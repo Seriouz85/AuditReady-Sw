@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Requirement {
+  id                String            @id @default(uuid())
+  name              String
+  description       String
+  category          String
+  status            RequirementStatus @default(NOT_FULFILLED)
+  lastUpdated       DateTime          @default(now()) @updatedAt
+  variables         Variable[]
+  history           RequirementHistory[]
+  createdAt         DateTime          @default(now())
+}
+
+model Variable {
+  id            String      @id @default(uuid())
+  name          String
+  value         String
+  requirementId String
+  requirement   Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now()) @updatedAt
+}
+
+model RequirementHistory {
+  id            String            @id @default(uuid())
+  requirementId String
+  requirement   Requirement       @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  status        RequirementStatus
+  comment       String?
+  updatedBy     String
+  createdAt     DateTime          @default(now())
+}
+
+enum RequirementStatus {
+  FULFILLED
+  PARTIALLY_FULFILLED
+  NOT_FULFILLED
+  NOT_APPLICABLE
+} 
