@@ -7,9 +7,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RequirementStatus } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   console.log("Dashboard component loaded");
+  const navigate = useNavigate();
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -136,27 +138,33 @@ const Dashboard = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
         variants={itemVariants}
       >
-        <StatsCard
-          title="Total Standards"
-          value={dashboardStats.totalStandards}
-          icon={<Shield size={16} />}
-          description="Active compliance standards"
-          className="shadow-md hover:shadow-lg transition-shadow"
-        />
-        <StatsCard
-          title="Total Requirements"
-          value={dashboardStats.totalRequirements}
-          icon={<BookOpen size={16} />}
-          description="Across all standards"
-          className="shadow-md hover:shadow-lg transition-shadow"
-        />
-        <StatsCard
-          title="Total Assessments"
-          value={dashboardStats.totalAssessments}
-          icon={<CheckSquare size={16} />}
-          description="Ongoing and completed"
-          className="shadow-md hover:shadow-lg transition-shadow"
-        />
+        <div onClick={() => navigate("/app/standards")} className="cursor-pointer">
+          <StatsCard
+            title="Total Standards"
+            value={dashboardStats.totalStandards}
+            icon={<Shield size={16} />}
+            description="Active compliance standards"
+            className="shadow-md hover:shadow-lg transition-shadow hover:bg-slate-50 dark:hover:bg-slate-800/50"
+          />
+        </div>
+        <div onClick={() => navigate("/app/requirements")} className="cursor-pointer">
+          <StatsCard
+            title="Total Requirements"
+            value={dashboardStats.totalRequirements}
+            icon={<BookOpen size={16} />}
+            description="Across all standards"
+            className="shadow-md hover:shadow-lg transition-shadow hover:bg-slate-50 dark:hover:bg-slate-800/50"
+          />
+        </div>
+        <div onClick={() => navigate("/app/assessments")} className="cursor-pointer">
+          <StatsCard
+            title="Total Assessments"
+            value={dashboardStats.totalAssessments}
+            icon={<CheckSquare size={16} />}
+            description="Ongoing and completed"
+            className="shadow-md hover:shadow-lg transition-shadow hover:bg-slate-50 dark:hover:bg-slate-800/50"
+          />
+        </div>
         <StatsCard
           title="Compliance Score"
           value={`${dashboardStats.complianceScore}%`}
@@ -198,7 +206,14 @@ const Dashboard = () => {
                           <p className="text-xs text-muted-foreground">Due in 3 days</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="px-2 py-1 h-auto text-xs">Start</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="px-2 py-1 h-auto text-xs"
+                        onClick={() => navigate("/app/assessments/1")}
+                      >
+                        Start
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -208,7 +223,10 @@ const Dashboard = () => {
         </div>
         
         <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-3">
-          <AssessmentProgress assessments={assessments} />
+          <AssessmentProgress 
+            assessments={assessments} 
+            onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}
+          />
         </motion.div>
       </motion.div>
     </motion.div>

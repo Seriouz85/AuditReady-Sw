@@ -16,6 +16,8 @@ import ReportRisk from "@/pages/risk-management/ReportRisk";
 import ManageRisks from "@/pages/risk-management/ManageRisks";
 import RiskSettings from "@/pages/risk-management/RiskSettings";
 import RiskReports from "@/pages/risk-management/RiskReports";
+import RiskDetail from "@/pages/risk-management/manage/RiskDetail";
+import RiskAssignment from "@/pages/risk-management/manage/RiskAssignment";
 import OrgChart from "@/pages/OrgChart";
 
 const Index = () => {
@@ -26,6 +28,7 @@ const Index = () => {
         <Route path="/standards" element={<Standards />} />
         <Route path="/requirements" element={<Requirements />} />
         <Route path="/assessments" element={<Assessments />} />
+        <Route path="/assessments/:id" element={<Assessments />} />
         <Route path="/applications" element={<Applications />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/reports" element={<Reports />} />
@@ -36,6 +39,8 @@ const Index = () => {
         <Route path="/risk-management" element={<RiskManagement />} />
         <Route path="/risk-management/report" element={<ReportRisk />} />
         <Route path="/risk-management/manage/risks" element={<ManageRisks />} />
+        <Route path="/risk-management/manage/risks/:riskId" element={<RiskDetail />} />
+        <Route path="/risk-management/manage/risks/:riskId/assign" element={<RiskAssignment />} />
         <Route path="/risk-management/manage/settings" element={<RiskSettings />} />
         <Route path="/risk-management/reports" element={<RiskReports />} />
         <Route path="*" element={<NotFound />} />

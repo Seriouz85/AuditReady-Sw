@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 
 interface AssessmentProgressProps {
   assessments: Assessment[];
+  onAssessmentClick?: (id: string) => void;
 }
 
-export function AssessmentProgress({ assessments }: AssessmentProgressProps) {
+export function AssessmentProgress({ assessments, onAssessmentClick }: AssessmentProgressProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const navigate = useNavigate();
 
@@ -65,7 +66,11 @@ export function AssessmentProgress({ assessments }: AssessmentProgressProps) {
 
   // Navigate to assessment detail page
   const handleNavigateToAssessment = (assessment: Assessment) => {
-    navigate(`/assessments?id=${assessment.id}`);
+    if (onAssessmentClick) {
+      onAssessmentClick(assessment.id);
+    } else {
+      navigate(`/app/assessments/${assessment.id}`);
+    }
   };
 
   return (
@@ -185,7 +190,7 @@ export function AssessmentProgress({ assessments }: AssessmentProgressProps) {
                 variant="outline" 
                 size="sm" 
                 className="group px-2 py-1 h-auto text-xs"
-                onClick={() => navigate('/assessments')}
+                onClick={() => navigate('/app/assessments')}
               >
                 View All Assessments
                 <ArrowRight className="ml-1.5 h-3 w-3 transition-transform group-hover:translate-x-1" />
@@ -203,7 +208,7 @@ export function AssessmentProgress({ assessments }: AssessmentProgressProps) {
                 variant="outline" 
                 size="sm"
                 className="px-2 py-1 h-auto text-xs"
-                onClick={() => navigate('/assessments')}
+                onClick={() => navigate('/app/assessments')}
               >
                 Go to Assessments
                 <ArrowRight className="ml-1.5 h-3 w-3" />
