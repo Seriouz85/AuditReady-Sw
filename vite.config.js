@@ -12,12 +12,14 @@ export default defineConfig(({ command }) => {
     plugins: [
       react(),
       {
-        name: 'generate-404-html',
+        name: 'generate-github-pages-files',
         closeBundle() {
           if (command === 'build') {
             // Copy index.html to 404.html for GitHub Pages SPA routing
-            const indexHtml = fs.readFileSync('./dist/index.html', 'utf-8');
-            fs.writeFileSync('./dist/404.html', indexHtml);
+            fs.copyFileSync('./dist/index.html', './dist/404.html');
+            
+            // Create .nojekyll file to disable Jekyll processing
+            fs.writeFileSync('./dist/.nojekyll', '');
           }
         }
       }
