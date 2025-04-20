@@ -4,6 +4,10 @@
 
 @layer base {
   :root {
+    /* Base scaling to achieve 80% of normal size */
+    font-size: 80%;
+    --spacing-unit: 0.8rem;
+    
     --background: 210 33% 98%;
     --foreground: 210 30% 16%;
 

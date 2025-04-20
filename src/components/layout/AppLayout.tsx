@@ -25,6 +25,7 @@ import { LanguageSelector } from '@/components/LanguageSelector';
 import { NotificationsMenu } from '@/components/NotificationsMenu';
 import { useTranslation } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { ZoomToggle } from '@/components/ui/zoom-toggle';
 import { useTheme } from 'next-themes';
 
 type SubNavItem = {
@@ -287,6 +288,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex justify-end items-center p-3 border-b">
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <ZoomToggle />
             <NotificationsMenu />
             <LanguageSelector />
           </div>
