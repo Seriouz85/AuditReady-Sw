@@ -899,7 +899,7 @@ const Organizations: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Organizations</h1>
         <div className="flex gap-2">
-          <Link to="/organizations/chart">
+          <Link to="/app/organizations/chart">
             <Button variant="outline">
               <Network className="mr-2 h-4 w-4" />
               View Org Chart

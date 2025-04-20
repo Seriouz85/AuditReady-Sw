@@ -79,6 +79,15 @@ const getSecurityContact = (contact: string | { name: string; email: string } | 
 // Custom Node Component - Adjust props type back
 const OrganizationNode = ({ data }: NodeProps<ChartNode['data']>) => {
   const bgColor = getNodeColor(data.hierarchyLevel);
+  const [isEditing, setIsEditing] = useState(false);
+  const [nodeLabel, setNodeLabel] = useState(data.label);
+  const [nodeType, setNodeType] = useState(data.type);
+  
+  // Update the node data when editing is completed
+  useEffect(() => {
+    data.label = nodeLabel;
+    data.type = nodeType;
+  }, [nodeLabel, nodeType, data]);
 
   return (
     <div 
@@ -92,41 +101,88 @@ const OrganizationNode = ({ data }: NodeProps<ChartNode['data']>) => {
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         position: 'relative',
       }}
+      onDoubleClick={() => setIsEditing(true)}
     >
       {/* Target Handle (Top) - Always present but might not be connectable depending on context */}
       <Handle
         type="target"
         position={Position.Top}
-        id={`${data.id}-target`}
+        id={`${data.id}-target-top`}
         className="w-2 h-2 !bg-gray-500 opacity-50"
         isConnectable={data.isConnectable ?? true}
       />
+      
+      {/* Left vertical handle */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        id={`${data.id}-target-left`}
+        className="w-2 h-2 !bg-blue-500 opacity-50"
+        isConnectable={data.isConnectable ?? true}
+      />
+      
+      {/* Right vertical handle */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id={`${data.id}-source-right`}
+        className="w-2 h-2 !bg-green-500 opacity-50"
+        isConnectable={data.isConnectable ?? true}
+      />
 
-      <div style={{ fontWeight: 600, fontSize: '1.125rem', marginBottom: '0.5rem', textAlign: 'center' }}>
-        {data.label}
-      </div>
-      <div style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: '1rem', textAlign: 'center' }}>
-        {data.type}
-      </div>
-
-      {data.securityContact && (
-        <div style={{ 
-          fontSize: '0.75rem', 
-          borderTop: '1px solid rgba(255,255,255,0.2)', 
-          paddingTop: '0.75rem', 
-          marginTop: '0.75rem',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>Security Contact:</div>
-          {getSecurityContact(data.securityContact)}
+      {isEditing ? (
+        <div className="p-2 bg-white rounded shadow-inner" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="text"
+            value={nodeLabel}
+            onChange={(e) => setNodeLabel(e.target.value)}
+            className="w-full p-1 mb-2 text-black border rounded text-center font-semibold text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoFocus
+          />
+          <input
+            type="text"
+            value={nodeType}
+            onChange={(e) => setNodeType(e.target.value)}
+            className="w-full p-1 text-black border rounded text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="flex justify-end mt-2">
+            <button 
+              className="text-xs bg-blue-600 text-white px-2 py-1 rounded" 
+              onClick={() => setIsEditing(false)}
+            >
+              Save
+            </button>
+          </div>
         </div>
+      ) : (
+        <>
+          <div style={{ fontWeight: 600, fontSize: '1.125rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+            {nodeLabel}
+          </div>
+          <div style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: '1rem', textAlign: 'center' }}>
+            {nodeType}
+          </div>
+
+          {data.securityContact && (
+            <div style={{ 
+              fontSize: '0.75rem', 
+              borderTop: '1px solid rgba(255,255,255,0.2)', 
+              paddingTop: '0.75rem', 
+              marginTop: '0.75rem',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>Security Contact:</div>
+              {getSecurityContact(data.securityContact)}
+            </div>
+          )}
+        </>
       )}
 
       {/* Source Handle (Bottom) - Always present */}
       <Handle
         type="source"
         position={Position.Bottom}
-        id={`${data.id}-source`}
+        id={`${data.id}-source-bottom`}
         className="w-2 h-2 !bg-gray-500 opacity-50"
         isConnectable={data.isConnectable ?? true}
       />
@@ -354,11 +410,22 @@ const OrgChartContent = () => {
         return;
       }
 
-      console.log('onConnectBuilder: Adding new edge.');
+      // Determine edge type based on the connection handles
+      let edgeType = 'step'; // Default type
+      
+      // When connecting vertical points (left/right handles)
+      if (
+        (connection.sourceHandle?.includes('-source-right') && connection.targetHandle?.includes('-target-left')) ||
+        (connection.sourceHandle?.includes('-source-left') && connection.targetHandle?.includes('-target-right'))
+      ) {
+        edgeType = 'straight'; // Use straight line for horizontal connections
+      }
+
+      console.log('onConnectBuilder: Adding new edge, type:', edgeType);
       const newEdge = {
         ...connection,
         id: `edge-${connection.source}-${connection.target}-${Date.now()}`,
-        type: 'step',
+        type: edgeType,
         style: { stroke: '#000', strokeWidth: 2 },
       } as Edge;
       setEdges((eds) => addEdge(newEdge, eds));
@@ -369,6 +436,39 @@ const OrgChartContent = () => {
     },
     [edges, setEdges, toast] // Added toast dependency
   );
+
+  // Save organization data
+  const saveOrganizationData = useCallback(() => {
+    try {
+      // Extract updated data from nodes to update the organizations data
+      const updatedOrgs = nodes.map(node => {
+        const org = mockOrganizations.find(o => o.id === node.id);
+        if (org) {
+          return {
+            ...org,
+            name: node.data.label,
+            type: node.data.type as any, // Cast to the expected type
+          };
+        }
+        return null;
+      }).filter(Boolean);
+      
+      console.log('Updated organization data:', updatedOrgs);
+      
+      // In a real application, you'd save this to your backend
+      toast({
+        title: "Changes Saved",
+        description: "Organization chart changes have been saved.",
+      });
+    } catch (error) {
+      console.error('Failed to save organization changes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save organization changes.",
+        variant: "destructive",
+      });
+    }
+  }, [nodes, toast]);
 
   // Node change handler for logging drag end position
   const onNodesChangeBuilder = useCallback((changes: NodeChange[]) => {
@@ -396,6 +496,9 @@ const OrgChartContent = () => {
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button onClick={saveOrganizationData} variant="default">
+            Save Changes
+          </Button>
           <Button onClick={exportAsPNG} variant="outline">
             <FileDown className="w-4 h-4 mr-2" />
             Export PNG
@@ -421,6 +524,9 @@ const OrgChartContent = () => {
           <Card>
             <CardHeader>
               <CardTitle>Current Organizational Structure</CardTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                Double-click on any node to edit its content. Connect nodes horizontally using the left and right handles.
+              </p>
             </CardHeader>
             <CardContent>
               <div className="h-[800px] border rounded-lg bg-gray-100" ref={reactFlowWrapper}>
