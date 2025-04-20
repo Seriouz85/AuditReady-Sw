@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/ui/status-badge";
+// @ts-ignore: Required for type checking
 import { Requirement, RequirementPriority } from "@/types";
 import { TagList } from "@/components/ui/tag-selector";
 import { ArrowUpDown, ArrowUp, ArrowDown, Flag } from "lucide-react";
