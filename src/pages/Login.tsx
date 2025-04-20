@@ -125,7 +125,7 @@ const Login = () => {
   return (
     <div className={`min-h-screen flex ${theme === 'light' ? 'bg-slate-100' : 'bg-[#1a1f2e]'}`}>
       {/* Left side - Login Form */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-white shadow-xl' : ''}`}>
+      <div className={`lg:w-5/12 flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-white shadow-xl' : ''}`}>
         {/* Logo and Theme Toggle */}
         <div className="w-full max-w-md flex justify-between items-center mb-8">
           <div className="flex items-center gap-2">
@@ -240,7 +240,7 @@ const Login = () => {
       </div>
 
       {/* Right side - Features - reduced gap between sides */}
-      <div className={`hidden lg:flex flex-1 flex-col justify-center px-4 ${theme === 'light' ? 'bg-slate-50' : ''}`}>
+      <div className={`hidden lg:flex lg:w-5/12 flex-col justify-center px-8 ${theme === 'light' ? 'bg-slate-50' : ''}`}>
         <div className="max-w-md mx-auto">
           <h2 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Why Choose AuditReady?</h2>
           <p className={`mb-6 ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
@@ -280,6 +280,9 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Center spacer to push content towards the center */}
+      <div className="hidden lg:block flex-grow"></div>
     </div>
   );
 };
