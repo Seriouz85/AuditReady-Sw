@@ -19,7 +19,6 @@ import RiskReports from "@/pages/risk-management/RiskReports";
 import RiskDetail from "@/pages/risk-management/manage/RiskDetail";
 import RiskAssignment from "@/pages/risk-management/manage/RiskAssignment";
 import OrgChart from "@/pages/OrgChart";
-import PrimeOrgChart from "@/pages/organizations/PrimeOrgChart";
 
 const Index = () => {
   return (
@@ -36,7 +35,6 @@ const Index = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/organizations" element={<Organizations />} />
         <Route path="/organizations/chart" element={<OrgChart />} />
-        <Route path="/organizations/prime-chart" element={<PrimeOrgChart />} />
         <Route path="/documents/*" element={<Documents />} />
         <Route path="/risk-management" element={<RiskManagement />} />
         <Route path="/risk-management/report" element={<ReportRisk />} />
