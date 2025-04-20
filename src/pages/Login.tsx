@@ -10,6 +10,7 @@ import { toast } from "@/utils/toast";
 import { mockSignIn, mockSignInAnonymously } from "@/lib/mockAuth";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ZoomToggle } from "@/components/ui/zoom-toggle";
 
 // Removed unused variables: createAdminUser, ADMIN_EMAIL, ADMIN_PASSWORD, MAIN_APP_URL
 
@@ -133,7 +134,10 @@ const Login = () => {
               AuditReady
             </span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ZoomToggle />
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Login Form */}

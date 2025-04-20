@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ZoomToggle } from "@/components/ui/zoom-toggle";
 import { useTheme } from "next-themes";
 
 export default function Landing() {
@@ -68,6 +69,7 @@ export default function Landing() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
+            <ZoomToggle />
             <ThemeToggle />
             <Button 
               variant="ghost" 
