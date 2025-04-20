@@ -22,6 +22,14 @@ const d3 = {
 
 export class OrgChart {
     constructor() {
+        // Add logging to console to help debug
+        console.log("OrgChart Constructor - Available methods:", {
+            render: typeof this.render === 'function',
+            fit: typeof this.fit === 'function',
+            setZoom: typeof this.setZoom === 'function',
+            zoomIn: typeof this.zoomIn === 'function',
+            zoomOut: typeof this.zoomOut === 'function'
+        });
 
         // Exposed variables  test test
         const attrs = {
