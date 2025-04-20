@@ -1,8 +1,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Requirement } from "@/types";
+import { Requirement, RequirementPriority } from "@/types";
 import { TagList } from "@/components/ui/tag-selector";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Flag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface RequirementTableProps {
   requirements: Requirement[];
@@ -20,6 +21,25 @@ export function RequirementTable({
   const getSortIcon = (key: keyof Requirement) => {
     if (!sortConfig || sortConfig.key !== key) return <ArrowUpDown className="h-4 w-4" />;
     return sortConfig.direction === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
+  };
+
+  const getPriorityBadge = (priority?: RequirementPriority) => {
+    if (!priority || priority === 'default') {
+      return null;
+    }
+
+    const colors = {
+      low: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+      medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
+      high: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-red-200 dark:border-red-800"
+    };
+
+    return (
+      <Badge variant="outline" className={`${colors[priority]} flex items-center gap-1 py-0.5`}>
+        <Flag className="h-3 w-3" />
+        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+      </Badge>
+    );
   };
 
   return (
@@ -50,6 +70,14 @@ export function RequirementTable({
             >
               <div className="flex items-center gap-1">
                 Status {getSortIcon('status')}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onSort?.('priority')}
+            >
+              <div className="flex items-center gap-1">
+                Priority {getSortIcon('priority')}
               </div>
             </TableHead>
             <TableHead 
@@ -87,6 +115,9 @@ export function RequirementTable({
                   <StatusBadge status={req.status} />
                 </TableCell>
                 <TableCell>
+                  {getPriorityBadge(req.priority)}
+                </TableCell>
+                <TableCell>
                   {req.lastAssessmentDate 
                     ? new Date(req.lastAssessmentDate).toLocaleDateString() 
                     : 'Never'}
@@ -96,7 +127,7 @@ export function RequirementTable({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
+              <TableCell colSpan={7} className="h-24 text-center">
                 No requirements found.
               </TableCell>
             </TableRow>

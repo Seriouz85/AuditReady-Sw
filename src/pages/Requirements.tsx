@@ -6,8 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RequirementTable } from "@/components/requirements/RequirementTable";
 import { RequirementDetail } from "@/components/requirements/RequirementDetail";
 import { requirements, standards, tags } from "@/data/mockData";
-import { Requirement, RequirementStatus, TagCategory } from "@/types";
-import { ArrowLeft, Filter, Plus, Search } from "lucide-react";
+import { Requirement, RequirementStatus, TagCategory, RequirementPriority } from "@/types";
+import { ArrowLeft, Filter, Plus, Search, Flag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/lib/i18n";
@@ -16,12 +16,18 @@ const Requirements = () => {
   const [searchParams] = useSearchParams();
   const standardIdFromUrl = searchParams.get("standard");
   const statusFromUrl = searchParams.get("status") as RequirementStatus | null;
+  const priorityFromUrl = searchParams.get("priority") as RequirementPriority | null;
   const { t } = useTranslation();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<RequirementStatus | "all">(
     statusFromUrl && ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'].includes(statusFromUrl) 
       ? statusFromUrl 
+      : "all"
+  );
+  const [priorityFilter, setPriorityFilter] = useState<RequirementPriority | "all">(
+    priorityFromUrl && ['default', 'low', 'medium', 'high'].includes(priorityFromUrl)
+      ? priorityFromUrl
       : "all"
   );
   const [standardFilter, setStandardFilter] = useState<string>(standardIdFromUrl || "all");
@@ -39,6 +45,11 @@ const Requirements = () => {
     const newStatusFromUrl = searchParams.get("status") as RequirementStatus | null;
     if (newStatusFromUrl && ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'].includes(newStatusFromUrl)) {
       setStatusFilter(newStatusFromUrl);
+    }
+    
+    const newPriorityFromUrl = searchParams.get("priority") as RequirementPriority | null;
+    if (newPriorityFromUrl && ['default', 'low', 'medium', 'high'].includes(newPriorityFromUrl)) {
+      setPriorityFilter(newPriorityFromUrl);
     }
   }, [searchParams, standardIdFromUrl]);
 
@@ -62,11 +73,12 @@ const Requirements = () => {
       
       const matchesStatus = statusFilter === "all" || requirement.status === statusFilter;
       const matchesStandard = standardFilter === "all" || requirement.standardId === standardFilter;
+      const matchesPriority = priorityFilter === "all" || requirement.priority === priorityFilter;
       
       const matchesTypeTag = typeTagFilter === "all" || (requirement.tags && requirement.tags.includes(typeTagFilter));
       const matchesAppliesToTag = appliesToTagFilter === "all" || (requirement.tags && requirement.tags.includes(appliesToTagFilter));
       
-      return matchesSearch && matchesStatus && matchesStandard && matchesTypeTag && matchesAppliesToTag;
+      return matchesSearch && matchesStatus && matchesStandard && matchesPriority && matchesTypeTag && matchesAppliesToTag;
     });
 
     // Apply sorting
@@ -85,7 +97,7 @@ const Requirements = () => {
     }
 
     return result;
-  }, [localRequirements, searchQuery, statusFilter, standardFilter, typeTagFilter, appliesToTagFilter, sortConfig]);
+  }, [localRequirements, searchQuery, statusFilter, standardFilter, priorityFilter, typeTagFilter, appliesToTagFilter, sortConfig]);
 
   const handleRequirementSelect = (requirement: Requirement) => {
     setSelectedRequirement(requirement);
@@ -100,6 +112,16 @@ const Requirements = () => {
       setSelectedRequirement({ ...selectedRequirement, status });
     }
   };
+  
+  const handlePriorityChange = (id: string, priority: RequirementPriority) => {
+    setLocalRequirements(
+      localRequirements.map((req) => (req.id === id ? { ...req, priority } : req))
+    );
+    
+    if (selectedRequirement && selectedRequirement.id === id) {
+      setSelectedRequirement({ ...selectedRequirement, priority });
+    }
+  };
 
   const handleFilterChange = (status: RequirementStatus | "all") => {
     // Update URL parameters when status filter changes
@@ -108,6 +130,17 @@ const Requirements = () => {
       newSearchParams.delete('status');
     } else {
       newSearchParams.set('status', status);
+    }
+    window.history.pushState({}, '', `?${newSearchParams.toString()}`);
+  };
+  
+  const handlePriorityFilterChange = (priority: RequirementPriority | "all") => {
+    // Update URL parameters when priority filter changes
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (priority === 'all') {
+      newSearchParams.delete('priority');
+    } else {
+      newSearchParams.set('priority', priority);
     }
     window.history.pushState({}, '', `?${newSearchParams.toString()}`);
   };
@@ -153,6 +186,28 @@ const Requirements = () => {
 
   const typeTags = getTagsByCategory('type');
   const appliesToTags = getTagsByCategory('applies-to');
+
+  // Set sample priorities for demonstration
+  useEffect(() => {
+    // Only set priorities if not already set
+    const needsPriorities = localRequirements.some(req => !req.priority);
+    
+    if (needsPriorities) {
+      const prioritizedRequirements = localRequirements.map((req, index) => {
+        if (req.priority) return req;
+        
+        // Set some sample priorities for demonstration
+        let priority: RequirementPriority = 'default';
+        if (index % 10 === 0) priority = 'high';
+        else if (index % 5 === 0) priority = 'medium';
+        else if (index % 3 === 0) priority = 'low';
+        
+        return { ...req, priority };
+      });
+      
+      setLocalRequirements(prioritizedRequirements);
+    }
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -215,6 +270,26 @@ const Requirements = () => {
                   <SelectItem value="partially-fulfilled">{t('assessment.status.partial', 'Partially Fulfilled')}</SelectItem>
                   <SelectItem value="not-fulfilled">{t('assessment.status.notFulfilled', 'Not Fulfilled')}</SelectItem>
                   <SelectItem value="not-applicable">{t('assessment.status.notApplicable', 'Not Applicable')}</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select
+                value={priorityFilter}
+                onValueChange={(value) => {
+                  setPriorityFilter(value as RequirementPriority | "all");
+                  handlePriorityFilterChange(value as RequirementPriority | "all");
+                }}
+              >
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <Flag className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder={t('requirements.filter.priority', 'Priority')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Priorities</SelectItem>
+                  <SelectItem value="default">Default</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -310,6 +385,7 @@ const Requirements = () => {
         <RequirementDetail 
           requirement={selectedRequirement}
           onStatusChange={handleStatusChange}
+          onPriorityChange={handlePriorityChange}
           onEvidenceChange={handleEvidenceChange}
           onNotesChange={handleNotesChange}
           onTagsChange={handleTagsChange}

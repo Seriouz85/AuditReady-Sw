@@ -4,18 +4,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Requirement, RequirementStatus } from "@/types";
+import { Requirement, RequirementStatus, RequirementPriority } from "@/types";
 import { useState } from "react";
 import { toast } from "@/utils/toast";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { FileText, Link, ExternalLink, Save, Plus, X } from "lucide-react";
+import { FileText, Link, ExternalLink, Save, Plus, X, Flag } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
 interface RequirementDetailProps {
   requirement: Requirement;
   onStatusChange?: (id: string, status: RequirementStatus) => void;
+  onPriorityChange?: (id: string, priority: RequirementPriority) => void;
   onEvidenceChange?: (id: string, evidence: string, evidenceLinks?: string[]) => void;
   onNotesChange?: (id: string, notes: string) => void;
   onTagsChange?: (id: string, tags: string[]) => void;
@@ -29,6 +30,7 @@ interface EvidenceLink {
 export function RequirementDetail({ 
   requirement,
   onStatusChange,
+  onPriorityChange,
   onEvidenceChange,
   onNotesChange,
   onTagsChange
@@ -37,6 +39,7 @@ export function RequirementDetail({
   const [evidence, setEvidence] = useState(requirement.evidence || '');
   const [notes, setNotes] = useState(requirement.notes || '');
   const [status, setStatus] = useState<RequirementStatus>(requirement.status);
+  const [priority, setPriority] = useState<RequirementPriority>(requirement.priority || 'default');
   const [tags, setTags] = useState<string[]>(requirement.tags || []);
   const [evidenceLinks, setEvidenceLinks] = useState<EvidenceLink[]>([
     { url: '', description: '' }
@@ -45,6 +48,11 @@ export function RequirementDetail({
 
   const handleStatusChange = (value: RequirementStatus) => {
     setStatus(value);
+    setHasChanges(true);
+  };
+
+  const handlePriorityChange = (value: RequirementPriority) => {
+    setPriority(value);
     setHasChanges(true);
   };
 
@@ -83,6 +91,10 @@ export function RequirementDetail({
   const handleSaveAll = () => {
     if (onStatusChange) {
       onStatusChange(requirement.id, status);
+    }
+    
+    if (onPriorityChange) {
+      onPriorityChange(requirement.id, priority);
     }
     
     if (onEvidenceChange) {
@@ -142,28 +154,50 @@ export function RequirementDetail({
         <Separator />
         
         <div className="space-y-4">
-          <TagSelector 
-            selectedTags={tags} 
-            onChange={handleTagsChange} 
+          <TagSelector
+            selectedTags={tags}
+            onChange={handleTagsChange}
             className="min-h-[40px]"
           />
         </div>
         
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="status">{t('requirement.field.status', 'Compliance Status')}</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="status">{t('requirement.field.status', 'Compliance Status')}</Label>
+            </div>
+            <Select value={status} onValueChange={handleStatusChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('requirement.status.placeholder', 'Select status')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="fulfilled">{t('assessment.status.fulfilled', 'Fulfilled')}</SelectItem>
+                <SelectItem value="partially-fulfilled">{t('assessment.status.partial', 'Partially Fulfilled')}</SelectItem>
+                <SelectItem value="not-fulfilled">{t('assessment.status.notFulfilled', 'Not Fulfilled')}</SelectItem>
+                <SelectItem value="not-applicable">{t('assessment.status.notApplicable', 'Not Applicable')}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={status} onValueChange={handleStatusChange}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('requirement.status.placeholder', 'Select status')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fulfilled">{t('assessment.status.fulfilled', 'Fulfilled')}</SelectItem>
-              <SelectItem value="partially-fulfilled">{t('assessment.status.partial', 'Partially Fulfilled')}</SelectItem>
-              <SelectItem value="not-fulfilled">{t('assessment.status.notFulfilled', 'Not Fulfilled')}</SelectItem>
-              <SelectItem value="not-applicable">{t('assessment.status.notApplicable', 'Not Applicable')}</SelectItem>
-            </SelectContent>
-          </Select>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="priority" className="flex items-center gap-1">
+                <Flag size={14} className="text-muted-foreground" />
+                {t('requirement.field.priority', 'Priority')}
+              </Label>
+            </div>
+            <Select value={priority} onValueChange={handlePriorityChange}>
+              <SelectTrigger id="priority">
+                <SelectValue placeholder={t('requirement.priority.placeholder', 'Select priority')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Default</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         
         <div className="space-y-2">
@@ -174,7 +208,7 @@ export function RequirementDetail({
             id="evidence"
             placeholder={t('requirement.field.evidence.placeholder', 'Document evidence of compliance...')}
             value={evidence}
-            onChange={(e) => handleEvidenceChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleEvidenceChange(e.target.value)}
             rows={4}
           />
         </div>
@@ -237,7 +271,7 @@ export function RequirementDetail({
             id="notes"
             placeholder={t('requirement.field.notes.placeholder', 'Add notes or comments...')}
             value={notes}
-            onChange={(e) => handleNotesChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleNotesChange(e.target.value)}
             rows={4}
           />
         </div>

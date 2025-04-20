@@ -8,13 +8,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 // Define zoom levels
 const ZOOM_LEVELS = {
-  default: 80, // -20% from normal (our standard default)
-  medium: 90,  // -10% from normal
-  large: 100,  // normal size
-  larger: 110  // +10% from normal
+  default: 80, // Default (scaled down by 20%)
+  medium: 90,  // +10% from default
+  large: 100,  // +20% from default
 };
 
 // Create a context to store and share zoom state
@@ -64,10 +69,9 @@ export function ZoomToggle() {
   const { currentZoom, setZoom } = useZoom();
   
   const getZoomLabel = (zoomLevel: number) => {
-    if (zoomLevel === ZOOM_LEVELS.default) return "Default (-20%)";
-    if (zoomLevel === ZOOM_LEVELS.medium) return "Medium (-10%)";
-    if (zoomLevel === ZOOM_LEVELS.large) return "Large (Normal)";
-    if (zoomLevel === ZOOM_LEVELS.larger) return "Larger (+10%)";
+    if (zoomLevel === ZOOM_LEVELS.default) return "Default";
+    if (zoomLevel === ZOOM_LEVELS.medium) return "+10%";
+    if (zoomLevel === ZOOM_LEVELS.large) return "+20%";
     return `${zoomLevel}%`;
   };
   
@@ -76,7 +80,6 @@ export function ZoomToggle() {
   const getNextZoomLevel = () => {
     if (currentZoom === ZOOM_LEVELS.default) return ZOOM_LEVELS.medium;
     if (currentZoom === ZOOM_LEVELS.medium) return ZOOM_LEVELS.large;
-    if (currentZoom === ZOOM_LEVELS.large) return ZOOM_LEVELS.larger;
     return ZOOM_LEVELS.default; // Cycle back to default
   };
   
@@ -85,45 +88,48 @@ export function ZoomToggle() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          title={`Current zoom: ${currentZoomLabel}. Click to change.`}
-        >
-          {currentZoom < ZOOM_LEVELS.large ? 
-            <ZoomIn className="h-4 w-4" /> : 
-            <ZoomOut className="h-4 w-4" />
-          }
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem 
-          onClick={() => setZoom(ZOOM_LEVELS.default)}
-          className={currentZoom === ZOOM_LEVELS.default ? "bg-accent text-accent-foreground" : ""}
-        >
-          Default (-20%)
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setZoom(ZOOM_LEVELS.medium)}
-          className={currentZoom === ZOOM_LEVELS.medium ? "bg-accent text-accent-foreground" : ""}
-        >
-          Medium (-10%)
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setZoom(ZOOM_LEVELS.large)}
-          className={currentZoom === ZOOM_LEVELS.large ? "bg-accent text-accent-foreground" : ""}
-        >
-          Large (Normal)
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setZoom(ZOOM_LEVELS.larger)}
-          className={currentZoom === ZOOM_LEVELS.larger ? "bg-accent text-accent-foreground" : ""}
-        >
-          Larger (+10%)
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+              >
+                {currentZoom === ZOOM_LEVELS.default ? 
+                  <ZoomIn className="h-4 w-4" /> : 
+                  <ZoomOut className="h-4 w-4" />
+                }
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem 
+                onClick={() => setZoom(ZOOM_LEVELS.default)}
+                className={currentZoom === ZOOM_LEVELS.default ? "bg-accent text-accent-foreground" : ""}
+              >
+                Default
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setZoom(ZOOM_LEVELS.medium)}
+                className={currentZoom === ZOOM_LEVELS.medium ? "bg-accent text-accent-foreground" : ""}
+              >
+                +10%
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setZoom(ZOOM_LEVELS.large)}
+                className={currentZoom === ZOOM_LEVELS.large ? "bg-accent text-accent-foreground" : ""}
+              >
+                +20%
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Adjust zoom: {currentZoomLabel}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 } 

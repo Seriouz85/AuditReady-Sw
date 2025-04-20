@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
@@ -6,129 +6,198 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, PlusCircle, Download, Loader2 } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n'; // Assuming you use i18n
+import { Eye, PlusCircle, Download, Loader2, ZoomIn, Maximize, Trash2 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
+import { OrgChart } from '@/lib/org-chart/d3-org-chart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Placeholder for the charting library (e.g., reactflow)
-// We'll integrate this properly later
-const PlaceholderOrgChart = ({ data, mode }: { data: any; mode: 'view' | 'create' }) => (
-  <div className="w-full h-full border rounded-lg flex items-center justify-center bg-muted/30 text-muted-foreground">
-    <p>Organizational Chart Preview ({mode} mode) - Data: {JSON.stringify(data)}</p>
-    {/* Chart rendering logic will go here */}
-  </div>
-);
+// OrgChart component wrapper
+const OrgChartComponent = ({ data, onNodeClick }) => {
+  const chartRef = useRef();
+  const containerRef = useRef();
 
+  useEffect(() => {
+    if (!data || data.length === 0) return;
+
+    // Initialize the chart
+    const chart = new OrgChart()
+      .container(containerRef.current)
+      .data(data)
+      .nodeWidth(() => 200)
+      .nodeHeight(() => 100)
+      .compact(false)
+      .layout('top')
+      .childrenMargin(() => 50)
+      .siblingsMargin(() => 20)
+      .neighbourMargin(() => 15) // Reduced from default to create smaller distances between boxes
+      .onNodeClick(d => {
+        // Auto-zoom to the clicked node
+        chart.setExpanded(d.id, !d._expanded);
+        chart.setCentered(d.id);
+        chart.update(d);
+        
+        if (onNodeClick) onNodeClick(d);
+      })
+      .nodeContent(node => {
+        return `
+          <div style="padding: 10px; border-radius: 4px; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.15); width: 100%; height: 100%;">
+            <div style="font-weight: bold; font-size: 14px;">${node.data.name || 'Unnamed'}</div>
+            <div style="font-size: 12px; color: #666;">${node.data.role || 'No role'}</div>
+            ${node.data.email ? `<div style="font-size: 11px; margin-top: 5px;">${node.data.email}</div>` : ''}
+          </div>
+        `;
+      });
+
+    chartRef.current = chart;
+    chart.render();
+
+    return () => {
+      chart.clear();
+    };
+  }, [data, onNodeClick]);
+
+  return (
+    <div ref={containerRef} style={{ width: '100%', height: '100%' }}></div>
+  );
+};
+
+// Main component
 const OrganizationalChart = () => {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<'view' | 'create'>('view');
+  const [mode, setMode] = useState('template');
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState('ceo');
 
-  // --- State for Create Mode ---
-  const [nodes, setNodes] = useState<any[]>([]); // Replace 'any' with your node type
-  const [edges, setEdges] = useState<any[]>([]); // Replace 'any' with your edge type
-  const [newNodeLabel, setNewNodeLabel] = useState('');
+  // State for chart nodes
+  const [nodes, setNodes] = useState([]);
+  const [newNodeName, setNewNodeName] = useState('');
   const [newNodeRole, setNewNodeRole] = useState('');
-  const [sourceNode, setSourceNode] = useState('');
-  const [targetNode, setTargetNode] = useState('');
+  const [newNodeEmail, setNewNodeEmail] = useState('');
+  const [selectedParentId, setSelectedParentId] = useState('');
 
-  // --- Mock Data for View Mode ---
-  // TODO: Replace with actual data fetching logic from your Organization data
-  const mockOrgData = {
-    nodes: [
-      { id: '1', data: { label: 'CEO', role: 'Chief Executive Officer' }, position: { x: 250, y: 5 } },
-      { id: '2', data: { label: 'VP Engineering', role: 'Vice President' }, position: { x: 100, y: 100 } },
-      { id: '3', data: { label: 'VP Sales', role: 'Vice President' }, position: { x: 400, y: 100 } },
-      { id: '4', data: { label: 'Lead Dev', role: 'Team Lead' }, position: { x: 50, y: 200 } },
-      { id: '5', data: { label: 'Sales Rep', role: 'Representative' }, position: { x: 350, y: 200 } },
+  const templates = {
+    blank: [],
+    ceo: [
+      { id: '1', name: 'CEO', role: 'Chief Executive Officer', parentId: null },
+      { id: '2', name: 'VP Engineering', role: 'Vice President', parentId: '1' },
+      { id: '3', name: 'VP Sales', role: 'Vice President', parentId: '1' },
+      { id: '4', name: 'Lead Dev', role: 'Team Lead', parentId: '2' },
+      { id: '5', name: 'Sales Rep', role: 'Representative', parentId: '3' },
     ],
-    edges: [
-      { id: 'e1-2', source: '1', target: '2' },
-      { id: 'e1-3', source: '1', target: '3' },
-      { id: 'e2-4', source: '2', target: '4' },
-      { id: 'e3-5', source: '3', target: '5' },
-    ],
+    corporate: [
+      { id: '1', name: 'President', role: 'President', parentId: null },
+      { id: '2', name: 'COO', role: 'Chief Operations Officer', parentId: '1' },
+      { id: '3', name: 'CFO', role: 'Chief Financial Officer', parentId: '1' },
+      { id: '4', name: 'CTO', role: 'Chief Technology Officer', parentId: '1' },
+      { id: '5', name: 'Operations Manager', role: 'Manager', parentId: '2' },
+      { id: '6', name: 'Finance Director', role: 'Director', parentId: '3' },
+      { id: '7', name: 'Dev Manager', role: 'Manager', parentId: '4' },
+    ]
   };
 
-  // --- Event Handlers (Create Mode) ---
+  // Set initial nodes based on template
+  useEffect(() => {
+    setNodes(templates[activeTemplate] || []);
+  }, [activeTemplate]);
+
+  // Handle adding a new node
   const handleAddNode = useCallback(() => {
-    if (!newNodeLabel || !newNodeRole) return; // Basic validation
-    const newNodeId = `node-${nodes.length + 1}-${Date.now()}`;
+    if (!newNodeName) return;
+    
+    const newNodeId = `node-${Date.now()}`;
     const newNode = {
       id: newNodeId,
-      // Position needs logic based on layout or user input
-      position: { x: Math.random() * 400, y: Math.random() * 400 }, 
-      data: { label: newNodeLabel, role: newNodeRole },
-      // Add other node properties as needed by your chart library
+      name: newNodeName,
+      role: newNodeRole,
+      email: newNodeEmail,
+      parentId: selectedParentId || null
     };
-    setNodes((nds) => nds.concat(newNode));
-    setNewNodeLabel('');
+    
+    setNodes(prevNodes => [...prevNodes, newNode]);
+    setNewNodeName('');
     setNewNodeRole('');
-  }, [nodes, newNodeLabel, newNodeRole]);
+    setNewNodeEmail('');
+    setSelectedParentId('');
+  }, [newNodeName, newNodeRole, newNodeEmail, selectedParentId]);
 
-  const handleAddEdge = useCallback(() => {
-    if (!sourceNode || !targetNode || sourceNode === targetNode) return; // Basic validation
-    const newEdgeId = `edge-${sourceNode}-${targetNode}-${Date.now()}`;
-    const newEdge = {
-      id: newEdgeId,
-      source: sourceNode,
-      target: targetNode,
-      // Add other edge properties (e.g., type: 'smoothstep')
+  // Handle removing a node
+  const handleRemoveNode = useCallback((nodeId) => {
+    // Remove this node and all its children
+    const removeNodeAndChildren = (id) => {
+      const childrenIds = nodes.filter(n => n.parentId === id).map(n => n.id);
+      childrenIds.forEach(childId => removeNodeAndChildren(childId));
+      setNodes(prevNodes => prevNodes.filter(n => n.id !== id));
     };
-    setEdges((eds) => eds.concat(newEdge));
-    setSourceNode('');
-    setTargetNode('');
-  }, [edges, sourceNode, targetNode]);
+    
+    removeNodeAndChildren(nodeId);
+  }, [nodes]);
 
-  // --- Export Functionality ---
+  // Export functionality
   const handleExport = () => {
     setIsLoading(true);
-    console.log('Exporting chart data:', { nodes, edges });
-    // TODO: Implement actual export logic (e.g., to PNG, SVG using a library)
+    // Implement actual export logic here
     setTimeout(() => {
-      alert('Export functionality not yet implemented. Chart data logged to console.');
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(nodes));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "org-chart.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
       setIsLoading(false);
     }, 1000);
   };
 
-  // --- Render Logic ---
-  const renderViewMode = () => (
+  // Render chart view
+  const renderChartView = () => (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>Current Organizational Chart</CardTitle>
-        <CardDescription>Visual representation of your organization's structure.</CardDescription>
+        <CardTitle>Organizational Chart</CardTitle>
+        <CardDescription>Interactive view of your organization's structure</CardDescription>
       </CardHeader>
-      <CardContent className="h-[calc(100%-80px)] p-0"> {/* Adjust height based on CardHeader */} 
-        <PlaceholderOrgChart data={mockOrgData} mode="view" />
+      <CardContent className="h-[calc(100%-80px)] p-0">
+        <OrgChartComponent data={nodes} onNodeClick={(node) => {
+          console.log('Node clicked:', node);
+        }} />
       </CardContent>
     </Card>
   );
 
-  const renderCreateMode = () => (
+  // Render chart creation interface
+  const renderChartCreation = () => (
     <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
       <ResizablePanel defaultSize={35} minSize={25}>
         <div className="flex h-full flex-col p-4 space-y-4">
           <h3 className="text-lg font-semibold">Create Chart</h3>
-          <p className="text-sm text-muted-foreground">Add elements and define relationships.</p>
+          <p className="text-sm text-muted-foreground">Start with a template or build from scratch.</p>
+          
+          <Tabs defaultValue={activeTemplate} onValueChange={setActiveTemplate}>
+            <TabsList className="w-full">
+              <TabsTrigger value="blank">Blank</TabsTrigger>
+              <TabsTrigger value="ceo">CEO Structure</TabsTrigger>
+              <TabsTrigger value="corporate">Corporate</TabsTrigger>
+            </TabsList>
+          </Tabs>
           
           <ScrollArea className="flex-1 pr-2">
             <div className="space-y-6">
-              {/* Add Node Section */}
+              {/* Add Person Form */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Add Person / Role</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <Label htmlFor="node-label">Name / Title</Label>
+                    <Label htmlFor="node-name">Name</Label>
                     <Input 
-                      id="node-label" 
-                      placeholder="e.g., CEO, Marketing Team" 
-                      value={newNodeLabel}
-                      onChange={(e) => setNewNodeLabel(e.target.value)}
+                      id="node-name" 
+                      placeholder="e.g., John Smith" 
+                      value={newNodeName}
+                      onChange={(e) => setNewNodeName(e.target.value)}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="node-role">Role / Description</Label>
+                    <Label htmlFor="node-role">Position / Role</Label>
                     <Input 
                       id="node-role" 
                       placeholder="e.g., Chief Executive Officer" 
@@ -136,48 +205,57 @@ const OrganizationalChart = () => {
                       onChange={(e) => setNewNodeRole(e.target.value)}
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="node-email">Email (Optional)</Label>
+                    <Input 
+                      id="node-email" 
+                      placeholder="e.g., john@example.com" 
+                      value={newNodeEmail}
+                      onChange={(e) => setNewNodeEmail(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="parent-node">Reports To (Optional)</Label>
+                    <Select value={selectedParentId} onValueChange={setSelectedParentId}>
+                      <SelectTrigger id="parent-node">
+                        <SelectValue placeholder="Select manager..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">No Manager (Top Level)</SelectItem>
+                        {nodes.map((node) => (
+                          <SelectItem key={node.id} value={node.id}>{node.name} ({node.role})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Button onClick={handleAddNode} size="sm" className="w-full">
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Element
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Person
                   </Button>
                 </CardContent>
               </Card>
 
-              {/* Add Edge/Connection Section */}
-              {nodes.length > 1 && (
+              {/* Current Nodes List */}
+              {nodes.length > 0 && (
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Define Relationship</CardTitle>
+                    <CardTitle className="text-base">Current People</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div>
-                      <Label htmlFor="source-node">Reports To (Source)</Label>
-                      <Select value={sourceNode} onValueChange={setSourceNode}>
-                        <SelectTrigger id="source-node">
-                          <SelectValue placeholder="Select manager..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {nodes.map((node) => (
-                            <SelectItem key={node.id} value={node.id}>{node.data.label} ({node.data.role})</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="target-node">Subordinate (Target)</Label>
-                      <Select value={targetNode} onValueChange={setTargetNode}>
-                        <SelectTrigger id="target-node">
-                          <SelectValue placeholder="Select direct report..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {nodes.map((node) => (
-                            <SelectItem key={node.id} value={node.id}>{node.data.label} ({node.data.role})</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button onClick={handleAddEdge} size="sm" className="w-full">
-                      <PlusCircle className="mr-2 h-4 w-4" /> Add Relationship
-                    </Button>
+                    {nodes.map((node) => (
+                      <div key={node.id} className="flex items-center justify-between border p-2 rounded">
+                        <div>
+                          <div className="font-medium">{node.name}</div>
+                          <div className="text-sm text-muted-foreground">{node.role}</div>
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleRemoveNode(node.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               )}
@@ -188,12 +266,15 @@ const OrganizationalChart = () => {
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={65} minSize={30}>
         <div className="flex h-full items-center justify-center p-4">
-          <PlaceholderOrgChart data={{ nodes, edges }} mode="create" />
+          <OrgChartComponent data={nodes} onNodeClick={(node) => {
+            setSelectedParentId(node.id);
+          }} />
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>
   );
 
+  // Main render
   return (
     <div className="flex flex-col h-full p-4 md:p-6 space-y-4">
       <div className="flex justify-between items-center flex-wrap gap-2">
@@ -203,15 +284,15 @@ const OrganizationalChart = () => {
             variant={mode === 'view' ? 'default' : 'outline'} 
             onClick={() => setMode('view')}
           >
-            <Eye className="mr-2 h-4 w-4" /> View Existing
+            <Eye className="mr-2 h-4 w-4" /> View Chart
           </Button>
           <Button 
-            variant={mode === 'create' ? 'default' : 'outline'} 
-            onClick={() => setMode('create')}
+            variant={mode === 'template' ? 'default' : 'outline'} 
+            onClick={() => setMode('template')}
           >
-            <PlusCircle className="mr-2 h-4 w-4" /> Create New
+            <PlusCircle className="mr-2 h-4 w-4" /> Create Chart
           </Button>
-          {(mode === 'create' && nodes.length > 0) && (
+          {nodes.length > 0 && (
             <Button onClick={handleExport} disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -224,8 +305,8 @@ const OrganizationalChart = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0"> {/* Ensure container takes remaining height */} 
-        {mode === 'view' ? renderViewMode() : renderCreateMode()}
+      <div className="flex-1 min-h-0">
+        {mode === 'view' ? renderChartView() : renderChartCreation()}
       </div>
     </div>
   );

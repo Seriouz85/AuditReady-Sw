@@ -239,16 +239,16 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right side - Features */}
-      <div className={`hidden lg:flex flex-1 flex-col justify-center p-8 ${theme === 'light' ? 'bg-slate-50' : ''}`}>
+      {/* Right side - Features - reduced gap between sides */}
+      <div className={`hidden lg:flex flex-1 flex-col justify-center px-4 ${theme === 'light' ? 'bg-slate-50' : ''}`}>
         <div className="max-w-md mx-auto">
           <h2 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Why Choose AuditReady?</h2>
-          <p className={`mb-8 ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
+          <p className={`mb-6 ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
             Join thousands of organizations that trust AuditReady for their compliance needs
           </p>
 
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
               <div className={`p-2 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/10'}`}>
                 <Shield className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               </div>
@@ -258,7 +258,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3">
               <div className={`p-2 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/10'}`}>
                 <Key className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               </div>
@@ -268,7 +268,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3">
               <div className={`p-2 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/10'}`}>
                 <Fingerprint className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               </div>

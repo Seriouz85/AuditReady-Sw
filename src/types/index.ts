@@ -29,6 +29,9 @@ export interface Standard {
 // Requirement status types
 export type RequirementStatus = 'fulfilled' | 'partially-fulfilled' | 'not-fulfilled' | 'not-applicable';
 
+// Requirement priority types
+export type RequirementPriority = 'low' | 'medium' | 'high' | 'default';
+
 // Requirement types
 export interface Requirement {
   id: string;
@@ -39,6 +42,7 @@ export interface Requirement {
   description: string;
   guidance: string;
   status: RequirementStatus;
+  priority?: RequirementPriority;
   evidence?: string;
   notes?: string;
   responsibleParty?: string;
