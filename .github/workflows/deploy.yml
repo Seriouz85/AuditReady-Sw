@@ -46,5 +46,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist # The folder the action should deploy
-          branch: gh-pages # The branch the action should deploy to
+          branch: main # Deploy to the main branch root
+          target-folder: docs # GitHub Pages can serve from /docs folder in main branch
           token: ${{ secrets.GITHUB_TOKEN }} # Using the built-in token 
