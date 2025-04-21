@@ -18,6 +18,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: true # Important for the deployment action
+          fetch-depth: 0 # Fetch all history for accurate access to repository files
+
+      - name: Verify package-lock.json
+        run: |
+          ls -la
+          if [ -f "package-lock.json" ]; then
+            echo "package-lock.json exists"
+          else
+            echo "package-lock.json does not exist"
+            exit 1
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
