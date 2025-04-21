@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <meta http-equiv="pragma" content="no-cache">
+  <title>Audit Readiness Hub</title>
+  <style>
+    :root {
+      --primary-color: #0F4C81;
+      --secondary-color: #f8f9fa;
+      --accent-color: #4CAF50;
+      --text-color: #333;
+      --light-text: #666;
+      --border-color: #eaeaea;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --border-radius: 8px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: #fff;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+    
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      background-color: var(--primary-color);
+      border-radius: 4px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary-color);
+    }
+    
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    
+    .btn:hover {
+      background-color: #0d3f6b;
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .hero {
+      padding: 5rem 0;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+    }
+    
+    .hero p {
+      font-size: 1.25rem;
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
+      color: var(--light-text);
+    }
+    
+    .features {
+      padding: 5rem 0;
+      background-color: var(--secondary-color);
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .feature-card {
+      background-color: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .feature-card h3 {
+      margin-bottom: 1rem;
+    }
+    
+    .cta-section {
+      padding: 5rem 0;
+      text-align: center;
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .cta-section h2 {
+      margin-bottom: 1.5rem;
+    }
+    
+    .cta-section p {
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .btn-white {
+      background-color: white;
+      color: var(--primary-color);
+    }
+    
+    .btn-white:hover {
+      background-color: #f0f0f0;
+      color: var(--primary-color);
+    }
+    
+    .footer {
+      padding: 3rem 0;
+      background-color: #1a1a1a;
+      color: white;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      margin-bottom: 1rem;
+    }
+    
+    .footer-column h4 {
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid #333;
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    @media (max-width: 768px) {
+      .nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">
+          <div class="logo-icon">A</div>
+          <span>Audit Readiness Hub</span>
+        </div>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#contact">Contact</a>
+          <a href="#about">About</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <section class="hero">
+    <div class="container">
+      <h1>Simplify Your Compliance Journey</h1>
+      <p>
+        Audit Readiness Hub helps organizations prepare for and pass security audits 
+        with comprehensive tracking, assessment management, and a requirements library.
+      </p>
+      <a href="#features" class="btn">Explore Features</a>
+    </div>
+  </section>
+  
+  <section id="features" class="features">
+    <div class="container">
+      <h2 class="section-title">Our Key Features</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Compliance Tracking</h3>
+          <p>
+            Monitor your compliance status across multiple standards from a single dashboard. 
+            Track progress and identify gaps in your security controls.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>Assessment Management</h3>
+          <p>
+            Create, assign, and track security assessments with ease. Streamline your 
+            assessment process and ensure nothing falls through the cracks.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Requirements Library</h3>
+          <p>
+            Access a comprehensive library of security requirements across different standards 
+            including ISO 27001, GDPR, HIPAA, and more.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to Transform Your Compliance Process?</h2>
+      <p>
+        Join thousands of organizations that trust Audit Readiness Hub for their compliance needs.
+      </p>
+      <a href="#contact" class="btn btn-white">Get Started Today</a>
+    </div>
+  </section>
+  
+  <section id="about" class="features">
+    <div class="container">
+      <h2 class="section-title">About Audit Readiness Hub</h2>
+      <p style="text-align: center; margin-bottom: 2rem;">
+        Audit Readiness Hub was created to simplify the complex process of preparing for security and compliance audits. 
+        Our platform helps organizations of all sizes meet regulatory requirements, improve security posture, and demonstrate compliance to auditors and customers.
+      </p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Security First</h3>
+          <p>
+            We prioritize security in everything we do, ensuring your compliance data is protected with enterprise-grade security controls.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>Global Standards</h3>
+          <p>
+            Our platform supports global compliance standards and can be customized to meet the specific needs of your organization.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💼</div>
+          <h3>Expert Support</h3>
+          <p>
+            Our team of compliance experts is available to help you navigate complex regulatory requirements and optimize your compliance program.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="contact" class="cta-section" style="background-color: #333;">
+    <div class="container">
+      <h2>Contact Us</h2>
+      <p>
+        Interested in learning more about how Audit Readiness Hub can help your organization? Get in touch with our team today.
+      </p>
+      <a href="mailto:info@auditreadinesshub.com" class="btn btn-white">Email Us</a>
+    </div>
+  </section>
+  
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <div class="logo footer-logo">
+            <div class="logo-icon">A</div>
+            <span>Audit Readiness Hub</span>
+          </div>
+          <p>
+            Simplifying compliance for organizations worldwide.
+          </p>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Compliance Guides</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Security</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="copyright">
+        &copy; 2025 Audit Readiness Hub. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</body>
+</html> 
