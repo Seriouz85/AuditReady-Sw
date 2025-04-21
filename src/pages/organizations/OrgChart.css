@@ -1,0 +1,246 @@
+.org-chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--background);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.org-chart {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.fullscreen-chart {
+  background-color: var(--background);
+  padding: 20px;
+}
+
+.org-chart-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: var(--card-background);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.3s ease-out;
+}
+
+.org-chart-toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+}
+
+.org-chart-toolbar-section:not(:last-child) {
+  border-right: 1px solid var(--border);
+  padding-right: 12px;
+  margin-right: 6px;
+}
+
+.search-section {
+  flex-grow: 1;
+}
+
+.org-chart-search {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding-left: 34px !important;
+  height: 36px;
+  border-radius: 6px;
+  background-color: var(--input-background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  transition: all 0.15s ease;
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.clear-search-button {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--muted-foreground);
+}
+
+.org-chart-button {
+  height: 36px;
+  width: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.org-chart-button:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.org-chart-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 16px;
+  background-color: var(--card-background);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.org-chart-status-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Tooltip Styling */
+.org-tooltip {
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--background);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  max-width: 300px;
+  font-family: var(--font-sans);
+}
+
+.org-tooltip-header {
+  background-color: var(--card-header-background);
+  padding: 10px 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 3px solid #3b82f6;
+  color: var(--foreground);
+}
+
+.org-tooltip-content {
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.org-tooltip-content .label {
+  font-weight: 500;
+  color: var(--muted-foreground);
+  margin-right: 6px;
+}
+
+/* Dark mode overrides */
+.dark .org-chart-button:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+.dark .org-tooltip {
+  background-color: hsl(217, 19%, 15%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark .org-tooltip-header {
+  background-color: hsl(217, 19%, 12%);
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .org-chart-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .org-chart-toolbar-section {
+    width: 100%;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-right: none;
+    margin-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .org-chart-toolbar-section:last-child {
+    border-bottom: none;
+  }
+  
+  .search-section {
+    order: -1;
+  }
+  
+  .org-chart-search {
+    max-width: 100%;
+  }
+}
+
+/* Animation effects */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* CSS Variables */
+:root {
+  --card-background: hsl(0, 0%, 100%);
+  --card-header-background: hsl(210, 20%, 98%);
+  --input-background: hsl(0, 0%, 100%);
+  --border: hsl(214, 32%, 91%);
+  --primary: hsl(217, 91%, 60%);
+  --primary-light: hsl(214, 100%, 97%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --foreground: hsl(217, 19%, 27%);
+}
+
+.dark {
+  --card-background: hsl(217, 19%, 14%);
+  --card-header-background: hsl(217, 19%, 11%);
+  --input-background: hsl(217, 19%, 16%);
+  --border: hsl(217, 19%, 18%);
+  --primary: hsl(217, 91%, 60%);
+  --primary-light: hsla(217, 91%, 60%, 0.15);
+  --muted-foreground: hsl(215, 16%, 65%);
+  --foreground: hsl(213, 31%, 91%);
+} 

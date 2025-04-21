@@ -128,116 +128,116 @@ const Login = () => {
       <div className={`flex-1 flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-white shadow-xl' : ''}`}>
         {/* Added max-width container to bring content closer to center */}
         <div className="w-full max-w-lg ml-auto mr-8">
-          {/* Logo and Theme Toggle */}
+        {/* Logo and Theme Toggle */}
           <div className="w-full flex justify-between items-center mb-8">
-            <div className="flex items-center gap-2">
-              <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
-              <span className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
-                AuditReady
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ZoomToggle />
-              <ThemeToggle />
-            </div>
+          <div className="flex items-center gap-2">
+            <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+            <span className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
+              AuditReady
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ZoomToggle />
+            <ThemeToggle />
+          </div>
+        </div>
+
+        {/* Login Form */}
+          <div className="w-full space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Welcome Back</h1>
+            <p className={`${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
+              Secure access to your compliance dashboard
+            </p>
+            <p className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>
+              Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}
+            </p>
+            {!isFirebaseAvailable && (
+              <p className={`mt-2 text-xs ${theme === 'light' ? 'text-amber-600 bg-amber-50' : 'text-amber-400 bg-amber-900/20'} p-2 rounded`}>
+                Using local authentication (Firebase unavailable)
+              </p>
+            )}
           </div>
 
-          {/* Login Form */}
-          <div className="w-full space-y-6">
-            <div className="text-center space-y-2">
-              <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Welcome Back</h1>
-              <p className={`${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
-                Secure access to your compliance dashboard
-              </p>
-              <p className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>
-                Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}
-              </p>
-              {!isFirebaseAvailable && (
-                <p className={`mt-2 text-xs ${theme === 'light' ? 'text-amber-600 bg-amber-50' : 'text-amber-400 bg-amber-900/20'} p-2 rounded`}>
-                  Using local authentication (Firebase unavailable)
-                </p>
-              )}
+          {loginError && (
+            <div className={`${theme === 'light' ? 'bg-red-50 border-red-200' : 'bg-red-900/20 border-red-800'} rounded-md p-3 text-sm flex items-start gap-2 border`}>
+              <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <p className={`font-medium ${theme === 'light' ? 'text-red-600' : 'text-red-400'}`}>Authentication Error</p>
+                <p className={theme === 'light' ? 'text-red-600' : 'text-red-300'}>{loginError}</p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>Email</label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`h-12 ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-[#2a2f3e] border-gray-700 text-white'}`}
+                placeholder={DEMO_EMAIL}
+                required
+              />
             </div>
 
-            {loginError && (
-              <div className={`${theme === 'light' ? 'bg-red-50 border-red-200' : 'bg-red-900/20 border-red-800'} rounded-md p-3 text-sm flex items-start gap-2 border`}>
-                <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className={`font-medium ${theme === 'light' ? 'text-red-600' : 'text-red-400'}`}>Authentication Error</p>
-                  <p className={theme === 'light' ? 'text-red-600' : 'text-red-300'}>{loginError}</p>
-                </div>
-              </div>
-            )}
+            <div className="space-y-2">
+              <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>Password</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`h-12 ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-[#2a2f3e] border-gray-700 text-white'}`}
+                placeholder="••••••"
+                required
+              />
+            </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>Email</label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`h-12 ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-[#2a2f3e] border-gray-700 text-white'}`}
-                  placeholder={DEMO_EMAIL}
-                  required
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                  className={`${theme === 'light' ? 'border-slate-300' : 'border-gray-600'} data-[state=checked]:bg-blue-500`}
                 />
+                <label htmlFor="remember" className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
+                  Remember me
+                </label>
               </div>
+              <a href="#forgot-password" className="text-sm text-blue-500 hover:text-blue-400">
+                Forgot password?
+              </a>
+            </div>
 
-              <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>Password</label>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`h-12 ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-[#2a2f3e] border-gray-700 text-white'}`}
-                  placeholder="••••••"
-                  required
-                />
+            <Button
+              type="submit"
+              className={`w-full h-12 text-base font-medium ${theme === 'light' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign in"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className={`w-full border-t ${theme === 'light' ? 'border-slate-200' : 'border-gray-700'}`}></div>
               </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="remember"
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                    className={`${theme === 'light' ? 'border-slate-300' : 'border-gray-600'} data-[state=checked]:bg-blue-500`}
-                  />
-                  <label htmlFor="remember" className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
-                    Remember me
-                  </label>
-                </div>
-                <a href="#forgot-password" className="text-sm text-blue-500 hover:text-blue-400">
-                  Forgot password?
-                </a>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className={`px-2 ${theme === 'light' ? 'bg-white text-slate-500' : 'bg-[#1a1f2e] text-gray-500'}`}>OR</span>
               </div>
+            </div>
 
-              <Button
-                type="submit"
-                className={`w-full h-12 text-base font-medium ${theme === 'light' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing in..." : "Sign in"}
-              </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className={`w-full border-t ${theme === 'light' ? 'border-slate-200' : 'border-gray-700'}`}></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className={`px-2 ${theme === 'light' ? 'bg-white text-slate-500' : 'bg-[#1a1f2e] text-gray-500'}`}>OR</span>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                onClick={handleSSOLogin}
-                className={`w-full h-12 text-base font-medium flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-                disabled={isLoading}
-              >
-                <Fingerprint className="h-5 w-5" />
-                Sign in with SSO
-              </Button>
-            </form>
+            <Button
+              type="button"
+              onClick={handleSSOLogin}
+              className={`w-full h-12 text-base font-medium flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+              disabled={isLoading}
+            >
+              <Fingerprint className="h-5 w-5" />
+              Sign in with SSO
+            </Button>
+          </form>
           </div>
         </div>
       </div>

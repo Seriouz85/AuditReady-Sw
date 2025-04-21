@@ -58,7 +58,7 @@ const createOrgChart = (containerElement: HTMLDivElement, data: OrgNode[]) => {
   try {
     // Clear the container first to avoid duplicate charts
     containerElement.innerHTML = '';
-    
+
     // Create a new chart
     const chart = new OrgChart()
       .container(containerElement)
@@ -117,16 +117,16 @@ const OrgChartComponent: React.FC<OrgChartComponentProps> = ({ data, onNodeClick
       
       // Configure additional behavior
       chart
-        .onNodeClick((d: OrgNodeExtended) => {
+      .onNodeClick((d: OrgNodeExtended) => {
           console.log("Node clicked:", d);
-          // Auto-zoom to the clicked node
-          chart.setExpanded(d.id, !d._expanded);
-          chart.setCentered(d.id);
-          chart.update(d);
-          
-          if (onNodeClick) onNodeClick(d);
-        })
-        .nodeContent((node: OrgNodeExtended) => {
+        // Auto-zoom to the clicked node
+        chart.setExpanded(d.id, !d._expanded);
+        chart.setCentered(d.id);
+        chart.update(d);
+        
+        if (onNodeClick) onNodeClick(d);
+      })
+      .nodeContent((node: OrgNodeExtended) => {
           // Enhanced node card with Tailwind-inspired design
           const hasAvatar = node.data?.avatar || false;
           const department = node.data?.department || '';
@@ -157,11 +157,11 @@ const OrgChartComponent: React.FC<OrgChartComponentProps> = ({ data, onNodeClick
                   : ''
                 }
               </div>
-            </div>
-          `;
+          </div>
+        `;
           if (debug) console.log(`Generated node content for: ${node.name}`);
           return nodeContent;
-        });
+      });
 
       // Store the chart reference
       chartRef.current = chart as OrgChart & OrgChartEnhancements;
@@ -170,7 +170,7 @@ const OrgChartComponent: React.FC<OrgChartComponentProps> = ({ data, onNodeClick
       console.log("Rendering chart...");
       
       try {
-        chart.render();
+    chart.render();
         
         // Use a timeout for rendering completion
         setTimeout(() => {
@@ -609,8 +609,8 @@ const OrganizationalChart: React.FC = () => {
       <CardHeader className="pb-2 border-b">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <CardTitle>Organizational Chart</CardTitle>
-            <CardDescription>Interactive view of your organization's structure</CardDescription>
+        <CardTitle>Organizational Chart</CardTitle>
+        <CardDescription>Interactive view of your organization's structure</CardDescription>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative">
@@ -643,7 +643,7 @@ const OrganizationalChart: React.FC = () => {
         <OrgChartComponent 
           data={filteredNodes.length > 0 ? filteredNodes : nodes} 
           onNodeClick={(node: OrgNodeExtended) => {
-            console.log('Node clicked:', node);
+          console.log('Node clicked:', node);
           }} 
           debug={debugMode}
         />
@@ -658,16 +658,16 @@ const OrganizationalChart: React.FC = () => {
         <div className="flex h-full flex-col">
           <div className="p-4 space-y-4 border-b">
             <h3 className="text-lg font-semibold">Create Organization Chart</h3>
-            <p className="text-sm text-muted-foreground">Start with a template or build from scratch.</p>
-            
-            <Tabs defaultValue={activeTemplate} onValueChange={(value) => setActiveTemplate(value as TemplateKey)}>
+          <p className="text-sm text-muted-foreground">Start with a template or build from scratch.</p>
+          
+          <Tabs defaultValue={activeTemplate} onValueChange={(value) => setActiveTemplate(value as TemplateKey)}>
               <TabsList className="w-full grid grid-cols-4">
-                <TabsTrigger value="blank">Blank</TabsTrigger>
+              <TabsTrigger value="blank">Blank</TabsTrigger>
                 <TabsTrigger value="ceo">CEO</TabsTrigger>
-                <TabsTrigger value="corporate">Corporate</TabsTrigger>
+              <TabsTrigger value="corporate">Corporate</TabsTrigger>
                 <TabsTrigger value="department">Department</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            </TabsList>
+          </Tabs>
           </div>
           
           <ScrollArea className="flex-1 px-4 py-3">
@@ -699,13 +699,13 @@ const OrganizationalChart: React.FC = () => {
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="node-email">Email (Optional)</Label>
-                      <Input 
-                        id="node-email" 
-                        placeholder="e.g., john@example.com" 
-                        value={newNodeEmail}
-                        onChange={(e) => setNewNodeEmail(e.target.value)}
+                  <div>
+                    <Label htmlFor="node-email">Email (Optional)</Label>
+                    <Input 
+                      id="node-email" 
+                      placeholder="e.g., john@example.com" 
+                      value={newNodeEmail}
+                      onChange={(e) => setNewNodeEmail(e.target.value)}
                         className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
                       />
                     </div>
@@ -755,7 +755,7 @@ const OrganizationalChart: React.FC = () => {
                 <Card className="transition-all duration-200 border-slate-200 dark:border-slate-700">
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">Current People</CardTitle>
+                    <CardTitle className="text-base">Current People</CardTitle>
                       <div className="text-xs text-slate-500">{nodes.length} people</div>
                     </div>
                   </CardHeader>
@@ -800,7 +800,7 @@ const OrganizationalChart: React.FC = () => {
           <OrgChartComponent 
             data={nodes} 
             onNodeClick={(node: OrgNodeExtended) => {
-              setSelectedParentId(node.id);
+            setSelectedParentId(node.id);
               toast({
                 title: "Node selected",
                 description: `Selected ${node.name} as parent node`,
@@ -841,13 +841,13 @@ const OrganizationalChart: React.FC = () => {
                 disabled={isLoading}
                 className="transition-all duration-200 hover:scale-[1.02]"
               >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Download className="mr-2 h-4 w-4" />
-                )}
-                Export Chart
-              </Button>
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="mr-2 h-4 w-4" />
+              )}
+              Export Chart
+            </Button>
               <Button
                 variant="outline"
                 onClick={toggleDebugMode}

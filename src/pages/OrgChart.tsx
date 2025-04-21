@@ -111,7 +111,7 @@ const OrganizationNode = ({ data }: NodeProps<ChartNode['data']>) => {
         className="w-2 h-2 !bg-gray-500 opacity-50"
         isConnectable={data.isConnectable ?? true}
       />
-      
+
       {/* Left vertical handle */}
       <Handle
         type="target"
@@ -156,24 +156,24 @@ const OrganizationNode = ({ data }: NodeProps<ChartNode['data']>) => {
         </div>
       ) : (
         <>
-          <div style={{ fontWeight: 600, fontSize: '1.125rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+      <div style={{ fontWeight: 600, fontSize: '1.125rem', marginBottom: '0.5rem', textAlign: 'center' }}>
             {nodeLabel}
-          </div>
-          <div style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: '1rem', textAlign: 'center' }}>
+      </div>
+      <div style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: '1rem', textAlign: 'center' }}>
             {nodeType}
-          </div>
+      </div>
 
-          {data.securityContact && (
-            <div style={{ 
-              fontSize: '0.75rem', 
-              borderTop: '1px solid rgba(255,255,255,0.2)', 
-              paddingTop: '0.75rem', 
-              marginTop: '0.75rem',
-              textAlign: 'center'
-            }}>
-              <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>Security Contact:</div>
-              {getSecurityContact(data.securityContact)}
-            </div>
+      {data.securityContact && (
+        <div style={{ 
+          fontSize: '0.75rem', 
+          borderTop: '1px solid rgba(255,255,255,0.2)', 
+          paddingTop: '0.75rem', 
+          marginTop: '0.75rem',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>Security Contact:</div>
+          {getSecurityContact(data.securityContact)}
+        </div>
           )}
         </>
       )}
