@@ -1,17 +1,31 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Standard } from "@/types";
-import { BookOpen, FileText, BarChart3, FileDown } from "lucide-react";
+import { BookOpen, FileText, BarChart3, FileDown, Download, CheckCircle2, XCircle, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface StandardCardProps {
   standard: Standard;
   requirementCount: number;
   onExport?: (id: string) => void;
   horizontal?: boolean;
+  onApplicabilityChange?: (isApplicable: boolean) => void;
+  isApplicable?: boolean;
+  onRemove: () => void;
 }
 
-export function StandardCard({ standard, requirementCount, onExport, horizontal = false }: StandardCardProps) {
+export function StandardCard({
+  standard,
+  requirementCount,
+  onExport,
+  horizontal = false,
+  onApplicabilityChange,
+  isApplicable = false,
+  onRemove
+}: StandardCardProps) {
   return (
     <Card className={`w-full border-muted transition-all duration-200 hover:border-primary/50 hover:shadow-md ${horizontal ? 'flex' : ''}`}>
       <div className={`${horizontal ? 'flex-1' : ''}`}>
@@ -40,6 +54,26 @@ export function StandardCard({ standard, requirementCount, onExport, horizontal 
               <span className="line-clamp-1">{standard.category}</span>
             </div>
           </div>
+          <div className="mt-4 flex items-center gap-2">
+            <Switch
+              id={`applicable-${standard.id}`}
+              checked={isApplicable}
+              onCheckedChange={onApplicabilityChange}
+            />
+            <Label htmlFor={`applicable-${standard.id}`} className="text-sm">
+              {isApplicable ? (
+                <span className="flex items-center gap-1 text-green-600">
+                  <CheckCircle2 size={14} />
+                  Applicable
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-red-600">
+                  <XCircle size={14} />
+                  Not Applicable
+                </span>
+              )}
+            </Label>
+          </div>
         </CardContent>
       </div>
       {horizontal && (
@@ -60,6 +94,9 @@ export function StandardCard({ standard, requirementCount, onExport, horizontal 
                 <BarChart3 size={16} className="mr-2" />
                 <span>Assess</span>
               </Link>
+            </Button>
+            <Button variant="outline" size="icon" onClick={onRemove}>
+              <Trash2 className="h-4 w-4" />
             </Button>
           </CardFooter>
         </div>
@@ -84,6 +121,9 @@ export function StandardCard({ standard, requirementCount, onExport, horizontal 
               <span className="hidden sm:inline">Assess</span>
               <span className="sm:hidden">Assess</span>
             </Link>
+          </Button>
+          <Button variant="outline" size="icon" onClick={onRemove}>
+            <Trash2 className="h-4 w-4" />
           </Button>
         </CardFooter>
       )}

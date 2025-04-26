@@ -3478,6 +3478,130 @@ export const requirements: Requirement[] = [
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
+  // NIST CSF 2.0 Requirements
+  {
+    id: 'nist-csf-GV.1',
+    standardId: 'nist-csf-2.0',
+    name: 'Organizational Context',
+    description: 'The organization\'s mission, objectives, stakeholders, and activities are understood and prioritized.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['governance', 'risk-management'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'nist-csf-GV.2',
+    standardId: 'nist-csf-2.0',
+    name: 'Risk Management Strategy',
+    description: 'The organization\'s priorities, constraints, risk tolerances, and assumptions are established and used to support operational risk decisions.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['governance', 'risk-management'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'nist-csf-GV.3',
+    standardId: 'nist-csf-2.0',
+    name: 'Roles, Responsibilities, and Authorities',
+    description: 'Cybersecurity roles, responsibilities, and authorities to foster accountability, performance assessment, and continuous improvement.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['governance', 'roles'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'nist-csf-GV.4',
+    standardId: 'nist-csf-2.0',
+    name: 'Policies, Processes, and Procedures',
+    description: 'Cybersecurity policies, processes, and procedures are established, communicated, and enforced.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['governance', 'policies'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'nist-csf-GV.5',
+    standardId: 'nist-csf-2.0',
+    name: 'Oversight',
+    description: 'Cybersecurity risk management strategy, policies, processes, and procedures are reviewed and updated by organizational leadership.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['governance', 'risk-management'],
+    evidence: '',
+    notes: ''
+  },
+
+  // ISO 27005:2022 Requirements
+  {
+    id: 'iso-27005-4.1',
+    standardId: 'iso-27005-2022',
+    name: 'General',
+    description: 'Establish the context for risk management, including organizational context, risk management context, and risk criteria.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['risk-management', 'context'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'iso-27005-4.2',
+    standardId: 'iso-27005-2022',
+    name: 'Risk Assessment',
+    description: 'Identify, analyze, and evaluate information security risks.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['risk-management', 'assessment'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'iso-27005-4.3',
+    standardId: 'iso-27005-2022',
+    name: 'Risk Treatment',
+    description: 'Select and implement appropriate risk treatment options.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['risk-management', 'treatment'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'iso-27005-4.4',
+    standardId: 'iso-27005-2022',
+    name: 'Risk Acceptance',
+    description: 'Decide whether to accept the risk based on the risk acceptance criteria.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['risk-management', 'acceptance'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'iso-27005-4.5',
+    standardId: 'iso-27005-2022',
+    name: 'Risk Communication and Consultation',
+    description: 'Communicate and consult with stakeholders throughout the risk management process.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['risk-management', 'communication'],
+    evidence: '',
+    notes: ''
+  },
+  {
+    id: 'iso-27005-4.6',
+    standardId: 'iso-27005-2022',
+    name: 'Risk Monitoring and Review',
+    description: 'Monitor and review the risk management process and its outcomes.',
+    status: 'not_started',
+    priority: 'default',
+    tags: ['risk-management', 'monitoring'],
+    evidence: '',
+    notes: ''
+  }
 ];
 
 // Mock Assessments
