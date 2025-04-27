@@ -1,76 +1,8 @@
 {
-  "hash": "26e1750a",
-  "configHash": "373561a3",
-  "lockfileHash": "a3080f5d",
-  "browserHash": "d8ad33ab",
-  "optimized": {
-    "react/jsx-dev-runtime": {
-      "src": "../../node_modules/react/jsx-dev-runtime.js",
-      "file": "react_jsx-dev-runtime.js",
-      "fileHash": "18b85983",
-      "needsInterop": true
-    },
-    "react-dom/client": {
-      "src": "../../node_modules/react-dom/client.js",
-      "file": "react-dom_client.js",
-      "fileHash": "18cbca27",
-      "needsInterop": true
-    },
-    "@tanstack/react-query": {
-      "src": "../../node_modules/@tanstack/react-query/build/modern/index.js",
-      "file": "@tanstack_react-query.js",
-      "fileHash": "5c4389cb",
-      "needsInterop": false
-    },
-    "react-router-dom": {
-      "src": "../../node_modules/react-router-dom/dist/index.js",
-      "file": "react-router-dom.js",
-      "fileHash": "2630c189",
-      "needsInterop": false
-    },
-    "react": {
-      "src": "../../node_modules/react/index.js",
-      "file": "react.js",
-      "fileHash": "edeb569d",
-      "needsInterop": true
-    },
-    "next-themes": {
-      "src": "../../node_modules/next-themes/dist/index.mjs",
-      "file": "next-themes.js",
-      "fileHash": "0c53ad23",
-      "needsInterop": false
-    },
-    "lucide-react": {
-      "src": "../../node_modules/lucide-react/dist/esm/lucide-react.js",
-      "file": "lucide-react.js",
-      "fileHash": "267f4376",
-      "needsInterop": false
-    },
-    "firebase/auth": {
-      "src": "../../node_modules/firebase/auth/dist/esm/index.esm.js",
-      "file": "firebase_auth.js",
-      "fileHash": "b57042c2",
-      "needsInterop": false
-    },
-    "framer-motion": {
-      "src": "../../node_modules/framer-motion/dist/es/index.mjs",
-      "file": "framer-motion.js",
-      "fileHash": "471e7b96",
-      "needsInterop": false
-    }
-  },
-  "chunks": {
-    "chunk-T6PWRRVS": {
-      "file": "chunk-T6PWRRVS.js"
-    },
-    "chunk-CCMZAS57": {
-      "file": "chunk-CCMZAS57.js"
-    },
-    "chunk-E55NSNTN": {
-      "file": "chunk-E55NSNTN.js"
-    },
-    "chunk-4MBMRILA": {
-      "file": "chunk-4MBMRILA.js"
-    }
-  }
+  "hash": "c035e8ce",
+  "configHash": "d1554498",
+  "lockfileHash": "d9a4c3dd",
+  "browserHash": "94e606ee",
+  "optimized": {},
+  "chunks": {}
 }

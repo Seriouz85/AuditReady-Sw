@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,6 +25,7 @@ import { CreateStandardForm } from "@/components/standards/CreateStandardForm";
 import { useNavigate } from "react-router-dom";
 import { useStandards } from "@/hooks/useStandards";
 import { useRequirements } from "@/hooks/useRequirements";
+import SoAPreview from '@/components/soa/SoAPreview';
 
 // Define the complete library of available standards
 const standardsLibrary: Standard[] = [
@@ -185,6 +186,7 @@ const Standards = () => {
   const [isLibraryDialogOpen, setIsLibraryDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedLibraryStandards, setSelectedLibraryStandards] = useState<Record<string, boolean>>({});
+  const soaRef = useRef(null);
 
   // Update localStorage when standards change
   useEffect(() => {
@@ -299,85 +301,26 @@ const Standards = () => {
                 Statement of Applicability
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[800px] max-h-[80vh]">
+            <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col">
               <DialogHeader>
                 <DialogTitle>Statement of Applicability</DialogTitle>
                 <DialogDescription>
-                  Select which standards and frameworks are applicable to your organization and provide justification.
+                  Live preview of your Statement of Applicability (SoA) based on all applicable standards.
                 </DialogDescription>
               </DialogHeader>
-              
-              <ScrollArea className="h-[60vh] pr-4">
-                <Tabs defaultValue="framework" className="mt-4">
-                  <TabsList>
-                    <TabsTrigger value="framework">Frameworks</TabsTrigger>
-                    <TabsTrigger value="regulation">Regulations</TabsTrigger>
-                    <TabsTrigger value="policy">Policies</TabsTrigger>
-                    <TabsTrigger value="guideline">Guidelines</TabsTrigger>
-                  </TabsList>
-                  
-                  {(['framework', 'regulation', 'policy', 'guideline'] as StandardType[]).map(type => (
-                    <TabsContent key={type} value={type} className="space-y-6 mt-4">
-                      {standardsData.filter(s => s.type === type).length === 0 ? (
-                        <p className="text-muted-foreground text-center py-4">No {type}s available</p>
-                      ) : (
-                        standardsData
-                          .filter(s => s.type === type)
-                          .map(standard => (
-                            <div key={standard.id} className="border rounded-lg p-4 space-y-3">
-                              <div className="flex items-start gap-2">
-                                <Checkbox 
-                                  id={`std-${standard.id}`}
-                                  checked={applicableStandards[standard.id]}
-                                  onCheckedChange={(checked) => 
-                                    handleApplicabilityChange(standard.id, checked as boolean)
-                                  }
-                                />
-                                <div className="grid gap-1.5 leading-none">
-                                  <Label htmlFor={`std-${standard.id}`} className="font-medium">
-                                    {standard.name} <span className="text-sm font-normal text-muted-foreground">v{standard.version}</span>
-                                  </Label>
-                                  <p className="text-sm text-muted-foreground">{standard.description}</p>
-                                </div>
-                              </div>
-                              
-                              {applicableStandards[standard.id] && (
-                                <div className="ml-6">
-                                  <Label htmlFor={`just-${standard.id}`} className="text-sm mb-1 block">
-                                    Justification
-                                  </Label>
-                                  <Input
-                                    id={`just-${standard.id}`}
-                                    value={applicableStandards[standard.id] ? "Applicable" : "Not Applicable"}
-                                    onChange={(e) => handleApplicabilityChange(standard.id, e.target.value === "Applicable")}
-                                    placeholder="Explain why this standard is applicable to your organization"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          ))
-                      )}
-                    </TabsContent>
-                  ))}
-                </Tabs>
-              </ScrollArea>
-              
-              <DialogFooter className="mt-4">
-                <Button variant="outline" onClick={() => setIsSOADialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={generateSOA}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Generate Statement
-                </Button>
-              </DialogFooter>
+              <div className="flex-1 overflow-y-auto pr-4">
+                <SoAPreview 
+                  ref={soaRef}
+                  standards={localStandards.filter(std => applicableStandards[std.id])}
+                  requirements={requirementsData}
+                />
+              </div>
+              <div className="border-t pt-3 pb-2 flex justify-end gap-2">
+                <SoAPreview.ActionButtons soaRef={soaRef} onClose={() => setIsSOADialogOpen(false)} />
+              </div>
             </DialogContent>
           </Dialog>
           
-          <Button variant="outline" onClick={importStandard}>
-            <FileUp className="h-4 w-4 mr-2" />
-            Import
-          </Button>
           <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
             <DialogTrigger asChild>
               <Button>

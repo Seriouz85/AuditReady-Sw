@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -39,7 +38,7 @@ const Settings = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="org-name">Organization Name</Label>
-                <Input id="org-name" defaultValue="Acme Corporation" />
+                <Input id="org-name" defaultValue="AuditReady" onBlur={e => localStorage.setItem('organizationProfile', JSON.stringify({ name: e.target.value }))} />
               </div>
               
               <div className="space-y-2">

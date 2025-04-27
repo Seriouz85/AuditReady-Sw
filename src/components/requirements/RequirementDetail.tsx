@@ -10,8 +10,9 @@ import { toast } from "@/utils/toast";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { FileText, Link, ExternalLink, Save, Plus, X, Flag } from "lucide-react";
+import { FileText, Link, ExternalLink, Save, Plus, X, Flag, Info } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface RequirementDetailProps {
   requirement: Requirement;
@@ -27,6 +28,14 @@ interface EvidenceLink {
   description: string;
 }
 
+// Extend the Requirement type locally to include legend fields
+interface RequirementWithLegend extends Requirement {
+  legendReg?: boolean;
+  legendCon?: boolean;
+  legendBp?: boolean;
+  legendRc?: boolean;
+}
+
 export function RequirementDetail({ 
   requirement,
   onStatusChange,
@@ -35,20 +44,30 @@ export function RequirementDetail({
   onNotesChange,
   onTagsChange
 }: RequirementDetailProps) {
+  const req = requirement as RequirementWithLegend;
   const { t } = useTranslation();
-  const [evidence, setEvidence] = useState(requirement.evidence || '');
-  const [notes, setNotes] = useState(requirement.notes || '');
-  const [status, setStatus] = useState<RequirementStatus>(requirement.status);
-  const [priority, setPriority] = useState<RequirementPriority>(requirement.priority || 'default');
-  const [tags, setTags] = useState<string[]>(requirement.tags || []);
+  const [evidence, setEvidence] = useState(req.evidence || '');
+  const [notes, setNotes] = useState(req.notes || '');
+  const [status, setStatus] = useState<RequirementStatus>(req.status);
+  const [priority, setPriority] = useState<RequirementPriority>(req.priority || 'default');
+  const [tags, setTags] = useState<string[]>(req.tags || []);
   const [evidenceLinks, setEvidenceLinks] = useState<EvidenceLink[]>([
     { url: '', description: '' }
   ]);
   const [hasChanges, setHasChanges] = useState(false);
+  const [legendReg, setLegendReg] = useState(req.legendReg || false);
+  const [legendCon, setLegendCon] = useState(req.legendCon || false);
+  const [legendBp, setLegendBp] = useState(req.legendBp || false);
+  const [legendRc, setLegendRc] = useState(req.legendRc || false);
+  const [justification, setJustification] = useState(requirement.justification || '');
 
   const handleStatusChange = (value: RequirementStatus) => {
     setStatus(value);
     setHasChanges(true);
+    // If status is not-applicable, require justification
+    if (value === 'not-applicable' && !justification) {
+      setJustification('');
+    }
   };
 
   const handlePriorityChange = (value: RequirementPriority) => {
@@ -88,13 +107,21 @@ export function RequirementDetail({
     setHasChanges(true);
   };
 
+  const handleLegendChange = (type: 'reg' | 'con' | 'bp' | 'rc', checked: boolean) => {
+    if (type === 'reg') setLegendReg(checked);
+    if (type === 'con') setLegendCon(checked);
+    if (type === 'bp') setLegendBp(checked);
+    if (type === 'rc') setLegendRc(checked);
+    setHasChanges(true);
+  };
+
   const handleSaveAll = () => {
     if (onStatusChange) {
-      onStatusChange(requirement.id, status);
+      onStatusChange(req.id, status);
     }
     
     if (onPriorityChange) {
-      onPriorityChange(requirement.id, priority);
+      onPriorityChange(req.id, priority);
     }
     
     if (onEvidenceChange) {
@@ -105,17 +132,26 @@ export function RequirementDetail({
         .join('\n');
       
       const fullEvidence = evidence + (formattedLinks ? `\n\nLinked Documents:\n${formattedLinks}` : '');
-      onEvidenceChange(requirement.id, fullEvidence);
+      onEvidenceChange(req.id, fullEvidence);
     }
     
     if (onNotesChange) {
-      onNotesChange(requirement.id, notes);
+      onNotesChange(req.id, notes);
     }
     
     if (onTagsChange) {
-      onTagsChange(requirement.id, tags);
+      onTagsChange(req.id, tags);
     }
     
+    // Save legend fields (if you have a save handler, pass these values)
+    req.legendReg = legendReg;
+    req.legendCon = legendCon;
+    req.legendBp = legendBp;
+    req.legendRc = legendRc;
+    // Save justification for exclusion if not applicable
+    if (status === 'not-applicable') {
+      req.justification = justification;
+    }
     setHasChanges(false);
     toast.success(t('requirement.toast.updated', "Requirement updated successfully"));
   };
@@ -177,6 +213,23 @@ export function RequirementDetail({
                 <SelectItem value="not-applicable">{t('assessment.status.notApplicable', 'Not Applicable')}</SelectItem>
               </SelectContent>
             </Select>
+            {/* Justification for exclusion if Not Applicable */}
+            {status === 'not-applicable' && (
+              <div className="space-y-2 mt-2">
+                <Label htmlFor="justification" className="text-red-600 font-semibold">Justification for exclusion <span className="text-red-500">*</span></Label>
+                <Textarea
+                  id="justification"
+                  value={justification}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => { setJustification(e.target.value); setHasChanges(true); }}
+                  placeholder="Provide a justification for why this requirement is not applicable."
+                  rows={3}
+                  required
+                />
+                {justification.trim() === '' && (
+                  <div className="text-xs text-red-500">Justification is required when marking as Not Applicable.</div>
+                )}
+              </div>
+            )}
           </div>
           
           <div className="space-y-2">
@@ -197,6 +250,47 @@ export function RequirementDetail({
                 <SelectItem value="high">High</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        {/* Legend for Control Inclusion */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Label className="font-semibold">Legend for Control Inclusion</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center cursor-pointer text-blue-600"><Info size={16} /></span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs">
+                  <div className="mb-1 font-semibold">Legend Definitions:</div>
+                  <ul className="list-disc ml-4">
+                    <li><b>REG</b>: The control is related to a regulatory or certification requirement</li>
+                    <li><b>CON</b>: The control is required due to contractual obligations</li>
+                    <li><b>BP</b>: The control is needed according to best practices</li>
+                    <li><b>RC</b>: The control is needed to mitigate inherent risk to control objectives</li>
+                  </ul>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={legendReg} onChange={e => handleLegendChange('reg', e.target.checked)} />
+              REG <span className="text-xs text-muted-foreground">(Regulatory/Certification)</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={legendCon} onChange={e => handleLegendChange('con', e.target.checked)} />
+              CON <span className="text-xs text-muted-foreground">(Contractual)</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={legendBp} onChange={e => handleLegendChange('bp', e.target.checked)} />
+              BP <span className="text-xs text-muted-foreground">(Best Practice)</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={legendRc} onChange={e => handleLegendChange('rc', e.target.checked)} />
+              RC <span className="text-xs text-muted-foreground">(Risk Control)</span>
+            </label>
           </div>
         </div>
         
@@ -279,7 +373,7 @@ export function RequirementDetail({
         <Button 
           className="w-full" 
           onClick={handleSaveAll} 
-          disabled={!hasChanges}
+          disabled={!hasChanges || (status === 'not-applicable' && justification.trim() === '')}
         >
           <Save size={16} className="mr-2" />
           {t('requirement.button.saveAllChanges', 'Save All Changes')}

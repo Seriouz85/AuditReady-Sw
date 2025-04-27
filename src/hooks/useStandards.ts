@@ -1,43 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Standard } from '@/types/standards';
+import { standards as demoStandards } from '@/data/mockData';
+import { Standard } from '@/types';
 
-export const useStandards = () => {
-  const [standards, setStandards] = useState<Standard[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useStandards() {
+  const [standards, setStandards] = useState<Standard[]>(() => {
+    const stored = localStorage.getItem('standards');
+    if (stored) return JSON.parse(stored);
+    localStorage.setItem('standards', JSON.stringify(demoStandards));
+    return demoStandards;
+  });
 
   useEffect(() => {
-    // TODO: Replace with actual API call
-    const fetchStandards = async () => {
-      try {
-        // Mock data for now
-        const mockStandards: Standard[] = [
-          {
-            id: 'iso-27002-2022',
-            name: 'ISO/IEC 27002:2022',
-            description: 'Information security, cybersecurity and privacy protection — Information security controls',
-            type: 'security',
-            version: '2022',
-            requirements: []
-          },
-          {
-            id: 'nist-800-53',
-            name: 'NIST SP 800-53',
-            description: 'Security and Privacy Controls for Information Systems and Organizations',
-            type: 'security',
-            version: 'Rev. 5',
-            requirements: []
-          }
-        ];
-        setStandards(mockStandards);
-      } catch (error) {
-        console.error('Error fetching standards:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    localStorage.setItem('standards', JSON.stringify(standards));
+  }, [standards]);
 
-    fetchStandards();
-  }, []);
-
-  return { standards, loading };
-}; 
+  return { standards, setStandards, loading: false };
+} 

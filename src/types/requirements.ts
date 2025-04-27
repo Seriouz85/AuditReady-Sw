@@ -6,4 +6,11 @@ export interface Requirement {
   name: string;
   description: string;
   status: RequirementStatus;
+  legendReg?: boolean;
+  legendCon?: boolean;
+  legendBp?: boolean;
+  legendRc?: boolean;
+  section?: string;
+  code?: string;
+  justification?: string;
 } 
