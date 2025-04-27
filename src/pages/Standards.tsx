@@ -197,16 +197,8 @@ const Standards = () => {
   }, [applicableStandards]);
 
   const getRequirementCount = (standardId: string) => {
-    if (standardId === 'iso-27002-2022') {
-      return 93; // Fixed count for ISO 27002:2022
-    }
-    if (standardId === 'nist-csf-2.0') {
-      return 5; // NIST CSF 2.0 requirements
-    }
-    if (standardId === 'iso-27005-2022') {
-      return 6; // ISO 27005:2022 requirements
-    }
-    return requirementsData.filter(req => req.standardId === standardId).length;
+    const standard = localStandards.find(std => std.id === standardId);
+    return standard ? standard.requirements.length : 0;
   };
 
   const handleApplicabilityChange = (standardId: string, isApplicable: boolean) => {
