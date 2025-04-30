@@ -17,7 +17,8 @@ import {
   FileOutput,
   AlertTriangle,
   ListTree,
-  Network
+  Network,
+  GraduationCap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -26,7 +27,6 @@ import { NotificationsMenu } from '@/components/NotificationsMenu';
 import { useTranslation } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ZoomToggle } from '@/components/ui/zoom-toggle';
-import { useTheme } from 'next-themes';
 
 type SubNavItem = {
   to: string;
@@ -184,6 +184,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     { to: '/app/requirements', icon: <BookOpen size={20} />, label: t('nav.requirements') },
     { to: '/app/assessments', icon: <CheckSquare size={20} />, label: t('nav.assessments') },
     { to: '/app/applications', icon: <Laptop size={20} />, label: t('nav.applications') },
+    { to: '/lms', icon: <GraduationCap size={20} />, label: 'Learning' },
     { 
       to: '/app/risk-management', 
       icon: <Shield size={20} />, 

@@ -4,27 +4,36 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+    plugins: [react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
-  },
   base: '/audit-readiness-hub/',
-  build: {
+    build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+      sourcemap: true,
+    minify: 'terser',
+      rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+          },
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
         },
       },
     },
-  },
   server: {
     port: 8080,
     strictPort: true,
-  }
+  },
+  publicDir: 'public',
+  assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.ico']
 });
