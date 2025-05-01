@@ -1,8 +1,9 @@
-name: Deploy Static Site to GitHub Pages
+name: Deploy Static Site to GitHub Pages (DISABLED)
 
 on:
-  push:
-    branches: ["main"]
+  # Disabled automatic triggers
+  # push:
+  #   branches: ["main"]
   workflow_dispatch:
 
 permissions:
