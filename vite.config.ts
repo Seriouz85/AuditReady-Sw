@@ -12,7 +12,7 @@ export default defineConfig({
     },
   base: '/audit-readiness-hub/',
     build: {
-    outDir: 'dist',
+    outDir: 'docs',
     assetsDir: 'assets',
       sourcemap: true,
     minify: 'terser',
