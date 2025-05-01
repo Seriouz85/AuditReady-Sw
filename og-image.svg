@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-gradient)" />
+  
+  <!-- Shield Logo -->
+  <g transform="translate(400, 200)">
+    <path d="M200,0 L0,100 V250 C0,350 100,450 200,500 C300,450 400,350 400,250 V100 L200,0z" fill="#3b82f6" opacity="0.9" />
+    <path d="M200,50 L50,125 V250 C50,325 125,400 200,440 C275,400 350,325 350,250 V125 L200,50z" fill="#0f172a" />
+    <path d="M200,100 L100,150 V250 C100,300 150,350 200,375 C250,350 300,300 300,250 V150 L200,100z" fill="#3b82f6" opacity="0.7" />
+  </g>
+  
+  <!-- Text -->
+  <text x="600" y="450" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" fill="url(#text-gradient)">AuditReady</text>
+  <text x="600" y="525" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" fill="white">Modern Compliance Management Platform</text>
+</svg> 
