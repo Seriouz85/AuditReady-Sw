@@ -24,7 +24,7 @@ export default defineConfig({
     },
     base: '/audit-readiness-hub/',
     build: {
-      outDir: 'docs',
+      outDir: './',
       emptyOutDir: false,
       assetsDir: 'assets',
       sourcemap: true,
