@@ -56,9 +56,63 @@
     <script type="module" crossorigin src="/audit-readiness-hub/assets/index-CS9GczOk.js"></script>
     <link rel="modulepreload" crossorigin href="/audit-readiness-hub/assets/vendor-DYTHKI1l.js">
     <link rel="stylesheet" crossorigin href="/audit-readiness-hub/assets/index-M375qArF.css">
+    
+    <!-- Fallback style for when app fails to load -->
+    <style>
+      .fallback-content {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        text-align: center;
+      }
+      .fallback-content h1 {
+        color: #0066cc;
+        margin-bottom: 20px;
+      }
+      .fallback-content .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+      }
+      .fallback-content .button {
+        background-color: #0066cc;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      .fallback-content .button:hover {
+        background-color: #0052a3;
+      }
+      #root:empty + .fallback-content {
+        display: block;
+      }
+      #root:not(:empty) + .fallback-content {
+        display: none;
+      }
+    </style>
   </head>
 
   <body>
     <div id="root"></div>
+    <!-- Fallback content when React app fails to load -->
+    <div class="fallback-content">
+      <h1>AuditReady - Security Compliance Platform</h1>
+      <p>Welcome to AuditReady, the intelligent platform designed for modern security teams.</p>
+      <p>If you're seeing this message, the application may be having trouble loading.</p>
+      
+      <div class="buttons">
+        <a href="/audit-readiness-hub/" class="button">Home</a>
+        <a href="/audit-readiness-hub/login" class="button">Login</a>
+        <a href="/audit-readiness-hub/app" class="button">Dashboard</a>
+        <a href="/audit-readiness-hub/lms" class="button">Learning Portal</a>
+      </div>
+    </div>
   </body>
 </html> 
