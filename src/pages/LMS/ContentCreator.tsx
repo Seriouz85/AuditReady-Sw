@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Tabs, 
-  TabsList, 
-  TabsTrigger, 
-  TabsContent 
-} from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -16,7 +10,6 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
-  X, 
   Check, 
   ArrowLeft, 
   Plus, 
@@ -25,19 +18,18 @@ import {
   BookOpen, 
   ClipboardList,
   Layers,
-  LayoutGrid,
-  Brain,
   Save,
-  Settings,
   Upload,
   BookMarked,
-  Bot,
   Palette,
   Library,
   FileQuestion,
   Sparkles,
   Timer,
-  Users
+  Users,
+  ChevronRight,
+  Brain,
+  Bot
 } from 'lucide-react';
 
 // Content type interfaces
@@ -148,7 +140,6 @@ const ContentCreator: React.FC = () => {
   
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [newCategory, setNewCategory] = useState('');
-  const [customThemeColor, setCustomThemeColor] = useState('#ffffff');
   const [animateCard, setAnimateCard] = useState(false);
   
   // Get current content type
@@ -203,10 +194,18 @@ const ContentCreator: React.FC = () => {
     };
     
     console.log('Submitting content:', finalData);
-    // In a real app, you would submit this data to your backend
+    // In a real app, you would save this data to your backend
     
-    // Navigate back to the LMS page
-    navigate('/lms');
+    // Navigate based on content type
+    if (selectedType === 'course') {
+      // For courses, go to the course builder to create content
+      navigate('/lms/create/course-builder', { 
+        state: { courseData: finalData } 
+      });
+    } else {
+      // For other content types, go back to the LMS page
+      navigate('/lms');
+    }
   };
   
   // Handler for back button
@@ -691,18 +690,28 @@ const ContentCreator: React.FC = () => {
                   </div>
                 </div>
               </Card>
-              
-              <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                <div className="flex items-start gap-3">
-                  <div className="bg-blue-100 p-2 rounded-full mt-1">
-                    <Sparkles className="h-4 w-4 text-blue-700" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-blue-900">Need help?</h3>
-                    <p className="text-sm text-blue-700 mt-1">
-                      Our AI assistant can help you create engaging content quickly. Try using the AI generation feature!
-                    </p>
-                  </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <Button 
+                onClick={handleSubmit}
+                className="rounded-full px-8 py-6 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all text-lg font-medium"
+              >
+                {selectedType === 'course' ? 'Continue to Course Builder' : 'Create Content'}
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+            
+            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+              <div className="flex items-start gap-3">
+                <div className="bg-blue-100 p-2 rounded-full mt-1">
+                  <Sparkles className="h-4 w-4 text-blue-700" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-blue-900">Need help?</h3>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Our AI assistant can help you create engaging content quickly. Try using the AI generation feature!
+                  </p>
                 </div>
               </div>
             </div>
@@ -731,8 +740,8 @@ const ContentCreator: React.FC = () => {
             <span className="text-sm font-medium">Step 1: Details</span>
             <span className="text-muted-foreground mx-1">→</span>
             <Button variant="ghost" size="sm" className="rounded-full" onClick={() => {
-              // This would navigate to the next step in a real implementation
-              alert('This would take you to the next step (content editor)');
+              // Save current form data and navigate to content editor
+              handleSubmit();
             }}>
               Step 2: Content
             </Button>

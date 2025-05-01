@@ -19,6 +19,7 @@ import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Question {
   id: number;
@@ -64,6 +65,19 @@ const QuizEditor: React.FC = () => {
 
   const selectedQuestion = questions.find(q => q.id === selectedQuestionId) || null;
 
+  const location = useLocation();
+  const courseBuilderMode = location.pathname.includes('create');
+  
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    if (courseBuilderMode) {
+      navigate('/lms/create/course-builder');
+    } else {
+      navigate('/lms');
+    }
+  };
+
   const addNewQuestion = () => {
     const newId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
     const newQuestion: Question = {
@@ -108,8 +122,9 @@ const QuizEditor: React.FC = () => {
       <header className="border-b p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
+            <Button variant="ghost" onClick={handleBack} className="gap-1 rounded-lg">
+              <ArrowLeft className="h-4 w-4" />
+              {courseBuilderMode ? 'Back to Course Builder' : 'Back to LMS'}
             </Button>
             <div>
               <Input 

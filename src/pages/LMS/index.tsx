@@ -23,9 +23,11 @@ import {
   Brain,
   Award,
   User,
-  Star
+  Star,
+  ChevronLeft,
+  Settings
 } from 'lucide-react';
-import { getTimeBasedGreeting, updateStreak, usePageView, trackActivity } from '@/lib/tracking';
+import { getTimeBasedGreeting, updateStreak, trackActivity } from '@/lib/tracking';
 
 interface Course {
   id: number;
@@ -132,9 +134,6 @@ const TrenningLMS: React.FC = () => {
   const [userStreak, setUserStreak] = useState(updateStreak());
   const [localCourses, setLocalCourses] = useState(courses);
   
-  // Page view tracking
-  usePageView('dashboard', 'page', 'LMS Dashboard');
-  
   // Update greeting based on time of day
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -210,6 +209,12 @@ const TrenningLMS: React.FC = () => {
       {/* Hero Header Section - New Design */}
       <div className="bg-gradient-to-r from-indigo-700 to-purple-800 text-white">
         <div className="container max-w-7xl mx-auto p-8">
+          {/* Back to Dashboard Button */}
+          <Link to="/app" className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors">
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Back to Dashboard
+          </Link>
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             <div className="md:col-span-2">
               <h1 className="text-4xl font-bold mb-2">
@@ -333,7 +338,7 @@ const TrenningLMS: React.FC = () => {
       
       {/* Main Actions Navigation */}
       <div className="container max-w-7xl mx-auto -mt-8 z-10 relative px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Link to="/lms/create/content">
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
               <div className="flex items-center">
@@ -375,6 +380,21 @@ const TrenningLMS: React.FC = () => {
                   <p className="text-sm text-muted-foreground">Track learning progress</p>
                 </div>
                 <ArrowRight className="ml-auto h-5 w-5 text-amber-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Card>
+          </Link>
+          
+          <Link to="/lms/admin">
+            <Card className="p-6 bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center">
+                <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3 mr-4">
+                  <Settings className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg group-hover:text-gray-700 transition-colors">Admin View</h3>
+                  <p className="text-sm text-muted-foreground">System settings & users</p>
+                </div>
+                <ArrowRight className="ml-auto h-5 w-5 text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
