@@ -17,7 +17,13 @@ import {
   Plus,
   ChartBar,
   Edit,
-  Sparkles
+  Sparkles,
+  GraduationCap,
+  Rocket,
+  Brain,
+  Award,
+  User,
+  Star
 } from 'lucide-react';
 import { getTimeBasedGreeting, updateStreak, usePageView, trackActivity } from '@/lib/tracking';
 
@@ -62,7 +68,7 @@ const courses: Course[] = [
     status: 'In Progress',
     materials: 12,
     deadline: '12 hrs',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     category: 'Course'
   },
   {
@@ -114,8 +120,8 @@ const newCourses: Course[] = [
 const notifications: Notification[] = [
   {
     id: 1,
-    title: 'Feature Discussion',
-    content: 'The learning content are a new feature in "Feature Discussion" can be explain the material problem chat.',
+    title: 'New LMS Feature: Collaborative Learning Spaces',
+    content: 'We have introduced Collaborative Learning Spaces where team members can discuss course materials, share insights, and solve problems together in real-time.',
     type: 'New',
     date: '2h ago'
   }
@@ -200,80 +206,188 @@ const TrenningLMS: React.FC = () => {
   };
 
   return (
-    <div className="container max-w-7xl mx-auto p-4">
-      {/* Header Section with more playful design */}
-      <div className="flex justify-between items-center pb-8">
-        <div>
-          <h1 className="text-3xl font-bold">
-            {greeting}, {currentUser.name} <span className="text-yellow-500">✨</span>
-          </h1>
-          <p className="text-muted-foreground mt-1">Welcome to Trenning, check your priority learning.</p>
-        </div>
-        
-        <div className="flex gap-6">
-          <div className="flex flex-col items-center">
-            <div className="bg-gradient-to-r from-amber-100 to-amber-200 p-2 rounded-2xl mb-1 flex items-center shadow-sm">
-              <Target className="text-amber-500 mr-2 h-5 w-5" />
-              <span className="text-xl font-semibold">{currentUser.points}</span>
+    <div className="min-h-screen bg-background">
+      {/* Hero Header Section - New Design */}
+      <div className="bg-gradient-to-r from-indigo-700 to-purple-800 text-white">
+        <div className="container max-w-7xl mx-auto p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <div className="md:col-span-2">
+              <h1 className="text-4xl font-bold mb-2">
+                {greeting}, {currentUser.name} <span className="text-yellow-400">✨</span>
+              </h1>
+              <p className="text-white/80 text-lg mb-6">Welcome to your personalized learning journey</p>
+              
+              <div className="flex flex-wrap gap-4 mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center">
+                  <div className="rounded-full bg-white/20 p-2 mr-3">
+                    <Target className="text-yellow-300 h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/70">Learning Points</p>
+                    <p className="text-xl font-semibold">{currentUser.points}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center">
+                  <div className="rounded-full bg-white/20 p-2 mr-3">
+                    <Trophy className="text-indigo-300 h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/70">Badges Earned</p>
+                    <p className="text-xl font-semibold">{currentUser.badges}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center">
+                  <div className="rounded-full bg-white/20 p-2 mr-3">
+                    <Star className="text-amber-300 h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/70">Day Streak</p>
+                    <p className="text-xl font-semibold">{currentUser.streak.days}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 inline-flex items-center">
+                <Avatar className="h-12 w-12 border-2 border-white mr-4">
+                  <AvatarImage src={`https://api.dicebear.com/6.x/avataaars/svg?seed=user1`} alt={currentUser.name} />
+                  <AvatarFallback>{currentUser.name.substring(0, 2)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="flex items-center">
+                    <p className="font-semibold">{currentUser.role}</p>
+                    <Badge className="ml-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0">
+                      Pro Learner
+                    </Badge>
+                  </div>
+                  <div className="flex items-center mt-1">
+                    <div className="h-2 w-24 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-yellow-400 to-amber-500" 
+                        style={{ width: `${(currentUser.dailyGoal.current / currentUser.dailyGoal.total) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs ml-2 text-white/70">
+                      {currentUser.dailyGoal.current}/{currentUser.dailyGoal.total} today
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span className="text-xs text-muted-foreground">Point</span>
-          </div>
-          
-          <div className="flex flex-col items-center">
-            <div className="bg-gradient-to-r from-purple-100 to-purple-200 p-2 rounded-2xl mb-1 flex items-center shadow-sm">
-              <Trophy className="text-purple-500 mr-2 h-5 w-5" />
-              <span className="text-xl font-semibold">{currentUser.badges}</span>
+            
+            <div className="hidden md:block">
+              <div className="relative">
+                <div className="absolute -right-4 -top-4 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-3 z-10 shadow-lg">
+                  <GraduationCap className="h-8 w-8 text-white" />
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 relative overflow-hidden">
+                  <div className="absolute -right-10 -bottom-10 text-white/5">
+                    <Rocket className="h-36 w-36" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">Your Learning Stats</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Weekly Progress</span>
+                        <span>68%</span>
+                      </div>
+                      <Progress value={68} className="h-2 rounded-full bg-white/20" />
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Monthly Goal</span>
+                        <span>42%</span>
+                      </div>
+                      <Progress value={42} className="h-2 rounded-full bg-white/20" />
+                    </div>
+                    
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Brain className="h-5 w-5 mr-2 text-indigo-300" />
+                          <span>Completed Courses</span>
+                        </div>
+                        <span className="font-semibold">4</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Award className="h-5 w-5 mr-2 text-amber-300" />
+                          <span>Certifications</span>
+                        </div>
+                        <span className="font-semibold">2</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span className="text-xs text-muted-foreground">Badges</span>
-          </div>
-          
-          <div className="flex flex-col items-center">
-            <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-2 rounded-2xl mb-1 flex items-center shadow-sm">
-              <Book className="text-blue-500 mr-2 h-5 w-5" />
-              <span className="text-xl font-semibold">120</span>
-            </div>
-            <span className="text-xs text-muted-foreground">Learning content</span>
-          </div>
-          
-          <div className="flex flex-col items-center">
-            <div className="bg-gradient-to-r from-green-100 to-green-200 p-2 rounded-2xl mb-1 flex items-center shadow-sm">
-              <Clock className="text-green-500 mr-2 h-5 w-5" />
-              <span className="text-xl font-semibold">44</span>
-            </div>
-            <span className="text-xs text-muted-foreground">Learning time</span>
           </div>
         </div>
       </div>
       
-      {/* Main Actions Bar */}
-      <div className="mb-6 flex justify-center gap-4">
-        <Link to="/lms/create/content">
-          <Button className="rounded-full px-6 py-6 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md hover:shadow-lg transition-all">
-            <Sparkles className="mr-2 h-5 w-5" />
-            Create New Course
-          </Button>
-        </Link>
-        <Link to="/lms/courses/edit">
-          <Button className="rounded-full px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all">
-            <Edit className="mr-2 h-5 w-5" />
-            Edit Courses
-          </Button>
-        </Link>
-        <Link to="/lms/reports">
-          <Button className="rounded-full px-6 py-6 h-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-md hover:shadow-lg transition-all">
-            <ChartBar className="mr-2 h-5 w-5" />
-            Reports
-          </Button>
-        </Link>
+      {/* Main Actions Navigation */}
+      <div className="container max-w-7xl mx-auto -mt-8 z-10 relative px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link to="/lms/create/content">
+            <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center">
+                <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3 mr-4">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg group-hover:text-indigo-700 transition-colors">Create Course</h3>
+                  <p className="text-sm text-muted-foreground">Design new learning content</p>
+                </div>
+                <ArrowRight className="ml-auto h-5 w-5 text-indigo-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Card>
+          </Link>
+          
+          <Link to="/lms/courses/edit">
+            <Card className="p-6 bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center">
+                <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3 mr-4">
+                  <Edit className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg group-hover:text-purple-700 transition-colors">Edit Courses</h3>
+                  <p className="text-sm text-muted-foreground">Manage existing content</p>
+                </div>
+                <ArrowRight className="ml-auto h-5 w-5 text-purple-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Card>
+          </Link>
+          
+          <Link to="/lms/reports">
+            <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center">
+                <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3 mr-4">
+                  <ChartBar className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg group-hover:text-amber-700 transition-colors">Analytics</h3>
+                  <p className="text-sm text-muted-foreground">Track learning progress</p>
+                </div>
+                <ArrowRight className="ml-auto h-5 w-5 text-amber-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Card>
+          </Link>
+        </div>
       </div>
       
       {/* Notifications */}
       {notifications.length > 0 && (
-        <div className="mb-8">
+        <div className="container max-w-7xl mx-auto p-4 md:p-8 mt-4">
           {notifications.map(notification => (
             <div 
               key={notification.id} 
-              className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-6 relative overflow-hidden shadow-sm"
+              className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 relative overflow-hidden shadow-md"
             >
               <Badge className="absolute top-4 left-4 bg-green-500 text-white rounded-full px-3">
                 {notification.type}
@@ -282,8 +396,8 @@ const TrenningLMS: React.FC = () => {
                 <h3 className="font-semibold text-lg mb-1">{notification.title}</h3>
                 <p className="text-gray-600">{notification.content}</p>
                 <div className="mt-2">
-                  <Button variant="link" className="p-0 h-auto flex items-center text-primary">
-                    Go to detail <ArrowRight className="ml-1 h-4 w-4" />
+                  <Button variant="link" className="p-0 h-auto flex items-center text-green-600">
+                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -293,7 +407,7 @@ const TrenningLMS: React.FC = () => {
       )}
       
       {/* Learning Progress Section */}
-      <div className="mb-8">
+      <div className="container max-w-7xl mx-auto p-4 md:p-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold flex items-center">
             In progress learning content 
@@ -388,8 +502,8 @@ const TrenningLMS: React.FC = () => {
         </div>
       </div>
       
-      {/* New Enrollment Section */}
-      <div className="mb-8">
+      {/* New Enrollment Section - Fixed container width */}
+      <div className="container max-w-7xl mx-auto p-4 md:p-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold flex items-center">
             New enrollment 
@@ -448,8 +562,8 @@ const TrenningLMS: React.FC = () => {
         </div>
       </div>
       
-      {/* User Goals Section */}
-      <div className="mb-8">
+      {/* User Goals Section - Fixed container width */}
+      <div className="container max-w-7xl mx-auto p-4 md:p-8">
         <div className="flex items-center gap-4 mb-4">
           <h2 className="text-xl font-semibold flex items-center">Goals</h2>
           <Button variant="ghost" size="icon" className="h-6 w-6">
@@ -475,8 +589,8 @@ const TrenningLMS: React.FC = () => {
         </div>
       </div>
       
-      {/* Leaderboard Preview */}
-      <div>
+      {/* Leaderboard Preview - Fixed container width */}
+      <div className="container max-w-7xl mx-auto p-4 md:p-8 mb-16">
         <div className="flex items-center gap-4 mb-4">
           <h2 className="text-xl font-semibold flex items-center">Leaderboard</h2>
           <Button variant="ghost" size="icon" className="h-6 w-6">

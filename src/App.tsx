@@ -2,11 +2,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
 import CreateLearningPath from "./pages/LMS/CreateLearningPath";
 import EditCourse from "./pages/LMS/EditCourse";
@@ -34,6 +35,7 @@ const App = () => (
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/app/*" element={<Index />} />
+                <Route path="/lms-old" element={<LMS />} />
                 <Route path="/lms" element={<TrenningLMS />} />
                 <Route path="/lms/create/learning-path" element={<CreateLearningPath />} />
                 <Route path="/lms/create/content" element={<ContentCreator />} />
