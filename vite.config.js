@@ -6,6 +6,7 @@ import fs from 'fs'
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
+  // Use root path for development, and the repo path for production
   const base = isDev ? '/' : '/audit-readiness-hub/';
   
   return {
@@ -20,6 +21,9 @@ export default defineConfig(({ command }) => {
             
             // Create .nojekyll file to disable Jekyll processing
             fs.writeFileSync('./dist/.nojekyll', '');
+            
+            // Create _redirects file for Netlify (if used)
+            fs.writeFileSync('./dist/_redirects', '/* /index.html 200');
           }
         }
       }
@@ -42,6 +46,10 @@ export default defineConfig(({ command }) => {
           },
         },
       },
+    },
+    server: {
+      port: 5173, // Use consistent port
+      open: true, // Auto-open browser
     }
   }
 }) 
