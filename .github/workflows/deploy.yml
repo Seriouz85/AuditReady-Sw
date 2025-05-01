@@ -40,12 +40,9 @@ jobs:
           
       - name: Build
         run: npm run build
-        
-      - name: Copy build to root
-        run: cp -r dist/* .
-        
+          
       - name: Create .nojekyll file
-        run: touch .nojekyll
+        run: touch dist/.nojekyll
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -53,7 +50,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'dist'
           
   deploy:
     environment:
