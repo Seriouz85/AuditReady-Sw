@@ -1,0 +1,6 @@
+This file is added to help fix the SPA (Single Page Application) routing issues with GitHub Pages.
+The following changes were made:
+1. Added proper 404.html redirect script
+2. Fixed index.html redirect handling
+3. Added .nojekyll file to prevent Jekyll processing
+4. Ensured BrowserRouter is using the correct basename (/audit-readiness-hub) 
