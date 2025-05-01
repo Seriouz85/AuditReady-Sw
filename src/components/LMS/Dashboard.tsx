@@ -198,31 +198,17 @@ const LiveDashboard: React.FC<DashboardProps> = ({
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-sm">
-                    User <span className="text-muted-foreground">{getActivityTypeText(activity)}</span> {activity.contentTitle}
+                    {activity.contentTitle}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {formatRelativeTime(activity.timestamp)}
+                    {getActivityTypeText(activity)} {formatRelativeTime(activity.timestamp)}
                   </p>
                 </div>
-                {activity.progress !== undefined && (
-                  <Badge className="bg-gray-100 text-gray-700">
-                    {activity.progress}%
-                  </Badge>
-                )}
               </div>
             ))
           ) : (
-            <div className="text-center py-8 bg-gray-50 rounded-xl">
-              <Activity className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-              <p className="text-muted-foreground">No activity recorded yet</p>
-            </div>
+            <p className="text-sm text-muted-foreground">No recent activities</p>
           )}
-        </div>
-        
-        <div className="flex justify-center mt-4">
-          <Button variant="outline" className="rounded-full">
-            View All Activities
-          </Button>
         </div>
       </div>
     </div>

@@ -59,7 +59,10 @@ export const getActivities = (): UserActivity[] => {
   try {
     const storedActivities = sessionStorage.getItem(ACTIVITY_STORAGE_KEY);
     if (storedActivities) {
-      return JSON.parse(storedActivities);
+      return JSON.parse(storedActivities).map((activity: any) => ({
+        ...activity,
+        timestamp: new Date(activity.timestamp)
+      }));
     }
   } catch (error) {
     console.error('Failed to retrieve activities:', error);
@@ -72,11 +75,6 @@ export const getActivities = (): UserActivity[] => {
 export const usePageView = (contentId: number | string, contentType: UserActivity['contentType'], contentTitle: string) => {
   useEffect(() => {
     trackActivity('view', contentId, contentType, contentTitle);
-    
-    // Cleanup function - could potentially track time spent on page
-    return () => {
-      // Optional: track exit event
-    };
   }, [contentId, contentType, contentTitle]);
 };
 

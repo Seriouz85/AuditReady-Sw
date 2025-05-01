@@ -62,7 +62,7 @@ const courses: Course[] = [
     status: 'In Progress',
     materials: 12,
     deadline: '12 hrs',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1523240795612-9a054b097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     category: 'Course'
   },
   {
@@ -195,9 +195,8 @@ const TrenningLMS: React.FC = () => {
   const handleEnroll = (course: Course) => {
     // Track enrollment
     trackActivity('enroll', course.id, 'course', course.title);
-    
-    // Show enrollment confirmation
-    alert(`Successfully enrolled in "${course.title}"`);
+    // Add to local courses
+    setLocalCourses(prev => [...prev, { ...course, status: 'In Progress' }]);
   };
 
   return (
@@ -254,7 +253,7 @@ const TrenningLMS: React.FC = () => {
             Create New Course
           </Button>
         </Link>
-        <Link to="/lms/quizzes">
+        <Link to="/lms/courses/edit">
           <Button className="rounded-full px-6 py-6 h-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all">
             <Edit className="mr-2 h-5 w-5" />
             Edit Courses
@@ -307,70 +306,72 @@ const TrenningLMS: React.FC = () => {
         
         <div className="grid grid-cols-1 gap-6">
           {localCourses.filter(course => course.status === "In Progress").map(course => (
-            <div key={course.id} className="flex flex-col md:flex-row gap-6 bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-2xl shadow hover:shadow-md transition-all group overflow-hidden">
-              <div className="md:w-48 h-28 rounded-2xl overflow-hidden bg-muted relative">
-                {course.image ? (
-                  <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primary-foreground">
-                    <FileText className="h-10 w-10 text-muted-foreground" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </div>
-              
-              <div className="flex-1 flex flex-col md:flex-row gap-6">
-                <div className="flex-1">
-                  <Badge className="mb-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-full px-3">{course.category || 'Course'}</Badge>
-                  <h3 className="font-medium text-lg mb-1">{course.title}</h3>
-                  
-                  <div className="flex items-center text-sm text-muted-foreground mb-3">
-                    <div className="flex items-center mr-4">
-                      <FileText className="mr-1 h-4 w-4" /> 
-                      <span>{course.materials} Material</span>
+            <Link to={`/lms/course/${course.id}`} key={course.id} className="block">
+              <div className="flex flex-col md:flex-row gap-6 bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-2xl shadow hover:shadow-md transition-all group overflow-hidden">
+                <div className="md:w-48 h-28 rounded-2xl overflow-hidden bg-muted relative">
+                  {course.image ? (
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary-foreground">
+                      <FileText className="h-10 w-10 text-muted-foreground" />
                     </div>
-                    <div className="flex items-center">
-                      <Clock className="mr-1 h-4 w-4" /> 
-                      <span>{course.duration}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-1">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">Completion</span>
-                      <span>{course.progress}%</span>
-                    </div>
-                    <Progress value={course.progress} className="h-3 rounded-full bg-gray-200" />
-                  </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
                 
-                <div className="flex flex-col md:flex-row items-center gap-4 md:pl-4 md:border-l">
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs text-muted-foreground mb-1">Deadline</span>
-                    <div className="flex items-center text-sm font-medium">
-                      <Calendar className="h-4 w-4 mr-1 text-red-500" />
-                      <span>{course.deadline || 'N/A'}</span>
+                <div className="flex-1 flex flex-col md:flex-row gap-6">
+                  <div className="flex-1">
+                    <Badge className="mb-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-full px-3">{course.category || 'Course'}</Badge>
+                    <h3 className="font-medium text-lg mb-1">{course.title}</h3>
+                    
+                    <div className="flex items-center text-sm text-muted-foreground mb-3">
+                      <div className="flex items-center mr-4">
+                        <FileText className="mr-1 h-4 w-4" /> 
+                        <span>{course.materials} Material</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="mr-1 h-4 w-4" /> 
+                        <span>{course.duration}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-1">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">Completion</span>
+                        <span>{course.progress}%</span>
+                      </div>
+                      <Progress value={course.progress} className="h-3 rounded-full bg-gray-200" />
                     </div>
                   </div>
                   
-                  {course.progress > 0 ? (
-                    <Button 
-                      className="w-full md:w-auto rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-sm hover:shadow-md transition-all"
-                      onClick={() => handleCourseAction(course)}
-                    >
-                      Continue
-                    </Button>
-                  ) : (
-                    <Button 
-                      className="w-full md:w-auto rounded-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 shadow-sm hover:shadow-md transition-all"
-                      onClick={() => handleCourseAction(course)}
-                    >
-                      Start
-                    </Button>
-                  )}
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:pl-4 md:border-l">
+                    <div className="flex flex-col items-center">
+                      <span className="text-xs text-muted-foreground mb-1">Deadline</span>
+                      <div className="flex items-center text-sm font-medium">
+                        <Calendar className="h-4 w-4 mr-1 text-red-500" />
+                        <span>{course.deadline || 'N/A'}</span>
+                      </div>
+                    </div>
+                    
+                    {course.progress > 0 ? (
+                      <Button 
+                        className="w-full md:w-auto rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-sm hover:shadow-md transition-all"
+                        onClick={() => handleCourseAction(course)}
+                      >
+                        Continue
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="w-full md:w-auto rounded-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 shadow-sm hover:shadow-md transition-all"
+                        onClick={() => handleCourseAction(course)}
+                      >
+                        Start
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
           
           {/* Show a message if no courses are in progress */}
@@ -401,46 +402,48 @@ const TrenningLMS: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {newCourses.map(course => (
-            <Card key={course.id} className="overflow-hidden group rounded-2xl border-0 shadow hover:shadow-md transition-all">
-              <div className="h-48 bg-muted relative">
-                {course.image ? (
-                  <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primary-foreground">
-                    <FileText className="h-10 w-10 text-muted-foreground" />
+            <Link to={`/lms/course/${course.id}`} key={course.id} className="block">
+              <Card className="overflow-hidden group rounded-2xl border-0 shadow hover:shadow-md transition-all">
+                <div className="h-48 bg-muted relative">
+                  {course.image ? (
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary-foreground">
+                      <FileText className="h-10 w-10 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute top-3 left-3">
+                    <Badge className="bg-white/90 text-black font-normal rounded-full">{course.materials} materials</Badge>
                   </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-white/90 text-black font-normal rounded-full">{course.materials} materials</Badge>
+                  <div className="absolute bottom-3 left-3">
+                    <Badge className="bg-primary/90 text-white hover:bg-primary rounded-full">
+                      {course.category || 'Course'}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="absolute bottom-3 left-3">
-                  <Badge className="bg-primary/90 text-white hover:bg-primary rounded-full">
-                    {course.category || 'Course'}
-                  </Badge>
-                </div>
-              </div>
-              
-              <div className="p-5">
-                <h3 className="font-medium line-clamp-2 mb-3 group-hover:text-primary transition-colors text-lg">
-                  {course.title}
-                </h3>
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="mr-1 h-4 w-4" /> 
-                    <span>{course.duration}</span>
+                <div className="p-5">
+                  <h3 className="font-medium line-clamp-2 mb-3 group-hover:text-primary transition-colors text-lg">
+                    {course.title}
+                  </h3>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Clock className="mr-1 h-4 w-4" /> 
+                      <span>{course.duration}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="rounded-full p-2 h-auto w-auto bg-primary/10 hover:bg-primary/20 text-primary"
+                      onClick={() => handleEnroll(course)}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button 
-                    size="sm" 
-                    className="rounded-full p-2 h-auto w-auto bg-primary/10 hover:bg-primary/20 text-primary"
-                    onClick={() => handleEnroll(course)}
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

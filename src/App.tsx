@@ -9,10 +9,11 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import TrenningLMS from "./pages/LMS/index";
 import CreateLearningPath from "./pages/LMS/CreateLearningPath";
-import QuizView from "./pages/LMS/QuizView";
+import EditCourse from "./pages/LMS/EditCourse";
 import QuizEditor from "./pages/LMS/QuizEditor";
 import ContentCreator from "./pages/LMS/ContentCreator";
 import Reports from "./pages/LMS/Reports";
+import CourseDetail from "./pages/LMS/CourseDetail";
 import { LanguageProvider } from "./providers/LanguageProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
@@ -36,10 +37,11 @@ const App = () => (
                 <Route path="/lms" element={<TrenningLMS />} />
                 <Route path="/lms/create/learning-path" element={<CreateLearningPath />} />
                 <Route path="/lms/create/content" element={<ContentCreator />} />
-                <Route path="/lms/quizzes" element={<QuizView />} />
+                <Route path="/lms/courses/edit" element={<EditCourse />} />
                 <Route path="/lms/quizzes/create" element={<QuizEditor />} />
                 <Route path="/lms/quizzes/edit/:id" element={<QuizEditor />} />
                 <Route path="/lms/reports" element={<Reports />} />
+                <Route path="/lms/course/:courseId" element={<CourseDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
