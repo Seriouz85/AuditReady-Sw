@@ -8,7 +8,6 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   Check, 
   ArrowLeft, 
@@ -692,28 +691,29 @@ const ContentCreator: React.FC = () => {
               </Card>
             </div>
             
-            <div className="mt-6 flex justify-end">
+            <div className="col-span-12 flex justify-between items-start mt-6 gap-6">
+              <div className="bg-blue-50 rounded-2xl border border-blue-100 p-4 max-w-sm">
+                <div className="flex items-start gap-3">
+                  <div className="bg-blue-100 p-2 rounded-full mt-1">
+                    <Sparkles className="h-4 w-4 text-blue-700" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-blue-900">Need help?</h3>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Our AI assistant can help you create engaging content quickly.
+                      Try using the AI generation feature!
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
               <Button 
                 onClick={handleSubmit}
-                className="rounded-full px-8 py-6 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all text-lg font-medium"
+                className="rounded-full px-8 py-3 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md hover:shadow-lg transition-all font-medium"
               >
                 {selectedType === 'course' ? 'Continue to Course Builder' : 'Create Content'}
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
-            </div>
-            
-            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-              <div className="flex items-start gap-3">
-                <div className="bg-blue-100 p-2 rounded-full mt-1">
-                  <Sparkles className="h-4 w-4 text-blue-700" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-blue-900">Need help?</h3>
-                  <p className="text-sm text-blue-700 mt-1">
-                    Our AI assistant can help you create engaging content quickly. Try using the AI generation feature!
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         )}
@@ -725,7 +725,7 @@ const ContentCreator: React.FC = () => {
           <Button 
             size="lg" 
             onClick={() => setActiveTab('details')}
-            className="rounded-full px-8 py-7 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all"
+            className="rounded-full px-8 py-3 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md hover:shadow-lg transition-all"
           >
             Continue
             <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
@@ -739,7 +739,7 @@ const ContentCreator: React.FC = () => {
           <div className="bg-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
             <span className="text-sm font-medium">Step 1: Details</span>
             <span className="text-muted-foreground mx-1">→</span>
-            <Button variant="ghost" size="sm" className="rounded-full" onClick={() => {
+            <Button variant="ghost" size="sm" className="rounded-full text-muted-foreground" onClick={() => {
               // Save current form data and navigate to content editor
               handleSubmit();
             }}>
