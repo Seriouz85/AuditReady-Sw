@@ -20,6 +20,15 @@ const redirectFromGitHubPages = () => {
     const newPath = window.location.pathname + redirectPath + window.location.hash;
     window.history.replaceState(null, '', newPath);
   }
+
+  // Handle root path special case for GitHub Pages
+  if (
+    window.location.hostname.includes('github.io') && 
+    window.location.pathname === '/audit-readiness-hub/' &&
+    !window.location.search
+  ) {
+    console.log('GitHub Pages root path detected, ensuring proper routing');
+  }
 };
 
 // Run this before rendering the app
