@@ -29,6 +29,7 @@ import {
   CircleDashed,
   BookmarkPlus
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 // Mock course data - in a real app, this would come from an API
 const coursesData = [
@@ -189,6 +190,7 @@ const CourseDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('content');
   const [currentLesson, setCurrentLesson] = useState<string | null>(null);
+  const { setTheme } = useTheme();
 
   // Track page view
   usePageView(courseId || 'unknown', 'course', course?.title || 'Course Detail');
@@ -229,6 +231,8 @@ const CourseDetail: React.FC = () => {
     
     fetchCourse();
   }, [courseId, navigate]);
+
+  useEffect(() => { setTheme('light'); }, [setTheme]);
 
   // Handler for starting a lesson
   const handleStartLesson = (moduleId: string, lessonId: string) => {

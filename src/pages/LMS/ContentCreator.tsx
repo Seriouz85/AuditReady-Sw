@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -30,6 +30,7 @@ import {
   Brain,
   Bot
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 // Content type interfaces
 interface ContentType {
@@ -117,6 +118,7 @@ const categories = [
 
 const ContentCreator: React.FC = () => {
   const navigate = useNavigate();
+  const { setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('type');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [contentData, setContentData] = useState({
@@ -215,6 +217,8 @@ const ContentCreator: React.FC = () => {
       navigate('/lms');
     }
   };
+  
+  useEffect(() => { setTheme('light'); }, [setTheme]);
   
   return (
     <div className="min-h-screen bg-background">

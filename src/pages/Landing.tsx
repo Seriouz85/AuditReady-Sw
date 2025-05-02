@@ -173,7 +173,7 @@ export default function Landing() {
 
           {/* Dashboard Mockup */}
           <div className="relative mx-auto max-w-6xl">
-            <div className={`relative rounded-lg overflow-hidden shadow-2xl ${theme === 'light' ? 'border border-slate-200' : 'border border-slate-700'}`}>
+            <div className={`relative rounded-lg overflow-hidden shadow-2xl ${theme === 'light' ? 'border border-slate-200' : 'border border-border'}`}>
               <div className={`${theme === 'light' ? 'bg-slate-100' : 'bg-slate-800'} p-2 flex items-center gap-2`}>
                 <div className="flex gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -183,7 +183,7 @@ export default function Landing() {
               </div>
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-900'} p-6`}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className={`${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/50 border-slate-700'}`}>
+                  <Card className={`${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/50 border-border'}`}>
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-white'} font-semibold`}>Compliance Score</h3>
@@ -193,7 +193,7 @@ export default function Landing() {
                       <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} text-sm mt-2`}>+12% from last month</p>
                     </CardContent>
                   </Card>
-                  <Card className={`${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/50 border-slate-700'}`}>
+                  <Card className={`${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/50 border-border'}`}>
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-white'} font-semibold`}>Active Assessments</h3>
@@ -203,7 +203,7 @@ export default function Landing() {
                       <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} text-sm mt-2`}>3 due this week</p>
                     </CardContent>
                   </Card>
-                  <Card className={`${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/50 border-slate-700'}`}>
+                  <Card className={`${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/50 border-border'}`}>
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-white'} font-semibold`}>Risk Score</h3>
@@ -278,7 +278,7 @@ export default function Landing() {
             </div>
 
             {/* Assessment Preview Mockup */}
-            <div className={`relative rounded-lg overflow-hidden shadow-2xl ${theme === 'light' ? 'border border-slate-200' : 'border border-slate-700'}`}>
+            <div className={`relative rounded-lg overflow-hidden shadow-2xl ${theme === 'light' ? 'border border-slate-200' : 'border border-border'}`}>
               <div className={`${theme === 'light' ? 'bg-slate-100' : 'bg-slate-800'} p-4`}>
                 <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-white'} font-semibold`}>ISO 27001 Assessment</h3>
               </div>
@@ -336,7 +336,7 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className={`${theme === 'light' ? 'bg-white border-slate-200 shadow-md' : 'bg-slate-800/50 border-slate-700'}`}>
+              <Card key={index} className={`${theme === 'light' ? 'bg-white border-slate-200 shadow-md' : 'bg-slate-800/50 border-border'}`}>
                 <CardContent className="p-6">
                   <div className="mb-4">
                     {[...Array(5)].map((_, i) => (
@@ -405,7 +405,7 @@ export default function Landing() {
       </section>
 
       {/* Enhanced Footer */}
-      <footer className={`py-12 px-4 border-t ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
+      <footer className={`py-12 px-4 border-t ${theme === 'light' ? 'border-slate-200' : 'border-border'}`}>
         <div className="container mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -445,7 +445,7 @@ export default function Landing() {
               </ul>
             </div>
           </div>
-          <div className={`text-center ${theme === 'light' ? 'text-slate-600' : 'text-slate-500'} pt-8 ${theme === 'light' ? 'border-t border-slate-200' : 'border-t border-slate-800'}`}>
+          <div className={`text-center ${theme === 'light' ? 'text-slate-600' : 'text-slate-500'} pt-8 ${theme === 'light' ? 'border-t border-slate-200' : 'border-t border-border'}`}>
             <p>© 2024 AuditReady. All rights reserved.</p>
           </div>
         </div>
@@ -456,7 +456,7 @@ export default function Landing() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <Card className="bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-colors">
+    <Card className="bg-slate-800/50 border-border hover:border-blue-500/50 transition-colors">
       <CardContent className="p-6">
         <div className="rounded-full bg-blue-500/10 w-12 h-12 flex items-center justify-center mb-4">
           {icon}

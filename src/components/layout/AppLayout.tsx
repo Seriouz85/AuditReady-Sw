@@ -286,7 +286,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Updated Header Structure with matching padding to sidebar */}
-        <div className="flex justify-end items-center p-4 border-b border-border">
+        <div className="flex justify-end items-center p-4 border-b border-border header-border-align">
           <div className="flex items-center gap-2">
             <ZoomToggle />
             <ThemeToggle />

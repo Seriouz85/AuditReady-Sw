@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   Save, 
@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 
 interface Question {
   id: number;
@@ -32,6 +33,9 @@ interface Question {
 }
 
 const QuizEditor: React.FC = () => {
+  const { setTheme } = useTheme();
+  useEffect(() => { setTheme('light'); }, [setTheme]);
+
   const [activeTab, setActiveTab] = useState('questions');
   const [questions, setQuestions] = useState<Question[]>([
     {

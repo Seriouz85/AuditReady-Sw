@@ -12,14 +12,19 @@ import {
   ChevronRight,
   ChevronLeft,
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useEffect } from 'react';
 
 interface CreateLearningPathProps {
   onClose?: () => void;
 }
 
 const CreateLearningPath: React.FC<CreateLearningPathProps> = ({ onClose }) => {
+  const { setTheme } = useTheme();
   const [currentStep, setCurrentStep] = React.useState(1);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
+
+  useEffect(() => { setTheme('light'); }, [setTheme]);
 
   const categories = [
     'Prototyping',

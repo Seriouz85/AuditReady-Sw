@@ -28,9 +28,12 @@
     --destructive: 340 80% 45%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 210 20% 85%;
-    --input: 210 20% 85%;
-    --ring: 210 50% 28%;
+    --border: 215 20% 87%;
+    --border-width: 1px;
+    --border-radius: 0.75rem;
+
+    --input: 210 30% 25%;
+    --ring: 210 50% 50%;
 
     --radius: 0.5rem;
 
@@ -69,7 +72,7 @@
     --destructive: 340 80% 45%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 213 30% 32%;
+    --border: 215 16% 22%;
     --input: 210 30% 25%;
     --ring: 210 50% 50%;
   }
@@ -105,7 +108,6 @@
   body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    color-adjust: exact !important;
     background: white !important;
   }
   
@@ -498,5 +500,20 @@ main > div:first-child {
 .dark .card,
 .dark [data-card="true"] {
   border-color: hsl(var(--border)) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1.5px 4px rgba(15,23,42,0.10);
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-radius: 0.5rem !important;
+}
+
+.card, [data-card="true"] {
+  border-color: hsl(var(--border));
+  border-width: var(--border-width);
+  border-style: solid;
+  border-radius: var(--border-radius);
+  box-shadow: 0 1.5px 6px rgba(30, 41, 59, 0.06);
+}
+
+.header-border-align {
+  margin-bottom: -12px;
 }

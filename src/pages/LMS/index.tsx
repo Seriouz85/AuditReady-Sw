@@ -28,6 +28,7 @@ import {
   Settings
 } from 'lucide-react';
 import { getTimeBasedGreeting, updateStreak, trackActivity } from '@/lib/tracking';
+import { useTheme } from 'next-themes';
 
 interface Course {
   id: number;
@@ -130,6 +131,7 @@ const notifications: Notification[] = [
 ];
 
 const TrenningLMS: React.FC = () => {
+  const { setTheme } = useTheme();
   const [greeting, setGreeting] = useState(getTimeBasedGreeting());
   const [userStreak, setUserStreak] = useState(updateStreak());
   const [localCourses, setLocalCourses] = useState(courses);
@@ -142,6 +144,8 @@ const TrenningLMS: React.FC = () => {
     
     return () => clearInterval(intervalId);
   }, []);
+  
+  useEffect(() => { setTheme('light'); }, [setTheme]);
   
   const currentUser = {
     name: 'User',

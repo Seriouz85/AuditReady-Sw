@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import LiveDashboard from '@/components/LMS/Dashboard';
 import { usePageView } from '@/lib/tracking';
+import { useTheme } from 'next-themes';
 
 // Mock data
 const courseCompletionData = [
@@ -89,6 +90,8 @@ const getScoreBadgeStyle = (score: number) => {
 };
 
 const Reports: React.FC = () => {
+  const { setTheme } = useTheme();
+  useEffect(() => { setTheme('light'); }, [setTheme]);
   const [selectedPeriod, setSelectedPeriod] = useState('month');
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedDepartment, setSelectedDepartment] = useState('all');

@@ -13,7 +13,6 @@
   --card-background: hsl(0, 0%, 100%);
   --card-header-background: hsl(210, 20%, 98%);
   --input-background: hsl(0, 0%, 100%);
-  --border: hsl(214, 32%, 91%);
   --primary: hsl(217, 91%, 60%);
   --primary-light: hsl(214, 100%, 97%);
   --muted-foreground: hsl(215, 16%, 47%);
@@ -234,7 +233,6 @@
   --card-background: hsl(217, 19%, 14%);
   --card-header-background: hsl(217, 19%, 11%);
   --input-background: hsl(217, 19%, 16%);
-  --border: hsl(217, 19%, 18%);
   --primary: hsl(217, 91%, 60%);
   --primary-light: hsla(217, 91%, 60%, 0.15);
   --muted-foreground: hsl(215, 16%, 65%);
@@ -245,7 +243,6 @@
   --card-background: hsl(217, 19%, 14%);
   --card-header-background: hsl(217, 19%, 11%);
   --input-background: hsl(217, 19%, 16%);
-  --border: hsl(217, 19%, 18%);
   --primary: hsl(217, 91%, 60%);
   --primary-light: hsla(217, 91%, 60%, 0.15);
   --muted-foreground: hsl(215, 16%, 65%);

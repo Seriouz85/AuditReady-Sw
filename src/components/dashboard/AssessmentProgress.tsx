@@ -6,6 +6,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface AssessmentProgressProps {
   assessments: Assessment[];
@@ -15,6 +17,7 @@ interface AssessmentProgressProps {
 export function AssessmentProgress({ assessments, onAssessmentClick }: AssessmentProgressProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Sort by most recent first
   const sortedAssessments = [...assessments]
@@ -74,7 +77,10 @@ export function AssessmentProgress({ assessments, onAssessmentClick }: Assessmen
   };
 
   return (
-    <Card className="h-full shadow-xl hover:shadow-2xl transition-all duration-500">
+    <Card className={cn(
+      "h-full shadow-xl hover:shadow-2xl transition-all duration-500",
+      theme === 'dark' ? 'border border-white/15' : 'border border-border'
+    )}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div>

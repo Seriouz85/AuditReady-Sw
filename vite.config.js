@@ -53,8 +53,9 @@ export default defineConfig(({ command }) => {
       },
     },
     server: {
-      port: 3000,
+      port: 3001,
       open: true, // Auto-open browser
+      host: true, // Listen on all addresses
     }
   }
 }) 

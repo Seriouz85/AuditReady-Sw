@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { useTheme } from 'next-themes';
 
 // Define types for content modules
 interface Module {
@@ -45,6 +46,7 @@ const CourseBuilder: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const courseData = location.state?.courseData || null;
+  const { setTheme } = useTheme();
   
   const [courseSections, setCourseSections] = useState<CourseSection[]>([
     {
@@ -54,6 +56,8 @@ const CourseBuilder: React.FC = () => {
       isExpanded: true
     }
   ]);
+  
+  useEffect(() => { setTheme('light'); }, [setTheme]);
   
   // Handle back button click
   const handleBack = () => {

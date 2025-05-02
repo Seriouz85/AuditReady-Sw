@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -21,8 +21,12 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getTimeBasedGreeting } from '@/lib/tracking';
+import { useTheme } from 'next-themes';
 
 const LMSAdmin: React.FC = () => {
+  const { setTheme } = useTheme();
+  useEffect(() => { setTheme('light'); }, [setTheme]);
+  
   const [greeting] = useState(getTimeBasedGreeting());
   
   const currentUser = {

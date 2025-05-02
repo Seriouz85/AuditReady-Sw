@@ -84,7 +84,10 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
   };
 
   return (
-    <Card className="h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+    <Card className={cn(
+      "h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200",
+      theme === 'dark' ? 'border border-white/15' : 'border border-border'
+    )}>
       <CardHeader className="text-center pt-1 pb-0">
         <CardTitle className="flex flex-col items-center">
           <span className="text-lg font-bold">Compliance Status</span>
