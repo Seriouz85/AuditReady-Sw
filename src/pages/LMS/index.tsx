@@ -338,63 +338,59 @@ const TrenningLMS: React.FC = () => {
       
       {/* Main Actions Navigation */}
       <div className="container max-w-7xl mx-auto -mt-8 z-10 relative px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Link to="/lms/create/content">
-            <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
-              <div className="flex items-center">
-                <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3 mr-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
+          <Link to="/lms/create/content" className="block">
+            <Card className="p-0 h-24 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center h-full pl-4 pr-6">
+                <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3 mr-4 flex-shrink-0">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg group-hover:text-indigo-700 transition-colors">Create Course</h3>
+                  <h3 className="font-semibold text-base group-hover:text-indigo-700 transition-colors">Create Course</h3>
                   <p className="text-sm text-muted-foreground">Design new learning content</p>
                 </div>
-                <ArrowRight className="ml-auto h-5 w-5 text-indigo-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
           
-          <Link to="/lms/courses/edit">
-            <Card className="p-6 bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
-              <div className="flex items-center">
-                <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3 mr-4">
+          <Link to="/lms/courses/edit" className="block">
+            <Card className="p-0 h-24 bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center h-full pl-4 pr-6">
+                <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3 mr-4 flex-shrink-0">
                   <Edit className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg group-hover:text-purple-700 transition-colors">Edit Courses</h3>
+                  <h3 className="font-semibold text-base group-hover:text-purple-700 transition-colors">Edit Courses</h3>
                   <p className="text-sm text-muted-foreground">Manage existing content</p>
                 </div>
-                <ArrowRight className="ml-auto h-5 w-5 text-purple-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
           
-          <Link to="/lms/reports">
-            <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
-              <div className="flex items-center">
-                <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3 mr-4">
+          <Link to="/lms/reports" className="block">
+            <Card className="p-0 h-24 bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center h-full pl-4 pr-6">
+                <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3 mr-4 flex-shrink-0">
                   <ChartBar className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg group-hover:text-amber-700 transition-colors">Analytics</h3>
+                  <h3 className="font-semibold text-base group-hover:text-amber-700 transition-colors">Analytics</h3>
                   <p className="text-sm text-muted-foreground">Track learning progress</p>
                 </div>
-                <ArrowRight className="ml-auto h-5 w-5 text-amber-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
           
-          <Link to="/lms/admin">
-            <Card className="p-6 bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
-              <div className="flex items-center">
-                <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3 mr-4">
+          <Link to="/lms/admin" className="block">
+            <Card className="p-0 h-24 bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center h-full pl-4 pr-6">
+                <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3 mr-4 flex-shrink-0">
                   <Settings className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg group-hover:text-gray-700 transition-colors">Admin View</h3>
+                  <h3 className="font-semibold text-base group-hover:text-gray-700 transition-colors">Admin View</h3>
                   <p className="text-sm text-muted-foreground">System settings & users</p>
                 </div>
-                <ArrowRight className="ml-auto h-5 w-5 text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
