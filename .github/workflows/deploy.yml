@@ -1,4 +1,4 @@
-name: Deploy to Main Branch
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -28,12 +28,16 @@ jobs:
       - name: Build
         run: npm run build
       
-      - name: Deploy to Main Branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: main # The branch the action should deploy to
-          folder: dist # The folder the action should deploy
-          clean: true # Automatically remove deleted files from the deploy branch
-          target-folder: ./ # Deploy to the root folder of the repository
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Deploy website to main branch root" 
+      - name: Copy build files to repository root
+        run: |
+          cp -r dist/* .
+          cp dist/index.html dist/404.html
+          touch .nojekyll
+      
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Deploy website updates" || echo "No changes to commit"
+          git push 
