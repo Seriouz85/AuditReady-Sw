@@ -10,6 +10,14 @@
   background-color: var(--background);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   animation: fadeIn 0.3s ease-out;
+  --card-background: hsl(0, 0%, 100%);
+  --card-header-background: hsl(210, 20%, 98%);
+  --input-background: hsl(0, 0%, 100%);
+  --border: hsl(214, 32%, 91%);
+  --primary: hsl(217, 91%, 60%);
+  --primary-light: hsl(214, 100%, 97%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --foreground: hsl(217, 19%, 27%);
 }
 
 .org-chart {
@@ -222,19 +230,18 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* CSS Variables */
-:root {
-  --card-background: hsl(0, 0%, 100%);
-  --card-header-background: hsl(210, 20%, 98%);
-  --input-background: hsl(0, 0%, 100%);
-  --border: hsl(214, 32%, 91%);
+.dark {
+  --card-background: hsl(217, 19%, 14%);
+  --card-header-background: hsl(217, 19%, 11%);
+  --input-background: hsl(217, 19%, 16%);
+  --border: hsl(217, 19%, 18%);
   --primary: hsl(217, 91%, 60%);
-  --primary-light: hsl(214, 100%, 97%);
-  --muted-foreground: hsl(215, 16%, 47%);
-  --foreground: hsl(217, 19%, 27%);
+  --primary-light: hsla(217, 91%, 60%, 0.15);
+  --muted-foreground: hsl(215, 16%, 65%);
+  --foreground: hsl(213, 31%, 91%);
 }
 
-.dark {
+.dark .org-chart-container {
   --card-background: hsl(217, 19%, 14%);
   --card-header-background: hsl(217, 19%, 11%);
   --input-background: hsl(217, 19%, 16%);
