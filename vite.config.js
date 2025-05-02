@@ -48,7 +48,7 @@ export default defineConfig(({ command }) => {
       },
     },
     server: {
-      port: 5173, // Use consistent port
+      port: 3000,
       open: true, // Auto-open browser
     }
   }
