@@ -26,7 +26,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/',
+  // Use relative path for development and absolute for production
+  base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
