@@ -33,10 +33,7 @@ jobs:
         run: npm ci
         
       - name: Build
-        run: |
-          npm run build
-        env:
-          BASE_URL: '/audit-readiness-hub/'
+        run: npm run build
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
