@@ -26,7 +26,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/audit-readiness-hub/',
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
