@@ -69,7 +69,7 @@
     --destructive: 340 80% 45%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 210 30% 25%;
+    --border: 213 30% 32%;
     --input: 210 30% 25%;
     --ring: 210 50% 50%;
   }
@@ -480,4 +480,23 @@
   .supplier-report-content .overflow-hidden {
     overflow: visible !important;
   }
+}
+
+/* Fix for header line to match navbar line */
+.dark header,
+main > div:first-child {
+  border-bottom-color: hsl(var(--border)) !important;
+}
+
+/* Fix for main layout header in dark mode */
+.dark main > div.border-b {
+  border-bottom-color: hsl(var(--border)) !important;
+  border-bottom-width: 1px !important;
+}
+
+/* Improved dark mode card borders for better separation */
+.dark .card,
+.dark [data-card="true"] {
+  border-color: hsl(var(--border)) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(15, 23, 42, 0.12);
 }

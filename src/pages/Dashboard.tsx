@@ -82,7 +82,7 @@ const Dashboard = () => {
       animate="visible"
       variants={containerVariants}
     >
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between !border-none !pb-0">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold tracking-tight">Compliance Dashboard</h1>
           <p className="text-muted-foreground mt-1">
@@ -97,7 +97,8 @@ const Dashboard = () => {
       {/* Re-added Recent Trend Card */}
       <motion.div
         variants={fadeInVariants}
-        className="bg-gradient-to-r from-blue-50 via-white to-teal-50 dark:from-blue-950/30 dark:via-slate-900/50 dark:to-teal-950/30 rounded-xl p-4 shadow-lg w-full"
+        className="bg-gradient-to-r from-blue-50 via-background to-teal-50 dark:from-blue-950/30 dark:via-slate-900/60 dark:to-teal-950/30 rounded-xl p-4 shadow-lg w-full border border-border/70"
+        data-card="true"
       >
         <div className="flex flex-col md:flex-row justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -111,7 +112,7 @@ const Dashboard = () => {
           </div>
           
           <div className="flex flex-row gap-3">
-            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2 bg-background dark:bg-gray-800/60 p-2 rounded-lg shadow-sm">
               <div className="bg-amber-100 dark:bg-amber-900/50 p-1.5 rounded-lg">
                 <Calendar size={14} className="text-amber-600 dark:text-amber-400" />
               </div>
@@ -121,7 +122,7 @@ const Dashboard = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2 bg-background dark:bg-gray-800/60 p-2 rounded-lg shadow-sm">
               <div className="bg-green-100 dark:bg-green-900/50 p-1.5 rounded-lg">
                 <Clock size={14} className="text-green-600 dark:text-green-400" />
               </div>
@@ -144,7 +145,8 @@ const Dashboard = () => {
             value={dashboardStats.totalStandards}
             icon={<Shield size={16} />}
             description="Active compliance standards"
-            className="shadow-md hover:shadow-lg transition-shadow hover:bg-slate-50 dark:hover:bg-slate-800/50"
+            className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
+            data-card="true"
           />
         </div>
         <div onClick={() => navigate("/app/requirements")} className="cursor-pointer">
@@ -153,7 +155,8 @@ const Dashboard = () => {
             value={dashboardStats.totalRequirements}
             icon={<BookOpen size={16} />}
             description="Across all standards"
-            className="shadow-md hover:shadow-lg transition-shadow hover:bg-slate-50 dark:hover:bg-slate-800/50"
+            className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
+            data-card="true"
           />
         </div>
         <div onClick={() => navigate("/app/assessments")} className="cursor-pointer">
@@ -162,7 +165,8 @@ const Dashboard = () => {
             value={dashboardStats.totalAssessments}
             icon={<CheckSquare size={16} />}
             description="Ongoing and completed"
-            className="shadow-md hover:shadow-lg transition-shadow hover:bg-slate-50 dark:hover:bg-slate-800/50"
+            className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
+            data-card="true"
           />
         </div>
         <StatsCard
@@ -174,7 +178,8 @@ const Dashboard = () => {
             isPositive: true
           }}
           description="Overall compliance rate"
-          className="shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-950/30"
+          className="shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-background to-blue-50 dark:from-gray-900 dark:to-blue-950/30 border border-border/70"
+          data-card="true"
         />
       </motion.div>
       
@@ -188,7 +193,7 @@ const Dashboard = () => {
           </motion.div>
           
           <motion.div variants={itemVariants}>
-            <Card className="shadow-md hover:shadow-lg transition-all h-full">
+            <Card className="shadow-md hover:shadow-lg transition-all h-full border border-border/70" data-card="true">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold">Upcoming Tasks</h3>
@@ -196,7 +201,7 @@ const Dashboard = () => {
                 </div>
                 <div className="space-y-2">
                   {[1, 2, 3].map((item) => (
-                    <div key={item} className="p-2 border rounded-lg flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                    <div key={item} className="p-2 border border-border/50 rounded-lg flex justify-between items-center hover:bg-muted/20 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
                           <Shield size={14} className="text-blue-600 dark:text-blue-400" />
@@ -222,7 +227,7 @@ const Dashboard = () => {
           </motion.div>
         </div>
         
-        <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-3">
+        <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-3 border border-border/70" data-card="true">
           <AssessmentProgress 
             assessments={assessments} 
             onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}

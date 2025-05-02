@@ -92,7 +92,7 @@ const NavItem = ({ to, icon, label, isActive, subItems, isExpanded, onToggle }: 
       )}
       
       {hasSubItems && isExpanded && (
-        <div className="ml-6 space-y-1 border-l border-sidebar-border pl-2">
+        <div className="ml-6 space-y-1 border-l border-border pl-2">
           {subItems.map((subItem) => (
             <Link key={subItem.to} to={subItem.to}>
               <Button
@@ -241,8 +241,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </Button>
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto">
-        <div className="p-4 pb-6 flex items-center justify-between border-b border-sidebar-border">
+      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border">
+        <div className="p-4 pb-6 flex items-center justify-between border-b border-border">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -251,7 +251,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         
         {renderNav()}
         
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-border">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>
@@ -262,11 +262,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Sidebar - Mobile */}
       <aside 
         className={cn(
-          "fixed inset-0 z-40 w-full bg-sidebar transform transition-transform duration-300 ease-in-out md:hidden",
+          "fixed inset-0 z-40 w-full bg-sidebar transform transition-transform duration-300 ease-in-out md:hidden border-r border-border",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="p-4 pb-6 flex items-center justify-between border-b border-sidebar-border">
+        <div className="p-4 pb-6 flex items-center justify-between border-b border-border">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -275,7 +275,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         
         {renderNav()}
         
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-border">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>
@@ -285,8 +285,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Reverted Header Structure */}
-        <div className="flex justify-end items-center p-3 border-b">
+        {/* Updated Header Structure with matching padding to sidebar */}
+        <div className="flex justify-end items-center p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <ZoomToggle />
             <ThemeToggle />
