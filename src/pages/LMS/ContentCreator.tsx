@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -118,6 +118,7 @@ const categories = [
 
 const ContentCreator: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('type');
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -197,6 +198,9 @@ const ContentCreator: React.FC = () => {
     console.log('Submitting content:', finalData);
     // In a real app, you would save this data to your backend
     
+    // Set step 2 as active before navigating
+    setActiveTab('content');
+
     // Navigate based on content type
     if (selectedType === 'course') {
       // For courses, go to the course builder to create content
@@ -211,14 +215,62 @@ const ContentCreator: React.FC = () => {
   
   // Handler for back button
   const handleBack = () => {
-    if (activeTab === 'details' && selectedType) {
+    if (activeTab === 'details') {
       setActiveTab('type');
+    } else if (activeTab === 'content') {
+      setActiveTab('details');
     } else {
       navigate('/lms');
     }
   };
   
-  useEffect(() => { setTheme('light'); }, [setTheme]);
+  useEffect(() => {
+    setTheme('light');
+    const params = new URLSearchParams(location.search);
+    // 1. Prioritera state från navigation
+    if (location.state?.courseData) {
+      setContentData(location.state.courseData);
+      localStorage.setItem('lms_content_creator', JSON.stringify({
+        ...JSON.parse(localStorage.getItem('lms_content_creator') || '{}'),
+        contentData: location.state.courseData
+      }));
+      setActiveTab('details');
+    } else if (params.get('step') === 'details') {
+      // 2. Annars, ladda från autosave
+      setActiveTab('details');
+      const saved = localStorage.getItem('lms_content_creator');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.contentData) setContentData(parsed.contentData);
+          if (parsed.selectedType) setSelectedType(parsed.selectedType);
+          if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
+        } catch {}
+      }
+    }
+  }, [setTheme, location.search, location.state]);
+  
+  // Autosave: Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('lms_content_creator');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.contentData) setContentData(parsed.contentData);
+        if (parsed.selectedType) setSelectedType(parsed.selectedType);
+        if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
+      } catch {}
+    }
+  }, []);
+
+  // Autosave: Save to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem('lms_content_creator', JSON.stringify({
+      contentData,
+      selectedType,
+      selectedCategories
+    }));
+  }, [contentData, selectedType, selectedCategories]);
   
   return (
     <div className="min-h-screen bg-background">
@@ -249,6 +301,55 @@ const ContentCreator: React.FC = () => {
       </header>
       
       <div className="container max-w-7xl mx-auto p-6">
+        {/* Progress indicator at the top */}
+        <div className="flex justify-center mb-8 mt-4">
+          <div className="flex items-center space-x-4">
+            {/* Step 1: Type */}
+            <div
+              className={`flex items-center cursor-pointer transition-colors ${activeTab === 'type' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
+              onClick={() => setActiveTab('type')}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">1</div>
+              <span className="ml-2">Type</span>
+            </div>
+            <div className="w-16 h-0.5 bg-gray-300"></div>
+            {/* Step 2: Details */}
+            <div
+              className={`flex items-center cursor-pointer transition-colors ${activeTab === 'details' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
+              onClick={() => {
+                if (selectedType) setActiveTab('details');
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">2</div>
+              <span className="ml-2">Details</span>
+            </div>
+            <div className="w-16 h-0.5 bg-gray-300"></div>
+            {/* Step 3: Content */}
+            <div
+              className={`flex items-center cursor-pointer transition-colors ${activeTab === 'content' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
+              onClick={() => {
+                if (selectedType && contentData.title && contentData.description) {
+                  setActiveTab('content');
+                  const finalData = {
+                    ...contentData,
+                    type: selectedType,
+                    categories: selectedCategories,
+                    created: new Date().toISOString()
+                  };
+                  if (selectedType === 'course') {
+                    navigate('/lms/create/course-builder', { state: { courseData: finalData } });
+                  } else {
+                    navigate('/lms');
+                  }
+                }
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">3</div>
+              <span className="ml-2">Content</span>
+            </div>
+          </div>
+        </div>
+        
         {/* Content Type Selection */}
         {activeTab === 'type' && (
           <div>
@@ -722,40 +823,6 @@ const ContentCreator: React.FC = () => {
           </div>
         )}
       </div>
-      
-      {/* Bottom navigation */}
-      {activeTab === 'type' && selectedType && (
-        <div className="fixed bottom-6 right-6">
-          <Button 
-            size="lg" 
-            onClick={() => setActiveTab('details')}
-            className="rounded-full px-8 py-3 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md hover:shadow-lg transition-all"
-          >
-            Continue
-            <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
-          </Button>
-        </div>
-      )}
-      
-      {/* Progress indicator */}
-      {activeTab === 'details' && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
-          <div className="bg-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
-            <span className="text-sm font-medium">Step 1: Details</span>
-            <span className="text-muted-foreground mx-1">→</span>
-            <Button variant="ghost" size="sm" className="rounded-full text-muted-foreground" onClick={() => {
-              // Save current form data and navigate to content editor
-              handleSubmit();
-            }}>
-              Step 2: Content
-            </Button>
-            <span className="text-muted-foreground mx-1">→</span>
-            <Button variant="ghost" size="sm" className="rounded-full" disabled>
-              Step 3: Review
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

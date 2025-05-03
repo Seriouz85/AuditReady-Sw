@@ -14,7 +14,8 @@ import {
   Save,
   Eye,
   Settings,
-  Sparkles
+  Sparkles,
+  ChevronUp
 } from 'lucide-react';
 import { DragVertical } from '@/components/ui/drag-vertical';
 import { Button } from '@/components/ui/button';
@@ -57,16 +58,31 @@ const CourseBuilder: React.FC = () => {
     }
   ]);
   
-  useEffect(() => { setTheme('light'); }, [setTheme]);
+  // Add new state for AI generation
+  const [numSectionsToGenerate, setNumSectionsToGenerate] = useState<number>(3);
+  
+  // Add new state for showing the generate modal
+  const [showGenerateModal, setShowGenerateModal] = useState<boolean>(false);
+  
+  // Add new state for tab management
+  const [currentTab, setCurrentTab] = useState<'type' | 'details' | 'course-builder'>('type');
+  const [activeTab, setActiveTab] = useState<'type' | 'details' | 'course-builder'>('type');
+  
+  // 1. Add loading state for AI generation
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  useEffect(() => { setTheme('light'); setActiveTab('course-builder'); setCurrentTab('course-builder'); }, [setTheme]);
   
   // Handle back button click
   const handleBack = () => {
     if (window.confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
-      navigate('/lms/create/content');
+      setActiveTab('details');
+      setCurrentTab('details');
+      navigate('/lms/create/content?step=details', { state: { courseData: courseDataFromBuilder } });
     }
   };
   
-  // Add a new section
+  // Update addSection function to auto-scroll to the new section
   const addSection = () => {
     const newSection: CourseSection = {
       id: Math.random().toString(36).substr(2, 9),
@@ -76,6 +92,8 @@ const CourseBuilder: React.FC = () => {
     };
     
     setCourseSections([...courseSections, newSection]);
+    // Auto-scroll to the new section
+    scrollToSection(newSection.id);
   };
   
   // Toggle section expansion
@@ -199,6 +217,141 @@ const CourseBuilder: React.FC = () => {
     navigate('/lms');
   };
   
+  // Update handleGenerateContent to show the modal
+  const handleGenerateContent = () => {
+    setShowGenerateModal(true);
+  };
+  
+  // Update handleModalSubmit to parse AI response and update courseSections
+  const handleModalSubmit = async () => {
+    setShowGenerateModal(false);
+    if (!courseData) {
+      alert('Please ensure course details are filled in.');
+      return;
+    }
+    setIsGenerating(true);
+    // Ny, tydlig prompt för AI
+    const prompt = `Return ONLY valid JSON.\nCreate a professional training course with the following details:\n- Type: ${courseData.type}\n- Title: ${courseData.title}\n- Target Audience: ${courseData.targetAudience}\n- Difficulty: ${courseData.difficultyLevel}\n- Description: ${courseData.description}\n- Number of sections: ${numSectionsToGenerate}\n\nFor each section, provide:\n- title: string\n- content: string (the main text for the section)\n- quizzes: array of quiz questions (optional, each with question, options, answer)\n\nExample format:\n{\n  \\"sections\\": [\n    {\n      \\"title\\": \\"Section 1 Title\\",\n      \\"content\\": \\"Section 1 main text...\\",\n      \\"quizzes\\": [\n        {\n          \\"question\\": \\"What is GDPR?\\",\n          \\"options\\": [\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"],\n          \\"answer\\": \"Option 2\"\n        }\n      ]\n    }\n  ]\n}\nDo NOT include any introduction or explanation text before or after the JSON.`;
+
+    try {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate content');
+      }
+
+      const data = await response.json();
+      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+      // Försök tolka JSON
+      let parsed;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (err) {
+        // Försök extrahera JSON om AI lagt till text före/efter
+        const match = rawText.match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            parsed = JSON.parse(match[0]);
+          } catch (e) {
+            setIsGenerating(false);
+            alert('Kunde inte tolka AI-svaret som JSON. Försök igen.');
+            return;
+          }
+        } else {
+          setIsGenerating(false);
+          alert('Kunde inte tolka AI-svaret som JSON. Försök igen.');
+          return;
+        }
+      }
+
+      if (!parsed.sections || !Array.isArray(parsed.sections)) {
+        setIsGenerating(false);
+        alert('AI-svaret innehåller inga sektioner. Försök igen.');
+        return;
+      }
+
+      // Fix: Ensure all modules are expanded and first section gets its content
+      const newSections = parsed.sections.map((section: any, idx: number) => ({
+        id: Math.random().toString(36).substr(2, 9),
+        title: section.title || `Section ${idx + 1}`,
+        isExpanded: true,
+        modules: [
+          {
+            id: Math.random().toString(36).substr(2, 9),
+            title: section.title || `Section ${idx + 1} Content`,
+            type: 'text',
+            content: section.content || '',
+            isExpanded: true
+          },
+          ...(Array.isArray(section.quizzes) ? section.quizzes.map((quiz: any, qidx: number) => ({
+            id: Math.random().toString(36).substr(2, 9),
+            title: quiz.question ? `Quiz: ${quiz.question}` : `Quiz ${qidx + 1}`,
+            type: 'quiz',
+            content: JSON.stringify({
+              question: quiz.question || '',
+              options: quiz.options || [],
+              answer: quiz.answer || ''
+            }),
+            isExpanded: true
+          })) : [])
+        ]
+      }));
+
+      setCourseSections([...courseSections, ...newSections]);
+      // Auto-scroll till första nya sektionen
+      if (newSections.length > 0) scrollToSection(newSections[0].id);
+      setIsGenerating(false);
+      alert('Innehåll genererat och uppdelat i sektioner!');
+      setActiveTab('details');
+      setCurrentTab('details');
+    } catch (error) {
+      setIsGenerating(false);
+      console.error('Error generating content:', error);
+      alert('Misslyckades med att generera innehåll. Försök igen.');
+    }
+  };
+
+  // Add new function to auto-scroll to a section
+  const scrollToSection = (sectionId: string) => {
+    const sectionElement = document.getElementById(sectionId);
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
+  const handleTabChange = (tab: 'type' | 'details' | 'course-builder') => {
+    setActiveTab(tab);
+    setCurrentTab(tab);
+  };
+  
+  // Section move up/down handlers
+  const moveSection = (sectionId: string, direction: 'up' | 'down') => {
+    setCourseSections(prev => {
+      const idx = prev.findIndex(s => s.id === sectionId);
+      if (idx === -1) return prev;
+      const newSections = [...prev];
+      if (direction === 'up' && idx > 0) {
+        [newSections[idx - 1], newSections[idx]] = [newSections[idx], newSections[idx - 1]];
+      } else if (direction === 'down' && idx < newSections.length - 1) {
+        [newSections[idx], newSections[idx + 1]] = [newSections[idx + 1], newSections[idx]];
+      }
+      return newSections;
+    });
+  };
+  
+  // Helper: Build courseDataFromBuilder from current state
+  const courseDataFromBuilder = {
+    ...courseData,
+    sections: courseSections,
+    updatedAt: new Date().toISOString()
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -228,6 +381,49 @@ const CourseBuilder: React.FC = () => {
       </header>
       
       <div className="container max-w-7xl mx-auto p-4 pt-6">
+        {/* Add visual progress indicator */}
+        <div className="flex justify-center mb-6">
+          <div className="flex items-center space-x-4">
+            {/* Step 1: Type */}
+            <div
+              className={`flex items-center cursor-pointer transition-colors ${activeTab === 'type' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
+              onClick={() => {
+                setActiveTab('type');
+                setCurrentTab('type');
+                navigate('/lms/create/content');
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">1</div>
+              <span className="ml-2">Type</span>
+            </div>
+            <div className="w-16 h-0.5 bg-gray-300"></div>
+            {/* Step 2: Details */}
+            <div
+              className={`flex items-center cursor-pointer transition-colors ${activeTab === 'details' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
+              onClick={() => {
+                setActiveTab('details');
+                setCurrentTab('details');
+                navigate('/lms/create/content?step=details', { state: { courseData: courseDataFromBuilder } });
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">2</div>
+              <span className="ml-2">Details</span>
+            </div>
+            <div className="w-16 h-0.5 bg-gray-300"></div>
+            {/* Step 3: Content */}
+            <div
+              className={`flex items-center cursor-pointer transition-colors ${activeTab === 'course-builder' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
+              onClick={() => {
+                setActiveTab('course-builder');
+                setCurrentTab('course-builder');
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">3</div>
+              <span className="ml-2">Content</span>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-wrap md:flex-nowrap gap-6">
           {/* Main content area */}
           <div className="w-full md:w-3/4 space-y-6">
@@ -258,7 +454,7 @@ const CourseBuilder: React.FC = () => {
               
               <div className="p-0">
                 {courseSections.map((section) => (
-                  <div key={section.id} className="border-b last:border-0">
+                  <div key={section.id} id={section.id} className="border-b last:border-0">
                     {/* Section header */}
                     <div 
                       className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
@@ -291,9 +487,25 @@ const CourseBuilder: React.FC = () => {
                         </Button>
                         {section.isExpanded ? (
                           <ChevronDown className="h-5 w-5" />
-                        ) : (
-                          <ChevronRight className="h-5 w-5" />
-                        )}
+                        ) : null}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full hover:bg-gray-200"
+                          onClick={e => { e.stopPropagation(); moveSection(section.id, 'up'); }}
+                          disabled={courseSections.findIndex(s => s.id === section.id) === 0}
+                        >
+                          <ChevronUp className="h-4 w-4 text-gray-500" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full hover:bg-gray-200"
+                          onClick={e => { e.stopPropagation(); moveSection(section.id, 'down'); }}
+                          disabled={courseSections.findIndex(s => s.id === section.id) === courseSections.length - 1}
+                        >
+                          <ChevronDown className="h-4 w-4 text-gray-500" />
+                        </Button>
                       </div>
                     </div>
                     
@@ -351,12 +563,9 @@ const CourseBuilder: React.FC = () => {
                             {module.isExpanded && (
                               <div className="p-3 border-t">
                                 {module.type === 'text' && (
-                                  <Textarea 
-                                    placeholder="Enter text content here..."
-                                    className="min-h-[150px] rounded-lg"
-                                    value={module.content}
-                                    onChange={(e) => updateModule(section.id, module.id, { content: e.target.value })}
-                                  />
+                                  <div className="prose prose-lg font-serif text-gray-800 bg-white p-6 rounded-lg shadow-inner min-h-[150px]">
+                                    {module.content}
+                                  </div>
                                 )}
                                 
                                 {module.type === 'video' && (
@@ -392,16 +601,61 @@ const CourseBuilder: React.FC = () => {
                                 )}
                                 
                                 {module.type === 'quiz' && (
-                                  <div className="text-center p-4">
-                                    <Button 
-                                      onClick={() => navigate('/lms/quizzes/create')}
-                                      className="rounded-full bg-gradient-to-r from-green-500 to-teal-500"
-                                    >
-                                      <FileQuestion className="mr-2 h-4 w-4" />
-                                      Create Quiz Questions
-                                    </Button>
-                                    <p className="text-xs text-gray-500 mt-2">Opens the quiz editor in a new tab</p>
-                                  </div>
+                                  (() => {
+                                    let quizData: { question: string; options: string[]; answer: string } = { question: '', options: [], answer: '' };
+                                    try {
+                                      quizData = JSON.parse(module.content);
+                                    } catch {}
+                                    return (
+                                      <div className="space-y-3">
+                                        <Input
+                                          placeholder="Quizfråga"
+                                          className="rounded-lg"
+                                          value={quizData.question}
+                                          onChange={e => {
+                                            const updated = { ...quizData, question: e.target.value };
+                                            updateModule(section.id, module.id, { content: JSON.stringify(updated) });
+                                          }}
+                                        />
+                                        {quizData.options && quizData.options.map((opt, i) => (
+                                          <div key={i} className="flex items-center gap-2">
+                                            <Input
+                                              placeholder={`Alternativ ${i + 1}`}
+                                              className="rounded-lg"
+                                              value={opt}
+                                              onChange={e => {
+                                                const newOptions = [...quizData.options];
+                                                newOptions[i] = e.target.value;
+                                                const updated = { ...quizData, options: newOptions };
+                                                updateModule(section.id, module.id, { content: JSON.stringify(updated) });
+                                              }}
+                                            />
+                                            <input
+                                              type="radio"
+                                              checked={quizData.answer === opt}
+                                              onChange={() => {
+                                                const updated = { ...quizData, answer: opt };
+                                                updateModule(section.id, module.id, { content: JSON.stringify(updated) });
+                                              }}
+                                              name={`quiz-answer-${module.id}`}
+                                            />
+                                            <span className="text-xs text-gray-500">Correct answer</span>
+                                          </div>
+                                        ))}
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="rounded-full"
+                                          onClick={() => {
+                                            const updated = { ...quizData, options: [...(quizData.options || []), ''] };
+                                            updateModule(section.id, module.id, { content: JSON.stringify(updated) });
+                                          }}
+                                        >
+                                          Lägg till alternativ
+                                        </Button>
+                                      </div>
+                                    );
+                                  })()
                                 )}
                               </div>
                             )}
@@ -477,7 +731,7 @@ const CourseBuilder: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <Button className="w-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
+              <Button className="w-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-500" onClick={handleGenerateContent}>
                 <Sparkles className="mr-2 h-4 w-4" />
                 Generate Content
               </Button>
@@ -530,6 +784,39 @@ const CourseBuilder: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add the modal dialog */}
+      {showGenerateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Generate Content</h3>
+            <p className="mb-4">How many sections would you like to generate?</p>
+            <Input
+              type="number"
+              value={numSectionsToGenerate}
+              onChange={(e) => setNumSectionsToGenerate(Number(e.target.value))}
+              className="mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowGenerateModal(false)}>Cancel</Button>
+              <Button onClick={handleModalSubmit}>Generate</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loader overlay when isGenerating */}
+      {isGenerating && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            <svg className="animate-spin h-12 w-12 text-purple-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+            <span className="text-lg font-semibold text-white">Generating content...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
