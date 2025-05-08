@@ -4,8 +4,10 @@ import path from 'path'
 import fs from 'fs'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
   const isProduction = command === 'build';
+  // Check if we're building for GitHub Pages or Vercel
+  const isGitHubPages = mode === 'github' || process.env.GITHUB_PAGES === 'true';
   
   return {
     plugins: [
@@ -21,7 +23,7 @@ export default defineConfig(({ command }) => {
               // Create .nojekyll file to disable Jekyll processing
               fs.writeFileSync('./dist/.nojekyll', '');
               
-              // Create _redirects file for Netlify (if used)
+              // Create _redirects file for Netlify/Vercel
               fs.writeFileSync('./dist/_redirects', '/* /index.html 200');
               
               console.log('✅ GitHub Pages files generated successfully!');
@@ -37,8 +39,10 @@ export default defineConfig(({ command }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    // Use different base path for development and production
-    base: isProduction ? './' : '/',
+    // Use different base path based on deployment target
+    base: isProduction 
+      ? (isGitHubPages ? './' : '/') 
+      : '/',
     build: {
       outDir: 'dist',
       assetsDir: 'assets',

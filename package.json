@@ -7,10 +7,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:github": "GITHUB_PAGES=true vite build --mode github",
+    "build:vercel": "vite build --mode vercel",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build:github",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

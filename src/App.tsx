@@ -22,7 +22,15 @@ import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
 
 const queryClient = new QueryClient();
-const basename = import.meta.env.DEV ? "/" : "/audit-readiness-hub/";
+
+// Check if we're on GitHub Pages
+const isGitHubPages = window.location.hostname.includes('github.io');
+// Use the appropriate basename based on deployment platform
+const basename = import.meta.env.DEV 
+  ? "/" 
+  : isGitHubPages 
+    ? "/audit-readiness-hub/" 
+    : "/";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
