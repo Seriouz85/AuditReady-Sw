@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import * as echarts from 'echarts';
 import { OrganizationNode, Organization } from '@/types/organization';
 import { Button } from '@/components/ui/button';
 import { 
@@ -9,13 +8,14 @@ import {
   Move, 
   Search, 
   RotateCcw, 
-  RefreshCcw, 
   Filter, 
   Download,
   ChevronUp,
   ChevronDown,
   Plus,
-  Minus
+  Minus,
+  Grid,
+  LayoutGrid
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import {
@@ -35,7 +35,25 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { OrgNode, OrgChartInstance } from '@/lib/org-chart/OrgChartTypes';
 import './OrgChart.css';
+
+// This is a workaround for TypeScript - we'll use the actual library at runtime
+// but interface with it through our strongly-typed interface
+interface Window {
+  d3OrgChart?: any;
+  d3?: {
+    OrgChart?: any;
+  };
+}
+declare global {
+  interface Window {
+    d3OrgChart?: any;
+    d3?: {
+      OrgChart?: any;
+    };
+  }
+}
 
 interface OrgChartProps {
   organizationList?: Organization[];
@@ -51,7 +69,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
   onNodeEdit 
 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const chartInstance = useRef<echarts.ECharts | null>(null);
+  const orgChartRef = useRef<OrgChartInstance | null>(null);
   const { theme, setTheme } = useTheme();
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -59,10 +77,10 @@ const OrgChart: React.FC<OrgChartProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [hoverNode, setHoverNode] = useState<OrganizationNode | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [nodeSize, setNodeSize] = useState<[number, number]>([160, 90]);
+  const [nodeSize, setNodeSize] = useState(1);
   const [showLabels, setShowLabels] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [chartLayout, setChartLayout] = useState<'orthogonal' | 'radial'>('orthogonal');
+  const [chartLayout, setChartLayout] = useState<'tree' | 'compact'>('tree');
   const [animate, setAnimate] = useState(true);
 
   // Convert flat organization list to hierarchical structure
@@ -132,354 +150,248 @@ const OrgChart: React.FC<OrgChartProps> = ({
 
   // Search and highlight nodes
   useEffect(() => {
-    if (!searchTerm || !hierarchicalData || !chartInstance.current) return;
+    if (!searchTerm || !hierarchicalData || !orgChartRef.current) return;
     
-    // Deep clone to avoid modifying original
-    const searchAndHighlight = (node: OrganizationNode): OrganizationNode => {
-      const clonedNode = {...node};
-      
-      const isMatch = node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      (node.role && node.role.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                      (node.department && node.department.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      clonedNode.highlight = isMatch;
-      
-      if (node.children) {
-        clonedNode.children = node.children.map(searchAndHighlight);
-      }
-      
-      return clonedNode;
-    };
+    orgChartRef.current.clearHighlighting();
     
-    const highlightedData = searchAndHighlight(JSON.parse(JSON.stringify(hierarchicalData)));
-    setHierarchicalData(highlightedData);
-  }, [searchTerm]);
+    if (searchTerm.length > 0) {
+      orgChartRef.current.search(searchTerm.toLowerCase(), true);
+    }
+  }, [searchTerm, hierarchicalData]);
 
-  // Convert organization data to ECharts tree data format
-  const convertToEChartsFormat = (node: OrganizationNode): any => {
-    // Determine if node matches search term
-    const isHighlighted = node.highlight || 
-                         (searchTerm && 
-                          (node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (node.role && node.role.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                           (node.department && node.department.toLowerCase().includes(searchTerm.toLowerCase()))));
+  // Helper function to get node color based on hierarchy level
+  const getNodeColor = (level?: number): string => {
+    const isDark = theme === 'dark';
     
-    const hoverEffect = hoverNode?.id === node.id;
-    
-    // Build node styles based on hierarchy level
-    let bgColor = '#3b82f6'; // Default blue
-    let borderColor = '#2563eb';
-    
-    // Color scheme based on hierarchy level for visual distinction
-    switch(node.hierarchyLevel) {
+    switch(level) {
       case 1: // Root/Parent
-        bgColor = theme === 'dark' ? '#1e40af' : '#3b82f6'; // Blue
-        break;
+        return isDark ? '#1e40af' : '#3b82f6'; // Blue
       case 2: // Subsidiary
-        bgColor = theme === 'dark' ? '#7e22ce' : '#8b5cf6'; // Purple
-        break;
+        return isDark ? '#7e22ce' : '#8b5cf6'; // Purple
       case 3: // Division
-        bgColor = theme === 'dark' ? '#047857' : '#10b981'; // Green
-        break;
+        return isDark ? '#047857' : '#10b981'; // Green
       case 4: // Region
-        bgColor = theme === 'dark' ? '#b45309' : '#f59e0b'; // Amber
-        break;
+        return isDark ? '#b45309' : '#f59e0b'; // Amber
       case 5: // Department
-        bgColor = theme === 'dark' ? '#9f1239' : '#e11d48'; // Red
-        break;
+        return isDark ? '#9f1239' : '#e11d48'; // Red
       case 6: // Section
-        bgColor = theme === 'dark' ? '#5b21b6' : '#8b5cf6'; // Violet
-        break;
+        return isDark ? '#5b21b6' : '#8b5cf6'; // Violet
       case 7: // Branch
-        bgColor = theme === 'dark' ? '#0f766e' : '#14b8a6'; // Teal
-        break;
+        return isDark ? '#0f766e' : '#14b8a6'; // Teal
       default:
-        bgColor = theme === 'dark' ? '#1e40af' : '#3b82f6'; // Default blue
+        return isDark ? '#1e40af' : '#3b82f6'; // Default blue
     }
+  };
+
+  // Initialize and update chart
+  useEffect(() => {
+    if (!chartRef.current || !hierarchicalData) return;
     
-    return {
-      name: node.name,
-      value: node,
-      children: node.children?.map((child: OrganizationNode) => convertToEChartsFormat(child)) || [],
-      itemStyle: {
-        color: bgColor,
-        borderColor: isHighlighted ? '#fde047' : (hoverEffect ? '#f97316' : borderColor),
-        borderWidth: isHighlighted ? 3 : (hoverEffect ? 2 : 1),
-        borderType: isHighlighted ? 'dashed' : 'solid',
-        shadowBlur: hoverEffect ? 10 : 0,
-        shadowColor: 'rgba(0, 0, 0, 0.3)',
-      },
-      lineStyle: {
-        color: isHighlighted ? '#f97316' : '#94a3b8',
-        width: isHighlighted ? 2 : 1,
-        curveness: 0.3,
-      },
-      label: {
-        show: showLabels,
-        position: 'inside',
-        color: '#ffffff',
-        formatter: (params: any) => {
-          const { name, value } = params.data;
-          return [
-            `{title|${name}}`,
-            `{role|${value.role || 'No Role'}}`,
-            value.department ? `{dept|${value.department}}` : '',
-          ].filter(Boolean).join('\\n');
-        },
-        rich: {
-          title: {
-            fontWeight: 'bold',
-            fontSize: 14,
-            padding: [2, 4, 0, 4],
-            lineHeight: 20,
-          },
-          role: {
-            fontSize: 12,
-            padding: [0, 4, 2, 4],
-            lineHeight: 16,
-          },
-          dept: {
-            fontSize: 10,
-            padding: [0, 4, 2, 4],
-            lineHeight: 14,
-            opacity: 0.8,
+    // Convert OrganizationNode to OrgNode
+    const convertToOrgNode = (node: OrganizationNode): OrgNode => {
+      return {
+        ...node,
+        children: node.children ? node.children.map(convertToOrgNode) : undefined
+      };
+    };
+
+    const orgNodeData = convertToOrgNode(hierarchicalData);
+    
+    if (!orgChartRef.current) {
+      try {
+        // Find the OrgChart constructor from the global scope
+        // This handles different ways the library might be loaded
+        let OrgChartClass: any = null;
+        
+        if (typeof window !== 'undefined') {
+          if (window.d3OrgChart) {
+            OrgChartClass = window.d3OrgChart;
+          } else if (window.d3 && window.d3.OrgChart) {
+            OrgChartClass = window.d3.OrgChart;
+          } else {
+            // Try to load from the org-chart package at runtime
+            OrgChartClass = require('d3-org-chart');
           }
         }
-      },
-      emphasis: {
-        focus: 'descendant',
-        itemStyle: {
-          color: theme === 'dark' ? '#2563eb' : '#60a5fa',
-          borderWidth: 2,
-          shadowBlur: 20,
-          shadowColor: 'rgba(0, 0, 0, 0.5)',
-        },
-        lineStyle: {
-          width: 2,
-          color: '#f97316',
-        },
-        label: {
-          color: '#ffffff',
-          fontWeight: 'bold',
+        
+        if (!OrgChartClass) {
+          console.error("Could not find d3-org-chart library. Make sure it's properly loaded.");
+          return;
         }
-      }
-    };
-  };
-
-  const initChart = () => {
-    if (!chartRef.current) return;
-    
-    // Dispose existing chart instance
-    if (chartInstance.current) {
-      chartInstance.current.dispose();
-    }
-
-    // Create new chart instance
-    chartInstance.current = echarts.init(chartRef.current);
-    
-    // Apply responsive behavior
-    window.addEventListener('resize', () => {
-      chartInstance.current?.resize();
-    });
-
-    updateChart();
-  };
-
-  const updateChart = () => {
-    if (!chartInstance.current || !hierarchicalData) return;
-
-    const echartsData = convertToEChartsFormat(hierarchicalData);
-    
-    const option: echarts.EChartsOption = {
-      tooltip: {
-        trigger: 'item',
-        formatter: (params: any) => {
-          const { name, value } = params.data;
-          const borderColor = params.color || '#3b82f6';
-          
-          // Create a more attractive tooltip with HTML/CSS
-          return `
-            <div class="org-tooltip">
-              <div class="org-tooltip-header" style="border-color: ${borderColor}">
-                <strong>${name}</strong>
+        
+        orgChartRef.current = new OrgChartClass() as OrgChartInstance;
+        orgChartRef.current
+          .container(chartRef.current)
+          .data(orgNodeData)
+          .nodeHeight(() => 80 * nodeSize)
+          .nodeWidth(() => 180 * nodeSize)
+          .childrenMargin(() => 50)
+          .compactMarginBetween(() => 35)
+          .compactMarginPair(() => 30)
+          .neighbourMargin(() => 20)
+          .siblingsMargin(() => 20)
+          .buttonContent(({ node, state }: { node: any, state: any }) => {
+            return `
+              <div style="color: #2563eb; border-radius: 5px; padding: 4px; font-size: 10px; margin: auto auto; background-color: white; border: 1px solid #2563eb">
+                <span>${node.children?.length}</span>
               </div>
-              <div class="org-tooltip-content">
-                <div><span class="label">Role:</span> ${value.role || 'No Role'}</div>
-                ${value.email ? `<div><span class="label">Email:</span> ${value.email}</div>` : ''}
-                ${value.department ? `<div><span class="label">Dept:</span> ${value.department}</div>` : ''}
-                ${value.hierarchyLevel ? `<div><span class="label">Level:</span> ${value.hierarchyLevel}</div>` : ''}
+            `;
+          })
+          .nodeContent((node: any) => {
+            const borderColor = node.data._highlighted ? '#fde047' : (hoverNode?.id === node.data.id ? '#f97316' : getNodeColor(node.data.hierarchyLevel));
+            const bgColor = getNodeColor(node.data.hierarchyLevel);
+            const isDark = theme === 'dark';
+            
+            return `
+              <div class="org-node ${node.data._highlighted ? 'highlighted' : ''} ${isDark ? 'dark' : ''}" 
+                   style="background-color: ${bgColor}; border-color: ${borderColor};">
+                <div class="org-node-content">
+                  ${showLabels ? `
+                    <div class="org-node-title">${node.data.name}</div>
+                    <div class="org-node-subtitle">${node.data.role || 'No Role'}</div>
+                    ${node.data.department ? `<div class="org-node-detail">${node.data.department}</div>` : ''}
+                  ` : ''}
+                </div>
               </div>
-            </div>
-          `;
-        },
-        extraCssText: `
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-          border-radius: 8px;
-          padding: 0;
-          z-index: 100;
-        `
-      },
-      series: [
-        {
-          type: 'tree',
-          data: [echartsData],
-          top: '6%',
-          left: '8%',
-          bottom: '6%',
-          right: '8%',
-          symbolSize: nodeSize,
-          symbol: 'roundRect',
-          roam: true,
-          initialTreeDepth: isExpanded ? -1 : 1, // Expand all nodes if isExpanded is true
-          expandAndCollapse: true,
-          animationDuration: animate ? 750 : 0,
-          animationDurationUpdate: animate ? 550 : 0,
-          layout: chartLayout,
-          orient: 'vertical',
-          itemStyle: {
-            borderWidth: 1,
-            borderRadius: 5,
-          },
-          lineStyle: {
-            color: theme === 'dark' ? '#64748b' : '#94a3b8',
-            width: 1,
-            curveness: 0.5
-          },
-          emphasis: {
-            focus: 'descendant'
-          },
-          edgeShape: 'polyline',
-          edgeForkPosition: '50%',
-          leaves: {
-            label: {
-              position: 'inside',
+            `;
+          })
+          .onNodeClick((node: any) => {
+            if (onNodeClick) {
+              onNodeClick(node.data);
             }
-          }
+          })
+          .onNodeDblClick((node: any) => {
+            if (onNodeEdit) {
+              onNodeEdit(node.data);
+            }
+          });
+          
+        // Configure initial chart state based on component props
+        if (isExpanded) {
+          orgChartRef.current.expandAll();
         }
-      ]
-    };
+        
+        if (chartLayout === 'compact') {
+          orgChartRef.current.compact(true);
+        }
 
-    chartInstance.current.setOption(option);
-
-    // Add click event handler
-    chartInstance.current.on('click', (params: any) => {
-      if (params.data?.value && onNodeClick) {
-        onNodeClick(params.data.value);
+        if (!animate) {
+          orgChartRef.current.duration(0);
+        }
+        
+        // Render the initial chart
+        orgChartRef.current.render();
+      } catch (error) {
+        console.error("Error initializing org chart:", error);
       }
-    });
-    
-    // Add double-click for edit
-    chartInstance.current.on('dblclick', (params: any) => {
-      if (params.data?.value && onNodeEdit) {
-        onNodeEdit(params.data.value);
+    } else {
+      // Update existing chart with new data
+      try {
+        orgChartRef.current
+          .data(orgNodeData)
+          .nodeHeight(() => 80 * nodeSize)
+          .nodeWidth(() => 180 * nodeSize)
+          .compact(chartLayout === 'compact')
+          .render();
+      } catch (error) {
+        console.error("Error updating org chart:", error);
       }
-    });
+    }
     
-    // Add mouseover for hover effects
-    chartInstance.current.on('mouseover', (params: any) => {
-      if (params.data?.value) {
-        setHoverNode(params.data.value);
+    // Set up mouseover/mouseout handlers for hover effects
+    if (chartRef.current) {
+      try {
+        const nodes = chartRef.current.querySelectorAll('.node');
+        nodes.forEach((node: Element) => {
+          node.addEventListener('mouseover', (e: Event) => {
+            const nodeId = node.getAttribute('data-id');
+            if (nodeId && orgChartRef.current) {
+              const nodeData = orgChartRef.current.getNodeById(nodeId);
+              if (nodeData) {
+                setHoverNode(nodeData.data);
+              }
+            }
+          });
+          
+          node.addEventListener('mouseout', () => {
+            setHoverNode(null);
+          });
+        });
+      } catch (error) {
+        console.error("Error setting up node hover effects:", error);
       }
-    });
-    
-    // Reset hover state on mouseout
-    chartInstance.current.on('mouseout', () => {
-      setHoverNode(null);
-    });
-  };
+    }
+  }, [hierarchicalData, chartLayout, nodeSize, showLabels, theme, animate, hoverNode?.id, onNodeClick, onNodeEdit]);
 
   // Zoom in functionality
   const handleZoomIn = () => {
-    if (!chartInstance.current) return;
+    if (!orgChartRef.current) return;
     setZoomLevel(prev => {
       const newZoom = Math.min(prev + 0.2, 2.5);
-      chartInstance.current?.setOption({
-        series: [{
-          zoom: newZoom
-        }]
-      });
+      try {
+        orgChartRef.current?.zoomIn();
+      } catch (error) {
+        console.error("Error zooming in:", error);
+      }
       return newZoom;
     });
   };
 
   // Zoom out functionality
   const handleZoomOut = () => {
-    if (!chartInstance.current) return;
+    if (!orgChartRef.current) return;
     setZoomLevel(prev => {
       const newZoom = Math.max(prev - 0.2, 0.5);
-      chartInstance.current?.setOption({
-        series: [{
-          zoom: newZoom
-        }]
-      });
+      try {
+        orgChartRef.current?.zoomOut();
+      } catch (error) {
+        console.error("Error zooming out:", error);
+      }
       return newZoom;
     });
   };
 
   // Reset zoom and position
   const handleReset = () => {
-    if (!chartInstance.current) return;
+    if (!orgChartRef.current) return;
     setZoomLevel(1);
-    chartInstance.current.setOption({
-      series: [{
-        zoom: 1,
-        center: ['50%', '50%']
-      }]
-    });
+    try {
+      orgChartRef.current.fit();
+    } catch (error) {
+      console.error("Error resetting view:", error);
+    }
   };
 
   // Toggle dragging mode
   const handleToggleDrag = () => {
     setIsDragging(!isDragging);
-    if (chartInstance.current) {
-      chartInstance.current.setOption({
-        series: [{
-          roam: !isDragging ? 'move' : true
-        }]
-      });
-    }
+    // D3 org chart automatically supports dragging
   };
   
   // Toggle expand/collapse all nodes
   const handleToggleExpand = () => {
+    if (!orgChartRef.current) return;
+    
     setIsExpanded(!isExpanded);
-    if (chartInstance.current) {
-      chartInstance.current.setOption({
-        series: [{
-          initialTreeDepth: !isExpanded ? -1 : 1
-        }]
-      });
+    try {
+      if (isExpanded) {
+        orgChartRef.current.collapseAll();
+      } else {
+        orgChartRef.current.expandAll();
+      }
+    } catch (error) {
+      console.error("Error toggling expand/collapse:", error);
     }
   };
   
   // Handle increasing node size
   const handleIncreaseNodeSize = () => {
-    setNodeSize(prev => {
-      const newSize: [number, number] = [Math.min(prev[0] + 20, 220), Math.min(prev[1] + 20, 140)];
-      if (chartInstance.current) {
-        chartInstance.current.setOption({
-          series: [{
-            symbolSize: newSize
-          }]
-        });
-      }
-      return newSize;
-    });
+    setNodeSize(prev => Math.min(prev + 0.1, 1.5));
   };
   
   // Handle decreasing node size
   const handleDecreaseNodeSize = () => {
-    setNodeSize(prev => {
-      const newSize: [number, number] = [Math.max(prev[0] - 20, 120), Math.max(prev[1] - 20, 60)];
-      if (chartInstance.current) {
-        chartInstance.current.setOption({
-          series: [{
-            symbolSize: newSize
-          }]
-        });
-      }
-      return newSize;
-    });
+    setNodeSize(prev => Math.max(prev - 0.1, 0.6));
   };
   
   // Toggle labels visibility
@@ -506,38 +418,40 @@ const OrgChart: React.FC<OrgChartProps> = ({
   
   // Toggle chart layout
   const handleToggleLayout = () => {
-    const newLayout = chartLayout === 'orthogonal' ? 'radial' : 'orthogonal';
+    const newLayout = chartLayout === 'tree' ? 'compact' : 'tree';
     setChartLayout(newLayout);
-    if (chartInstance.current) {
-      chartInstance.current.setOption({
-        series: [{
-          layout: newLayout
-        }]
-      });
+    
+    if (orgChartRef.current) {
+      try {
+        orgChartRef.current.compact(newLayout === 'compact').render();
+      } catch (error) {
+        console.error("Error changing layout:", error);
+      }
     }
   };
   
   // Download chart as image
   const handleDownload = () => {
-    if (!chartInstance.current) return;
+    if (!orgChartRef.current) return;
     
-    const url = chartInstance.current.getDataURL({
-      type: 'png',
-      pixelRatio: 2,
-      backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff'
-    });
-    
-    const link = document.createElement('a');
-    link.download = 'organization-chart.png';
-    link.href = url;
-    link.click();
+    try {
+      orgChartRef.current.exportImg({
+        full: true,
+        scale: 2,
+        onLoad: (imgData: string) => {
+          const link = document.createElement('a');
+          link.download = 'organization-chart.png';
+          link.href = imgData;
+          link.click();
+        }
+      });
+    } catch (error) {
+      console.error("Error exporting image:", error);
+    }
   };
 
-  // Initialize chart on component mount
+  // Listen for fullscreen change
   useEffect(() => {
-    initChart();
-    
-    // Listen for fullscreen change
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -545,22 +459,9 @@ const OrgChart: React.FC<OrgChartProps> = ({
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     
     return () => {
-      if (chartInstance.current) {
-        chartInstance.current.dispose();
-      }
-      window.removeEventListener('resize', () => {
-        chartInstance.current?.resize();
-      });
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
-
-  // Update chart when data or theme changes
-  useEffect(() => {
-    if (hierarchicalData) {
-      updateChart();
-    }
-  }, [hierarchicalData, theme, nodeSize, showLabels, chartLayout, animate]);
 
   return (
     <div className="org-chart-container">
@@ -575,7 +476,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleZoomIn}
                 >
-                  <ZoomIn />
+                  <ZoomIn size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -593,7 +494,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleZoomOut}
                 >
-                  <ZoomOut />
+                  <ZoomOut size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -611,7 +512,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleReset}
                 >
-                  <RotateCcw />
+                  <RotateCcw size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -631,7 +532,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleToggleDrag}
                 >
-                  <Move />
+                  <Move size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -649,7 +550,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleToggleExpand}
                 >
-                  {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                  {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -667,7 +568,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleToggleFullscreen}
                 >
-                  <Maximize />
+                  <Maximize size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -687,7 +588,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleIncreaseNodeSize}
                 >
-                  <Plus />
+                  <Plus size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -705,7 +606,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleDecreaseNodeSize}
                 >
-                  <Minus />
+                  <Minus size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -713,11 +614,29 @@ const OrgChart: React.FC<OrgChartProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={chartLayout === 'compact' ? "default" : "outline"} 
+                  size="icon"
+                  className="org-chart-button" 
+                  onClick={handleToggleLayout}
+                >
+                  {chartLayout === 'compact' ? <LayoutGrid size={18} /> : <Grid size={18} />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{chartLayout === 'compact' ? "Compact Layout" : "Standard Layout"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         
         <div className="org-chart-toolbar-section search-section">
           <div className="org-chart-search">
-            <Search className="search-icon" />
+            <Search className="search-icon" size={16} />
             <Input
               type="text"
               placeholder="Search organizations..."
@@ -742,7 +661,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="icon" className="org-chart-button">
-                <Filter />
+                <Filter size={18} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
@@ -764,7 +683,16 @@ const OrgChart: React.FC<OrgChartProps> = ({
                     <Switch
                       id="toggle-animations"
                       checked={animate}
-                      onCheckedChange={(checked) => setAnimate(checked)}
+                      onCheckedChange={(checked) => {
+                        setAnimate(checked);
+                        if (orgChartRef.current) {
+                          try {
+                            orgChartRef.current.duration(checked ? 400 : 0);
+                          } catch (error) {
+                            console.error("Error setting animation duration:", error);
+                          }
+                        }
+                      }}
                     />
                   </div>
                   
@@ -774,15 +702,20 @@ const OrgChart: React.FC<OrgChartProps> = ({
                       variant="outline" 
                       size="sm"
                       onClick={handleToggleLayout}
+                      className="flex items-center gap-2"
                     >
-                      {chartLayout === 'orthogonal' ? 'Tree View' : 'Radial View'}
+                      {chartLayout === 'tree' ? (
+                        <><LayoutGrid size={14} /> Compact</>
+                      ) : (
+                        <><Grid size={14} /> Standard</>
+                      )}
                     </Button>
                   </div>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <Label htmlFor="node-size">Node Size</Label>
-                      <span className="text-xs text-muted-foreground">{nodeSize[0]}×{nodeSize[1]}</span>
+                      <span className="text-xs text-muted-foreground">{Math.round(nodeSize * 100)}%</span>
                     </div>
                     <div className="flex gap-2 items-center">
                       <Button 
@@ -795,14 +728,12 @@ const OrgChart: React.FC<OrgChartProps> = ({
                       </Button>
                       <Slider
                         id="node-size"
-                        min={120}
-                        max={220}
+                        min={60}
+                        max={150}
                         step={10}
-                        value={[nodeSize[0]]}
+                        value={[nodeSize * 100]}
                         onValueChange={(value) => {
-                          const ratio = nodeSize[1] / nodeSize[0];
-                          const newSize: [number, number] = [value[0], Math.round(value[0] * ratio)];
-                          setNodeSize(newSize);
+                          setNodeSize(value[0] / 100);
                         }}
                       />
                       <Button 
@@ -849,7 +780,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
                   className="org-chart-button" 
                   onClick={handleDownload}
                 >
-                  <Download />
+                  <Download size={18} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -891,7 +822,7 @@ const OrgChart: React.FC<OrgChartProps> = ({
           )}
           <div className="org-chart-status-item">
             <Badge variant="outline">
-              Layout: {chartLayout === 'orthogonal' ? 'Tree' : 'Radial'}
+              Layout: {chartLayout === 'tree' ? 'Standard' : 'Compact'}
             </Badge>
           </div>
         </div>
