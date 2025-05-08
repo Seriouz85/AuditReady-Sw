@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon-BC-3GdFJ.ico" />
     <meta name="description" content="AuditReady - Modern Compliance Management Platform" />
     <meta name="author" content="AuditReady" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,9 +19,29 @@
     <!-- D3 and D3-org-chart -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-org-chart@3.1.1/build/d3-org-chart.min.js"></script>
-    <script type="module" crossorigin src="./assets/index-DDiv1O_U.js"></script>
-    <link rel="modulepreload" crossorigin href="./assets/vendor-DYTHKI1l.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-D7NtUic8.css">
+    
+    <!-- SPA Routing for GitHub Pages -->
+    <script type="text/javascript">
+      // Only run this script on GitHub Pages
+      if (window.location.hostname.includes('github.io')) {
+        // Single Page Apps for GitHub Pages
+        // MIT License
+        // https://github.com/rafgraph/spa-github-pages
+        (function(l) {
+          if (l.search[1] === '/' ) {
+            var decoded = l.search.slice(1).split('&').map(function(s) { 
+              return s.replace(/~and~/g, '&')
+            }).join('?');
+            window.history.replaceState(null, null,
+                l.pathname.slice(0, -1) + decoded + l.hash
+            );
+          }
+        }(window.location))
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-BkgTnuZI.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-DYTHKI1l.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-kkUmnN_a.css">
   </head>
   <body>
     <div id="root"></div>
