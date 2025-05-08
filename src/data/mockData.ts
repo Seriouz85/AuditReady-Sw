@@ -94,7 +94,48 @@ export const tags: Tag[] = [
     description: 'Policy-related requirements',
     category: 'type'
   },
-  
+  {
+    id: 'tag-identity',
+    name: 'Identity',
+    color: '#A21CAF', // Purple
+    description: 'Related to identity and account management',
+    category: 'type'
+  },
+  {
+    id: 'tag-people',
+    name: 'People',
+    color: '#F59E42', // Orange (eller valfri färg)
+    description: 'Related to people, training, and awareness',
+    category: 'type'
+  },
+  {
+    id: 'tag-supplier',
+    name: 'Supplier',
+    color: '#8B5CF6', // Lila (eller valfri färg)
+    description: 'Related to supplier and service provider management',
+    category: 'type'
+  },
+  {
+    id: 'tag-logging',
+    name: 'Logging',
+    color: '#FBBF24', // Yellow
+    description: 'Related to audit log management and monitoring',
+    category: 'type'
+  },
+  {
+    id: 'tag-endpoint',
+    name: 'Endpoint',
+    color: '#3B82F6', // Blue
+    description: 'Related to endpoint protection and controls',
+    category: 'type'
+  },
+  {
+    id: 'tag-backup',
+    name: 'Backup',
+    color: '#10B981', // Green
+    description: 'Related to backup and data recovery',
+    category: 'type'
+  },
   // Applies-to category tags
   {
     id: 'tag-application',
@@ -233,6 +274,67 @@ export const standards: Standard[] = [
     ],
     createdAt: '2024-03-15T09:20:00Z',
     updatedAt: '2024-03-15T09:20:00Z',
+  },
+  {
+    id: 'cis-ig1',
+    name: 'CIS Controls IG1',
+    version: '8.1',
+    type: 'framework',
+    description: 'CIS Implementation Group 1 (IG1) is the essential cyber hygiene standard, representing basic cyber defense readiness for all enterprises.',
+    category: 'Cybersecurity',
+    requirements: [
+      // Fylls på med alla requirement-IDs för IG1 (dvs. där IG1 är markerad med x i tabellen)
+      'cis-ig1-1.1', 'cis-ig1-1.2',
+      'cis-ig1-2.1', 'cis-ig1-2.2', 'cis-ig1-2.3',
+      'cis-ig1-3.1', 'cis-ig1-3.2', 'cis-ig1-3.3', 'cis-ig1-3.4', 'cis-ig1-3.5', 'cis-ig1-3.6',
+      'cis-ig1-4.1', 'cis-ig1-4.2', 'cis-ig1-4.3', 'cis-ig1-4.4', 'cis-ig1-4.5', 'cis-ig1-4.6', 'cis-ig1-4.7',
+      'cis-ig1-5.1', 'cis-ig1-5.2', 'cis-ig1-5.3', 'cis-ig1-5.4',
+      'cis-ig1-6.1', 'cis-ig1-6.2', 'cis-ig1-6.3', 'cis-ig1-6.4', 'cis-ig1-6.5',
+      'cis-ig1-7.1', 'cis-ig1-7.2', 'cis-ig1-7.3', 'cis-ig1-7.4',
+      'cis-ig1-8.1', 'cis-ig1-8.2', 'cis-ig1-8.3',
+      'cis-ig1-9.1', 'cis-ig1-9.2',
+      'cis-ig1-10.1', 'cis-ig1-10.2', 'cis-ig1-10.3',
+      'cis-ig1-11.1', 'cis-ig1-11.2', 'cis-ig1-11.3', 'cis-ig1-11.4',
+      'cis-ig1-12.1',
+      'cis-ig1-13.1',
+      'cis-ig1-14.1', 'cis-ig1-14.2', 'cis-ig1-14.3', 'cis-ig1-14.4', 'cis-ig1-14.5', 'cis-ig1-14.6', 'cis-ig1-14.7', 'cis-ig1-14.8',
+      'cis-ig1-15.1',
+      'cis-ig1-16.1',
+      'cis-ig1-17.1', 'cis-ig1-17.2', 'cis-ig1-17.3',
+      'cis-ig1-18.1',
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2',
+    name: 'CIS Controls IG2',
+    version: '8.1',
+    type: 'framework',
+    description: 'CIS Implementation Group 2 (IG2) includes all IG1 safeguards plus additional safeguards for organizations with moderate cybersecurity maturity and resources.',
+    category: 'Cybersecurity',
+    requirements: [
+      'cis-ig2-1.1', 'cis-ig2-1.2', 'cis-ig2-1.3', 'cis-ig2-1.4',
+      'cis-ig2-2.1', 'cis-ig2-2.2', 'cis-ig2-2.3', 'cis-ig2-2.4', 'cis-ig2-2.5', 'cis-ig2-2.6',
+      'cis-ig2-3.1', 'cis-ig2-3.2', 'cis-ig2-3.3', 'cis-ig2-3.4', 'cis-ig2-3.5', 'cis-ig2-3.6', 'cis-ig2-3.7', 'cis-ig2-3.8', 'cis-ig2-3.9', 'cis-ig2-3.10', 'cis-ig2-3.11', 'cis-ig2-3.12',
+      'cis-ig2-4.1', 'cis-ig2-4.2', 'cis-ig2-4.3', 'cis-ig2-4.4', 'cis-ig2-4.5', 'cis-ig2-4.6', 'cis-ig2-4.7', 'cis-ig2-4.8', 'cis-ig2-4.9', 'cis-ig2-4.10', 'cis-ig2-4.11',
+      'cis-ig2-5.1', 'cis-ig2-5.2', 'cis-ig2-5.3', 'cis-ig2-5.4', 'cis-ig2-5.5', 'cis-ig2-5.6',
+      'cis-ig2-6.1', 'cis-ig2-6.2', 'cis-ig2-6.3', 'cis-ig2-6.4', 'cis-ig2-6.5', 'cis-ig2-6.6', 'cis-ig2-6.7',
+      'cis-ig2-7.1', 'cis-ig2-7.2', 'cis-ig2-7.3', 'cis-ig2-7.4', 'cis-ig2-7.5', 'cis-ig2-7.6', 'cis-ig2-7.7',
+      'cis-ig2-8.1', 'cis-ig2-8.2', 'cis-ig2-8.3', 'cis-ig2-8.4', 'cis-ig2-8.5', 'cis-ig2-8.6', 'cis-ig2-8.7', 'cis-ig2-8.8', 'cis-ig2-8.9', 'cis-ig2-8.10', 'cis-ig2-8.11',
+      'cis-ig2-9.1', 'cis-ig2-9.2', 'cis-ig2-9.3', 'cis-ig2-9.4', 'cis-ig2-9.5', 'cis-ig2-9.6',
+      'cis-ig2-10.1', 'cis-ig2-10.2', 'cis-ig2-10.3', 'cis-ig2-10.4', 'cis-ig2-10.5', 'cis-ig2-10.6', 'cis-ig2-10.7',
+      'cis-ig2-11.1', 'cis-ig2-11.2', 'cis-ig2-11.3', 'cis-ig2-11.4', 'cis-ig2-11.5',
+      'cis-ig2-12.1', 'cis-ig2-12.2', 'cis-ig2-12.3', 'cis-ig2-12.4', 'cis-ig2-12.5', 'cis-ig2-12.6', 'cis-ig2-12.7',
+      'cis-ig2-13.1', 'cis-ig2-13.2', 'cis-ig2-13.3', 'cis-ig2-13.4', 'cis-ig2-13.5', 'cis-ig2-13.6',
+      'cis-ig2-14.1', 'cis-ig2-14.2', 'cis-ig2-14.3', 'cis-ig2-14.4', 'cis-ig2-14.5', 'cis-ig2-14.6', 'cis-ig2-14.7', 'cis-ig2-14.8', 'cis-ig2-14.9',
+      'cis-ig2-15.1', 'cis-ig2-15.2', 'cis-ig2-15.3', 'cis-ig2-15.4',
+      'cis-ig2-16.1', 'cis-ig2-16.2', 'cis-ig2-16.3', 'cis-ig2-16.4', 'cis-ig2-16.5', 'cis-ig2-16.6', 'cis-ig2-16.7', 'cis-ig2-16.8', 'cis-ig2-16.9', 'cis-ig2-16.10', 'cis-ig2-16.11',
+      'cis-ig2-17.1', 'cis-ig2-17.2', 'cis-ig2-17.3', 'cis-ig2-17.4', 'cis-ig2-17.5', 'cis-ig2-17.6', 'cis-ig2-17.7',
+      'cis-ig2-18.1', 'cis-ig2-18.2', 'cis-ig2-18.3',
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];
 
@@ -908,6 +1010,19 @@ export const requirements: Requirement[] = [
     name: 'Information security policies',
     description: 'A set of policies for information security should be defined, approved by management, published and communicated to employees and relevant external parties.',
     guidance: 'Develop and maintain comprehensive information security policies.',
+    auditReadyGuidance: `**Purpose**
+
+A set of policies for information security should be defined, approved by management, published and communicated to employees and relevant external parties.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -924,6 +1039,19 @@ export const requirements: Requirement[] = [
     name: 'Information security roles and responsibilities',
     description: 'Information security roles and responsibilities should be defined and allocated according to the organization\'s needs.',
     guidance: 'Define clear security roles and responsibilities throughout the organization.',
+    auditReadyGuidance: `**Purpose**
+
+Information security roles and responsibilities should be defined and allocated according to the organization\
+
+**Implementation**
+
+* Clearly define and document information security roles and responsibilities
+
+* Ensure roles are aligned with organizational needs and structure
+
+* Communicate responsibilities to all relevant personnel
+
+* Include responsibilities for managing risks and ensuring compliance`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -940,6 +1068,19 @@ export const requirements: Requirement[] = [
     name: 'Segregation of duties',
     description: 'Conflicting duties and areas of responsibility should be segregated to reduce opportunities for unauthorized or unintentional modification or misuse of the organization\'s assets.',
     guidance: 'Implement separation of duties to prevent conflicts of interest.',
+    auditReadyGuidance: `**Purpose**
+
+Conflicting duties and areas of responsibility should be segregated to reduce opportunities for unauthorized or unintentional modification or misuse of the organization\
+
+**Implementation**
+
+* Identify and document conflicting duties and areas of responsibility
+
+* Implement separation of duties to prevent conflicts of interest
+
+* Ensure no single person can access, modify, or use assets without authorization
+
+* Consider technical and procedural controls where segregation is difficult`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -956,6 +1097,19 @@ export const requirements: Requirement[] = [
     name: 'Management responsibilities',
     description: 'Management should require all employees and contractors to apply information security in accordance with the established policies and procedures of the organization.',
     guidance: 'Ensure management enforces security policies and procedures.',
+    auditReadyGuidance: `**Purpose**
+
+Management should require all employees and contractors to apply information security in accordance with the established policies and procedures of the organization.
+
+**Implementation**
+
+* Establish management oversight of information security policy
+
+* Require management to enforce compliance with policies and procedures
+
+* Ensure management leads by example in security practices
+
+* Implement regular reporting on security compliance to management`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -972,6 +1126,19 @@ export const requirements: Requirement[] = [
     name: 'Contact with authorities',
     description: 'Appropriate contacts with relevant authorities should be maintained.',
     guidance: 'Establish and maintain relationships with regulatory and law enforcement agencies.',
+    auditReadyGuidance: `**Purpose**
+
+Appropriate contacts with relevant authorities should be maintained.
+
+**Implementation**
+
+* Identify and document relevant authorities (e.g., law enforcement, regulatory bodies)
+
+* Establish formal procedures for contacting authorities during incidents
+
+* Maintain up-to-date contact information for authorities
+
+* Conduct periodic reviews of authority relationships and procedures`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -988,6 +1155,19 @@ export const requirements: Requirement[] = [
     name: 'Contact with special interest groups',
     description: 'Appropriate contacts with special interest groups or other specialist security forums and professional associations should be maintained.',
     guidance: 'Participate in security communities and professional forums.',
+    auditReadyGuidance: `**Purpose**
+
+Appropriate contacts with special interest groups or other specialist security forums and professional associations should be maintained.
+
+**Implementation**
+
+* Identify relevant security forums and professional associations
+
+* Establish formal memberships or relationships with these groups
+
+* Implement procedures for sharing and receiving security information
+
+* Regularly review the value and relevance of these relationships`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1004,6 +1184,19 @@ export const requirements: Requirement[] = [
     name: 'Threat intelligence',
     description: 'Information relating to information security threats should be collected and analyzed to produce threat intelligence.',
     guidance: 'Implement threat intelligence gathering and analysis processes.',
+    auditReadyGuidance: `**Purpose**
+
+Information relating to information security threats should be collected and analyzed to produce threat intelligence.
+
+**Implementation**
+
+* Establish formal processes for collecting threat intelligence information
+
+* Implement tools and procedures for analyzing threat data
+
+* Create mechanisms to distribute relevant threat intelligence internally
+
+* Regularly review and update threat intelligence sources and processes`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1020,6 +1213,13 @@ export const requirements: Requirement[] = [
     name: 'Information security in project management',
     description: 'Information security should be integrated into project management, regardless of the type of the project.',
     guidance: 'Include security in all aspects of project management.',
+    auditReadyGuidance: `**Purpose**
+
+Information security should be integrated into project management, regardless of the type of the project.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1036,6 +1236,19 @@ export const requirements: Requirement[] = [
     name: 'Inventory of information and other associated assets',
     description: 'Assets associated with information and information processing facilities should be identified and an inventory of these assets should be drawn up and maintained.',
     guidance: 'Maintain a comprehensive asset inventory.',
+    auditReadyGuidance: `**Purpose**
+
+Assets associated with information and information processing facilities should be identified and an inventory of these assets should be drawn up and maintained.
+
+**Implementation**
+
+* Develop and maintain a comprehensive asset inventory system
+
+* Include all information assets, hardware, software, and supporting services
+
+* Assign ownership and classification to each asset
+
+* Regularly update and validate the inventory`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1052,6 +1265,19 @@ export const requirements: Requirement[] = [
     name: 'Acceptable use of information and other associated assets',
     description: 'Rules for the acceptable use of information and of assets associated with information and information processing facilities should be identified, documented and implemented.',
     guidance: 'Document and enforce acceptable use policies.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for the acceptable use of information and of assets associated with information and information processing facilities should be identified, documented and implemented.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1068,6 +1294,19 @@ export const requirements: Requirement[] = [
     name: 'Return of assets',
     description: 'All employees and external party users should return all organizational assets in their possession upon termination of their employment, contract or agreement.',
     guidance: 'Implement and enforce asset return procedures.',
+    auditReadyGuidance: `**Purpose**
+
+All employees and external party users should return all organizational assets in their possession upon termination of their employment, contract or agreement.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1084,6 +1323,19 @@ export const requirements: Requirement[] = [
     name: 'Classification of information',
     description: 'Information should be classified in terms of legal requirements, value, criticality and sensitivity to unauthorized disclosure or modification.',
     guidance: 'Implement information classification scheme.',
+    auditReadyGuidance: `**Purpose**
+
+Information should be classified in terms of legal requirements, value, criticality and sensitivity to unauthorized disclosure or modification.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1100,6 +1352,19 @@ export const requirements: Requirement[] = [
     name: 'Labelling of information',
     description: 'An appropriate set of procedures for information labelling should be developed and implemented in accordance with the information classification scheme adopted by the organization.',
     guidance: 'Develop and implement information labeling procedures.',
+    auditReadyGuidance: `**Purpose**
+
+An appropriate set of procedures for information labelling should be developed and implemented in accordance with the information classification scheme adopted by the organization.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1116,6 +1381,19 @@ export const requirements: Requirement[] = [
     name: 'Information transfer',
     description: 'Formal transfer policies, procedures and controls should be in place to protect the transfer of information through the use of all types of communication facilities.',
     guidance: 'Establish secure information transfer procedures.',
+    auditReadyGuidance: `**Purpose**
+
+Formal transfer policies, procedures and controls should be in place to protect the transfer of information through the use of all types of communication facilities.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1132,6 +1410,19 @@ export const requirements: Requirement[] = [
     name: 'Access control',
     description: 'Rules for controlling physical and logical access to information and information processing facilities should be established and implemented.',
     guidance: 'Implement comprehensive access control measures.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for controlling physical and logical access to information and information processing facilities should be established and implemented.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1148,6 +1439,19 @@ export const requirements: Requirement[] = [
     name: 'Identity management',
     description: 'The complete lifecycle of identities should be managed, from initial registration through to final deprovisioning.',
     guidance: 'Implement comprehensive identity lifecycle management.',
+    auditReadyGuidance: `**Purpose**
+
+The complete lifecycle of identities should be managed, from initial registration through to final deprovisioning.
+
+**Implementation**
+
+* Define and document comprehensive information security policies approved by management
+
+* Ensure policies are communicated to all employees and relevant external parties
+
+* Review policies regularly and update when significant changes occur
+
+* Consider the four domains: Organizational, People, Physical, and Technological controls`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Organizational Control',
@@ -1169,6 +1473,19 @@ export const requirements: Requirement[] = [
     name: 'Screening',
     description: 'Background verification checks on all candidates for employment should be carried out in accordance with relevant laws, regulations and ethics and should be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.',
     guidance: 'Implement personnel screening procedures.',
+    auditReadyGuidance: `**Purpose**
+
+Background verification checks on all candidates for employment should be carried out in accordance with relevant laws, regulations and ethics and should be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.
+
+**Implementation**
+
+* Implement background verification checks in accordance with laws and regulations
+
+* Scale verification depth based on role sensitivity and information access
+
+* Document screening procedures and requirements
+
+* Review and update screening processes regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -1185,6 +1502,19 @@ export const requirements: Requirement[] = [
     name: 'Terms and conditions of employment',
     description: 'The contractual agreements with employees and contractors should state their and the organization\'s responsibilities for information security.',
     guidance: 'Include security responsibilities in employment contracts.',
+    auditReadyGuidance: `**Purpose**
+
+The contractual agreements with employees and contractors should state their and the organization\
+
+**Implementation**
+
+* Include information security responsibilities in employment contracts
+
+* Ensure terms apply before granting access to sensitive information
+
+* Clearly define consequences of non-compliance
+
+* Update terms when roles or responsibilities change`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -1203,6 +1533,19 @@ export const requirements: Requirement[] = [
     name: 'Physical security perimeters',
     description: 'Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.',
     guidance: 'Establish physical security boundaries.',
+    auditReadyGuidance: `**Purpose**
+
+Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -1219,6 +1562,19 @@ export const requirements: Requirement[] = [
     name: 'Physical entry',
     description: 'Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.',
     guidance: 'Implement physical access controls.',
+    auditReadyGuidance: `**Purpose**
+
+Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.
+
+**Implementation**
+
+* Implement appropriate entry controls based on area sensitivity
+
+* Use multi-factor authentication for highly sensitive areas
+
+* Maintain logs of all access to secure areas
+
+* Regularly review and audit access records`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -1237,6 +1593,19 @@ export const requirements: Requirement[] = [
     name: 'User endpoint devices',
     description: 'A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.',
     guidance: 'Implement endpoint security controls.',
+    auditReadyGuidance: `**Purpose**
+
+A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1253,6 +1622,19 @@ export const requirements: Requirement[] = [
     name: 'Privileged access rights',
     description: 'The allocation and use of privileged access rights should be restricted and controlled.',
     guidance: 'Implement privileged access management.',
+    auditReadyGuidance: `**Purpose**
+
+The allocation and use of privileged access rights should be restricted and controlled.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1270,6 +1652,13 @@ export const requirements: Requirement[] = [
     name: 'Information access restriction',
     description: 'Access to information and application functions should be restricted in accordance with the access control policy.',
     guidance: 'Implement application-level access controls.',
+    auditReadyGuidance: `**Purpose**
+
+Access to information and application functions should be restricted in accordance with the access control policy.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1286,6 +1675,13 @@ export const requirements: Requirement[] = [
     name: 'Access to source code',
     description: 'Access to source code should be restricted.',
     guidance: 'Implement source code access controls and secure repositories.',
+    auditReadyGuidance: `**Purpose**
+
+Access to source code should be restricted.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1302,6 +1698,13 @@ export const requirements: Requirement[] = [
     name: 'Secure authentication',
     description: 'Authentication information should be protected by techniques appropriate to the level of risk.',
     guidance: 'Implement secure authentication mechanisms.',
+    auditReadyGuidance: `**Purpose**
+
+Authentication information should be protected by techniques appropriate to the level of risk.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1318,6 +1721,13 @@ export const requirements: Requirement[] = [
     name: 'Capacity management',
     description: 'The use of resources should be monitored and adjusted in line with current and expected capacity requirements.',
     guidance: 'Implement capacity management processes and monitoring.',
+    auditReadyGuidance: `**Purpose**
+
+The use of resources should be monitored and adjusted in line with current and expected capacity requirements.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1334,6 +1744,19 @@ export const requirements: Requirement[] = [
     name: 'Protection against malware',
     description: 'Protection against malware should be implemented and supported by appropriate user awareness.',
     guidance: 'Implement anti-malware solutions and user awareness training.',
+    auditReadyGuidance: `**Purpose**
+
+Protection against malware should be implemented and supported by appropriate user awareness.
+
+**Implementation**
+
+* Implement multi-layered anti-malware protection
+
+* Include technical controls and user awareness
+
+* Keep protection mechanisms updated
+
+* Regularly test effectiveness against current threats`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1350,6 +1773,13 @@ export const requirements: Requirement[] = [
     name: 'Management of technical vulnerabilities',
     description: 'Information about technical vulnerabilities of information systems in use should be obtained, the organization\'s exposure to such vulnerabilities should be evaluated and appropriate measures should be taken.',
     guidance: 'Implement vulnerability management processes.',
+    auditReadyGuidance: `**Purpose**
+
+Information about technical vulnerabilities of information systems in use should be obtained, the organization\
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1366,6 +1796,19 @@ export const requirements: Requirement[] = [
     name: 'Configuration management',
     description: 'Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.',
     guidance: 'Implement configuration management processes.',
+    auditReadyGuidance: `**Purpose**
+
+Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.
+
+**Implementation**
+
+* Establish baseline configurations for all systems and networks
+
+* Document, implement, and monitor configuration standards
+
+* Use automation for configuration compliance checking
+
+* Regularly review and update baseline configurations`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1382,6 +1825,19 @@ export const requirements: Requirement[] = [
     name: 'Information deletion',
     description: 'Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.',
     guidance: 'Implement secure data deletion procedures.',
+    auditReadyGuidance: `**Purpose**
+
+Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1398,6 +1854,19 @@ export const requirements: Requirement[] = [
     name: 'Data masking',
     description: 'Data masking should be applied in accordance with the organization\'s policy on access control, legal, statutory, regulatory and contractual requirements.',
     guidance: 'Implement data masking techniques for sensitive information.',
+    auditReadyGuidance: `**Purpose**
+
+Data masking should be applied in accordance with the organization\
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1414,6 +1883,19 @@ export const requirements: Requirement[] = [
     name: 'Data leakage prevention',
     description: 'Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.',
     guidance: 'Implement data loss prevention (DLP) solutions.',
+    auditReadyGuidance: `**Purpose**
+
+Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1430,6 +1912,19 @@ export const requirements: Requirement[] = [
     name: 'Information backup',
     description: 'Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\'s policy.',
     guidance: 'Implement comprehensive backup solutions with regular testing.',
+    auditReadyGuidance: `**Purpose**
+
+Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1446,6 +1941,19 @@ export const requirements: Requirement[] = [
     name: 'Redundancy of information processing facilities',
     description: 'Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.',
     guidance: 'Implement redundant systems for critical services.',
+    auditReadyGuidance: `**Purpose**
+
+Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1462,6 +1970,19 @@ export const requirements: Requirement[] = [
     name: 'Logging',
     description: 'Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.',
     guidance: 'Implement comprehensive logging across systems and networks.',
+    auditReadyGuidance: `**Purpose**
+
+Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1478,6 +1999,19 @@ export const requirements: Requirement[] = [
     name: 'Monitoring activities',
     description: 'Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.',
     guidance: 'Implement security monitoring and anomaly detection.',
+    auditReadyGuidance: `**Purpose**
+
+Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1494,6 +2028,19 @@ export const requirements: Requirement[] = [
     name: 'Clock synchronization',
     description: 'The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.',
     guidance: 'Implement time synchronization across all systems.',
+    auditReadyGuidance: `**Purpose**
+
+The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1510,6 +2057,19 @@ export const requirements: Requirement[] = [
     name: 'Use of privileged utility programs',
     description: 'The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.',
     guidance: 'Control access to and usage of privileged utility programs.',
+    auditReadyGuidance: `**Purpose**
+
+The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1526,6 +2086,19 @@ export const requirements: Requirement[] = [
     name: 'Installation of software on operational systems',
     description: 'Procedures should be implemented to control the installation of software on operational systems.',
     guidance: 'Implement software installation controls.',
+    auditReadyGuidance: `**Purpose**
+
+Procedures should be implemented to control the installation of software on operational systems.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1542,6 +2115,19 @@ export const requirements: Requirement[] = [
     name: 'Networks security',
     description: 'Networks and network devices should be secured, managed and controlled to protect information in systems and applications.',
     guidance: 'Implement comprehensive network security controls.',
+    auditReadyGuidance: `**Purpose**
+
+Networks and network devices should be secured, managed and controlled to protect information in systems and applications.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1558,6 +2144,19 @@ export const requirements: Requirement[] = [
     name: 'Security of network services',
     description: 'Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.',
     guidance: 'Define and enforce security requirements for network services.',
+    auditReadyGuidance: `**Purpose**
+
+Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1574,6 +2173,19 @@ export const requirements: Requirement[] = [
     name: 'Segregation of networks',
     description: 'Groups of information services, users and information systems should be segregated on networks.',
     guidance: 'Implement network segmentation.',
+    auditReadyGuidance: `**Purpose**
+
+Groups of information services, users and information systems should be segregated on networks.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1590,6 +2202,19 @@ export const requirements: Requirement[] = [
     name: 'Web filtering',
     description: 'Access to external websites should be managed to reduce exposure to malicious content.',
     guidance: 'Implement web filtering and content control.',
+    auditReadyGuidance: `**Purpose**
+
+Access to external websites should be managed to reduce exposure to malicious content.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1606,6 +2231,19 @@ export const requirements: Requirement[] = [
     name: 'Use of cryptography',
     description: 'Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.',
     guidance: 'Implement cryptographic controls and policies.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1622,6 +2260,19 @@ export const requirements: Requirement[] = [
     name: 'Secure development lifecycle',
     description: 'Rules for the development of software and systems should be established and applied to developments within the organization.',
     guidance: 'Implement secure development lifecycle practices.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for the development of software and systems should be established and applied to developments within the organization.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1638,6 +2289,19 @@ export const requirements: Requirement[] = [
     name: 'Application security requirements',
     description: 'Security requirements should be identified, specified and approved when developing or acquiring applications.',
     guidance: 'Define security requirements for applications.',
+    auditReadyGuidance: `**Purpose**
+
+Security requirements should be identified, specified and approved when developing or acquiring applications.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1654,6 +2318,19 @@ export const requirements: Requirement[] = [
     name: 'Secure system architecture and engineering principles',
     description: 'Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.',
     guidance: 'Implement secure-by-design principles.',
+    auditReadyGuidance: `**Purpose**
+
+Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1670,6 +2347,19 @@ export const requirements: Requirement[] = [
     name: 'Secure coding',
     description: 'Secure coding principles should be applied to software development.',
     guidance: 'Implement secure coding practices and standards.',
+    auditReadyGuidance: `**Purpose**
+
+Secure coding principles should be applied to software development.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1686,6 +2376,19 @@ export const requirements: Requirement[] = [
     name: 'Security testing in development and acceptance',
     description: 'Security testing processes should be defined and implemented in the development lifecycle.',
     guidance: 'Implement security testing as part of the development process.',
+    auditReadyGuidance: `**Purpose**
+
+Security testing processes should be defined and implemented in the development lifecycle.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1702,6 +2405,13 @@ export const requirements: Requirement[] = [
     name: 'Outsourced development',
     description: 'The organization should supervise and monitor the activity of outsourced system development.',
     guidance: 'Establish security requirements for outsourced development.',
+    auditReadyGuidance: `**Purpose**
+
+The organization should supervise and monitor the activity of outsourced system development.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1718,6 +2428,13 @@ export const requirements: Requirement[] = [
     name: 'Separation of development, test and production environments',
     description: 'Development, test and production environments should be separated and secured.',
     guidance: 'Implement environment separation.',
+    auditReadyGuidance: `**Purpose**
+
+Development, test and production environments should be separated and secured.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1734,6 +2451,13 @@ export const requirements: Requirement[] = [
     name: 'Change management',
     description: 'Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.',
     guidance: 'Implement security change management processes.',
+    auditReadyGuidance: `**Purpose**
+
+Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1750,6 +2474,13 @@ export const requirements: Requirement[] = [
     name: 'Test information',
     description: 'Test information should be carefully selected, protected and controlled.',
     guidance: 'Implement controls for test data.',
+    auditReadyGuidance: `**Purpose**
+
+Test information should be carefully selected, protected and controlled.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -1766,6 +2497,13 @@ export const requirements: Requirement[] = [
     name: 'Protection of information systems during audit testing',
     description: 'Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.',
     guidance: 'Plan and manage security testing and audits.',
+    auditReadyGuidance: `**Purpose**
+
+Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2155,6 +2893,19 @@ export const requirements: Requirement[] = [
     name: 'Information security awareness, education and training',
     description: 'All employees and relevant interested parties should receive appropriate information security awareness, education and training and regular updates in organizational policies and procedures.',
     guidance: 'Implement security awareness and training programs.',
+    auditReadyGuidance: `**Purpose**
+
+All employees and relevant interested parties should receive appropriate information security awareness, education and training and regular updates in organizational policies and procedures.
+
+**Implementation**
+
+* Develop a comprehensive security awareness program
+
+* Include regular training, updates, and awareness communications
+
+* Tailor training to specific roles and responsibilities
+
+* Measure effectiveness through testing and practical assessments`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -2171,6 +2922,13 @@ export const requirements: Requirement[] = [
     name: 'Disciplinary process',
     description: 'A disciplinary process should be established to address violations of information security policy or rules.',
     guidance: 'Define and enforce consequences for security violations.',
+    auditReadyGuidance: `**Purpose**
+
+A disciplinary process should be established to address violations of information security policy or rules.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -2187,6 +2945,13 @@ export const requirements: Requirement[] = [
     name: 'Responsibilities after termination or change of employment',
     description: 'Information security responsibilities and duties that remain valid after termination or change of employment should be defined, enforced and communicated to the employee or contractor.',
     guidance: 'Define and enforce post-employment security responsibilities.',
+    auditReadyGuidance: `**Purpose**
+
+Information security responsibilities and duties that remain valid after termination or change of employment should be defined, enforced and communicated to the employee or contractor.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -2203,6 +2968,13 @@ export const requirements: Requirement[] = [
     name: 'Confidentiality or non-disclosure agreements',
     description: 'Confidentiality or non-disclosure agreements reflecting the organization\'s needs for the protection of information should be identified, documented, regularly reviewed and signed by employees and external parties.',
     guidance: 'Implement appropriate confidentiality agreements.',
+    auditReadyGuidance: `**Purpose**
+
+Confidentiality or non-disclosure agreements reflecting the organization\
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -2219,6 +2991,19 @@ export const requirements: Requirement[] = [
     name: 'Remote working',
     description: 'Security measures should be implemented to protect information accessed, processed or stored at remote working locations.',
     guidance: 'Implement remote work security controls.',
+    auditReadyGuidance: `**Purpose**
+
+Security measures should be implemented to protect information accessed, processed or stored at remote working locations.
+
+**Implementation**
+
+* Establish formal policies and procedures for secure remote working
+
+* Address physical, environmental, and communication security requirements
+
+* Implement technical controls for remote access and data protection
+
+* Regularly review and update remote working arrangements`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -2235,6 +3020,19 @@ export const requirements: Requirement[] = [
     name: 'Information security event reporting',
     description: 'The organization should provide mechanisms for reporting information security events and weaknesses.',
     guidance: 'Implement security incident reporting processes.',
+    auditReadyGuidance: `**Purpose**
+
+The organization should provide mechanisms for reporting information security events and weaknesses.
+
+**Implementation**
+
+* Establish formal procedures for reporting security events and weaknesses
+
+* Implement multiple reporting channels for different types of incidents
+
+* Ensure all personnel understand reporting responsibilities
+
+* Regularly test reporting mechanisms and response procedures`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 People Control',
@@ -2253,6 +3051,19 @@ export const requirements: Requirement[] = [
     name: 'Physical security perimeters',
     description: 'Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.',
     guidance: 'Establish physical security boundaries.',
+    auditReadyGuidance: `**Purpose**
+
+Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2269,6 +3080,19 @@ export const requirements: Requirement[] = [
     name: 'Physical entry',
     description: 'Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.',
     guidance: 'Implement physical access controls.',
+    auditReadyGuidance: `**Purpose**
+
+Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.
+
+**Implementation**
+
+* Implement appropriate entry controls based on area sensitivity
+
+* Use multi-factor authentication for highly sensitive areas
+
+* Maintain logs of all access to secure areas
+
+* Regularly review and audit access records`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2286,6 +3110,13 @@ export const requirements: Requirement[] = [
     name: 'Securing offices, rooms and facilities',
     description: 'Physical security for offices, rooms and facilities should be designed and implemented.',
     guidance: 'Implement physical security measures for working spaces.',
+    auditReadyGuidance: `**Purpose**
+
+Physical security for offices, rooms and facilities should be designed and implemented.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2302,6 +3133,19 @@ export const requirements: Requirement[] = [
     name: 'Physical security monitoring',
     description: 'Premises should be continuously monitored for unauthorized physical access.',
     guidance: 'Implement physical security monitoring systems.',
+    auditReadyGuidance: `**Purpose**
+
+Premises should be continuously monitored for unauthorized physical access.
+
+**Implementation**
+
+* Implement comprehensive monitoring of physical access points
+
+* Use appropriate technologies (CCTV, intrusion detection, etc.)
+
+* Establish procedures for monitoring, logging, and responding to events
+
+* Regularly review monitoring effectiveness and coverage`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2318,6 +3162,13 @@ export const requirements: Requirement[] = [
     name: 'Protecting against physical and environmental threats',
     description: 'Protection against physical and environmental threats such as natural disasters, malicious attack or accidents should be designed and implemented.',
     guidance: 'Implement environmental protection controls.',
+    auditReadyGuidance: `**Purpose**
+
+Protection against physical and environmental threats such as natural disasters, malicious attack or accidents should be designed and implemented.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2334,6 +3185,13 @@ export const requirements: Requirement[] = [
     name: 'Working in secure areas',
     description: 'Procedures for working in secure areas should be designed and implemented.',
     guidance: 'Define procedures for working in secure areas.',
+    auditReadyGuidance: `**Purpose**
+
+Procedures for working in secure areas should be designed and implemented.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2350,6 +3208,13 @@ export const requirements: Requirement[] = [
     name: 'Clear desk and clear screen',
     description: 'Rules for maintaining a clear desk for papers and removable storage media and a clear screen for information processing facilities should be established and appropriate for the classification and risks.',
     guidance: 'Implement clear desk and clear screen policies.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for maintaining a clear desk for papers and removable storage media and a clear screen for information processing facilities should be established and appropriate for the classification and risks.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2366,6 +3231,13 @@ export const requirements: Requirement[] = [
     name: 'Equipment siting and protection',
     description: 'Equipment should be sited and protected to reduce the risks from environmental threats and hazards, and opportunities for unauthorized access.',
     guidance: 'Implement equipment placement and protection measures.',
+    auditReadyGuidance: `**Purpose**
+
+Equipment should be sited and protected to reduce the risks from environmental threats and hazards, and opportunities for unauthorized access.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2382,6 +3254,19 @@ export const requirements: Requirement[] = [
     name: 'Security of assets off-premises',
     description: 'Off-site assets should be protected taking into account the different risks of working outside the organization\'s premises.',
     guidance: 'Implement controls for assets used outside the organization.',
+    auditReadyGuidance: `**Purpose**
+
+Off-site assets should be protected taking into account the different risks of working outside the organization\
+
+**Implementation**
+
+* Establish formal clear desk and clear screen policies
+
+* Include requirements for handling sensitive information when unattended
+
+* Implement technical controls to enforce screen locking
+
+* Conduct regular compliance checks`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2398,6 +3283,19 @@ export const requirements: Requirement[] = [
     name: 'Storage media',
     description: 'Storage media containing information should be protected against unauthorized access, misuse or corruption during transportation.',
     guidance: 'Secure storage media throughout its lifecycle.',
+    auditReadyGuidance: `**Purpose**
+
+Storage media containing information should be protected against unauthorized access, misuse or corruption during transportation.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2414,6 +3312,19 @@ export const requirements: Requirement[] = [
     name: 'Supporting utilities',
     description: 'Equipment should be protected from power failures and other disruptions caused by failures in supporting utilities.',
     guidance: 'Implement protection for supporting utilities.',
+    auditReadyGuidance: `**Purpose**
+
+Equipment should be protected from power failures and other disruptions caused by failures in supporting utilities.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2430,6 +3341,19 @@ export const requirements: Requirement[] = [
     name: 'Cabling security',
     description: 'Power and telecommunications cabling carrying data or supporting information services should be protected from interception, interference or damage.',
     guidance: 'Implement cabling security measures.',
+    auditReadyGuidance: `**Purpose**
+
+Power and telecommunications cabling carrying data or supporting information services should be protected from interception, interference or damage.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2446,6 +3370,19 @@ export const requirements: Requirement[] = [
     name: 'Equipment maintenance',
     description: 'Equipment should be correctly maintained to ensure its continued availability and integrity.',
     guidance: 'Implement equipment maintenance procedures.',
+    auditReadyGuidance: `**Purpose**
+
+Equipment should be correctly maintained to ensure its continued availability and integrity.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2462,6 +3399,19 @@ export const requirements: Requirement[] = [
     name: 'Secure disposal or re-use of equipment',
     description: 'All items of equipment containing storage media should be verified to ensure that any sensitive data and licensed software has been removed or securely overwritten prior to disposal or re-use.',
     guidance: 'Implement secure equipment disposal procedures.',
+    auditReadyGuidance: `**Purpose**
+
+All items of equipment containing storage media should be verified to ensure that any sensitive data and licensed software has been removed or securely overwritten prior to disposal or re-use.
+
+**Implementation**
+
+* Define clear security perimeters for areas with sensitive information
+
+* Implement appropriate physical barriers and entry controls
+
+* Document perimeter security requirements
+
+* Regularly review and test perimeter security effectiveness`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Physical Control',
@@ -2480,6 +3430,19 @@ export const requirements: Requirement[] = [
     name: 'User endpoint devices',
     description: 'A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.',
     guidance: 'Implement endpoint security controls.',
+    auditReadyGuidance: `**Purpose**
+
+A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2496,6 +3459,19 @@ export const requirements: Requirement[] = [
     name: 'Privileged access rights',
     description: 'The allocation and use of privileged access rights should be restricted and controlled.',
     guidance: 'Implement privileged access management.',
+    auditReadyGuidance: `**Purpose**
+
+The allocation and use of privileged access rights should be restricted and controlled.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2513,6 +3489,13 @@ export const requirements: Requirement[] = [
     name: 'Information access restriction',
     description: 'Access to information and application functions should be restricted in accordance with the access control policy.',
     guidance: 'Implement application-level access controls.',
+    auditReadyGuidance: `**Purpose**
+
+Access to information and application functions should be restricted in accordance with the access control policy.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2529,6 +3512,13 @@ export const requirements: Requirement[] = [
     name: 'Access to source code',
     description: 'Access to source code should be restricted.',
     guidance: 'Implement source code access controls and secure repositories.',
+    auditReadyGuidance: `**Purpose**
+
+Access to source code should be restricted.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2545,6 +3535,13 @@ export const requirements: Requirement[] = [
     name: 'Secure authentication',
     description: 'Authentication information should be protected by techniques appropriate to the level of risk.',
     guidance: 'Implement secure authentication mechanisms.',
+    auditReadyGuidance: `**Purpose**
+
+Authentication information should be protected by techniques appropriate to the level of risk.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2561,6 +3558,13 @@ export const requirements: Requirement[] = [
     name: 'Capacity management',
     description: 'The use of resources should be monitored and adjusted in line with current and expected capacity requirements.',
     guidance: 'Implement capacity management processes and monitoring.',
+    auditReadyGuidance: `**Purpose**
+
+The use of resources should be monitored and adjusted in line with current and expected capacity requirements.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2577,6 +3581,19 @@ export const requirements: Requirement[] = [
     name: 'Protection against malware',
     description: 'Protection against malware should be implemented and supported by appropriate user awareness.',
     guidance: 'Implement anti-malware solutions and user awareness training.',
+    auditReadyGuidance: `**Purpose**
+
+Protection against malware should be implemented and supported by appropriate user awareness.
+
+**Implementation**
+
+* Implement multi-layered anti-malware protection
+
+* Include technical controls and user awareness
+
+* Keep protection mechanisms updated
+
+* Regularly test effectiveness against current threats`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2593,6 +3610,13 @@ export const requirements: Requirement[] = [
     name: 'Management of technical vulnerabilities',
     description: 'Information about technical vulnerabilities of information systems in use should be obtained, the organization\'s exposure to such vulnerabilities should be evaluated and appropriate measures should be taken.',
     guidance: 'Implement vulnerability management processes.',
+    auditReadyGuidance: `**Purpose**
+
+Information about technical vulnerabilities of information systems in use should be obtained, the organization\
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2609,6 +3633,19 @@ export const requirements: Requirement[] = [
     name: 'Configuration management',
     description: 'Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.',
     guidance: 'Implement configuration management processes.',
+    auditReadyGuidance: `**Purpose**
+
+Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.
+
+**Implementation**
+
+* Establish baseline configurations for all systems and networks
+
+* Document, implement, and monitor configuration standards
+
+* Use automation for configuration compliance checking
+
+* Regularly review and update baseline configurations`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2625,6 +3662,19 @@ export const requirements: Requirement[] = [
     name: 'Information deletion',
     description: 'Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.',
     guidance: 'Implement secure data deletion procedures.',
+    auditReadyGuidance: `**Purpose**
+
+Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2641,6 +3691,19 @@ export const requirements: Requirement[] = [
     name: 'Data masking',
     description: 'Data masking should be applied in accordance with the organization\'s policy on access control, legal, statutory, regulatory and contractual requirements.',
     guidance: 'Implement data masking techniques for sensitive information.',
+    auditReadyGuidance: `**Purpose**
+
+Data masking should be applied in accordance with the organization\
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2657,6 +3720,19 @@ export const requirements: Requirement[] = [
     name: 'Data leakage prevention',
     description: 'Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.',
     guidance: 'Implement data loss prevention (DLP) solutions.',
+    auditReadyGuidance: `**Purpose**
+
+Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2673,6 +3749,19 @@ export const requirements: Requirement[] = [
     name: 'Information backup',
     description: 'Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\'s policy.',
     guidance: 'Implement comprehensive backup solutions with regular testing.',
+    auditReadyGuidance: `**Purpose**
+
+Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2689,6 +3778,19 @@ export const requirements: Requirement[] = [
     name: 'Redundancy of information processing facilities',
     description: 'Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.',
     guidance: 'Implement redundant systems for critical services.',
+    auditReadyGuidance: `**Purpose**
+
+Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2705,6 +3807,19 @@ export const requirements: Requirement[] = [
     name: 'Logging',
     description: 'Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.',
     guidance: 'Implement comprehensive logging across systems and networks.',
+    auditReadyGuidance: `**Purpose**
+
+Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2721,6 +3836,19 @@ export const requirements: Requirement[] = [
     name: 'Monitoring activities',
     description: 'Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.',
     guidance: 'Implement security monitoring and anomaly detection.',
+    auditReadyGuidance: `**Purpose**
+
+Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2737,6 +3865,19 @@ export const requirements: Requirement[] = [
     name: 'Clock synchronization',
     description: 'The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.',
     guidance: 'Implement time synchronization across all systems.',
+    auditReadyGuidance: `**Purpose**
+
+The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2753,6 +3894,19 @@ export const requirements: Requirement[] = [
     name: 'Use of privileged utility programs',
     description: 'The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.',
     guidance: 'Control access to and usage of privileged utility programs.',
+    auditReadyGuidance: `**Purpose**
+
+The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2769,6 +3923,19 @@ export const requirements: Requirement[] = [
     name: 'Installation of software on operational systems',
     description: 'Procedures should be implemented to control the installation of software on operational systems.',
     guidance: 'Implement software installation controls.',
+    auditReadyGuidance: `**Purpose**
+
+Procedures should be implemented to control the installation of software on operational systems.
+
+**Implementation**
+
+* Develop and implement endpoint security policies and procedures
+
+* Include requirements for encryption, authentication, and access controls
+
+* Implement technical controls through MDM or other management tools
+
+* Regularly audit compliance with endpoint policies`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2785,6 +3952,19 @@ export const requirements: Requirement[] = [
     name: 'Networks security',
     description: 'Networks and network devices should be secured, managed and controlled to protect information in systems and applications.',
     guidance: 'Implement comprehensive network security controls.',
+    auditReadyGuidance: `**Purpose**
+
+Networks and network devices should be secured, managed and controlled to protect information in systems and applications.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2801,6 +3981,19 @@ export const requirements: Requirement[] = [
     name: 'Security of network services',
     description: 'Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.',
     guidance: 'Define and enforce security requirements for network services.',
+    auditReadyGuidance: `**Purpose**
+
+Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2817,6 +4010,19 @@ export const requirements: Requirement[] = [
     name: 'Segregation of networks',
     description: 'Groups of information services, users and information systems should be segregated on networks.',
     guidance: 'Implement network segmentation.',
+    auditReadyGuidance: `**Purpose**
+
+Groups of information services, users and information systems should be segregated on networks.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2833,6 +4039,19 @@ export const requirements: Requirement[] = [
     name: 'Web filtering',
     description: 'Access to external websites should be managed to reduce exposure to malicious content.',
     guidance: 'Implement web filtering and content control.',
+    auditReadyGuidance: `**Purpose**
+
+Access to external websites should be managed to reduce exposure to malicious content.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2849,6 +4068,19 @@ export const requirements: Requirement[] = [
     name: 'Use of cryptography',
     description: 'Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.',
     guidance: 'Implement cryptographic controls and policies.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2865,6 +4097,19 @@ export const requirements: Requirement[] = [
     name: 'Secure development lifecycle',
     description: 'Rules for the development of software and systems should be established and applied to developments within the organization.',
     guidance: 'Implement secure development lifecycle practices.',
+    auditReadyGuidance: `**Purpose**
+
+Rules for the development of software and systems should be established and applied to developments within the organization.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2881,6 +4126,19 @@ export const requirements: Requirement[] = [
     name: 'Application security requirements',
     description: 'Security requirements should be identified, specified and approved when developing or acquiring applications.',
     guidance: 'Define security requirements for applications.',
+    auditReadyGuidance: `**Purpose**
+
+Security requirements should be identified, specified and approved when developing or acquiring applications.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2897,6 +4155,19 @@ export const requirements: Requirement[] = [
     name: 'Secure system architecture and engineering principles',
     description: 'Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.',
     guidance: 'Implement secure-by-design principles.',
+    auditReadyGuidance: `**Purpose**
+
+Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2913,6 +4184,19 @@ export const requirements: Requirement[] = [
     name: 'Secure coding',
     description: 'Secure coding principles should be applied to software development.',
     guidance: 'Implement secure coding practices and standards.',
+    auditReadyGuidance: `**Purpose**
+
+Secure coding principles should be applied to software development.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2929,6 +4213,19 @@ export const requirements: Requirement[] = [
     name: 'Security testing in development and acceptance',
     description: 'Security testing processes should be defined and implemented in the development lifecycle.',
     guidance: 'Implement security testing as part of the development process.',
+    auditReadyGuidance: `**Purpose**
+
+Security testing processes should be defined and implemented in the development lifecycle.
+
+**Implementation**
+
+* Implement strict controls for privileged account management
+
+* Restrict and monitor privileged access allocation
+
+* Use just-in-time access where possible
+
+* Review privileged access rights regularly`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2945,6 +4242,13 @@ export const requirements: Requirement[] = [
     name: 'Outsourced development',
     description: 'The organization should supervise and monitor the activity of outsourced system development.',
     guidance: 'Establish security requirements for outsourced development.',
+    auditReadyGuidance: `**Purpose**
+
+The organization should supervise and monitor the activity of outsourced system development.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2961,6 +4265,13 @@ export const requirements: Requirement[] = [
     name: 'Separation of development, test and production environments',
     description: 'Development, test and production environments should be separated and secured.',
     guidance: 'Implement environment separation.',
+    auditReadyGuidance: `**Purpose**
+
+Development, test and production environments should be separated and secured.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2977,6 +4288,13 @@ export const requirements: Requirement[] = [
     name: 'Change management',
     description: 'Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.',
     guidance: 'Implement security change management processes.',
+    auditReadyGuidance: `**Purpose**
+
+Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -2993,6 +4311,13 @@ export const requirements: Requirement[] = [
     name: 'Test information',
     description: 'Test information should be carefully selected, protected and controlled.',
     guidance: 'Implement controls for test data.',
+    auditReadyGuidance: `**Purpose**
+
+Test information should be carefully selected, protected and controlled.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -3009,6 +4334,13 @@ export const requirements: Requirement[] = [
     name: 'Protection of information systems during audit testing',
     description: 'Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.',
     guidance: 'Plan and manage security testing and audits.',
+    auditReadyGuidance: `**Purpose**
+
+Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.
+
+**Implementation**
+
+`,
     status: 'not-fulfilled',
     evidence: '',
     notes: 'ISO 27002:2022 Technological Control',
@@ -3482,126 +4814,7984 @@ export const requirements: Requirement[] = [
   {
     id: 'nist-csf-GV.1',
     standardId: 'nist-csf-2.0',
+    section: 'GV',
+    code: 'GV.1',
     name: 'Organizational Context',
     description: 'The organization\'s mission, objectives, stakeholders, and activities are understood and prioritized.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Document the organization\'s mission, objectives, stakeholders, and activities as the foundation for cybersecurity risk management.',
+    status: 'not-fulfilled',
     tags: ['governance', 'risk-management'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Executive Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'nist-csf-GV.2',
     standardId: 'nist-csf-2.0',
+    section: 'GV',
+    code: 'GV.2',
     name: 'Risk Management Strategy',
     description: 'The organization\'s priorities, constraints, risk tolerances, and assumptions are established and used to support operational risk decisions.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Develop a formal risk management strategy that defines risk tolerance levels and risk assessment methodologies.',
+    status: 'not-fulfilled',
     tags: ['governance', 'risk-management'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Risk Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'nist-csf-GV.3',
     standardId: 'nist-csf-2.0',
+    section: 'GV',
+    code: 'GV.3',
     name: 'Roles, Responsibilities, and Authorities',
     description: 'Cybersecurity roles, responsibilities, and authorities to foster accountability, performance assessment, and continuous improvement.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Clearly define and document cybersecurity roles, responsibilities, and authorities across the organization.',
+    status: 'not-fulfilled',
     tags: ['governance', 'roles'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'CISO',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'nist-csf-GV.4',
     standardId: 'nist-csf-2.0',
+    section: 'GV',
+    code: 'GV.4',
     name: 'Policies, Processes, and Procedures',
     description: 'Cybersecurity policies, processes, and procedures are established, communicated, and enforced.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Develop, implement, and maintain comprehensive cybersecurity policies, processes, and procedures.',
+    status: 'not-fulfilled',
     tags: ['governance', 'policies'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'CISO',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'nist-csf-GV.5',
     standardId: 'nist-csf-2.0',
+    section: 'GV',
+    code: 'GV.5',
     name: 'Oversight',
     description: 'Cybersecurity risk management strategy, policies, processes, and procedures are reviewed and updated by organizational leadership.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Implement a regular review cycle for all cybersecurity governance documents, with leadership approval required for changes.',
+    status: 'not-fulfilled',
     tags: ['governance', 'risk-management'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Executive Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
 
   // ISO 27005:2022 Requirements
   {
     id: 'iso-27005-4.1',
     standardId: 'iso-27005-2022',
+    section: '4',
+    code: '4.1',
     name: 'General',
     description: 'Establish the context for risk management, including organizational context, risk management context, and risk criteria.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Document the internal and external context for information security risk management and establish risk criteria.',
+    status: 'not-fulfilled',
     tags: ['risk-management', 'context'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Risk Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'iso-27005-4.2',
     standardId: 'iso-27005-2022',
+    section: '4',
+    code: '4.2',
     name: 'Risk Assessment',
     description: 'Identify, analyze, and evaluate information security risks.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Implement a structured risk assessment process including risk identification, analysis, and evaluation phases.',
+    status: 'not-fulfilled',
     tags: ['risk-management', 'assessment'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Risk Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'iso-27005-4.3',
     standardId: 'iso-27005-2022',
+    section: '4',
+    code: '4.3',
     name: 'Risk Treatment',
     description: 'Select and implement appropriate risk treatment options.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Develop and implement risk treatment plans based on selected risk treatment options (mitigate, accept, avoid, transfer).',
+    status: 'not-fulfilled',
     tags: ['risk-management', 'treatment'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Risk Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'iso-27005-4.4',
     standardId: 'iso-27005-2022',
+    section: '4',
+    code: '4.4',
     name: 'Risk Acceptance',
     description: 'Decide whether to accept the risk based on the risk acceptance criteria.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Implement a formal risk acceptance process with appropriate management sign-off.',
+    status: 'not-fulfilled',
     tags: ['risk-management', 'acceptance'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Executive Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'iso-27005-4.5',
     standardId: 'iso-27005-2022',
+    section: '4',
+    code: '4.5',
     name: 'Risk Communication and Consultation',
     description: 'Communicate and consult with stakeholders throughout the risk management process.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Establish communication channels and regular consultation with stakeholders at all stages of risk management.',
+    status: 'not-fulfilled',
     tags: ['risk-management', 'communication'],
     evidence: '',
-    notes: ''
+    notes: '',
+    responsibleParty: 'Risk Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: 'iso-27005-4.6',
     standardId: 'iso-27005-2022',
+    section: '4',
+    code: '4.6',
     name: 'Risk Monitoring and Review',
     description: 'Monitor and review the risk management process and its outcomes.',
-    status: 'not_started',
-    priority: 'default',
+    guidance: 'Implement ongoing monitoring and scheduled reviews of the risk management process and identified risks.',
+    status: 'not-fulfilled',
     tags: ['risk-management', 'monitoring'],
     evidence: '',
-    notes: ''
-  }
+    notes: '',
+    responsibleParty: 'Risk Management',
+    lastAssessmentDate: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'cis-ig1-1.1',
+    standardId: 'cis-ig1',
+    section: '1',
+    code: '1.1',
+    name: 'Establish and Maintain Detailed Enterprise Asset Inventory',
+    description: "Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include: end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process, where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise's network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-1.2',
+    standardId: 'cis-ig1',
+    section: '1',
+    code: '1.2',
+    name: 'Address Unauthorized Assets',
+    description: 'Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-2.1',
+    standardId: 'cis-ig1',
+    section: '2',
+    code: '2.1',
+    name: 'Establish and Maintain a Software Inventory',
+    description: 'Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business purpose for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually, or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business  for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-2.2',
+    standardId: 'cis-ig1',
+    section: '2',
+    code: '2.2',
+    name: 'Ensure Authorized Software is Currently Supported',
+    description: 'Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise’s mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly, or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise’s mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-2.3',
+    standardId: 'cis-ig1',
+    section: '2',
+    code: '2.3',
+    name: 'Address Unauthorized Software',
+    description: 'Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly, or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-3.1',
+    standardId: 'cis-ig1',
+    section: '3',
+    code: '3.1',
+    name: 'Establish and Maintain a Data Management Process',
+    description: 'Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-3.2',
+    standardId: 'cis-ig1',
+    section: '3',
+    code: '3.2',
+    name: 'Establish and Maintain a Data Inventory',
+    description: 'Establish and maintain a data inventory based on the enterprise’s data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a data inventory based on the enterprise’s data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-3.3',
+    standardId: 'cis-ig1',
+    section: '3',
+    code: '3.3',
+    name: 'Configure Data Access Control Lists',
+    description: 'Configure data access control lists based on a user’s need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure data access control lists based on a user’s need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-3.4',
+    standardId: 'cis-ig1',
+    section: '3',
+    code: '3.4',
+    name: 'Enforce Data Retention',
+    description: 'Retain data according to the enterprise’s documented data management process. Data retention must include both minimum and maximum timelines.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Retain data according to the enterprise’s documented data management process. Data retention must include both minimum and maximum timelines.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-3.5',
+    standardId: 'cis-ig1',
+    section: '3',
+    code: '3.5',
+    name: 'Securely Dispose of Data',
+    description: 'Securely dispose of data as outlined in the enterprise’s documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely dispose of data as outlined in the enterprise’s documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-3.6',
+    standardId: 'cis-ig1',
+    section: '3',
+    code: '3.6',
+    name: 'Encrypt Data on End-User Devices',
+    description: 'Encrypt data on end-user devices containing sensitive data. Example implementations can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Encrypt data on end-user devices containing sensitive data. Example s can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* s can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.1',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.1',
+    name: 'Establish and Maintain a Secure Configuration Process',
+    description: 'Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.2',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.2',
+    name: 'Establish and Maintain a Secure Configuration Process for Network Infrastructure',
+    description: 'Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.3',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.3',
+    name: 'Configure Automatic Session Locking on Enterprise Assets',
+    description: 'Configure automatic session locking on enterprise assets after a defined period of inactivity. For general purpose operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure automatic session locking on enterprise assets after a defined period of inactivity. For general  operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.4',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.4',
+    name: 'Implement and Manage a Firewall on Servers',
+    description: 'Implement and manage a firewall on servers, where supported. Example implementations include a virtual firewall, operating system firewall, or a third-party firewall agent.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Implement and manage a firewall on servers, where supported. Example s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.5',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.5',
+    name: 'Implement and Manage a Firewall on End-User Devices',
+    description: 'Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.6',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.6',
+    name: 'Securely Manage Enterprise Assets and Software',
+    description: 'Securely manage enterprise assets and software. Example implementations include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet (Teletype Network) and HTTP, unless operationally essential.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely manage enterprise assets and software. Example s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet (Teletype Network) and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet (Teletype Network) and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-4.7',
+    standardId: 'cis-ig1',
+    section: '4',
+    code: '4.7',
+    name: 'Manage Default Accounts on Enterprise Assets and Software',
+    description: 'Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example implementations can include: disabling default accounts or making them unusable.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example s can include: disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s can include: disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-5.1',
+    standardId: 'cis-ig1',
+    section: '5',
+    code: '5.1',
+    name: 'Establish and Maintain an Inventory of Accounts',
+    description: 'Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person’s name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly, or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person’s name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-5.2',
+    standardId: 'cis-ig1',
+    section: '5',
+    code: '5.2',
+    name: 'Use Unique Passwords',
+    description: 'Use unique passwords for all enterprise assets. Best practice implementation includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use unique passwords for all enterprise assets. Best practice  includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-5.3',
+    standardId: 'cis-ig1',
+    section: '5',
+    code: '5.3',
+    name: 'Disable Dormant Accounts',
+    description: 'Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-5.4',
+    standardId: 'cis-ig1',
+    section: '5',
+    code: '5.4',
+    name: 'Restrict Administrator Privileges to Dedicated Administrator Accounts',
+    description: 'Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user’s primary, non-privileged account.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user’s primary, non-privileged account.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-6.1',
+    standardId: 'cis-ig1',
+    section: '6',
+    code: '6.1',
+    name: 'Establish an Access Granting Process',
+    description: 'Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-6.2',
+    standardId: 'cis-ig1',
+    section: '6',
+    code: '6.2',
+    name: 'Establish an Access Revoking Process',
+    description: 'Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-6.3',
+    standardId: 'cis-ig1',
+    section: '6',
+    code: '6.3',
+    name: 'Require MFA for Externally-Exposed Applications',
+    description: 'Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory implementation of this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory  of this Safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* of this Safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-6.4',
+    standardId: 'cis-ig1',
+    section: '6',
+    code: '6.4',
+    name: 'Require MFA for Remote Network Access',
+    description: 'Require MFA for remote network access.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require MFA for remote network access.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-6.5',
+    standardId: 'cis-ig1',
+    section: '6',
+    code: '6.5',
+    name: 'Require MFA for Administrative Access',
+    description: 'Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-7.1',
+    standardId: 'cis-ig1',
+    section: '7',
+    code: '7.1',
+    name: 'Establish and Maintain a Vulnerability Management Process',
+    description: 'Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-7.2',
+    standardId: 'cis-ig1',
+    section: '7',
+    code: '7.2',
+    name: 'Establish and Maintain a Remediation Process',
+    description: 'Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly, or more frequent, reviews.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly, or more frequent, reviews.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-7.3',
+    standardId: 'cis-ig1',
+    section: '7',
+    code: '7.3',
+    name: 'Perform Automated Operating System Patch Management',
+    description: 'Perform operating system updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform operating system updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-7.4',
+    standardId: 'cis-ig1',
+    section: '7',
+    code: '7.4',
+    name: 'Perform Automated Application Patch Management',
+    description: 'Perform application updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform application updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-8.1',
+    standardId: 'cis-ig1',
+    section: '8',
+    code: '8.1',
+    name: 'Establish and Maintain an Audit Log Management Process',
+    description: 'Establish and maintain a documented audit log management process that defines the enterprise’s logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented audit log management process that defines the enterprise’s logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-8.2',
+    standardId: 'cis-ig1',
+    section: '8',
+    code: '8.2',
+    name: 'Collect Audit Logs',
+    description: 'Collect audit logs. Ensure that logging, per the enterprise’s audit log management process, has been enabled across enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect audit logs. Ensure that logging, per the enterprise’s audit log management process, has been enabled across enterprise assets.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-8.3',
+    standardId: 'cis-ig1',
+    section: '8',
+    code: '8.3',
+    name: 'Ensure Adequate Audit Log Storage',
+    description: 'Ensure that logging destinations maintain adequate storage to comply with the enterprise’s audit log management process.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that logging destinations maintain adequate storage to comply with the enterprise’s audit log management process.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-9.1',
+    standardId: 'cis-ig1',
+    section: '9',
+    code: '9.1',
+    name: 'Ensure Use of Only Fully Supported Browsers and Email Clients',
+    description: 'Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-9.2',
+    standardId: 'cis-ig1',
+    section: '9',
+    code: '9.2',
+    name: 'Use DNS Filtering Services',
+    description: 'Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-10.1',
+    standardId: 'cis-ig1',
+    section: '10',
+    code: '10.1',
+    name: 'Deploy and Maintain Anti-Malware Software',
+    description: 'Deploy and maintain anti-malware software on all enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy and maintain anti-malware software on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-10.2',
+    standardId: 'cis-ig1',
+    section: '10',
+    code: '10.2',
+    name: 'Configure Automatic Anti-Malware Signature Updates',
+    description: 'Configure automatic updates for anti-malware signature files on all enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure automatic updates for anti-malware signature files on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-10.3',
+    standardId: 'cis-ig1',
+    section: '10',
+    code: '10.3',
+    name: 'Disable Autorun and Autoplay for Removable Media',
+    description: 'Disable autorun and autoplay auto-execute functionality for removable media.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Disable autorun and autoplay auto-execute functionality for removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-11.1',
+    standardId: 'cis-ig1',
+    section: '11',
+    code: '11.1',
+    name: 'Establish and Maintain a Data Recovery Process',
+    description: 'Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-11.2',
+    standardId: 'cis-ig1',
+    section: '11',
+    code: '11.2',
+    name: 'Perform Automated Backups',
+    description: 'Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-11.3',
+    standardId: 'cis-ig1',
+    section: '11',
+    code: '11.3',
+    name: 'Protect Recovery Data',
+    description: 'Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-11.4',
+    standardId: 'cis-ig1',
+    section: '11',
+    code: '11.4',
+    name: 'Establish and Maintain an Isolated Instance of Recovery Data',
+    description: 'Establish and maintain an isolated instance of recovery data. Example implementations include, version controlling backup destinations through offline, cloud, or off-site systems or services.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an isolated instance of recovery data. Example s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-12.1',
+    standardId: 'cis-ig1',
+    section: '12',
+    code: '12.1',
+    name: 'Ensure Network Infrastructure is Up-to-Date',
+    description: 'Ensure network infrastructure is kept up-to-date. Example implementations include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure network infrastructure is kept up-to-date. Example s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-13.1',
+    standardId: 'cis-ig1',
+    section: '13',
+    code: '13.1',
+    name: 'Centralize Security Event Alerting',
+    description: 'Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice implementation requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice  requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.1',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.1',
+    name: 'Establish and Maintain a Security Awareness Program',
+    description: 'Establish and maintain a security awareness program. The purpose of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a security awareness program. The  of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.2',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.2',
+    name: 'Train Workforce Members to Recognize Social Engineering Attacks',
+    description: 'Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.3',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.3',
+    name: 'Train Workforce Members on Authentication Best Practices',
+    description: 'Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.4',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.4',
+    name: 'Train Workforce on Data Handling Best Practices',
+    description: 'Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.5',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.5',
+    name: 'Train Workforce Members on Causes of Unintentional Data Exposure',
+    description: 'Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.6',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.6',
+    name: 'Train Workforce Members on Recognizing and Reporting Security Incidents',
+    description: 'Train workforce members to be able to recognize a potential incident and be able to report such an incident.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to be able to recognize a potential incident and be able to report such an incident.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.7',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.7',
+    name: 'Train Workforce on How to Identify and Report if Their Enterprise Assets are Missing Security Updates',
+    description: 'Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-14.8',
+    standardId: 'cis-ig1',
+    section: '14',
+    code: '14.8',
+    name: 'Train Workforce on the Dangers of Connecting to and Transmitting Enterprise Data Over Insecure Networks',
+    description: 'Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-15.1',
+    standardId: 'cis-ig1',
+    section: '15',
+    code: '15.1',
+    name: 'Establish and Maintain an Inventory of Service Providers',
+    description: 'Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-16.1',
+    standardId: 'cis-ig1',
+    section: '16',
+    code: '16.1',
+    name: 'Establish and Maintain a Secure Application Development Process',
+    description: 'Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-17.1',
+    standardId: 'cis-ig1',
+    section: '17',
+    code: '17.1',
+    name: 'Designate Personnel to Manage Incident Handling',
+    description: 'Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-17.2',
+    standardId: 'cis-ig1',
+    section: '17',
+    code: '17.2',
+    name: 'Establish and Maintain Contact Information for Reporting Security Incidents',
+    description: 'Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig1-17.3',
+    standardId: 'cis-ig1',
+    section: '17',
+    code: '17.3',
+    name: 'Establish and Maintain an Enterprise Process for Reporting Incidents',
+    description: 'Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-1.1',
+    standardId: 'cis-ig2',
+    section: '1',
+    code: '1.1',
+    name: 'Establish and Maintain Detailed Enterprise Asset Inventory',
+    description: "Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include: end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process, where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise's network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-1.2',
+    standardId: 'cis-ig2',
+    section: '1',
+    code: '1.2',
+    name: 'Address Unauthorized Assets',
+    description: 'Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  // ... (fortsätt på samma sätt för resterande IG2 requirements enligt tabellen)
+  {
+    id: 'cis-ig2-1.3',
+    standardId: 'cis-ig2',
+    section: '1',
+    code: '1.3',
+    name: 'Utilize an Active Discovery Tool',
+    description: "Utilize an active discovery tool to identify assets connected to the enterprise's network. Configure the active discovery tool to execute daily, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-1.4',
+    standardId: 'cis-ig2',
+    section: '1',
+    code: '1.4',
+    name: 'Use Dynamic Host Configuration Protocol (DHCP) Logging to Update Enterprise Asset Inventory',
+    description: "Use DHCP logging on all DHCP servers or Internet Protocol (IP) address management tools to update the enterprise's asset inventory. Review and use logs to update the enterprise's asset inventory weekly, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-2.1',
+    standardId: 'cis-ig2',
+    section: '2',
+    code: '2.1',
+    name: 'Establish and Maintain a Software Inventory',
+    description: 'Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business purpose for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually, or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business  for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually, or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-2.2',
+    standardId: 'cis-ig2',
+    section: '2',
+    code: '2.2',
+    name: 'Ensure Authorized Software is Currently Supported',
+    description: "Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise's mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-2.3',
+    standardId: 'cis-ig2',
+    section: '2',
+    code: '2.3',
+    name: 'Address Unauthorized Software',
+    description: 'Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly, or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-2.4',
+    standardId: 'cis-ig2',
+    section: '2',
+    code: '2.4',
+    name: 'Utilize Automated Software Inventory Tools',
+    description: 'Utilize software inventory tools, when possible, throughout the enterprise to automate the discovery and documentation of installed software.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Utilize software inventory tools, when possible, throughout the enterprise to automate the discovery and documentation of installed software.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-2.5',
+    standardId: 'cis-ig2',
+    section: '2',
+    code: '2.5',
+    name: 'Allowlist Authorized Software',
+    description: "Use technical controls, such as application allowlisting, to ensure that only authorized software can execute or be accessed. Reassess bi-annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-2.6',
+    standardId: 'cis-ig2',
+    section: '2',
+    code: '2.6',
+    name: 'Allowlist Authorized Libraries',
+    description: "Use technical controls to ensure that only authorized software libraries, such as specific .dll, .ocx, and .so files, are allowed to load into a system process. Block unauthorized libraries from loading into a system process. Reassess bi-annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-application'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.1',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.1',
+    name: 'Establish and Maintain a Data Management Process',
+    description: "Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.2',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.2',
+    name: 'Establish and Maintain a Data Inventory',
+    description: "Establish and maintain a data inventory based on the enterprise's data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.3',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.3',
+    name: 'Configure Data Access Control Lists',
+    description: "Configure data access control lists based on a user's need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.4',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.4',
+    name: 'Enforce Data Retention',
+    description: "Retain data according to the enterprise's documented data management process. Data retention must include both minimum and maximum timelines.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.5',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.5',
+    name: 'Securely Dispose of Data',
+    description: "Securely dispose of data as outlined in the enterprise's documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.6',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.6',
+    name: 'Encrypt Data on End-User Devices',
+    description: "Encrypt data on end-user devices containing sensitive data. Example implementations can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.7',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.7',
+    name: 'Establish and Maintain a Data Classification Scheme',
+    description: "Establish and maintain an overall data classification scheme for the enterprise. Enterprises may use labels, such as 'Sensitive,' 'Confidential,' and 'Public,' and classify their data according to those labels. Review and update the classification scheme annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.8',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.8',
+    name: 'Document Data Flows',
+    description: "Document data flows. Data flow documentation includes service provider data flows and should be based on the enterprise's data management process. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.9',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.9',
+    name: 'Encrypt Data on Removable Media',
+    description: "Encrypt data on removable media.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.10',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.10',
+    name: 'Encrypt Sensitive Data in Transit',
+    description: "Encrypt sensitive data in transit. Example implementations can include: Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.11',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.11',
+    name: 'Encrypt Sensitive Data at Rest',
+    description: "Encrypt sensitive data at rest on servers, applications, and databases. Storage-layer encryption, also known as server-side encryption, meets the minimum requirement of this Safeguard. Additional encryption methods may include application-layer encryption, also known as client-side encryption, where access to the data storage device(s) does not permit access to the plain-text data.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-3.12',
+    standardId: 'cis-ig2',
+    section: '3',
+    code: '3.12',
+    name: 'Segment Data Processing and Storage Based on Sensitivity',
+    description: "Segment data processing and storage based on the sensitivity of the data. Do not process sensitive data on enterprise assets intended for lower sensitivity data.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-data-protection'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.1',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.1',
+    name: 'Establish and Maintain a Secure Configuration Process',
+    description: "Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.2',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.2',
+    name: 'Establish and Maintain a Secure Configuration Process for Network Infrastructure',
+    description: "Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.3',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.3',
+    name: 'Configure Automatic Session Locking on Enterprise Assets',
+    description: "Configure automatic session locking on enterprise assets after a defined period of inactivity. For general purpose operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.4',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.4',
+    name: 'Implement and Manage a Firewall on Servers',
+    description: "Implement and manage a firewall on servers, where supported. Example implementations include a virtual firewall, operating system firewall, or a third-party firewall agent.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.5',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.5',
+    name: 'Implement and Manage a Firewall on End-User Devices',
+    description: "Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.6',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.6',
+    name: 'Securely Manage Enterprise Assets and Software Configurations',
+    description: "Establish, implement, and actively manage (track, report on, correct) the security configuration of enterprise assets and software. Review and update configurations at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.7',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.7',
+    name: 'Implement Automated Configuration Management Tools',
+    description: "Utilize automated tools to maintain and verify security configurations of enterprise assets and software. Review tool effectiveness at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.8',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.8',
+    name: 'Document and Review Configuration Changes',
+    description: "Document all configuration changes to enterprise assets and software. Review and approve changes prior to implementation. Review change documentation at least quarterly, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.9',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.9',
+    name: 'Enforce Secure Configurations on Network Infrastructure',
+    description: "Enforce secure configurations on all network infrastructure devices. Review and update configurations at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.10',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.10',
+    name: 'Implement Configuration Change Control',
+    description: "Implement a configuration change control process for enterprise assets and software. Review and update the process at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-4.11',
+    standardId: 'cis-ig2',
+    section: '4',
+    code: '4.11',
+    name: 'Monitor and Alert on Configuration Changes',
+    description: "Monitor and alert on unauthorized configuration changes to enterprise assets and software. Investigate and remediate unauthorized changes promptly.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-5.1',
+    standardId: 'cis-ig2',
+    section: '5',
+    code: '5.1',
+    name: 'Establish and Maintain an Account Inventory',
+    description: "Establish and maintain an inventory of all accounts managed in the enterprise, including user, administrator, and service accounts. Review and update the inventory at least quarterly, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-5.2',
+    standardId: 'cis-ig2',
+    section: '5',
+    code: '5.2',
+    name: 'Use Unique Accounts',
+    description: "Ensure that all accounts are uniquely assigned to an individual or process. Shared accounts must be explicitly authorized and managed. Review at least quarterly, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-5.3',
+    standardId: 'cis-ig2',
+    section: '5',
+    code: '5.3',
+    name: 'Disable Dormant Accounts',
+    description: "Disable dormant accounts after a defined period of inactivity. Review and update the period at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-5.4',
+    standardId: 'cis-ig2',
+    section: '5',
+    code: '5.4',
+    name: 'Establish and Maintain an Account Management Process',
+    description: "Establish and maintain an account management process that includes requesting, approving, creating, modifying, disabling, and deleting accounts. Review and update the process at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-5.5',
+    standardId: 'cis-ig2',
+    section: '5',
+    code: '5.5',
+    name: 'Review Accounts',
+    description: "Review all accounts at least quarterly, or more frequently, to ensure that only authorized accounts exist. Remove or disable unauthorized accounts immediately.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-5.6',
+    standardId: 'cis-ig2',
+    section: '5',
+    code: '5.6',
+    name: 'Establish and Maintain an Account Authentication Process',
+    description: "Establish and maintain an account authentication process that includes strong authentication methods, such as multi-factor authentication (MFA), for all accounts. Review and update the process at least annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-identity'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.1',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.1',
+    name: 'Establish an Access Granting Process',
+    description: "Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.2',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.2',
+    name: 'Establish an Access Revoking Process',
+    description: "Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.3',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.3',
+    name: 'Require MFA for Externally-Exposed Applications',
+    description: "Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory implementation of this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.4',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.4',
+    name: 'Require MFA for Remote Network Access',
+    description: "Require MFA for remote network access.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.5',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.5',
+    name: 'Require MFA for Administrative Access',
+    description: "Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.6',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.6',
+    name: 'Establish and Maintain an Inventory of Authentication and Authorization Systems',
+    description: "Establish and maintain an inventory of the enterprise's authentication and authorization systems, including those hosted on-site or at a remote service provider. Review and update the inventory, at a minimum, annually, or more frequently.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-6.7',
+    standardId: 'cis-ig2',
+    section: '6',
+    code: '6.7',
+    name: 'Centralize Access Control',
+    description: "Centralize access control for all enterprise assets through a directory service or SSO provider, where supported.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-access-control'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.1',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.1',
+    name: 'Establish and Maintain a Vulnerability Management Process',
+    description: "Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.2',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.2',
+    name: 'Establish and Maintain a Remediation Process',
+    description: "Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly, or more frequent, reviews.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.3',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.3',
+    name: 'Perform Automated Operating System Patch Management',
+    description: "Perform operating system updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.4',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.4',
+    name: 'Perform Automated Application Patch Management',
+    description: "Perform application updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.5',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.5',
+    name: 'Perform Automated Vulnerability Scans of Internal Enterprise Assets',
+    description: "Perform automated vulnerability scans of internal enterprise assets on a quarterly, or more frequent, basis. Conduct both authenticated and unauthenticated scans.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.6',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.6',
+    name: 'Perform Automated Vulnerability Scans of Externally-Exposed Enterprise Assets',
+    description: "Perform automated vulnerability scans of externally-exposed enterprise assets. Perform scans on a monthly, or more frequent, basis.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-7.7',
+    standardId: 'cis-ig2',
+    section: '7',
+    code: '7.7',
+    name: 'Remediate Detected Vulnerabilities',
+    description: "Remediate detected vulnerabilities in software through processes and tooling on a monthly, or more frequent, basis, based on the remediation process.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.1',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.1',
+    name: 'Establish and Maintain an Audit Log Management Process',
+    description: "Establish and maintain a documented audit log management process that defines the enterprise's logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.2',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.2',
+    name: 'Collect Audit Logs',
+    description: "Collect audit logs for enterprise assets that store or process sensitive data, as well as for all network traffic that traverses a network boundary. Ensure that the logs are reviewed and retained in accordance with the enterprise's audit log management process.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.3',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.3',
+    name: 'Ensure Adequate Audit Log Storage',
+    description: "Ensure that logging destinations maintain adequate storage to comply with the enterprise's audit log management process.",
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.4',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.4',
+    name: 'Standardize Time Synchronization',
+    description: 'Standardize time synchronization. Configure at least two synchronized time sources across enterprise assets, where supported.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Standardize time synchronization. Configure at least two synchronized time sources across enterprise assets, where supported.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.5',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.5',
+    name: 'Collect Detailed Audit Logs',
+    description: 'Configure detailed audit logging for enterprise assets containing sensitive data. Include event source, date, username, timestamp, source addresses, destination addresses, and other useful elements that could assist in a forensic investigation.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure detailed audit logging for enterprise assets containing sensitive data. Include event source, date, username, timestamp, source addresses, destination addresses, and other useful elements that could assist in a forensic investigation.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.6',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.6',
+    name: 'Collect DNS Query Audit Logs',
+    description: 'Collect DNS query audit logs on enterprise assets, where appropriate and supported.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect DNS query audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.7',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.7',
+    name: 'Collect URL Request Audit Logs',
+    description: 'Collect URL request audit logs on enterprise assets, where appropriate and supported.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect URL request audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.8',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.8',
+    name: 'Collect Command-Line Audit Logs',
+    description: 'Collect command-line audit logs. Example implementations include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect command-line audit logs. Example s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.9',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.9',
+    name: 'Centralize Audit Logs',
+    description: 'Centralize, to the extent possible, audit log collection and retention across enterprise assets in accordance with the documented audit log management process. Example implementations primarily include leveraging a SIEM tool to centralize multiple log sources.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize, to the extent possible, audit log collection and retention across enterprise assets in accordance with the documented audit log management process. Example s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.10',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.10',
+    name: 'Retain Audit Logs',
+    description: 'Retain audit logs across enterprise assets for a minimum of 90 days.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Retain audit logs across enterprise assets for a minimum of 90 days.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-8.11',
+    standardId: 'cis-ig2',
+    section: '8',
+    code: '8.11',
+    name: 'Conduct Audit Log Reviews',
+    description: 'Conduct reviews of audit logs to detect anomalies or abnormal events that could indicate a potential threat. Conduct reviews on a weekly, or more frequent, basis.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Conduct reviews of audit logs to detect anomalies or abnormal events that could indicate a potential threat. Conduct reviews on a weekly, or more frequent, basis.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+    {
+    id: 'cis-ig2-9.1',
+    standardId: 'cis-ig2',
+    section: '9',
+    code: '9.1',
+    name: 'Ensure Use of Only Fully Supported Browsers and Email Clients',
+    description: 'Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-9.2',
+    standardId: 'cis-ig2',
+    section: '9',
+    code: '9.2',
+    name: 'Use DNS Filtering Services',
+    description: 'Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-9.3',
+    standardId: 'cis-ig2',
+    section: '9',
+    code: '9.3',
+    name: 'Maintain and Enforce Network-Based URL Filters',
+    description: 'Enforce and update network-based URL filters to limit an enterprise asset from connecting to potentially malicious or unapproved websites. Example implementations include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Enforce and update network-based URL filters to limit an enterprise asset from connecting to potentially malicious or unapproved websites. Example s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-9.4',
+    standardId: 'cis-ig2',
+    section: '9',
+    code: '9.4',
+    name: 'Restrict Unnecessary or Unauthorized Browser and Email Client Extensions',
+    description: 'Restrict, either through uninstalling or disabling, any unauthorized or unnecessary browser or email client plugins, extensions, and add-on applications.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Restrict, either through uninstalling or disabling, any unauthorized or unnecessary browser or email client plugins, extensions, and add-on applications.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-9.5',
+    standardId: 'cis-ig2',
+    section: '9',
+    code: '9.5',
+    name: 'Implement DMARC',
+    description: 'To lower the chance of spoofed or modified emails from valid domains, implement DMARC policy and verification, starting with implementing the Sender Policy Framework (SPF) and the DomainKeys Identified Mail (DKIM) standards.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+To lower the chance of spoofed or modified emails from valid domains, implement DMARC policy and verification, starting with implementing the Sender Policy Framework (SPF) and the DomainKeys Identified Mail (DKIM) standards.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-9.6',
+    standardId: 'cis-ig2',
+    section: '9',
+    code: '9.6',
+    name: 'Block Unnecessary File Types',
+    description: 'Block unnecessary file types attempting to enter the enterprise’s email gateway.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Block unnecessary file types attempting to enter the enterprise’s email gateway.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+    {
+    id: 'cis-ig2-10.1',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.1',
+    name: 'Deploy and Maintain Anti-Malware Software',
+    description: 'Deploy and maintain anti-malware software on all enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy and maintain anti-malware software on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-10.2',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.2',
+    name: 'Configure Automatic Anti-Malware Signature Updates',
+    description: 'Configure automatic updates for anti-malware signature files on all enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure automatic updates for anti-malware signature files on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-10.3',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.3',
+    name: 'Disable Autorun and Autoplay for Removable Media',
+    description: 'Disable autorun and autoplay auto-execute functionality for removable media.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Disable autorun and autoplay auto-execute functionality for removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-10.4',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.4',
+    name: 'Configure Automatic Anti-Malware Scanning of Removable Media',
+    description: 'Configure anti-malware software to automatically scan removable media.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure anti-malware software to automatically scan removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-10.5',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.5',
+    name: 'Enable Anti-Exploitation Features',
+    description: 'Enable anti-exploitation features on enterprise assets and software, where possible, such as Microsoft® Data Execution Prevention (DEP), Windows® Defender Exploit Guard (WDEG), or Apple® System Integrity Protection (SIP) and Gatekeeper™.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Enable anti-exploitation features on enterprise assets and software, where possible, such as Microsoft® Data Execution Prevention (DEP), Windows® Defender Exploit Guard (WDEG), or Apple® System Integrity Protection (SIP) and Gatekeeper™.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-10.6',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.6',
+    name: 'Centrally Manage Anti-Malware Software',
+    description: 'Centrally manage anti-malware software.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centrally manage anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-10.7',
+    standardId: 'cis-ig2',
+    section: '10',
+    code: '10.7',
+    name: 'Use Behavior-Based Anti-Malware Software',
+    description: 'Use behavior-based anti-malware software.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use behavior-based anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-11.1',
+    standardId: 'cis-ig2',
+    section: '11',
+    code: '11.1',
+    name: 'Establish and Maintain a Data Recovery Process',
+    description: 'Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-11.2',
+    standardId: 'cis-ig2',
+    section: '11',
+    code: '11.2',
+    name: 'Perform Automated Backups',
+    description: 'Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-11.3',
+    standardId: 'cis-ig2',
+    section: '11',
+    code: '11.3',
+    name: 'Protect Recovery Data',
+    description: 'Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-11.4',
+    standardId: 'cis-ig2',
+    section: '11',
+    code: '11.4',
+    name: 'Establish and Maintain an Isolated Instance of Recovery Data',
+    description: 'Establish and maintain an isolated instance of recovery data. Example implementations include, version controlling backup destinations through offline, cloud, or off-site systems or services.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an isolated instance of recovery data. Example s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-11.5',
+    standardId: 'cis-ig2',
+    section: '11',
+    code: '11.5',
+    name: 'Test Data Recovery',
+    description: 'Test backup recovery quarterly, or more frequently, for a sampling of in-scope enterprise assets.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Test backup recovery quarterly, or more frequently, for a sampling of in-scope enterprise assets.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.1',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.1',
+    name: 'Ensure Network Infrastructure is Up-to-Date',
+    description: 'Ensure network infrastructure is kept up-to-date. Example implementations include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure network infrastructure is kept up-to-date. Example s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.2',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.2',
+    name: 'Establish and Maintain a Secure Network Architecture',
+    description: 'Design and maintain a secure network architecture. A secure network architecture must address segmentation, least privilege, and availability, at a minimum. Example implementations may include documentation, policy, and design components.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Design and maintain a secure network architecture. A secure network architecture must address segmentation, least privilege, and availability, at a minimum. Example s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.3',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.3',
+    name: 'Securely Manage Network Infrastructure',
+    description: 'Securely manage network infrastructure. Example implementations include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely manage network infrastructure. Example s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.4',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.4',
+    name: 'Establish and Maintain Architecture Diagram(s)',
+    description: 'Establish and maintain architecture diagram(s) and/or other network system documentation. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain architecture diagram(s) and/or other network system documentation. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.5',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.5',
+    name: 'Centralize Network Authentication, Authorization, and Auditing (AAA)',
+    description: 'Centralize network AAA.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize network AAA.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.6',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.6',
+    name: 'Use of Secure Network Management and Communication Protocols',
+    description: 'Adopt secure network management protocols (e.g., 802.1X) and secure communication protocols (e.g., Wi-Fi Protected Access 2 (WPA2) Enterprise or more secure alternatives).',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Adopt secure network management protocols (e.g., 802.1X) and secure communication protocols (e.g., Wi-Fi Protected Access 2 (WPA2) Enterprise or more secure alternatives).\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-12.7',
+    standardId: 'cis-ig2',
+    section: '12',
+    code: '12.7',
+    name: 'Ensure Remote Devices Utilize a VPN and are Connecting to an Enterprise’s AAA Infrastructure',
+    description: 'Require users to authenticate to enterprise-managed VPN and authentication services prior to accessing enterprise resources on end-user devices.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require users to authenticate to enterprise-managed VPN and authentication services prior to accessing enterprise resources on end-user devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-13.1',
+    standardId: 'cis-ig2',
+    section: '13',
+    code: '13.1',
+    name: 'Centralize Security Event Alerting',
+    description: 'Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice implementation requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice  requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-13.2',
+    standardId: 'cis-ig2',
+    section: '13',
+    code: '13.2',
+    name: 'Deploy a Host-Based Intrusion Detection Solution',
+    description: 'Deploy a host-based intrusion detection solution on enterprise assets, where appropriate and/or supported.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy a host-based intrusion detection solution on enterprise assets, where appropriate and/or supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-13.3',
+    standardId: 'cis-ig2',
+    section: '13',
+    code: '13.3',
+    name: 'Deploy a Network Intrusion Detection Solution',
+    description: 'Deploy a network intrusion detection solution on enterprise assets, where appropriate. Example implementations include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy a network intrusion detection solution on enterprise assets, where appropriate. Example s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-13.4',
+    standardId: 'cis-ig2',
+    section: '13',
+    code: '13.4',
+    name: 'Perform Traffic Filtering Between Network Segments',
+    description: 'Perform traffic filtering between network segments, where appropriate.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform traffic filtering between network segments, where appropriate.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-13.5',
+    standardId: 'cis-ig2',
+    section: '13',
+    code: '13.5',
+    name: 'Manage Access Control for Remote Assets',
+    description: 'Manage access control for assets remotely connecting to enterprise resources. Determine amount of access to enterprise resources based on: up-to-date anti-malware software installed, configuration compliance with the enterprise’s secure configuration process, and ensuring the operating system and applications are up-to-date.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Manage access control for assets remotely connecting to enterprise resources. Determine amount of access to enterprise resources based on: up-to-date anti-malware software installed, configuration compliance with the enterprise’s secure configuration process, and ensuring the operating system and applications are up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-13.6',
+    standardId: 'cis-ig2',
+    section: '13',
+    code: '13.6',
+    name: 'Collect Network Traffic Flow Logs',
+    description: 'Collect network traffic flow logs and/or network traffic to review and alert upon from network devices.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect network traffic flow logs and/or network traffic to review and alert upon from network devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.1',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.1',
+    name: 'Establish and Maintain a Security Awareness Program',
+    description: 'Establish and maintain a security awareness program. The purpose of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a security awareness program. The  of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.2',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.2',
+    name: 'Train Workforce Members to Recognize Social Engineering Attacks',
+    description: 'Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.3',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.3',
+    name: 'Train Workforce Members on Authentication Best Practices',
+    description: 'Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.4',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.4',
+    name: 'Train Workforce on Data Handling Best Practices',
+    description: 'Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.5',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.5',
+    name: 'Train Workforce Members on Causes of Unintentional Data Exposure',
+    description: 'Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.6',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.6',
+    name: 'Train Workforce Members on Recognizing and Reporting Security Incidents',
+    description: 'Train workforce members to be able to recognize a potential incident and be able to report such an incident.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to be able to recognize a potential incident and be able to report such an incident.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.7',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.7',
+    name: 'Train Workforce on How to Identify and Report if Their Enterprise Assets are Missing Security Updates',
+    description: 'Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-14.8',
+    standardId: 'cis-ig2',
+    section: '14',
+    code: '14.8',
+    name: 'Train Workforce on the Dangers of Connecting to and Transmitting Enterprise Data Over Insecure Networks',
+    description: 'Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-15.1',
+    standardId: 'cis-ig2',
+    section: '15',
+    code: '15.1',
+    name: 'Establish and Maintain an Inventory of Service Providers',
+    description: 'Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-15.2',
+    standardId: 'cis-ig2',
+    section: '15',
+    code: '15.2',
+    name: 'Establish and Maintain a Service Provider Management Policy',
+    description: 'Establish and maintain a service provider management policy. Ensure the policy addresses the classification, inventory, assessment, monitoring, and decommissioning of service providers. Review and update the policy annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a service provider management policy. Ensure the policy addresses the classification, inventory, assessment, monitoring, and decommissioning of service providers. Review and update the policy annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-15.3',
+    standardId: 'cis-ig2',
+    section: '15',
+    code: '15.3',
+    name: 'Classify Service Providers',
+    description: 'Classify service providers. Classification consideration may include one or more characteristics, such as data sensitivity, data volume, availability requirements, applicable regulations, inherent risk, and mitigated risk. Update and review classifications annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Classify service providers. Classification consideration may include one or more characteristics, such as data sensitivity, data volume, availability requirements, applicable regulations, inherent risk, and mitigated risk. Update and review classifications annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-15.4',
+    standardId: 'cis-ig2',
+    section: '15',
+    code: '15.4',
+    name: 'Ensure Service Provider Contracts Include Security Requirements',
+    description: 'Ensure service provider contracts include security requirements. Example requirements may include minimum security program requirements, security incident and/or data breach notification and response, data encryption requirements, and data disposal commitments. These security requirements must be consistent with the enterprise’s service provider management policy. Review service provider contracts annually to ensure contracts are not missing security requirements.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure service provider contracts include security requirements. Example requirements may include minimum security program requirements, security incident and/or data breach notification and response, data encryption requirements, and data disposal commitments. These security requirements must be consistent with the enterprise’s service provider management policy. Review service provider contracts annually to ensure contracts are not missing security requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+    {
+    id: 'cis-ig2-16.1',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.1',
+    name: 'Establish and Maintain a Secure Application Development Process',
+    description: 'Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.2',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.2',
+    name: 'Establish and Maintain a Process to Accept and Address Software Vulnerabilities',
+    description: 'Establish and maintain a process to accept and address reports of software vulnerabilities, including providing a means for external entities to report. The process is to include such items as: a vulnerability handling policy that identifies reporting process, responsible party for handling vulnerability reports, and a process for intake, assignment, remediation, and remediation testing. As part of the process, use a vulnerability tracking system that includes severity ratings and metrics for measuring timing for identification, analysis, and remediation of vulnerabilities. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a process to accept and address reports of software vulnerabilities, including providing a means for external entities to report. The process is to include such items as: a vulnerability handling policy that identifies reporting process, responsible party for handling vulnerability reports, and a process for intake, assignment, remediation, and remediation testing. As part of the process, use a vulnerability tracking system that includes severity ratings and metrics for measuring timing for identification, analysis, and remediation of vulnerabilities. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.3',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.3',
+    name: 'Perform Root Cause Analysis on Security Vulnerabilities',
+    description: 'Perform root cause analysis on security vulnerabilities. When reviewing vulnerabilities, root cause analysis is the task of evaluating underlying issues that create vulnerabilities in code, and allows development teams to move beyond just fixing individual vulnerabilities as they arise.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform root cause analysis on security vulnerabilities. When reviewing vulnerabilities, root cause analysis is the task of evaluating underlying issues that create vulnerabilities in code, and allows development teams to move beyond just fixing individual vulnerabilities as they arise.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.4',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.4',
+    name: 'Establish and Manage an Inventory of Third-Party Software Components',
+    description: 'Establish and manage an updated inventory of third-party components used in development, often referred to as a “bill of materials,” as well as components slated for future use. This inventory is to include any risks that each third-party component could pose. Evaluate the list at least monthly to identify any changes or updates to these components, and validate that the component is still supported.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and manage an updated inventory of third-party components used in development, often referred to as a “bill of materials,” as well as components slated for future use. This inventory is to include any risks that each third-party component could pose. Evaluate the list at least monthly to identify any changes or updates to these components, and validate that the component is still supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.5',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.5',
+    name: 'Use Up-to-Date and Trusted Third-Party Software Components',
+    description: 'Use up-to-date and trusted third-party software components. When possible, choose established and proven frameworks and libraries that provide adequate security. Acquire these components from trusted sources or evaluate the software for vulnerabilities before use.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use up-to-date and trusted third-party software components. When possible, choose established and proven frameworks and libraries that provide adequate security. Acquire these components from trusted sources or evaluate the software for vulnerabilities before use.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.6',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.6',
+    name: 'Establish and Maintain a Severity Rating System and Process for Application Vulnerabilities',
+    description: 'Establish and maintain a severity rating system and process for application vulnerabilities that facilitates prioritizing the order in which discovered vulnerabilities are fixed. This process includes setting a minimum level of security acceptability for releasing code or applications. Severity ratings bring a systematic way of triaging vulnerabilities that improves risk management and helps ensure the most severe bugs are fixed first. Review and update the system and process annually.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a severity rating system and process for application vulnerabilities that facilitates prioritizing the order in which discovered vulnerabilities are fixed. This process includes setting a minimum level of security acceptability for releasing code or applications. Severity ratings bring a systematic way of triaging vulnerabilities that improves risk management and helps ensure the most severe bugs are fixed first. Review and update the system and process annually.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.7',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.7',
+    name: 'Use Standard Hardening Configuration Templates for Application Infrastructure',
+    description: 'Use standard, industry-recommended hardening configuration templates for application infrastructure components. This includes underlying servers, databases, and web servers, and applies to cloud containers, Platform as a Service (PaaS) components, and SaaS components. Do not allow in-house developed software to weaken configuration hardening.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use standard, industry-recommended hardening configuration templates for application infrastructure components. This includes underlying servers, databases, and web servers, and applies to cloud containers, Platform as a Service (PaaS) components, and SaaS components. Do not allow in-house developed software to weaken configuration hardening.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.8',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.8',
+    name: 'Separate Production and Non-Production Systems',
+    description: 'Maintain separate environments for production and non-production systems.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Maintain separate environments for production and non-production systems.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.9',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.9',
+    name: 'Train Developers in Application Security Concepts and Secure Coding',
+    description: 'Ensure that all software development personnel receive training in writing secure code for their specific development environment and responsibilities. Training can include general security principles and application security standard practices. Conduct training at least annually and design in a way to promote security within the development team, and build a culture of security among the developers.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that all software development personnel receive training in writing secure code for their specific development environment and responsibilities. Training can include general security principles and application security standard practices. Conduct training at least annually and design in a way to promote security within the development team, and build a culture of security among the developers.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.10',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.10',
+    name: 'Apply Secure Design Principles in Application Architectures',
+    description: 'Apply secure design principles in application architectures. Secure design principles include the concept of least privilege and enforcing mediation to validate every operation that the user makes, promoting the concept of \"never trust user input.\" Examples include ensuring that explicit error checking is performed and documented for all input, including for size, data type, and acceptable ranges or formats. Secure design also means minimizing the application infrastructure attack surface, such as turning off unprotected ports and services, removing unnecessary programs and files, and renaming or removing default accounts.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Apply secure design principles in application architectures. Secure design principles include the concept of least privilege and enforcing mediation to validate every operation that the user makes, promoting the concept of \"never trust user input.\" Examples include ensuring that explicit error checking is performed and documented for all input, including for size, data type, and acceptable ranges or formats. Secure design also means minimizing the application infrastructure attack surface, such as turning off unprotected ports and services, removing unnecessary programs and files, and renaming or removing default accounts.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-16.11',
+    standardId: 'cis-ig2',
+    section: '16',
+    code: '16.11',
+    name: 'Leverage Vetted Modules or Services for Application Security Components',
+    description: 'Leverage vetted modules or services for application security components, such as identity management, encryption, auditing, and logging. Using platform features in critical security functions will reduce developers’ workload and minimize the likelihood of design or implementation errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Leverage vetted modules or services for application security components, such as identity management, encryption, auditing, and logging. Using platform features in critical security functions will reduce developers’ workload and minimize the likelihood of design or  errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.1',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.1',
+    name: 'Designate Personnel to Manage Incident Handling',
+    description: 'Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.2',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.2',
+    name: 'Establish and Maintain Contact Information for Reporting Security Incidents',
+    description: 'Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.3',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.3',
+    name: 'Establish and Maintain an Enterprise Process for Reporting Incidents',
+    description: 'Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.4',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.4',
+    name: 'Establish and Maintain an Incident Response Process',
+    description: 'Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.5',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.5',
+    name: 'Assign Key Roles and Responsibilities',
+    description: 'Assign key roles and responsibilities for incident response, including staff from legal, IT, information security, facilities, public relations, human resources, incident responders, analysts, and relevant third parties. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Assign key roles and responsibilities for incident response, including staff from legal, IT, information security, facilities, public relations, human resources, incident responders, analysts, and relevant third parties. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.6',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.6',
+    name: 'Define Mechanisms for Communicating During Incident Response',
+    description: 'Determine which primary and secondary mechanisms will be used to communicate and report during a security incident. Mechanisms can include phone calls, emails, secure chat, or notification letters. Keep in mind that certain mechanisms, such as emails, can be affected during a security incident. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Determine which primary and secondary mechanisms will be used to communicate and report during a security incident. Mechanisms can include phone calls, emails, secure chat, or notification letters. Keep in mind that certain mechanisms, such as emails, can be affected during a security incident. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-17.7',
+    standardId: 'cis-ig2',
+    section: '17',
+    code: '17.7',
+    name: 'Conduct Routine Incident Response Exercises',
+    description: 'Plan and conduct routine incident response exercises and scenarios for key personnel involved in the incident response process to prepare for responding to real-world incidents. Exercises need to test communication channels, decision making, and workflows. Conduct testing on an annual basis, at a minimum.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Plan and conduct routine incident response exercises and scenarios for key personnel involved in the incident response process to prepare for responding to real-world incidents. Exercises need to test communication channels, decision making, and workflows. Conduct testing on an annual basis, at a minimum.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-18.1',
+    standardId: 'cis-ig2',
+    section: '18',
+    code: '18.1',
+    name: 'Establish and Maintain a Penetration Testing Program',
+    description: 'Establish and maintain a penetration testing program appropriate to the size, complexity, industry, and maturity of the enterprise. Penetration testing program characteristics include scope, such as network, web application, Application Programming Interface (API), hosted services, and physical premise controls; frequency; limitations, such as acceptable hours, and excluded attack types; point of contact information; remediation, such as how findings will be routed internally; and retrospective requirements.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a penetration testing program appropriate to the size, complexity, industry, and maturity of the enterprise. Penetration testing program characteristics include scope, such as network, web application, Application Programming Interface (API), hosted services, and physical premise controls; frequency; limitations, such as acceptable hours, and excluded attack types; point of contact information; remediation, such as how findings will be routed internally; and retrospective requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-18.2',
+    standardId: 'cis-ig2',
+    section: '18',
+    code: '18.2',
+    name: 'Perform Periodic External Penetration Tests',
+    description: 'Perform periodic external penetration tests based on program requirements, no less than annually. External penetration testing must include enterprise and environmental reconnaissance to detect exploitable information. Penetration testing requires specialized skills and experience and must be conducted through a qualified party. The testing may be clear box or opaque box.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform periodic external penetration tests based on program requirements, no less than annually. External penetration testing must include enterprise and environmental reconnaissance to detect exploitable information. Penetration testing requires specialized skills and experience and must be conducted through a qualified party. The testing may be clear box or opaque box.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig2-18.3',
+    standardId: 'cis-ig2',
+    section: '18',
+    code: '18.3',
+    name: 'Remediate Penetration Test Findings',
+    description: 'Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  // ... existing code ...
+  {
+    id: 'cis-ig2-18.3',
+    standardId: 'cis-ig2',
+    section: '18',
+    code: '18.3',
+    name: 'Remediate Penetration Test Findings',
+    description: 'Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+    tags: ['tag-technical'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  // IG3 chapter 1 requirements
+  {
+    id: 'cis-ig3-1.1',
+    standardId: 'cis-ig3',
+    section: '1',
+    code: '1.1',
+    name: 'Establish and Maintain Detailed Enterprise Asset Inventory',
+    description: 'Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise’s network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise’s network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig3-1.2',
+    standardId: 'cis-ig3',
+    section: '1',
+    code: '1.2',
+    name: 'Address Unauthorized Assets',
+    description: 'Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig3-1.3',
+    standardId: 'cis-ig3',
+    section: '1',
+    code: '1.3',
+    name: 'Utilize an Active Discovery Tool',
+    description: 'Utilize an active discovery tool to identify assets connected to the enterprise’s network. Configure the active discovery tool to execute daily or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Utilize an active discovery tool to identify assets connected to the enterprise’s network. Configure the active discovery tool to execute daily or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig3-1.4',
+    standardId: 'cis-ig3',
+    section: '1',
+    code: '1.4',
+    name: 'Use Dynamic Host Configuration Protocol (DHCP) Logging to Update Enterprise Asset Inventory',
+    description: 'Use DHCP logging on all DHCP servers or Internet Protocol (IP) address management tools to update the enterprise’s asset inventory. Review and use logs to update the enterprise’s asset inventory weekly or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use DHCP logging on all DHCP servers or Internet Protocol (IP) address management tools to update the enterprise’s asset inventory. Review and use logs to update the enterprise’s asset inventory weekly or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig3-1.5',
+    standardId: 'cis-ig3',
+    section: '1',
+    code: '1.5',
+    name: 'Use a Passive Asset Discovery Tool',
+    description: 'Use a passive discovery tool to identify assets connected to the enterprise’s network. Review and use scans to update the enterprise’s asset inventory at least weekly or more frequently.',
+    guidance: '',
+    status: 'not-fulfilled',
+    evidence: '',
+    notes: '',
+    responsibleParty: '',
+    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use a passive discovery tool to identify assets connected to the enterprise’s network. Review and use scans to update the enterprise’s asset inventory at least weekly or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
+
+**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
+
+    tags: ['tag-device'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+  id: 'cis-ig3-2.1',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.1',
+  name: 'Establish and Maintain a Software Inventory',
+  description: 'Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business purpose for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business  for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-2.2',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.2',
+  name: 'Ensure Authorized Software is Currently Supported',
+  description: 'Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise’s mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise’s mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-2.3',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.3',
+  name: 'Address Unauthorized Software',
+  description: 'Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-2.4',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.4',
+  name: 'Utilize Automated Software Inventory Tools',
+  description: 'Utilize software inventory tools, when possible, throughout the enterprise to automate the discovery and documentation of installed software.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Utilize software inventory tools, when possible, throughout the enterprise to automate the discovery and documentation of installed software.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-2.5',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.5',
+  name: 'Allowlist Authorized Software',
+  description: 'Use technical controls, such as application allowlisting, to ensure that only authorized software can execute or be accessed. Reassess bi-annually or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use technical controls, such as application allowlisting, to ensure that only authorized software can execute or be accessed. Reassess bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-2.6',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.6',
+  name: 'Allowlist Authorized Libraries',
+  description: 'Use technical controls to ensure that only authorized software libraries, such as specific .dll, .ocx, and .so files, are allowed to load into a system process. Block unauthorized libraries from loading into a system process. Reassess bi-annually or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use technical controls to ensure that only authorized software libraries, such as specific .dll, .ocx, and .so files, are allowed to load into a system process. Block unauthorized libraries from loading into a system process. Reassess bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-2.7',
+  standardId: 'cis-ig3',
+  section: '2',
+  code: '2.7',
+  name: 'Allowlist Authorized Scripts',
+  description: 'Use technical controls, such as digital signatures and version control, to ensure that only authorized scripts, such as specific .ps1 and .py files, are allowed to execute. Block unauthorized scripts from executing. Reassess bi-annually or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use technical controls, such as digital signatures and version control, to ensure that only authorized scripts, such as specific .ps1 and .py files, are allowed to execute. Block unauthorized scripts from executing. Reassess bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.1',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.1',
+  name: 'Establish and Maintain a Data Management Process',
+  description: 'Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.2',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.2',
+  name: 'Establish and Maintain a Data Inventory',
+  description: 'Establish and maintain a data inventory based on the enterprise’s data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a data inventory based on the enterprise’s data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.3',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.3',
+  name: 'Configure Data Access Control Lists',
+  description: 'Configure data access control lists based on a user’s need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure data access control lists based on a user’s need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.4',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.4',
+  name: 'Enforce Data Retention',
+  description: 'Retain data according to the enterprise’s documented data management process. Data retention must include both minimum and maximum timelines.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Retain data according to the enterprise’s documented data management process. Data retention must include both minimum and maximum timelines.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.5',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.5',
+  name: 'Securely Dispose of Data',
+  description: 'Securely dispose of data as outlined in the enterprise’s documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely dispose of data as outlined in the enterprise’s documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.6',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.6',
+  name: 'Encrypt Data on End-User Devices',
+  description: 'Encrypt data on end-user devices containing sensitive data. Example implementations can include Windows BitLocker, Apple FileVault, Linux dm-crypt.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Encrypt data on end-user devices containing sensitive data. Example s can include Windows BitLocker, Apple FileVault, Linux dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* s can include Windows BitLocker, Apple FileVault, Linux dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.7',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.7',
+  name: 'Establish and Maintain a Data Classification Scheme',
+  description: 'Establish and maintain an overall data classification scheme for the enterprise. Enterprises may use labels, such as Sensitive, Confidential, and Public, and classify their data according to those labels. Review and update the classification scheme annually or when significant enterprise changes occur that could impact this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an overall data classification scheme for the enterprise. Enterprises may use labels, such as Sensitive, Confidential, and Public, and classify their data according to those labels. Review and update the classification scheme annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.8',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.8',
+  name: 'Document Data Flows',
+  description: 'Document data flows. Data flow documentation includes service provider data flows and should be based on the enterprise’s data management process. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Document data flows. Data flow documentation includes service provider data flows and should be based on the enterprise’s data management process. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.9',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.9',
+  name: 'Encrypt Data on Removable Media',
+  description: 'Encrypt data on removable media.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Encrypt data on removable media.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.10',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.10',
+  name: 'Encrypt Sensitive Data in Transit',
+  description: 'Encrypt sensitive data in transit. Example implementations can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Encrypt sensitive data in transit. Example s can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* s can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.11',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.11',
+  name: 'Encrypt Sensitive Data at Rest',
+  description: 'Encrypt sensitive data at rest on servers, applications, and databases. Storage-layer encryption, also known as server-side encryption, meets the minimum requirement of this safeguard. Additional encryption methods may include application-layer encryption, also known as client-side encryption, where access to the data storage device(s) does not permit access to the plain-text data.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Encrypt sensitive data at rest on servers, applications, and databases. Storage-layer encryption, also known as server-side encryption, meets the minimum requirement of this safeguard. Additional encryption methods may include application-layer encryption, also known as client-side encryption, where access to the data storage device(s) does not permit access to the plain-text data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.12',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.12',
+  name: 'Segment Data Processing and Storage Based on Sensitivity',
+  description: 'Segment data processing and storage based on the sensitivity of the data. Do not process sensitive data on enterprise assets intended for lower sensitivity data.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Segment data processing and storage based on the sensitivity of the data. Do not process sensitive data on enterprise assets intended for lower sensitivity data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.13',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.13',
+  name: 'Deploy a Data Loss Prevention Solution',
+  description: 'Implement an automated tool, such as a host-based Data Loss Prevention (DLP) tool to identify all sensitive data stored, processed, or transmitted through enterprise assets, including those located onsite or at a remote service provider, and update the enterprise’s data inventory.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Implement an automated tool, such as a host-based Data Loss Prevention (DLP) tool to identify all sensitive data stored, processed, or transmitted through enterprise assets, including those located onsite or at a remote service provider, and update the enterprise’s data inventory.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-3.14',
+  standardId: 'cis-ig3',
+  section: '3',
+  code: '3.14',
+  name: 'Log Sensitive Data Access',
+  description: 'Log sensitive data access, including modification and disposal.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Log sensitive data access, including modification and disposal.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
+
+  tags: ['tag-data-protection'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.1',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.1',
+  name: 'Establish and Maintain a Secure Configuration Process',
+  description: 'Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.2',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.2',
+  name: 'Establish and Maintain a Secure Configuration Process for Network Infrastructure',
+  description: 'Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.3',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.3',
+  name: 'Configure Automatic Session Locking on Enterprise Assets',
+  description: 'Configure automatic session locking on enterprise assets after a defined period of inactivity. For general purpose operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure automatic session locking on enterprise assets after a defined period of inactivity. For general  operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.4',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.4',
+  name: 'Implement and Manage a Firewall on Servers',
+  description: 'Implement and manage a firewall on servers, where supported. Example implementations include a virtual firewall, operating system firewall, or a third-party firewall agent.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Implement and manage a firewall on servers, where supported. Example s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.5',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.5',
+  name: 'Implement and Manage a Firewall on End-User Devices',
+  description: 'Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.6',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.6',
+  name: 'Securely Manage Enterprise Assets and Software',
+  description: 'Securely manage enterprise assets and software. Example implementations include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely manage enterprise assets and software. Example s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.7',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.7',
+  name: 'Manage Default Accounts on Enterprise Assets and Software',
+  description: 'Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example implementations can include disabling default accounts or making them unusable.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example s can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.8',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.8',
+  name: 'Uninstall or Disable Unnecessary Services on Enterprise Assets and Software',
+  description: 'Uninstall or disable unnecessary services on enterprise assets and software, such as an unused file sharing service, web application module, or service function.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Uninstall or disable unnecessary services on enterprise assets and software, such as an unused file sharing service, web application module, or service function.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.9',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.9',
+  name: 'Configure Trusted DNS Servers on Enterprise Assets',
+  description: 'Configure trusted DNS servers on network infrastructure. Example implementations include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure trusted DNS servers on network infrastructure. Example s include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.10',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.10',
+  name: 'Enforce Automatic Device Lockout on Portable End-User Devices',
+  description: 'Enforce automatic device lockout following a predetermined threshold of local failed authentication attempts on portable end-user devices, where supported. For laptops, do not allow more than 20 failed authentication attempts; for tablets and smartphones, no more than 10 failed authentication attempts. Example implementations include Microsoft InTune Device Lock and Apple Configuration Profile maxFailedAttempts.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Enforce automatic device lockout following a predetermined threshold of local failed authentication attempts on portable end-user devices, where supported. For laptops, do not allow more than 20 failed authentication attempts; for tablets and smartphones, no more than 10 failed authentication attempts. Example s include Microsoft InTune Device Lock and Apple Configuration Profile maxFailedAttempts.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include Microsoft InTune Device Lock and Apple Configuration Profile maxFailedAttempts.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.11',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.11',
+  name: 'Enforce Remote Wipe Capability on Portable End-User Devices',
+  description: 'Remotely wipe enterprise data from enterprise-owned portable end-user devices when deemed appropriate such as lost or stolen devices, or when an individual no longer supports the enterprise.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Remotely wipe enterprise data from enterprise-owned portable end-user devices when deemed appropriate such as lost or stolen devices, or when an individual no longer supports the enterprise.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-4.12',
+  standardId: 'cis-ig3',
+  section: '4',
+  code: '4.12',
+  name: 'Separate Enterprise Workspaces on Mobile End-User Devices',
+  description: 'Ensure separate enterprise workspaces are used on mobile end-user devices, where supported. Example implementations include using an Apple Configuration Profile or Android Work Profile to separate enterprise applications and data from personal applications and data.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure separate enterprise workspaces are used on mobile end-user devices, where supported. Example s include using an Apple Configuration Profile or Android Work Profile to separate enterprise applications and data from personal applications and data.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* s include using an Apple Configuration Profile or Android Work Profile to separate enterprise applications and data from personal applications and data.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-5.1',
+  standardId: 'cis-ig3',
+  section: '5',
+  code: '5.1',
+  name: 'Establish and Maintain an Inventory of Accounts',
+  description: 'Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person’s name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person’s name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+  tags: ['tag-identity'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-5.2',
+  standardId: 'cis-ig3',
+  section: '5',
+  code: '5.2',
+  name: 'Use Unique Passwords',
+  description: 'Use unique passwords for all enterprise assets. Best practice implementation includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use unique passwords for all enterprise assets. Best practice  includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+  tags: ['tag-identity'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-5.3',
+  standardId: 'cis-ig3',
+  section: '5',
+  code: '5.3',
+  name: 'Disable Dormant Accounts',
+  description: 'Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+  tags: ['tag-identity'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-5.4',
+  standardId: 'cis-ig3',
+  section: '5',
+  code: '5.4',
+  name: 'Restrict Administrator Privileges to Dedicated Administrator Accounts',
+  description: 'Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user’s primary, non-privileged account.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user’s primary, non-privileged account.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+  tags: ['tag-identity'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-5.5',
+  standardId: 'cis-ig3',
+  section: '5',
+  code: '5.5',
+  name: 'Establish and Maintain an Inventory of Service Accounts',
+  description: 'Establish and maintain an inventory of service accounts. The inventory, at a minimum, must contain department owner, review date, and purpose. Perform service account reviews to validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of service accounts. The inventory, at a minimum, must contain department owner, review date, and . Perform service account reviews to validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+  tags: ['tag-identity'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-5.6',
+  standardId: 'cis-ig3',
+  section: '5',
+  code: '5.6',
+  name: 'Centralize Account Management',
+  description: 'Centralize account management through a directory or identity service.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize account management through a directory or identity service.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
+
+  tags: ['tag-identity'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.1',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.1',
+  name: 'Establish an Access Granting Process',
+  description: 'Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.2',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.2',
+  name: 'Establish an Access Revoking Process',
+  description: 'Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.3',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.3',
+  name: 'Require MFA for Externally-Exposed Applications',
+  description: 'Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory implementation of this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory  of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.4',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.4',
+  name: 'Require MFA for Remote Network Access',
+  description: 'Require MFA for remote network access.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require MFA for remote network access.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.5',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.5',
+  name: 'Require MFA for Administrative Access',
+  description: 'Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.6',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.6',
+  name: 'Establish and Maintain an Inventory of Authentication and Authorization Systems',
+  description: 'Establish and maintain an inventory of the enterprise’s authentication and authorization systems, including those hosted on-site or at a remote service provider. Review and update the inventory, at a minimum, annually or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of the enterprise’s authentication and authorization systems, including those hosted on-site or at a remote service provider. Review and update the inventory, at a minimum, annually or more frequently.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.7',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.7',
+  name: 'Centralize Access Control',
+  description: 'Centralize access control for all enterprise assets through a directory service or SSO provider, where supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize access control for all enterprise assets through a directory service or SSO provider, where supported.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-6.8',
+  standardId: 'cis-ig3',
+  section: '6',
+  code: '6.8',
+  name: 'Define and Maintain Role-Based Access Control',
+  description: 'Define and maintain role-based access control, through determining and documenting the access rights necessary for each role within the enterprise to successfully carry out its assigned duties. Perform access control reviews of enterprise assets to validate that all privileges are authorized, on a recurring schedule at a minimum annually or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Define and maintain role-based access control, through determining and documenting the access rights necessary for each role within the enterprise to successfully carry out its assigned duties. Perform access control reviews of enterprise assets to validate that all privileges are authorized, on a recurring schedule at a minimum annually or more frequently.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
+
+  tags: ['tag-access-control'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.1',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.1',
+  name: 'Establish and Maintain a Vulnerability Management Process',
+  description: 'Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.2',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.2',
+  name: 'Establish and Maintain a Remediation Process',
+  description: 'Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly or more frequent reviews.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly or more frequent reviews.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.3',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.3',
+  name: 'Perform Automated Operating System Patch Management',
+  description: 'Perform operating system updates on enterprise assets through automated patch management on a monthly or more frequent basis.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform operating system updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.4',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.4',
+  name: 'Perform Automated Application Patch Management',
+  description: 'Perform application updates on enterprise assets through automated patch management on a monthly or more frequent basis.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform application updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.5',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.5',
+  name: 'Perform Automated Vulnerability Scans of Internal Enterprise Assets',
+  description: 'Perform automated vulnerability scans of internal enterprise assets on a quarterly or more frequent basis. Conduct both authenticated and unauthenticated scans.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform automated vulnerability scans of internal enterprise assets on a quarterly or more frequent basis. Conduct both authenticated and unauthenticated scans.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.6',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.6',
+  name: 'Perform Automated Vulnerability Scans of Externally-Exposed Enterprise Assets',
+  description: 'Perform automated vulnerability scans of externally-exposed enterprise assets. Perform scans on a monthly or more frequent basis.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform automated vulnerability scans of externally-exposed enterprise assets. Perform scans on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-7.7',
+  standardId: 'cis-ig3',
+  section: '7',
+  code: '7.7',
+  name: 'Remediate Detected Vulnerabilities',
+  description: 'Remediate detected vulnerabilities in software through processes and tooling on a monthly or more frequent basis, based on the remediation process.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Remediate detected vulnerabilities in software through processes and tooling on a monthly or more frequent basis, based on the remediation process.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+// IG3 kapitel 8
+{
+  id: 'cis-ig3-8.1',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.1',
+  name: 'Establish and Maintain an Audit Log Management Process',
+  description: 'Establish and maintain a documented audit log management process that defines the enterprise’s logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented audit log management process that defines the enterprise’s logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.2',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.2',
+  name: 'Collect Audit Logs',
+  description: 'Collect audit logs. Ensure that logging, per the enterprise’s audit log management process, has been enabled across enterprise assets.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect audit logs. Ensure that logging, per the enterprise’s audit log management process, has been enabled across enterprise assets.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.3',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.3',
+  name: 'Ensure Adequate Audit Log Storage',
+  description: 'Ensure that logging destinations maintain adequate storage to comply with the enterprise’s audit log management process.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that logging destinations maintain adequate storage to comply with the enterprise’s audit log management process.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.4',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.4',
+  name: 'Standardize Time Synchronization',
+  description: 'Standardize time synchronization. Configure at least two synchronized time sources across enterprise assets, where supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Standardize time synchronization. Configure at least two synchronized time sources across enterprise assets, where supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.5',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.5',
+  name: 'Collect Detailed Audit Logs',
+  description: 'Configure detailed audit logging for enterprise assets containing sensitive data. Include event source, date, username, timestamp, source addresses, destination addresses, and other useful elements that could assist in a forensic investigation.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure detailed audit logging for enterprise assets containing sensitive data. Include event source, date, username, timestamp, source addresses, destination addresses, and other useful elements that could assist in a forensic investigation.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.6',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.6',
+  name: 'Collect DNS Query Audit Logs',
+  description: 'Collect DNS query audit logs on enterprise assets, where appropriate and supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect DNS query audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.7',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.7',
+  name: 'Collect URL Request Audit Logs',
+  description: 'Collect URL request audit logs on enterprise assets, where appropriate and supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect URL request audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.8',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.8',
+  name: 'Collect Command-Line Audit Logs',
+  description: 'Collect command-line audit logs. Example implementations include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect command-line audit logs. Example s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.9',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.9',
+  name: 'Centralize Audit Logs',
+  description: 'Centralize, to the extent possible, audit log collection and retention across enterprise assets in accordance with the documented audit log management process. Example implementations primarily include leveraging a SIEM tool to centralize multiple log sources.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize, to the extent possible, audit log collection and retention across enterprise assets in accordance with the documented audit log management process. Example s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.10',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.10',
+  name: 'Retain Audit Logs',
+  description: 'Retain audit logs across enterprise assets for a minimum of 90 days.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Retain audit logs across enterprise assets for a minimum of 90 days.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.11',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.11',
+  name: 'Conduct Audit Log Reviews',
+  description: 'Conduct reviews of audit logs to detect anomalies or abnormal events that could indicate a potential threat. Conduct reviews on a weekly, or more frequent, basis.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Conduct reviews of audit logs to detect anomalies or abnormal events that could indicate a potential threat. Conduct reviews on a weekly, or more frequent, basis.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-8.12',
+  standardId: 'cis-ig3',
+  section: '8',
+  code: '8.12',
+  name: 'Collect Service Provider Logs',
+  description: 'Collect service provider logs, where supported. Example implementations include collecting authentication and authorization events, data creation and disposal events, and user management events.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect service provider logs, where supported. Example s include collecting authentication and authorization events, data creation and disposal events, and user management events.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* s include collecting authentication and authorization events, data creation and disposal events, and user management events.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
+
+  tags: ['tag-logging'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+
+// IG3 kapitel 9
+{
+  id: 'cis-ig3-9.1',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.1',
+  name: 'Ensure Use of Only Fully Supported Browsers and Email Clients',
+  description: 'Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-9.2',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.2',
+  name: 'Use DNS Filtering Services',
+  description: 'Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-9.3',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.3',
+  name: 'Maintain and Enforce Network-Based URL Filters',
+  description: 'Enforce and update network-based URL filters to limit an enterprise asset from connecting to potentially malicious or unapproved websites. Example implementations include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Enforce and update network-based URL filters to limit an enterprise asset from connecting to potentially malicious or unapproved websites. Example s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-9.4',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.4',
+  name: 'Restrict Unnecessary or Unauthorized Browser and Email Client Extensions',
+  description: 'Restrict, either through uninstalling or disabling, any unauthorized or unnecessary browser or email client plugins, extensions, and add-on applications.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Restrict, either through uninstalling or disabling, any unauthorized or unnecessary browser or email client plugins, extensions, and add-on applications.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-9.5',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.5',
+  name: 'Implement DMARC',
+  description: 'To lower the chance of spoofed or modified emails from valid domains, implement DMARC policy and verification, starting with implementing the Sender Policy Framework (SPF) and the DomainKeys Identified Mail (DKIM) standards.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+To lower the chance of spoofed or modified emails from valid domains, implement DMARC policy and verification, starting with implementing the Sender Policy Framework (SPF) and the DomainKeys Identified Mail (DKIM) standards.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-9.6',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.6',
+  name: 'Block Unnecessary File Types',
+  description: 'Block unnecessary file types attempting to enter the enterprise’s email gateway.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Block unnecessary file types attempting to enter the enterprise’s email gateway.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-9.7',
+  standardId: 'cis-ig3',
+  section: '9',
+  code: '9.7',
+  name: 'Deploy and Maintain Email Server Anti-Malware Protections',
+  description: 'Deploy and maintain email server anti-malware protections, such as attachment scanning and/or sandboxing.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy and maintain email server anti-malware protections, such as attachment scanning and/or sandboxing.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
+
+**Implementation**
+
+* \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+// IG3 kapitel 10
+{
+  id: 'cis-ig3-10.1',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.1',
+  name: 'Deploy and Maintain Anti-Malware Software',
+  description: 'Deploy and maintain anti-malware software on all enterprise assets, and ensure it is updated regularly to detect and respond to known threats.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy and maintain anti-malware software on all enterprise assets, and ensure it is updated regularly to detect and respond to known threats.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-10.2',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.2',
+  name: 'Configure Automatic Anti-Malware Signature Updates',
+  description: 'Configure automatic updates for anti-malware signature files on all enterprise assets.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure automatic updates for anti-malware signature files on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-10.3',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.3',
+  name: 'Disable Autorun and Autoplay for Removable Media',
+  description: 'Disable autorun and autoplay auto-execute functionality for removable media.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Disable autorun and autoplay auto-execute functionality for removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-10.4',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.4',
+  name: 'Configure Automatic Anti-Malware Scanning of Removable Media',
+  description: 'Configure anti-malware software to automatically scan removable media.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Configure anti-malware software to automatically scan removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-10.5',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.5',
+  name: 'Enable Anti-Exploitation Features',
+  description: 'Enable anti-exploitation features on enterprise assets and software, where possible, such as Microsoft® Data Execution Prevention (DEP), Windows® Defender Exploit Guard (WDEG), or Apple® System Integrity Protection (SIP) and Gatekeeper™.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Enable anti-exploitation features on enterprise assets and software, where possible, such as Microsoft® Data Execution Prevention (DEP), Windows® Defender Exploit Guard (WDEG), or Apple® System Integrity Protection (SIP) and Gatekeeper™.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-10.6',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.6',
+  name: 'Centrally Manage Anti-Malware Software',
+  description: 'Centrally manage anti-malware software.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centrally manage anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-10.7',
+  standardId: 'cis-ig3',
+  section: '10',
+  code: '10.7',
+  name: 'Use Behavior-Based Anti-Malware Software',
+  description: 'Use behavior-based anti-malware software.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use behavior-based anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
+
+**Implementation**
+
+* \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
+
+  tags: ['tag-endpoint'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+// IG3 kapitel 11
+{
+  id: 'cis-ig3-11.1',
+  standardId: 'cis-ig3',
+  section: '11',
+  code: '11.1',
+  name: 'Establish and Maintain a Data Recovery Process',
+  description: 'Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-backup'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-11.2',
+  standardId: 'cis-ig3',
+  section: '11',
+  code: '11.2',
+  name: 'Perform Automated Backups',
+  description: 'Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-backup'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-11.3',
+  standardId: 'cis-ig3',
+  section: '11',
+  code: '11.3',
+  name: 'Protect Recovery Data',
+  description: 'Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-backup'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-11.4',
+  standardId: 'cis-ig3',
+  section: '11',
+  code: '11.4',
+  name: 'Establish and Maintain an Isolated Instance of Recovery Data',
+  description: 'Establish and maintain an isolated instance of recovery data. Example implementations include, version controlling backup destinations through offline, cloud, or off-site systems or services.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an isolated instance of recovery data. Example s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-backup'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-11.5',
+  standardId: 'cis-ig3',
+  section: '11',
+  code: '11.5',
+  name: 'Test Data Recovery',
+  description: 'Test backup recovery quarterly, or more frequently, for a sampling of in-scope enterprise assets.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Test backup recovery quarterly, or more frequently, for a sampling of in-scope enterprise assets.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-backup'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.1',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.1',
+  name: 'Ensure Network Infrastructure is Up-to-Date',
+  description: 'Ensure network infrastructure is kept up-to-date. Example implementations include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure network infrastructure is kept up-to-date. Example s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.2',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.2',
+  name: 'Establish and Maintain a Secure Network Architecture',
+  description: 'Design and maintain a secure network architecture. A secure network architecture must address segmentation, least privilege, and availability, at a minimum. Example implementations may include documentation, policy, and design components.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Design and maintain a secure network architecture. A secure network architecture must address segmentation, least privilege, and availability, at a minimum. Example s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.3',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.3',
+  name: 'Securely Manage Network Infrastructure',
+  description: 'Securely manage network infrastructure. Example implementations include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely manage network infrastructure. Example s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.4',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.4',
+  name: 'Establish and Maintain Architecture Diagram(s)',
+  description: 'Establish and maintain architecture diagram(s) and/or other network system documentation. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain architecture diagram(s) and/or other network system documentation. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.5',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.5',
+  name: 'Centralize Network Authentication, Authorization, and Auditing (AAA)',
+  description: 'Centralize network AAA.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize network AAA.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.6',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.6',
+  name: 'Use of Secure Network Management and Communication Protocols',
+  description: 'Adopt secure network management protocols (e.g., 802.1X) and secure communication protocols (e.g., Wi-Fi Protected Access 2 (WPA2) Enterprise or more secure alternatives).',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Adopt secure network management protocols (e.g., 802.1X) and secure communication protocols (e.g., Wi-Fi Protected Access 2 (WPA2) Enterprise or more secure alternatives).\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.7',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.7',
+  name: 'Ensure Remote Devices Utilize a VPN and are Connecting to an Enterprise’s AAA Infrastructure',
+  description: 'Require users to authenticate to enterprise-managed VPN and authentication services prior to accessing enterprise resources on end-user devices.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Require users to authenticate to enterprise-managed VPN and authentication services prior to accessing enterprise resources on end-user devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-12.8',
+  standardId: 'cis-ig3',
+  section: '12',
+  code: '12.8',
+  name: 'Establish and Maintain Dedicated Computing Resources for All Administrative Work',
+  description: 'Establish and maintain dedicated computing resources, either physically or logically separated, for all administrative tasks or tasks requiring administrative access. The computing resources should be segmented from the enterprise\'s primary network and not be allowed internet access.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.1',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.1',
+  name: 'Centralize Security Event Alerting',
+  description: 'Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice implementation requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice  requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.2',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.2',
+  name: 'Deploy a Host-Based Intrusion Detection Solution',
+  description: 'Deploy a host-based intrusion detection solution on enterprise assets, where appropriate and/or supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy a host-based intrusion detection solution on enterprise assets, where appropriate and/or supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.3',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.3',
+  name: 'Deploy a Network Intrusion Detection Solution',
+  description: 'Deploy a network intrusion detection solution on enterprise assets, where appropriate. Example implementations include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy a network intrusion detection solution on enterprise assets, where appropriate. Example s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.4',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.4',
+  name: 'Perform Traffic Filtering Between Network Segments',
+  description: 'Perform traffic filtering between network segments, where appropriate.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform traffic filtering between network segments, where appropriate.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.5',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.5',
+  name: 'Manage Access Control for Remote Assets',
+  description: 'Manage access control for assets remotely connecting to enterprise resources. Determine amount of access to enterprise resources based on: up-to-date anti-malware software installed, configuration compliance with the enterprise’s secure configuration process, and ensuring the operating system and applications are up-to-date.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Manage access control for assets remotely connecting to enterprise resources. Determine amount of access to enterprise resources based on: up-to-date anti-malware software installed, configuration compliance with the enterprise’s secure configuration process, and ensuring the operating system and applications are up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.6',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.6',
+  name: 'Collect Network Traffic Flow Logs',
+  description: 'Collect network traffic flow logs and/or network traffic to review and alert upon from network devices.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Collect network traffic flow logs and/or network traffic to review and alert upon from network devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+// IG3-only krav nedan:
+{
+  id: 'cis-ig3-13.7',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.7',
+  name: 'Deploy a Host-Based Intrusion Prevention Solution',
+  description: 'Deploy a host-based intrusion prevention solution on enterprise assets, where appropriate and/or supported. Example implementations include use of an Endpoint Detection and Response (EDR) client or host-based IPS agent.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy a host-based intrusion prevention solution on enterprise assets, where appropriate and/or supported. Example s include use of an Endpoint Detection and Response (EDR) client or host-based IPS agent.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include use of an Endpoint Detection and Response (EDR) client or host-based IPS agent.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.8',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.8',
+  name: 'Deploy a Network Intrusion Prevention Solution',
+  description: 'Deploy a network intrusion prevention solution, where appropriate. Example implementations include the use of a Network Intrusion Prevention System (NIPS) or equivalent CSP service.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy a network intrusion prevention solution, where appropriate. Example s include the use of a Network Intrusion Prevention System (NIPS) or equivalent CSP service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include the use of a Network Intrusion Prevention System (NIPS) or equivalent CSP service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.9',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.9',
+  name: 'Deploy Port-Level Access Control',
+  description: 'Deploy port-level access control. Port-level access control utilizes 802.1x, or similar network access control protocols, such as certificates, and may incorporate user and/or device authentication.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Deploy port-level access control. Port-level access control utilizes 802.1x, or similar network access control protocols, such as certificates, and may incorporate user and/or device authentication.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.10',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.10',
+  name: 'Perform Application Layer Filtering',
+  description: 'Perform application layer filtering. Example implementations include a filtering proxy, application layer firewall, or gateway.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform application layer filtering. Example s include a filtering proxy, application layer firewall, or gateway.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include a filtering proxy, application layer firewall, or gateway.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-13.11',
+  standardId: 'cis-ig3',
+  section: '13',
+  code: '13.11',
+  name: 'Tune Security Event Alerting Thresholds',
+  description: 'Tune security event alerting thresholds monthly, or more frequently.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Tune security event alerting thresholds monthly, or more frequently.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-network'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.1',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.1',
+  name: 'Establish and Maintain a Security Awareness Program',
+  description: 'Establish and maintain a security awareness program. The purpose of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a security awareness program. The  of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.2',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.2',
+  name: 'Train Workforce Members to Recognize Social Engineering Attacks',
+  description: 'Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.3',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.3',
+  name: 'Train Workforce Members on Authentication Best Practices',
+  description: 'Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.4',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.4',
+  name: 'Train Workforce on Data Handling Best Practices',
+  description: 'Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.5',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.5',
+  name: 'Train Workforce Members on Causes of Unintentional Data Exposure',
+  description: 'Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.6',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.6',
+  name: 'Train Workforce Members on Recognizing and Reporting Security Incidents',
+  description: 'Train workforce members to be able to recognize a potential incident and be able to report such an incident.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members to be able to recognize a potential incident and be able to report such an incident.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.7',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.7',
+  name: 'Train Workforce on How to Identify and Report if Their Enterprise Assets are Missing Security Updates',
+  description: 'Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.8',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.8',
+  name: 'Train Workforce on the Dangers of Connecting to and Transmitting Enterprise Data Over Insecure Networks',
+  description: 'Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-14.9',
+  standardId: 'cis-ig3',
+  section: '14',
+  code: '14.9',
+  name: 'Conduct Role-Specific Security Awareness and Skills Training',
+  description: 'Conduct role-specific security awareness and skills training. Example implementations include secure system administration courses for IT professionals, OWASP® Top 10 vulnerability awareness and prevention training for web application developers, and advanced social engineering awareness training for high-profile roles.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Conduct role-specific security awareness and skills training. Example s include secure system administration courses for IT professionals, OWASP® Top 10 vulnerability awareness and prevention training for web application developers, and advanced social engineering awareness training for high-profile roles.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* s include secure system administration courses for IT professionals, OWASP® Top 10 vulnerability awareness and prevention training for web application developers, and advanced social engineering awareness training for high-profile roles.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-people'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.1',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.1',
+  name: 'Establish and Maintain an Inventory of Service Providers',
+  description: 'Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.2',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.2',
+  name: 'Establish and Maintain a Service Provider Management Policy',
+  description: 'Establish and maintain a service provider management policy. Ensure the policy addresses the classification, inventory, assessment, monitoring, and decommissioning of service providers. Review and update the policy annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a service provider management policy. Ensure the policy addresses the classification, inventory, assessment, monitoring, and decommissioning of service providers. Review and update the policy annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.3',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.3',
+  name: 'Classify Service Providers',
+  description: 'Classify service providers. Classification consideration may include one or more characteristics, such as data sensitivity, data volume, availability requirements, applicable regulations, inherent risk, and mitigated risk. Update and review classifications annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Classify service providers. Classification consideration may include one or more characteristics, such as data sensitivity, data volume, availability requirements, applicable regulations, inherent risk, and mitigated risk. Update and review classifications annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.4',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.4',
+  name: 'Ensure Service Provider Contracts Include Security Requirements',
+  description: 'Ensure service provider contracts include security requirements. Example requirements may include minimum security program requirements, security incident and/or data breach notification and response, data encryption requirements, and data disposal commitments. These security requirements must be consistent with the enterprise’s service provider management policy. Review service provider contracts annually to ensure contracts are not missing security requirements.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure service provider contracts include security requirements. Example requirements may include minimum security program requirements, security incident and/or data breach notification and response, data encryption requirements, and data disposal commitments. These security requirements must be consistent with the enterprise’s service provider management policy. Review service provider contracts annually to ensure contracts are not missing security requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.5',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.5',
+  name: 'Assess Service Providers',
+  description: 'Assess service providers consistent with the enterprise’s service provider management policy. Assessment scope may vary based on classification(s), and may include review of standardized assessment reports, such as Service Organization Control 2 (SOC 2) and Payment Card Industry (PCI) Attestation of Compliance (AoC), customized questionnaires, or other appropriately rigorous processes. Reassess service providers annually, at a minimum, or with new and renewed contracts.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Assess service providers consistent with the enterprise’s service provider management policy. Assessment scope may vary based on classification(s), and may include review of standardized assessment reports, such as Service Organization Control 2 (SOC 2) and Payment Card Industry (PCI) Attestation of Compliance (AoC), customized questionnaires, or other appropriately rigorous processes. Reassess service providers annually, at a minimum, or with new and renewed contracts.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.6',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.6',
+  name: 'Monitor Service Providers',
+  description: 'Monitor service providers consistent with the enterprise’s service provider management policy. Monitoring may include periodic reassessment of service provider compliance, monitoring service provider release notes, and dark web monitoring.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Monitor service providers consistent with the enterprise’s service provider management policy. Monitoring may include periodic reassessment of service provider compliance, monitoring service provider release notes, and dark web monitoring.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-15.7',
+  standardId: 'cis-ig3',
+  section: '15',
+  code: '15.7',
+  name: 'Securely Decommission Service Providers',
+  description: 'Securely decommission service providers. Example considerations include user and service account deactivation, termination of data flows, and secure disposal of enterprise data within service provider systems.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Securely decommission service providers. Example considerations include user and service account deactivation, termination of data flows, and secure disposal of enterprise data within service provider systems.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-supplier'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.1',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.1',
+  name: 'Establish and Maintain a Secure Application Development Process',
+  description: 'Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.2',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.2',
+  name: 'Establish and Maintain a Process to Accept and Address Software Vulnerabilities',
+  description: 'Establish and maintain a process to accept and address reports of software vulnerabilities, including providing a means for external entities to report. The process is to include such items as: a vulnerability handling policy that identifies reporting process, responsible party for handling vulnerability reports, and a process for intake, assignment, remediation, and remediation testing. As part of the process, use a vulnerability tracking system that includes severity ratings and metrics for measuring timing for identification, analysis, and remediation of vulnerabilities. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a process to accept and address reports of software vulnerabilities, including providing a means for external entities to report. The process is to include such items as: a vulnerability handling policy that identifies reporting process, responsible party for handling vulnerability reports, and a process for intake, assignment, remediation, and remediation testing. As part of the process, use a vulnerability tracking system that includes severity ratings and metrics for measuring timing for identification, analysis, and remediation of vulnerabilities. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.3',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.3',
+  name: 'Perform Root Cause Analysis on Security Vulnerabilities',
+  description: 'Perform root cause analysis on security vulnerabilities. When reviewing vulnerabilities, root cause analysis is the task of evaluating underlying issues that create vulnerabilities in code, and allows development teams to move beyond just fixing individual vulnerabilities as they arise.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform root cause analysis on security vulnerabilities. When reviewing vulnerabilities, root cause analysis is the task of evaluating underlying issues that create vulnerabilities in code, and allows development teams to move beyond just fixing individual vulnerabilities as they arise.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.4',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.4',
+  name: 'Establish and Manage an Inventory of Third-Party Software Components',
+  description: 'Establish and manage an updated inventory of third-party components used in development, often referred to as a “bill of materials,” as well as components slated for future use. This inventory is to include any risks that each third-party component could pose. Evaluate the list at least monthly to identify any changes or updates to these components, and validate that the component is still supported.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and manage an updated inventory of third-party components used in development, often referred to as a “bill of materials,” as well as components slated for future use. This inventory is to include any risks that each third-party component could pose. Evaluate the list at least monthly to identify any changes or updates to these components, and validate that the component is still supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.5',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.5',
+  name: 'Use Up-to-Date and Trusted Third-Party Software Components',
+  description: 'Use up-to-date and trusted third-party software components. When possible, choose established and proven frameworks and libraries that provide adequate security. Acquire these components from trusted sources or evaluate the software for vulnerabilities before use.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use up-to-date and trusted third-party software components. When possible, choose established and proven frameworks and libraries that provide adequate security. Acquire these components from trusted sources or evaluate the software for vulnerabilities before use.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.6',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.6',
+  name: 'Establish and Maintain a Severity Rating System and Process for Application Vulnerabilities',
+  description: 'Establish and maintain a severity rating system and process for application vulnerabilities that facilitates prioritizing the order in which discovered vulnerabilities are fixed. This process includes setting a minimum level of security acceptability for releasing code or applications. Severity ratings bring a systematic way of triaging vulnerabilities that improves risk management and helps ensure the most severe bugs are fixed first. Review and update the system and process annually.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a severity rating system and process for application vulnerabilities that facilitates prioritizing the order in which discovered vulnerabilities are fixed. This process includes setting a minimum level of security acceptability for releasing code or applications. Severity ratings bring a systematic way of triaging vulnerabilities that improves risk management and helps ensure the most severe bugs are fixed first. Review and update the system and process annually.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.7',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.7',
+  name: 'Use Standard Hardening Configuration Templates for Application Infrastructure',
+  description: 'Use standard, industry-recommended hardening configuration templates for application infrastructure components. This includes underlying servers, databases, and web servers, and applies to cloud containers, Platform as a Service (PaaS) components, and SaaS components. Do not allow in-house developed software to weaken configuration hardening.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Use standard, industry-recommended hardening configuration templates for application infrastructure components. This includes underlying servers, databases, and web servers, and applies to cloud containers, Platform as a Service (PaaS) components, and SaaS components. Do not allow in-house developed software to weaken configuration hardening.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.8',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.8',
+  name: 'Separate Production and Non-Production Systems',
+  description: 'Maintain separate environments for production and non-production systems.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Maintain separate environments for production and non-production systems.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.9',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.9',
+  name: 'Train Developers in Application Security Concepts and Secure Coding',
+  description: 'Ensure that all software development personnel receive training in writing secure code for their specific development environment and responsibilities. Training can include general security principles and application security standard practices. Conduct training at least annually and design in a way to promote security within the development team, and build a culture of security among the developers.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Ensure that all software development personnel receive training in writing secure code for their specific development environment and responsibilities. Training can include general security principles and application security standard practices. Conduct training at least annually and design in a way to promote security within the development team, and build a culture of security among the developers.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.10',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.10',
+  name: 'Apply Secure Design Principles in Application Architectures',
+  description: 'Apply secure design principles in application architectures. Secure design principles include the concept of least privilege and enforcing mediation to validate every operation that the user makes, promoting the concept of "never trust user input." Examples include ensuring that explicit error checking is performed and documented for all input, including for size, data type, and acceptable ranges or formats. Secure design also means minimizing the application infrastructure attack surface, such as turning off unprotected ports and services, removing unnecessary programs and files, and renaming or removing default accounts.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Apply secure design principles in application architectures. Secure design principles include the concept of least privilege and enforcing mediation to validate every operation that the user makes, promoting the concept of "never trust user input." Examples include ensuring that explicit error checking is performed and documented for all input, including for size, data type, and acceptable ranges or formats. Secure design also means minimizing the application infrastructure attack surface, such as turning off unprotected ports and services, removing unnecessary programs and files, and renaming or removing default accounts.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.11',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.11',
+  name: 'Leverage Vetted Modules or Services for Application Security Components',
+  description: 'Leverage vetted modules or services for application security components, such as identity management, encryption, auditing, and logging. Using platform features in critical security functions will reduce developers’ workload and minimize the likelihood of design or implementation errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Leverage vetted modules or services for application security components, such as identity management, encryption, auditing, and logging. Using platform features in critical security functions will reduce developers’ workload and minimize the likelihood of design or  errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+// IG3-only krav nedan:
+{
+  id: 'cis-ig3-16.12',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.12',
+  name: 'Implement Code-Level Security Checks',
+  description: 'Apply static and dynamic analysis tools within the application life cycle to verify that secure coding practices are being followed.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Apply static and dynamic analysis tools within the application life cycle to verify that secure coding practices are being followed.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.13',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.13',
+  name: 'Conduct Application Penetration Testing',
+  description: 'Conduct application penetration testing. For critical applications, authenticated penetration testing is better suited to finding business logic vulnerabilities than code scanning and automated security testing. Penetration testing relies on the skill of the tester to manually manipulate an application as an authenticated and unauthenticated user.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Conduct application penetration testing. For critical applications, authenticated penetration testing is better suited to finding business logic vulnerabilities than code scanning and automated security testing. Penetration testing relies on the skill of the tester to manually manipulate an application as an authenticated and unauthenticated user.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-16.14',
+  standardId: 'cis-ig3',
+  section: '16',
+  code: '16.14',
+  name: 'Conduct Threat Modeling',
+  description: 'Conduct threat modeling. Threat modeling is the process of identifying and addressing application security design flaws within a design, before code is created. It is conducted through specially trained individuals who evaluate the application design and gauge security risks for each entry point and access level. The goal is to map out the application, architecture, and infrastructure in a structured way to understand its weaknesses.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Conduct threat modeling. Threat modeling is the process of identifying and addressing application security design flaws within a design, before code is created. It is conducted through specially trained individuals who evaluate the application design and gauge security risks for each entry point and access level. The goal is to map out the application, architecture, and infrastructure in a structured way to understand its weaknesses.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-application'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.1',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.1',
+  name: 'Designate Personnel to Manage Incident Handling',
+  description: 'Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.2',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.2',
+  name: 'Establish and Maintain Contact Information for Reporting Security Incidents',
+  description: 'Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.3',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.3',
+  name: 'Establish and Maintain an Enterprise Process for Reporting Incidents',
+  description: 'Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.4',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.4',
+  name: 'Establish and Maintain an Incident Response Process',
+  description: 'Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.5',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.5',
+  name: 'Assign Key Roles and Responsibilities',
+  description: 'Assign key roles and responsibilities for incident response, including staff from legal, IT, information security, facilities, public relations, human resources, incident responders, analysts, and relevant third parties. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Assign key roles and responsibilities for incident response, including staff from legal, IT, information security, facilities, public relations, human resources, incident responders, analysts, and relevant third parties. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.6',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.6',
+  name: 'Define Mechanisms for Communicating During Incident Response',
+  description: 'Determine which primary and secondary mechanisms will be used to communicate and report during a security incident. Mechanisms can include phone calls, emails, secure chat, or notification letters. Keep in mind that certain mechanisms, such as emails, can be affected during a security incident. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Determine which primary and secondary mechanisms will be used to communicate and report during a security incident. Mechanisms can include phone calls, emails, secure chat, or notification letters. Keep in mind that certain mechanisms, such as emails, can be affected during a security incident. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.7',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.7',
+  name: 'Conduct Routine Incident Response Exercises',
+  description: 'Plan and conduct routine incident response exercises and scenarios for key personnel involved in the incident response process to prepare for responding to real-world incidents. Exercises need to test communication channels, decision making, and workflows. Conduct testing on an annual basis, at a minimum.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Plan and conduct routine incident response exercises and scenarios for key personnel involved in the incident response process to prepare for responding to real-world incidents. Exercises need to test communication channels, decision making, and workflows. Conduct testing on an annual basis, at a minimum.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.8',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.8',
+  name: 'Conduct Post-Incident Reviews',
+  description: 'Conduct post-incident reviews. Post-incident reviews help prevent incident recurrence through identifying lessons learned and follow-up action.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Conduct post-incident reviews. Post-incident reviews help prevent incident recurrence through identifying lessons learned and follow-up action.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-17.9',
+  standardId: 'cis-ig3',
+  section: '17',
+  code: '17.9',
+  name: 'Establish and Maintain Security Incident Thresholds',
+  description: 'Establish and maintain security incident thresholds, including, at a minimum, differentiating between an incident and an event. Examples can include: abnormal activity, security vulnerability, security weakness, data breach, privacy incident, etc. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain security incident thresholds, including, at a minimum, differentiating between an incident and an event. Examples can include: abnormal activity, security vulnerability, security weakness, data breach, privacy incident, etc. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-incident'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-18.1',
+  standardId: 'cis-ig3',
+  section: '18',
+  code: '18.1',
+  name: 'Establish and Maintain a Penetration Testing Program',
+  description: 'Establish and maintain a penetration testing program appropriate to the size, complexity, industry, and maturity of the enterprise. Penetration testing program characteristics include scope, such as network, web application, Application Programming Interface (API), hosted services, and physical premise controls; frequency; limitations, such as acceptable hours, and excluded attack types; point of contact information; remediation, such as how findings will be routed internally; and retrospective requirements.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a penetration testing program appropriate to the size, complexity, industry, and maturity of the enterprise. Penetration testing program characteristics include scope, such as network, web application, Application Programming Interface (API), hosted services, and physical premise controls; frequency; limitations, such as acceptable hours, and excluded attack types; point of contact information; remediation, such as how findings will be routed internally; and retrospective requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-18.2',
+  standardId: 'cis-ig3',
+  section: '18',
+  code: '18.2',
+  name: 'Perform Periodic External Penetration Tests',
+  description: 'Perform periodic external penetration tests based on program requirements, no less than annually. External penetration testing must include enterprise and environmental reconnaissance to detect exploitable information. Penetration testing requires specialized skills and experience and must be conducted through a qualified party. The testing may be clear box or opaque box.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform periodic external penetration tests based on program requirements, no less than annually. External penetration testing must include enterprise and environmental reconnaissance to detect exploitable information. Penetration testing requires specialized skills and experience and must be conducted through a qualified party. The testing may be clear box or opaque box.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-18.3',
+  standardId: 'cis-ig3',
+  section: '18',
+  code: '18.3',
+  name: 'Remediate Penetration Test Findings',
+  description: 'Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-18.4',
+  standardId: 'cis-ig3',
+  section: '18',
+  code: '18.4',
+  name: 'Validate Security Measures',
+  description: 'Validate security measures after each penetration test. If deemed necessary, modify rulesets and capabilities to detect the techniques used during testing.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Validate security measures after each penetration test. If deemed necessary, modify rulesets and capabilities to detect the techniques used during testing.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
+{
+  id: 'cis-ig3-18.5',
+  standardId: 'cis-ig3',
+  section: '18',
+  code: '18.5',
+  name: 'Perform Periodic Internal Penetration Tests',
+  description: 'Perform periodic internal penetration tests based on program requirements, no less than annually. The testing may be clear box or opaque box.',
+  guidance: '',
+  status: 'not-fulfilled',
+  evidence: '',
+  notes: '',
+  responsibleParty: '',
+  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
+
+Perform periodic internal penetration tests based on program requirements, no less than annually. The testing may be clear box or opaque box.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
+
+**Implementation**
+
+* \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
+
+  tags: ['tag-technical'],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+},
 ];
 
 // Mock Assessments
@@ -3860,7 +13050,7 @@ export const suppliers: Supplier[] = [
     },
     associatedStandards: [
       {
-        standardId: 'iso-27001',
+    standardId: 'iso-27001',
         requirementIds: ['iso-27001-6.1.1', 'iso-27001-6.1.2', 'iso-27001-8.1'],
         sentDate: '2024-02-15T09:00:00Z',
         status: 'in-progress'
@@ -3891,7 +13081,7 @@ export const suppliers: Supplier[] = [
     },
     associatedStandards: [
       {
-        standardId: 'gdpr',
+    standardId: 'gdpr',
         requirementIds: ['gdpr-A1', 'gdpr-A2', 'gdpr-A6', 'gdpr-B1'],
         sentDate: '2024-01-20T11:30:00Z',
         status: 'completed'
@@ -4206,7 +13396,6 @@ const totalRequirements = requirements.length;
 const fulfilledCount = Math.floor(totalRequirements * 0.45);
 const partiallyFulfilledCount = Math.floor(totalRequirements * 0.37);
 const notFulfilledCount = Math.floor(totalRequirements * 0.13);
-const notApplicableCount = totalRequirements - fulfilledCount - partiallyFulfilledCount - notFulfilledCount;
 
 // Update the statuses
 requirements.forEach((requirement, index) => {
@@ -4216,7 +13405,5 @@ requirements.forEach((requirement, index) => {
     requirement.status = 'partially-fulfilled';
   } else if (index < fulfilledCount + partiallyFulfilledCount + notFulfilledCount) {
     requirement.status = 'not-fulfilled';
-  } else {
-    requirement.status = 'not-applicable';
   }
 });

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { FileText, Link, ExternalLink, Save, Plus, X, Flag, Info } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { marked } from "marked";
 
 interface RequirementDetailProps {
   requirement: Requirement;
@@ -60,6 +61,8 @@ export function RequirementDetail({
   const [legendBp, setLegendBp] = useState(req.legendBp || false);
   const [legendRc, setLegendRc] = useState(req.legendRc || false);
   const [justification, setJustification] = useState(requirement.justification || '');
+  const [guidance, setGuidance] = useState(req.guidance || '');
+  const [showAuditReady, setShowAuditReady] = useState(false);
 
   const handleStatusChange = (value: RequirementStatus) => {
     setStatus(value);
@@ -152,6 +155,7 @@ export function RequirementDetail({
     if (status === 'not-applicable') {
       req.justification = justification;
     }
+    req.guidance = guidance;
     setHasChanges(false);
     toast.success(t('requirement.toast.updated', "Requirement updated successfully"));
   };
@@ -166,7 +170,10 @@ export function RequirementDetail({
             </div>
             <CardTitle>{t(`requirement.${requirement.id}.name`, requirement.name)}</CardTitle>
             <CardDescription>
-              {t(`standard.${requirement.standardId}.name`, requirement.standardId)}
+              {requirement.standardId === 'cis-ig2' && 'CIS Controls IG2 - v8.1'}
+              {requirement.standardId === 'cis-ig1' && 'CIS Controls IG1 - v8.1'}
+              {requirement.standardId === 'cis-ig3' && 'CIS Controls IG3 - v8.1'}
+              {requirement.standardId !== 'cis-ig2' && requirement.standardId !== 'cis-ig1' && requirement.standardId !== 'cis-ig3' && t(`standard.${requirement.standardId}.name`, requirement.standardId)}
             </CardDescription>
           </div>
           <StatusBadge status={status} />
@@ -181,11 +188,115 @@ export function RequirementDetail({
         </div>
         
         <div>
-          <h3 className="text-sm font-medium mb-2">{t('requirement.field.guidance', 'Guidance')}</h3>
-          <p className="text-sm text-muted-foreground">
-            {t(`requirement.${requirement.id}.guidance`, requirement.guidance)}
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium">{t('requirement.field.guidance', 'Guidance')}</h3>
+            <Button
+              variant="outline"
+              className="ml-2 px-3 py-1 text-emerald-700 border-emerald-600 hover:bg-emerald-50"
+              onClick={() => setShowAuditReady(true)}
+            >
+              AuditReady guidance
+            </Button>
+          </div>
+          <Textarea
+            value={guidance}
+            onChange={e => { setGuidance(e.target.value); setHasChanges(true); }}
+            placeholder="Write your own guidance or notes for this requirement..."
+            rows={3}
+          />
         </div>
+        
+        {/* AuditReady guidance modal */}
+        {showAuditReady && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+            onClick={() => setShowAuditReady(false)}
+          >
+            <div 
+              className="bg-white dark:bg-slate-900 p-8 rounded-lg max-w-3xl w-full shadow-lg relative" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-900 text-xl"
+                onClick={() => setShowAuditReady(false)}
+              >
+                &times;
+              </button>
+              <h3 className="text-xl font-bold mb-5 text-emerald-700 dark:text-emerald-400">AuditReady guidance</h3>
+              
+              <div className="prose dark:prose-invert max-w-none max-h-[70vh] overflow-y-auto w-full px-3">
+                {(() => {
+                  const content = requirement.auditReadyGuidance || 'No guidance available.';
+                  
+                  const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                  
+                  const purposeIdx = lines.findIndex(l => 
+                    l.toLowerCase().includes('purpose') || 
+                    l.includes('**Purpose**')
+                  );
+                  
+                  const implIdx = lines.findIndex(l => 
+                    l.toLowerCase().includes('implementation') || 
+                    l.includes('**Implementation**')
+                  );
+                  
+                  let purposeText = '';
+                  if (purposeIdx >= 0) {
+                    for (let i = purposeIdx + 1; i < lines.length; i++) {
+                      if (i === implIdx) break;
+                      if (!lines[i].toLowerCase().includes('purpose') && 
+                          !lines[i].startsWith('•') && 
+                          !lines[i].startsWith('*')) {
+                        purposeText = lines[i];
+                        break;
+                      }
+                    }
+                  }
+                  
+                  const bulletPoints: string[] = [];
+                  if (implIdx >= 0) {
+                    for (let i = implIdx + 1; i < lines.length; i++) {
+                      const line = lines[i].trim();
+                      if (line.length > 0 && 
+                          !line.toLowerCase().includes('implementation') &&
+                          !line.includes('**Implementation**')) {
+                        const cleanedLine = line
+                          .replace(/^[•*]+ */, '')
+                          .replace(/^- */, '')
+                          .trim();
+                        if (cleanedLine && !bulletPoints.includes(cleanedLine)) {
+                          bulletPoints.push(cleanedLine);
+                        }
+                      }
+                    }
+                  }
+                  
+                  return (
+                    <>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Purpose</h4>
+                        <p className="text-base">{purposeText || "No purpose information available."}</p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Implementation</h4>
+                        {bulletPoints.length > 0 ? (
+                          <ul className="list-disc pl-6 space-y-3">
+                            {bulletPoints.map((point, idx) => (
+                              <li key={idx} className="text-base">{point}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No implementation details available.</p>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        )}
         
         <Separator />
         

@@ -2,6 +2,7 @@ import React, { useRef, forwardRef } from 'react';
 import { Standard } from '@/types';
 import { Requirement } from '@/types/requirements';
 import { useReactToPrint } from 'react-to-print';
+import { generatePDF } from '@/utils/pdfUtils';
 
 // Example props, adjust as needed
 const legendDefs = [
@@ -56,24 +57,24 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
 
   return (
     <div>
-      <div ref={ref} className="bg-white rounded-lg shadow p-4 border" data-soa-print>
+      <div ref={ref} className="bg-white dark:bg-slate-900 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700" data-soa-print>
         {/* Header/Metadata */}
-        <div className="mb-4 border-b pb-2">
+        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
           <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-2">
             <div>
-              <h2 className="text-2xl font-bold mb-1">Statement of Applicability (SoA)</h2>
-              <div className="text-muted-foreground text-sm">{companyName}</div>
+              <h2 className="text-2xl font-bold mb-1 text-gray-900 dark:text-gray-100">Statement of Applicability (SoA)</h2>
+              <div className="text-muted-foreground text-sm dark:text-gray-300">{companyName}</div>
             </div>
-            <div className="text-right text-sm mt-2 md:mt-0">
+            <div className="text-right text-sm mt-2 md:mt-0 text-gray-700 dark:text-gray-300">
               <div><strong>Date:</strong> {date}</div>
               <div><strong>Version:</strong> {soaVersion}</div>
               <div><strong>Prepared by:</strong> {preparedBy}</div>
             </div>
           </div>
-          {notes && <div className="text-xs text-muted-foreground mb-1">{notes}</div>}
+          {notes && <div className="text-xs text-muted-foreground mb-1 dark:text-gray-400">{notes}</div>}
         </div>
         <div className="mb-4">
-          <div className="text-sm text-muted-foreground mb-2">
+          <div className="text-sm text-muted-foreground mb-2 dark:text-gray-300">
             <strong>Legend for Control Inclusion:</strong>
             <ul className="ml-4 mt-1">
               {legendDefs.map(l => (
@@ -84,26 +85,26 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
         </div>
         <div className="overflow-x-auto">
           {relevantRequirements.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
+            <div className="text-center text-muted-foreground py-8 dark:text-gray-400">
               <p>No requirements found for the selected standards.</p>
               <p className="text-xs mt-2">Check that your requirements are linked to the correct standards and that standards are marked as applicable.</p>
             </div>
           ) : (
-            <table className="min-w-full border text-sm">
+            <table className="min-w-full border text-sm border-gray-200 dark:border-gray-700">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border px-2 py-1 align-bottom" rowSpan={2}>Standard</th>
-                  <th className="border px-2 py-1 align-bottom" rowSpan={2}>Clause</th>
-                  <th className="border px-2 py-1 align-bottom" rowSpan={2}>Requirement</th>
-                  <th className="border px-2 py-1 text-center" colSpan={4}>Justification for inclusion</th>
-                  <th className="border px-2 py-1 align-bottom" rowSpan={2}>Justification for exclusion</th>
-                  <th className="border px-2 py-1 align-bottom" rowSpan={2}>Status</th>
+                <tr className="bg-gray-100 dark:bg-slate-800">
+                  <th className="border px-2 py-1 align-bottom border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100" rowSpan={2}>Standard</th>
+                  <th className="border px-2 py-1 align-bottom border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100" rowSpan={2}>Clause</th>
+                  <th className="border px-2 py-1 align-bottom border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100" rowSpan={2}>Requirement</th>
+                  <th className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100" colSpan={4}>Justification for inclusion</th>
+                  <th className="border px-2 py-1 align-bottom border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100" rowSpan={2}>Justification for exclusion</th>
+                  <th className="border px-2 py-1 align-bottom border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100" rowSpan={2}>Status</th>
                 </tr>
-                <tr className="bg-gray-50">
-                  <th className="border px-2 py-1 text-center">REG</th>
-                  <th className="border px-2 py-1 text-center">CON</th>
-                  <th className="border px-2 py-1 text-center">BP</th>
-                  <th className="border px-2 py-1 text-center">RC</th>
+                <tr className="bg-gray-50 dark:bg-slate-700">
+                  <th className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">REG</th>
+                  <th className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">CON</th>
+                  <th className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">BP</th>
+                  <th className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">RC</th>
                 </tr>
               </thead>
               <tbody>
@@ -113,16 +114,16 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
                   // Clause: use code if present, else section, else '-'
                   const clause = req.code || req.section || '-';
                   return (
-                    <tr key={req.id} className="even:bg-gray-50">
-                      <td className="border px-2 py-1">{std?.name}</td>
-                      <td className="border px-2 py-1">{clause}</td>
-                      <td className="border px-2 py-1">{req.name}</td>
-                      <td className="border px-2 py-1 text-center">{regChecked ? '✔️' : ''}</td>
-                      <td className="border px-2 py-1 text-center">{(req as any).legendCon ? '✔️' : ''}</td>
-                      <td className="border px-2 py-1 text-center">{(req as any).legendBp ? '✔️' : ''}</td>
-                      <td className="border px-2 py-1 text-center">{(req as any).legendRc ? '✔️' : ''}</td>
-                      <td className="border px-2 py-1">{(req as any).justification || ''}</td>
-                      <td className="border px-2 py-1">{formatStatus(req.status)}</td>
+                    <tr key={req.id} className="even:bg-gray-50 dark:even:bg-slate-800">
+                      <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{std?.name}</td>
+                      <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{clause}</td>
+                      <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{req.name}</td>
+                      <td className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{regChecked ? '✔️' : ''}</td>
+                      <td className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{(req as any).legendCon ? '✔️' : ''}</td>
+                      <td className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{(req as any).legendBp ? '✔️' : ''}</td>
+                      <td className="border px-2 py-1 text-center border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{(req as any).legendRc ? '✔️' : ''}</td>
+                      <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{(req as any).justification || ''}</td>
+                      <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{formatStatus(req.status)}</td>
                     </tr>
                   );
                 })}
@@ -141,10 +142,12 @@ interface ActionButtonsProps {
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ soaRef, onClose }) => {
-  const handlePrint = useReactToPrint({
-    content: () => soaRef.current,
-    documentTitle: `SoA_${getCompanyName().replace(/\s+/g, '_')}`,
-  });
+  const handlePrint = () => {
+    generatePDF(
+      soaRef,
+      `SoA_${getCompanyName().replace(/\s+/g, '_')}`
+    );
+  };
   return (
     <>
       <button className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" onClick={handlePrint}>

@@ -4,28 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StandardCard } from "@/components/standards/StandardCard";
 import { StandardsLibrary } from "@/components/standards/StandardsLibrary";
-import { standards, requirements } from "@/data/mockData";
 import { Standard, StandardType } from "@/types";
-import { Plus, Search, Filter, FileUp, ClipboardCheck, Download, Library } from "lucide-react";
+import { Plus, Search, Filter, ClipboardCheck, Library } from "lucide-react";
 import { toast } from "@/utils/toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { CreateStandardForm } from "@/components/standards/CreateStandardForm";
+import { useRequirements } from "@/hooks/useRequirements";
+import SoAPreview from '@/components/soa/SoAPreview';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreateStandardForm } from "@/components/standards/CreateStandardForm";
-import { useNavigate } from "react-router-dom";
-import { useStandards } from "@/hooks/useStandards";
-import { useRequirements } from "@/hooks/useRequirements";
-import SoAPreview from '@/components/soa/SoAPreview';
 
 // Define the complete library of available standards
 const standardsLibrary: Standard[] = [
@@ -131,6 +123,94 @@ const standardsLibrary: Standard[] = [
     updatedAt: '2024-02-26T00:00:00Z',
   },
   {
+    id: 'cis-ig1',
+    name: 'CIS Controls IG1',
+    version: '8.1',
+    type: 'framework' as StandardType,
+    description: 'CIS Implementation Group 1 (IG1) is the essential cyber hygiene standard, representing basic cyber defense readiness for all enterprises.',
+    category: 'Cybersecurity',
+    requirements: [
+      'cis-ig1-1.1', 'cis-ig1-1.2',
+      'cis-ig1-2.1', 'cis-ig1-2.2', 'cis-ig1-2.3',
+      'cis-ig1-3.1', 'cis-ig1-3.2', 'cis-ig1-3.3', 'cis-ig1-3.4', 'cis-ig1-3.5', 'cis-ig1-3.6',
+      'cis-ig1-4.1', 'cis-ig1-4.2', 'cis-ig1-4.3', 'cis-ig1-4.4', 'cis-ig1-4.5', 'cis-ig1-4.6', 'cis-ig1-4.7',
+      'cis-ig1-5.1', 'cis-ig1-5.2', 'cis-ig1-5.3', 'cis-ig1-5.4',
+      'cis-ig1-6.1', 'cis-ig1-6.2', 'cis-ig1-6.3', 'cis-ig1-6.4', 'cis-ig1-6.5',
+      'cis-ig1-7.1', 'cis-ig1-7.2', 'cis-ig1-7.3', 'cis-ig1-7.4',
+      'cis-ig1-8.1', 'cis-ig1-8.2', 'cis-ig1-8.3',
+      'cis-ig1-9.1', 'cis-ig1-9.2',
+      'cis-ig1-10.1', 'cis-ig1-10.2', 'cis-ig1-10.3',
+      'cis-ig1-11.1', 'cis-ig1-11.2', 'cis-ig1-11.3', 'cis-ig1-11.4',
+      'cis-ig1-12.1',
+      'cis-ig1-13.1',
+      'cis-ig1-14.1', 'cis-ig1-14.2', 'cis-ig1-14.3', 'cis-ig1-14.4', 'cis-ig1-14.5', 'cis-ig1-14.6', 'cis-ig1-14.7', 'cis-ig1-14.8',
+      'cis-ig1-15.1',
+      'cis-ig1-16.1',
+      'cis-ig1-17.1', 'cis-ig1-17.2', 'cis-ig1-17.3'
+    ],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'cis-ig2',
+    name: 'CIS Controls IG2',
+    version: '8.1',
+    type: 'framework' as StandardType,
+    description: 'CIS Implementation Group 2 (IG2) includes all IG1 safeguards plus additional safeguards for organizations with moderate cybersecurity maturity and resources.',
+    category: 'Cybersecurity',
+    requirements: [
+      'cis-ig2-1.1', 'cis-ig2-1.2', 'cis-ig2-1.3', 'cis-ig2-1.4',
+      'cis-ig2-2.1', 'cis-ig2-2.2', 'cis-ig2-2.3', 'cis-ig2-2.4', 'cis-ig2-2.5', 'cis-ig2-2.6',
+      'cis-ig2-3.1', 'cis-ig2-3.2', 'cis-ig2-3.3', 'cis-ig2-3.4', 'cis-ig2-3.5', 'cis-ig2-3.6', 'cis-ig2-3.7', 'cis-ig2-3.8', 'cis-ig2-3.9', 'cis-ig2-3.10', 'cis-ig2-3.11', 'cis-ig2-3.12',
+      'cis-ig2-4.1', 'cis-ig2-4.2', 'cis-ig2-4.3', 'cis-ig2-4.4', 'cis-ig2-4.5', 'cis-ig2-4.6', 'cis-ig2-4.7', 'cis-ig2-4.8', 'cis-ig2-4.9', 'cis-ig2-4.10', 'cis-ig2-4.11',
+      'cis-ig2-5.1', 'cis-ig2-5.2', 'cis-ig2-5.3', 'cis-ig2-5.4', 'cis-ig2-5.5', 'cis-ig2-5.6',
+      'cis-ig2-6.1', 'cis-ig2-6.2', 'cis-ig2-6.3', 'cis-ig2-6.4', 'cis-ig2-6.5', 'cis-ig2-6.6', 'cis-ig2-6.7',
+      'cis-ig2-7.1', 'cis-ig2-7.2', 'cis-ig2-7.3', 'cis-ig2-7.4', 'cis-ig2-7.5', 'cis-ig2-7.6', 'cis-ig2-7.7',
+      'cis-ig2-8.1', 'cis-ig2-8.2', 'cis-ig2-8.3', 'cis-ig2-8.4', 'cis-ig2-8.5', 'cis-ig2-8.6', 'cis-ig2-8.7', 'cis-ig2-8.8', 'cis-ig2-8.9', 'cis-ig2-8.10', 'cis-ig2-8.11',
+      'cis-ig2-9.1', 'cis-ig2-9.2', 'cis-ig2-9.3', 'cis-ig2-9.4', 'cis-ig2-9.5', 'cis-ig2-9.6',
+      'cis-ig2-10.1', 'cis-ig2-10.2', 'cis-ig2-10.3', 'cis-ig2-10.4', 'cis-ig2-10.5', 'cis-ig2-10.6', 'cis-ig2-10.7',
+      'cis-ig2-11.1', 'cis-ig2-11.2', 'cis-ig2-11.3', 'cis-ig2-11.4', 'cis-ig2-11.5',
+      'cis-ig2-12.1', 'cis-ig2-12.2', 'cis-ig2-12.3', 'cis-ig2-12.4', 'cis-ig2-12.5', 'cis-ig2-12.6', 'cis-ig2-12.7',
+      'cis-ig2-13.1', 'cis-ig2-13.2', 'cis-ig2-13.3', 'cis-ig2-13.4', 'cis-ig2-13.5', 'cis-ig2-13.6',
+      'cis-ig2-14.1', 'cis-ig2-14.2', 'cis-ig2-14.3', 'cis-ig2-14.4', 'cis-ig2-14.5', 'cis-ig2-14.6', 'cis-ig2-14.7', 'cis-ig2-14.8',
+      'cis-ig2-15.1', 'cis-ig2-15.2', 'cis-ig2-15.3', 'cis-ig2-15.4',
+      'cis-ig2-16.1', 'cis-ig2-16.2', 'cis-ig2-16.3', 'cis-ig2-16.4', 'cis-ig2-16.5', 'cis-ig2-16.6', 'cis-ig2-16.7', 'cis-ig2-16.8', 'cis-ig2-16.9', 'cis-ig2-16.10', 'cis-ig2-16.11',
+      'cis-ig2-17.1', 'cis-ig2-17.2', 'cis-ig2-17.3', 'cis-ig2-17.4', 'cis-ig2-17.5', 'cis-ig2-17.6', 'cis-ig2-17.7', 'cis-ig2-17.8'
+    ],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'cis-ig3',
+    name: 'CIS Controls IG3',
+    version: '8.1',
+    type: 'framework' as StandardType,
+    description: 'CIS Implementation Group 3 (IG3) includes all IG1 and IG2 safeguards plus additional advanced safeguards for organizations with the highest cybersecurity maturity.',
+    category: 'Cybersecurity',
+    requirements: [
+      'cis-ig3-1.1', 'cis-ig3-1.2', 'cis-ig3-1.3', 'cis-ig3-1.4', 'cis-ig3-1.5',
+      'cis-ig3-2.1', 'cis-ig3-2.2', 'cis-ig3-2.3', 'cis-ig3-2.4', 'cis-ig3-2.5', 'cis-ig3-2.6', 'cis-ig3-2.7',
+      'cis-ig3-3.1', 'cis-ig3-3.2', 'cis-ig3-3.3', 'cis-ig3-3.4', 'cis-ig3-3.5', 'cis-ig3-3.6', 'cis-ig3-3.7', 'cis-ig3-3.8', 'cis-ig3-3.9', 'cis-ig3-3.10', 'cis-ig3-3.11', 'cis-ig3-3.12', 'cis-ig3-3.13', 'cis-ig3-3.14',
+      'cis-ig3-4.1', 'cis-ig3-4.2', 'cis-ig3-4.3', 'cis-ig3-4.4', 'cis-ig3-4.5', 'cis-ig3-4.6', 'cis-ig3-4.7', 'cis-ig3-4.8', 'cis-ig3-4.9', 'cis-ig3-4.10', 'cis-ig3-4.11', 'cis-ig3-4.12',
+      'cis-ig3-5.1', 'cis-ig3-5.2', 'cis-ig3-5.3', 'cis-ig3-5.4', 'cis-ig3-5.5', 'cis-ig3-5.6',
+      'cis-ig3-6.1', 'cis-ig3-6.2', 'cis-ig3-6.3', 'cis-ig3-6.4', 'cis-ig3-6.5', 'cis-ig3-6.6', 'cis-ig3-6.7', 'cis-ig3-6.8',
+      'cis-ig3-7.1', 'cis-ig3-7.2', 'cis-ig3-7.3', 'cis-ig3-7.4', 'cis-ig3-7.5', 'cis-ig3-7.6', 'cis-ig3-7.7',
+      'cis-ig3-8.1', 'cis-ig3-8.2', 'cis-ig3-8.3', 'cis-ig3-8.4', 'cis-ig3-8.5', 'cis-ig3-8.6', 'cis-ig3-8.7', 'cis-ig3-8.8', 'cis-ig3-8.9', 'cis-ig3-8.10', 'cis-ig3-8.11', 'cis-ig3-8.12',
+      'cis-ig3-9.1', 'cis-ig3-9.2', 'cis-ig3-9.3', 'cis-ig3-9.4', 'cis-ig3-9.5', 'cis-ig3-9.6', 'cis-ig3-9.7',
+      'cis-ig3-10.1', 'cis-ig3-10.2', 'cis-ig3-10.3', 'cis-ig3-10.4', 'cis-ig3-10.5', 'cis-ig3-10.6', 'cis-ig3-10.7',
+      'cis-ig3-11.1', 'cis-ig3-11.2', 'cis-ig3-11.3', 'cis-ig3-11.4', 'cis-ig3-11.5',
+      'cis-ig3-12.1', 'cis-ig3-12.2', 'cis-ig3-12.3', 'cis-ig3-12.4', 'cis-ig3-12.5', 'cis-ig3-12.6', 'cis-ig3-12.7', 'cis-ig3-12.8',
+      'cis-ig3-13.1', 'cis-ig3-13.2', 'cis-ig3-13.3', 'cis-ig3-13.4', 'cis-ig3-13.5', 'cis-ig3-13.6', 'cis-ig3-13.7', 'cis-ig3-13.8', 'cis-ig3-13.9', 'cis-ig3-13.10', 'cis-ig3-13.11',
+      'cis-ig3-14.1', 'cis-ig3-14.2', 'cis-ig3-14.3', 'cis-ig3-14.4', 'cis-ig3-14.5', 'cis-ig3-14.6', 'cis-ig3-14.7', 'cis-ig3-14.8', 'cis-ig3-14.9',
+      'cis-ig3-15.1', 'cis-ig3-15.2', 'cis-ig3-15.3', 'cis-ig3-15.4', 'cis-ig3-15.5', 'cis-ig3-15.6', 'cis-ig3-15.7',
+      'cis-ig3-16.1', 'cis-ig3-16.2', 'cis-ig3-16.3', 'cis-ig3-16.4', 'cis-ig3-16.5', 'cis-ig3-16.6', 'cis-ig3-16.7', 'cis-ig3-16.8', 'cis-ig3-16.9', 'cis-ig3-16.10', 'cis-ig3-16.11', 'cis-ig3-16.12', 'cis-ig3-16.13', 'cis-ig3-16.14',
+      'cis-ig3-17.1', 'cis-ig3-17.2', 'cis-ig3-17.3', 'cis-ig3-17.4', 'cis-ig3-17.5', 'cis-ig3-17.6', 'cis-ig3-17.7', 'cis-ig3-17.8', 'cis-ig3-17.9',
+      'cis-ig3-18.1', 'cis-ig3-18.2', 'cis-ig3-18.3', 'cis-ig3-18.4', 'cis-ig3-18.5'
+    ],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
     id: 'iso-27005-2022',
     name: 'ISO/IEC 27005:2022',
     version: '2022',
@@ -150,12 +230,10 @@ const standardsLibrary: Standard[] = [
 ];
 
 const Standards = () => {
-  const navigate = useNavigate();
-  const { standards: standardsData, loading: standardsLoading } = useStandards();
   const { requirements: requirementsData, loading: requirementsLoading } = useRequirements();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab] = useState("all");
   const [localStandards, setLocalStandards] = useState<Standard[]>(() => {
     const savedStandards = localStorage.getItem('standards');
     if (savedStandards) {
@@ -234,10 +312,6 @@ const Standards = () => {
     return matchesSearch && matchesType && matchesTab;
   });
 
-  const importStandard = () => {
-    toast.success("Standard imported successfully");
-  };
-
   const exportStandard = (id: string) => {
     toast.success(`Standard ${id} exported successfully`);
   };
@@ -269,23 +343,10 @@ const Standards = () => {
     toast.success(`Added ${uniqueNewStandards.length} new standard(s)`);
   };
 
-  const handleCreateStandard = (newStandard: Standard) => {
-    // Implementation needed
+   const handleCreateStandard = (_: Standard) => {    // Implementation needed
   };
 
-  const generateSOA = () => {
-    const selectedStandards = localStandards.filter(std => applicableStandards[std.id]);
-    
-    if (selectedStandards.length === 0) {
-      toast.error("Please select at least one applicable standard");
-      return;
-    }
-
-    toast.success("Statement of Applicability generated successfully");
-    setIsSOADialogOpen(false);
-  };
-
-  if (standardsLoading || requirementsLoading) {
+  if (requirementsLoading) {
     return <div>Loading...</div>;
   }
 

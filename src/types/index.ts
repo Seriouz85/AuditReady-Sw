@@ -40,7 +40,9 @@ export interface Requirement {
   code: string;
   name: string;
   description: string;
-  guidance: string;
+  guidance?: string;
+  auditReadyGuidance?: string;
+  justification?: string;
   status: RequirementStatus;
   priority?: RequirementPriority;
   evidence?: string;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -131,7 +131,8 @@ const notifications: Notification[] = [
 ];
 
 const TrenningLMS: React.FC = () => {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const prevTheme = useRef<string | undefined>();
   const [greeting, setGreeting] = useState(getTimeBasedGreeting());
   const [userStreak, setUserStreak] = useState(updateStreak());
   const [localCourses, setLocalCourses] = useState(courses);
@@ -145,7 +146,15 @@ const TrenningLMS: React.FC = () => {
     return () => clearInterval(intervalId);
   }, []);
   
-  useEffect(() => { setTheme('light'); }, [setTheme]);
+  useEffect(() => {
+    prevTheme.current = theme;
+    setTheme('light');
+    return () => {
+      if (prevTheme.current && prevTheme.current !== 'light') {
+        setTheme(prevTheme.current);
+      }
+    };
+  }, []);
   
   const currentUser = {
     name: 'User',

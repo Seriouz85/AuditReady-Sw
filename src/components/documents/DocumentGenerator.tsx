@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import DocumentFormatter from "./DocumentFormatter";
 
 // Custom CSS for handling text overflow
 const customStyles = {
@@ -426,6 +427,16 @@ IMPORTANT GUIDELINES:
 8. Include document metadata (version, date, owner, etc.) at the top
 9. End with appendices as appropriate for this document type
 
+FORMATTING REQUIREMENTS:
+1. Use clean, numbered headers (1, 1.1, 1.1.1) instead of hash symbols (#)
+2. For bullet points, use standard bullet format with a dash (-) at the start of each point, not asterisks (*) or other symbols
+3. Ensure proper indentation and consistent spacing between sections
+4. Use ALL CAPS for main section titles
+5. Use Title Case for subsection titles
+6. Add a blank line between paragraphs and sections for readability
+7. Keep line lengths reasonable - avoid extremely long paragraphs
+8. For lists, use consistent formatting throughout
+
 CRITICAL: Output ONLY the final document content. Do NOT include any hypothetical user responses, explanations of what you're doing, or anything outside the actual document content. Start directly with the document title and metadata.
 
 Create the complete document now, formatted for immediate use by the organization.`;
@@ -483,11 +494,15 @@ DOCUMENT STRUCTURE:
 10. Related "${processName}" policies and references
 11. Appendices as needed for "${processName}"
 
-FORMAT GUIDELINES:
-1. Use clear, professional, and simple language
-2. For any missing information, use placeholder text marked as "TBA-[TOPIC]" rather than omitting sections
-3. Be thorough but concise - include all necessary information without unnecessary length
-4. Include flow diagrams instructions where appropriate
+FORMATTING REQUIREMENTS:
+1. Use clean, numbered headers (1, 1.1, 1.1.1) instead of hash symbols (#)
+2. For bullet points, use standard bullet format with a dash (-) at the start of each point, not asterisks (*) or other symbols
+3. Ensure proper indentation and consistent spacing between sections
+4. Use ALL CAPS for main section titles
+5. Use Title Case for subsection titles
+6. Add a blank line between paragraphs and sections for readability
+7. Keep line lengths reasonable - avoid extremely long paragraphs
+8. For lists, use consistent formatting throughout
 
 CRITICAL: Output ONLY the final document content. Start directly with the document title and metadata. Do NOT switch to a different process type.
 
@@ -781,10 +796,8 @@ Create the complete "${processName}" process document now, formatted for immedia
               <CardContent className="flex-1 overflow-hidden">
                 <ScrollArea className="h-full">
                   {generatedContent ? (
-                    <div className="markdown-content">
-                      <div className="whitespace-pre-wrap font-mono text-sm break-words overflow-wrap-anywhere" style={customStyles}>
-                        {generatedContent}
-                      </div>
+                    <div className="markdown-content p-4">
+                      <DocumentFormatter content={generatedContent} />
                     </div>
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center gap-4 text-center p-4">
