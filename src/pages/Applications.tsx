@@ -1,36 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
-  Plus, Search, Filter, Mail, Laptop,
-  X, Check, AlertTriangle, FileEdit, Trash2, Shield,
+  Plus, Search, Filter, Laptop,
+  X, Shield,
 } from "lucide-react";
 import { applications as initialApplications } from "@/data/mockData";
-import { InternalUser, Application, Requirement, Standard } from "@/types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { InternalUser, Application, Requirement } from "@/types";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -54,6 +33,26 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageHeader } from '@/components/PageHeader';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Applications = () => {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -85,7 +84,6 @@ const Applications = () => {
   // Placeholder data until we confirm where these come from
   const internalUsers: InternalUser[] = []; 
   const requirements: Requirement[] = [];
-  const standards: Standard[] = [];
 
   // Get filtered applications
   const filteredApplications = applications.filter((application) => {

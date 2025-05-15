@@ -10,10 +10,9 @@ import { toast } from "@/utils/toast";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { FileText, Link, ExternalLink, Save, Plus, X, Flag, Info } from "lucide-react";
+import { FileText, Link, Save, Plus, X, Flag, Info } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { marked } from "marked";
 
 interface RequirementDetailProps {
   requirement: Requirement;
@@ -37,7 +36,7 @@ interface RequirementWithLegend extends Requirement {
   legendRc?: boolean;
 }
 
-export function RequirementDetail({ 
+export function RequirementDetail({
   requirement,
   onStatusChange,
   onPriorityChange,
@@ -63,6 +62,10 @@ export function RequirementDetail({
   const [justification, setJustification] = useState(requirement.justification || '');
   const [guidance, setGuidance] = useState(req.guidance || '');
   const [showAuditReady, setShowAuditReady] = useState(false);
+
+  if (requirement.id === 'cis-ig1-1.1' && (!requirement.auditReadyGuidance || requirement.auditReadyGuidance.trim() === '')) {
+    throw new Error('auditReadyGuidance is missing or empty for cis-ig1-1.1');
+  }
 
   const handleStatusChange = (value: RequirementStatus) => {
     setStatus(value);
@@ -122,30 +125,30 @@ export function RequirementDetail({
     if (onStatusChange) {
       onStatusChange(req.id, status);
     }
-    
+
     if (onPriorityChange) {
       onPriorityChange(req.id, priority);
     }
-    
+
     if (onEvidenceChange) {
       // Format links as part of the evidence
       const formattedLinks = evidenceLinks
         .filter(link => link.url.trim())
         .map(link => `[${link.description || link.url}](${link.url})`)
         .join('\n');
-      
+
       const fullEvidence = evidence + (formattedLinks ? `\n\nLinked Documents:\n${formattedLinks}` : '');
       onEvidenceChange(req.id, fullEvidence);
     }
-    
+
     if (onNotesChange) {
       onNotesChange(req.id, notes);
     }
-    
+
     if (onTagsChange) {
       onTagsChange(req.id, tags);
     }
-    
+
     // Save legend fields (if you have a save handler, pass these values)
     req.legendReg = legendReg;
     req.legendCon = legendCon;
@@ -161,6 +164,7 @@ export function RequirementDetail({
   };
 
   return (
+    <>
     <Card className="h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
@@ -186,7 +190,7 @@ export function RequirementDetail({
             {t(`requirement.${requirement.id}.description`, requirement.description)}
           </p>
         </div>
-        
+
         <div>
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-medium">{t('requirement.field.guidance', 'Guidance')}</h3>
@@ -205,15 +209,15 @@ export function RequirementDetail({
             rows={3}
           />
         </div>
-        
+
         {/* AuditReady guidance modal */}
         {showAuditReady && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
             onClick={() => setShowAuditReady(false)}
           >
-            <div 
-              className="bg-white dark:bg-slate-900 p-8 rounded-lg max-w-3xl w-full shadow-lg relative" 
+            <div
+              className="bg-white dark:bg-slate-900 p-8 rounded-lg max-w-3xl w-full shadow-lg relative"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -223,41 +227,35 @@ export function RequirementDetail({
                 &times;
               </button>
               <h3 className="text-xl font-bold mb-5 text-emerald-700 dark:text-emerald-400">AuditReady guidance</h3>
-              
               <div className="prose dark:prose-invert max-w-none max-h-[70vh] overflow-y-auto w-full px-3">
                 {(() => {
                   const content = requirement.auditReadyGuidance || 'No guidance available.';
-                  
                   const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                  
-                  const purposeIdx = lines.findIndex(l => 
-                    l.toLowerCase().includes('purpose') || 
+                  const purposeIdx = lines.findIndex(l =>
+                    l.toLowerCase().includes('purpose') ||
                     l.includes('**Purpose**')
                   );
-                  
-                  const implIdx = lines.findIndex(l => 
-                    l.toLowerCase().includes('implementation') || 
+                  const implIdx = lines.findIndex(l =>
+                    l.toLowerCase().includes('implementation') ||
                     l.includes('**Implementation**')
                   );
-                  
                   let purposeText = '';
                   if (purposeIdx >= 0) {
                     for (let i = purposeIdx + 1; i < lines.length; i++) {
                       if (i === implIdx) break;
-                      if (!lines[i].toLowerCase().includes('purpose') && 
-                          !lines[i].startsWith('•') && 
+                      if (!lines[i].toLowerCase().includes('purpose') &&
+                          !lines[i].startsWith('•') &&
                           !lines[i].startsWith('*')) {
                         purposeText = lines[i];
                         break;
                       }
                     }
                   }
-                  
                   const bulletPoints: string[] = [];
                   if (implIdx >= 0) {
                     for (let i = implIdx + 1; i < lines.length; i++) {
                       const line = lines[i].trim();
-                      if (line.length > 0 && 
+                      if (line.length > 0 &&
                           !line.toLowerCase().includes('implementation') &&
                           !line.includes('**Implementation**')) {
                         const cleanedLine = line
@@ -270,14 +268,12 @@ export function RequirementDetail({
                       }
                     }
                   }
-                  
                   return (
                     <>
                       <div className="mb-6">
                         <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Purpose</h4>
                         <p className="text-base">{purposeText || "No purpose information available."}</p>
                       </div>
-                      
                       <div>
                         <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Implementation</h4>
                         {bulletPoints.length > 0 ? (
@@ -297,9 +293,9 @@ export function RequirementDetail({
             </div>
           </div>
         )}
-        
+
         <Separator />
-        
+
         <div className="space-y-4">
           <TagSelector
             selectedTags={tags}
@@ -307,7 +303,7 @@ export function RequirementDetail({
             className="min-h-[40px]"
           />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
@@ -342,7 +338,7 @@ export function RequirementDetail({
               </div>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="priority" className="flex items-center gap-1">
@@ -404,7 +400,7 @@ export function RequirementDetail({
             </label>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="evidence">{t('requirement.field.evidence', 'Evidence')}</Label>
@@ -417,7 +413,7 @@ export function RequirementDetail({
             rows={4}
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label className="flex items-center">
             <FileText size={14} className="mr-1" />
@@ -432,23 +428,23 @@ export function RequirementDetail({
                     <div className="bg-muted p-2 border border-r-0 rounded-l-md">
                       <Link size={16} className="text-muted-foreground" />
                     </div>
-                    <Input 
+                    <Input
                       id={`link-url-${index}`}
                       placeholder="Document URL"
                       value={link.url}
                       onChange={(e) => handleEvidenceLinkChange(index, 'url', e.target.value)}
-                      className="rounded-l-none" 
+                      className="rounded-l-none"
                     />
                   </div>
                 </div>
-                <Input 
+                <Input
                   placeholder="Description (optional)"
                   value={link.description}
                   onChange={(e) => handleEvidenceLinkChange(index, 'description', e.target.value)}
                 />
-                <Button 
-                  variant="outline" 
-                  size="icon" 
+                <Button
+                  variant="outline"
+                  size="icon"
                   onClick={() => removeEvidenceLink(index)}
                   disabled={evidenceLinks.length === 1 && !link.url && !link.description}
                 >
@@ -456,9 +452,9 @@ export function RequirementDetail({
                 </Button>
               </div>
             ))}
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={addEvidenceLink}
               className="flex items-center"
             >
@@ -467,7 +463,7 @@ export function RequirementDetail({
             </Button>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="notes">{t('requirement.field.notes', 'Notes')}</Label>
@@ -480,10 +476,10 @@ export function RequirementDetail({
             rows={4}
           />
         </div>
-        
-        <Button 
-          className="w-full" 
-          onClick={handleSaveAll} 
+
+        <Button
+          className="w-full"
+          onClick={handleSaveAll}
           disabled={!hasChanges || (status === 'not-applicable' && justification.trim() === '')}
         >
           <Save size={16} className="mr-2" />
@@ -497,5 +493,6 @@ export function RequirementDetail({
         </div>
       </CardFooter>
     </Card>
+    </>
   );
 }

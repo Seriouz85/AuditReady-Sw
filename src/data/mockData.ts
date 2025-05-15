@@ -5012,7 +5012,20 @@ Audit requirements involving verification of operational systems should be caref
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,
+    lastAssessmentDate: null,    
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include: end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise’s network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually or more frequently.
+
+**Implementation**
+
+* Implement automated asset discovery tools to maintain an up-to-date inventory
+* Include all enterprise assets: end-user devices, network devices, IoT devices, and servers
+* Record key information for each asset: network address, hardware address, machine name, owner, department
+* Ensure both on-premises and cloud-based assets are included in the inventory
+* Review and update the inventory at least bi-annually
+* For unauthorized assets, establish a formal process for detection and remediation
+`,
     tags: ['tag-device'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
