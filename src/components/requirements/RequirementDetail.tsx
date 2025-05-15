@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Requirement, RequirementStatus, RequirementPriority } from "@/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "@/utils/toast";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { Separator } from "@/components/ui/separator";
@@ -21,6 +21,7 @@ interface RequirementDetailProps {
   onEvidenceChange?: (id: string, evidence: string, evidenceLinks?: string[]) => void;
   onNotesChange?: (id: string, notes: string) => void;
   onTagsChange?: (id: string, tags: string[]) => void;
+  onGuidanceChange?: (id: string, guidance: string) => void;
 }
 
 interface EvidenceLink {
@@ -42,7 +43,8 @@ export function RequirementDetail({
   onPriorityChange,
   onEvidenceChange,
   onNotesChange,
-  onTagsChange
+  onTagsChange,
+  onGuidanceChange
 }: RequirementDetailProps) {
   const req = requirement as RequirementWithLegend;
   const { t } = useTranslation();
@@ -62,6 +64,15 @@ export function RequirementDetail({
   const [justification, setJustification] = useState(requirement.justification || '');
   const [guidance, setGuidance] = useState(req.guidance || '');
   const [showAuditReady, setShowAuditReady] = useState(false);
+  
+  // Effect to update guidance state if requirement prop changes
+  useEffect(() => {
+    if (req.guidance) {
+      setGuidance(req.guidance);
+    }
+  }, [req.id, req.guidance]);
+  
+
 
   if (requirement.id === 'cis-ig1-1.1' && (!requirement.auditReadyGuidance || requirement.auditReadyGuidance.trim() === '')) {
     throw new Error('auditReadyGuidance is missing or empty for cis-ig1-1.1');
@@ -149,6 +160,11 @@ export function RequirementDetail({
       onTagsChange(req.id, tags);
     }
 
+    // Save guidance if handler is provided
+    if (onGuidanceChange) {
+      onGuidanceChange(req.id, guidance);
+    }
+
     // Save legend fields (if you have a save handler, pass these values)
     req.legendReg = legendReg;
     req.legendCon = legendCon;
@@ -162,6 +178,24 @@ export function RequirementDetail({
     setHasChanges(false);
     toast.success(t('requirement.toast.updated', "Requirement updated successfully"));
   };
+  
+  // Add keyboard shortcut for saving (Ctrl+S / Cmd+S)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if Ctrl/Cmd+S is pressed
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault(); // Prevent browser's save dialog
+        if (hasChanges && !(status === 'not-applicable' && justification.trim() === '')) {
+          handleSaveAll();
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [hasChanges, status, justification]);
 
   return (
     <>
@@ -180,7 +214,9 @@ export function RequirementDetail({
               {requirement.standardId !== 'cis-ig2' && requirement.standardId !== 'cis-ig1' && requirement.standardId !== 'cis-ig3' && t(`standard.${requirement.standardId}.name`, requirement.standardId)}
             </CardDescription>
           </div>
-          <StatusBadge status={status} />
+          <div className="flex flex-col items-end gap-2">
+            <StatusBadge status={status} />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -206,7 +242,23 @@ export function RequirementDetail({
             value={guidance}
             onChange={e => { setGuidance(e.target.value); setHasChanges(true); }}
             placeholder="Write your own guidance or notes for this requirement..."
-            rows={3}
+            className="min-h-[100px] overflow-hidden"
+            style={{ height: 'auto' }}
+            onInput={(e) => {
+              // Auto-resize the textarea to fit content
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = 'auto';
+              target.style.height = `${target.scrollHeight}px`;
+            }}
+            ref={(textareaRef) => {
+              // Initialize height on component mount and when value changes
+              if (textareaRef) {
+                setTimeout(() => {
+                  textareaRef.style.height = 'auto';
+                  textareaRef.style.height = `${textareaRef.scrollHeight}px`;
+                }, 0);
+              }
+            }}
           />
         </div>
 
@@ -226,7 +278,50 @@ export function RequirementDetail({
               >
                 &times;
               </button>
-              <h3 className="text-xl font-bold mb-5 text-emerald-700 dark:text-emerald-400">AuditReady guidance</h3>
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-xl font-bold text-emerald-700 dark:text-emerald-400">AuditReady guidance</h3>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="px-3 py-1 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  onClick={() => {
+                    // Extract the already parsed content from the modal
+                    const purposeElement = document.querySelector('.prose h4:first-child + p');
+                    const bulletElements = document.querySelectorAll('.prose ul li');
+                    
+                    // Get purpose text
+                    const purposeText = purposeElement ? purposeElement.textContent || '' : '';
+                    
+                    // Get bullet points and manually strip any existing dashes or bullet prefixes
+                    const bullets = Array.from(bulletElements)
+                      .map(el => {
+                        // Remove any leading dash, bullet, or asterisk with whitespace
+                        let text = el.textContent || '';
+                        return text.replace(/^[-•*]\s+/, '');
+                      })
+                      .join('\n');
+                    
+                    // Format the guidance with clear visual separation between sections
+                    const formattedGuidance = 
+`PURPOSE
+
+${purposeText}
+
+
+
+IMPLEMENTATION
+
+${bullets}`;
+                    
+                    setGuidance(formattedGuidance);
+                    setHasChanges(true);
+                    toast.success("Guidance applied to requirement");
+                    setShowAuditReady(false);
+                  }}
+                >
+                  Apply to Requirement
+                </Button>
+              </div>
               <div className="prose dark:prose-invert max-w-none max-h-[70vh] overflow-y-auto w-full px-3">
                 {(() => {
                   const content = requirement.auditReadyGuidance || 'No guidance available.';
@@ -487,8 +582,7 @@ export function RequirementDetail({
         </Button>
       </CardContent>
       <CardFooter>
-        <div className="flex w-full justify-between text-sm text-muted-foreground">
-          <div>Last updated: {new Date(requirement.updatedAt).toLocaleString()}</div>
+        <div className="flex w-full justify-end text-sm text-muted-foreground">
           <div>Responsible: {requirement.responsibleParty || 'Unassigned'}</div>
         </div>
       </CardFooter>

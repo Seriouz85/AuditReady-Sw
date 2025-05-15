@@ -7,7 +7,7 @@ import { RequirementTable } from "@/components/requirements/RequirementTable";
 import { RequirementDetail } from "@/components/requirements/RequirementDetail";
 import { requirements, standards, tags } from "@/data/mockData";
 import { Requirement, RequirementStatus, TagCategory, RequirementPriority } from "@/types";
-import { ArrowLeft, Filter, Plus, Search, Flag } from "lucide-react";
+import { ArrowLeft, Filter, Plus, Search, Flag, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/lib/i18n";
@@ -174,6 +174,16 @@ const Requirements = () => {
       setSelectedRequirement({ ...selectedRequirement, tags: newTags });
     }
   };
+  
+  const handleGuidanceChange = (id: string, guidance: string) => {
+    setLocalRequirements(
+      localRequirements.map((req) => (req.id === id ? { ...req, guidance } : req))
+    );
+    
+    if (selectedRequirement && selectedRequirement.id === id) {
+      setSelectedRequirement({ ...selectedRequirement, guidance });
+    }
+  };
 
   const getStandardName = (id: string): string => {
     const standard = standards.find(s => s.id === id);
@@ -214,14 +224,7 @@ const Requirements = () => {
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div>
           {selectedRequirement ? (
-            <Button 
-              variant="ghost" 
-              onClick={() => setSelectedRequirement(null)}
-              className="mb-2"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {t('requirements.button.back', 'Back to requirements')}
-            </Button>
+            <h1 className="text-3xl font-bold tracking-tight">{getStandardName(selectedRequirement.standardId)}: {selectedRequirement.code}</h1>
           ) : (
             <h1 className="text-3xl font-bold tracking-tight">{t('requirements.title', 'Requirements')}</h1>
           )}
@@ -382,14 +385,48 @@ const Requirements = () => {
       )}
       
       {selectedRequirement && (
-        <RequirementDetail 
-          requirement={selectedRequirement}
-          onStatusChange={handleStatusChange}
-          onPriorityChange={handlePriorityChange}
-          onEvidenceChange={handleEvidenceChange}
-          onNotesChange={handleNotesChange}
-          onTagsChange={handleTagsChange}
-        />
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={() => setSelectedRequirement(null)}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {t('requirements.button.back', 'Back to requirements')}
+            </Button>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground">
+                Last updated: {new Date(selectedRequirement.updatedAt).toLocaleString()}
+              </div>
+              <Button 
+                size="sm"
+                className="flex items-center gap-1.5"
+                onClick={() => {
+                  document.dispatchEvent(new KeyboardEvent('keydown', {
+                    key: 's',
+                    ctrlKey: navigator.platform.includes('Win'),
+                    metaKey: navigator.platform.includes('Mac'),
+                  }));
+                }}
+              >
+                <Save size={14} className="mr-1" />
+                Save
+                <span className="text-[10px] opacity-70 px-1 py-0.5 rounded bg-muted ml-1">
+                  {navigator.platform.includes('Mac') ? '⌘S' : 'Ctrl+S'}
+                </span>
+              </Button>
+            </div>
+          </div>
+          <RequirementDetail 
+            requirement={selectedRequirement}
+            onStatusChange={handleStatusChange}
+            onPriorityChange={handlePriorityChange}
+            onEvidenceChange={handleEvidenceChange}
+            onNotesChange={handleNotesChange}
+            onTagsChange={handleTagsChange}
+            onGuidanceChange={handleGuidanceChange}
+          />
+        </>
       )}
     </div>
   );

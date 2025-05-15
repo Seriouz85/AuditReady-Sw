@@ -229,7 +229,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   );
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Mobile Menu Toggle */}
       <Button
         variant="ghost"
@@ -241,7 +241,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </Button>
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border">
+      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20">
         <div className="p-4 pb-6 flex items-center justify-between border-b border-border">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
@@ -286,7 +286,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Updated Header Structure with matching padding to sidebar */}
-        <div className="flex justify-end items-center p-4 border-b border-border header-border-align">
+        <div className="flex justify-end items-center p-4 border-b border-border bg-background sticky top-0 z-10 main-header h-[65px]">
           <div className="flex items-center gap-2">
             <ZoomToggle />
             <ThemeToggle />
@@ -294,7 +294,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <LanguageSelector />
           </div>
         </div>
-        <div className="flex-1 px-6 py-5 overflow-y-auto">
+        <div className="flex-1 px-6 pt-6 pb-5 overflow-y-auto content-area">
           {children}
         </div>
       </main>

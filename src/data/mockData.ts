@@ -6746,6 +6746,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Encrypt data on removable media.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6763,6 +6770,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Encrypt sensitive data in transit. Example implementations can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6780,6 +6794,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Encrypt sensitive data at rest on servers, applications, and databases. Storage-layer encryption, also known as server-side encryption, meets the minimum requirement of this safeguard. Additional encryption methods may include application-layer encryption, also known as client-side encryption, where access to the data storage device(s) does not permit access to the plain-text data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6797,6 +6818,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Segment data processing and storage based on the sensitivity of the data. Do not process sensitive data on enterprise assets intended for lower sensitivity data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
+
+**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6814,6 +6842,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6831,6 +6866,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6848,6 +6890,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Configure automatic session locking on enterprise assets after a defined period of inactivity. For general operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6865,6 +6914,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Implement and manage a firewall on servers, where supported. Example implementations include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6882,6 +6938,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6899,6 +6962,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Securely manage enterprise assets and software. Example implementations include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6916,6 +6986,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example implementations can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6933,6 +7010,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Uninstall or disable unnecessary services on enterprise assets and software, such as an unused file sharing service, web application module, or service function.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6950,6 +7034,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Configure trusted DNS servers on network infrastructure. Example implementations include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
+
+**Implementation**
+
+* \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7001,6 +7092,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person's name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7018,6 +7116,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Use unique passwords for all enterprise assets. Best practice implementation includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7035,6 +7140,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7052,6 +7164,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user's primary, non-privileged account.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7069,6 +7188,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of service accounts. The inventory, at a minimum, must contain department owner, review date, and purpose. Perform service account reviews to validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7086,6 +7212,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Centralize account management through a directory or identity service.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
+
+**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7103,6 +7236,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7120,6 +7260,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7137,6 +7284,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory implementation of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7154,6 +7308,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Require MFA for remote network access.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7171,6 +7332,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7188,6 +7356,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain an inventory of the enterprise's authentication and authorization systems, including those hosted on-site or at a remote service provider. Review and update the inventory, at a minimum, annually or more frequently.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7205,6 +7380,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Centralize access control for all enterprise assets through a directory service or SSO provider, where supported.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
+
+**Implementation**
+
+* \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7222,6 +7404,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7239,6 +7428,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly or more frequent reviews.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7256,6 +7452,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Perform operating system updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7273,6 +7476,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Perform application updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7290,6 +7500,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Perform automated vulnerability scans of internal enterprise assets on a quarterly or more frequent basis. Conduct both authenticated and unauthenticated scans.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7307,6 +7524,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Perform automated vulnerability scans of externally-exposed enterprise assets. Perform scans on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7324,6 +7548,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Remediate detected vulnerabilities in software through processes and tooling on a monthly or more frequent basis, based on the remediation process.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
+
+**Implementation**
+
+* \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7341,6 +7572,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Establish and maintain a documented audit log management process that defines the enterprise's logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7358,6 +7596,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Collect audit logs. Ensure that logging, per the enterprise's audit log management process, has been enabled across enterprise assets.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -7375,6 +7620,13 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Purpose**
+
+Ensure that logging destinations maintain adequate storage to comply with the enterprise's audit log management process.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
+
+**Implementation**
+
+* \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
     tags: ['tag-technical'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

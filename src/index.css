@@ -72,7 +72,7 @@
     --destructive: 340 80% 45%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 215 16% 22%;
+    --border: 215 20% 20%;
     --input: 210 30% 25%;
     --ring: 210 50% 50%;
   }
@@ -96,6 +96,185 @@
 }
 .status-not-applicable {
   @apply text-gray-500 bg-gray-50 dark:bg-gray-900/20;
+}
+
+/* Layout elements z-index and positioning */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.sidebar {
+  z-index: 20;
+}
+
+.content-area {
+  position: relative;
+  z-index: 5;
+}
+
+/* Card styling */
+.card, [data-card="true"] {
+  border-color: hsl(var(--border));
+  border-width: var(--border-width);
+  border-style: solid;
+  border-radius: var(--border-radius);
+  box-shadow: 0 1.5px 6px rgba(30, 41, 59, 0.06);
+}
+
+/* Global dark mode improvements */
+.dark {
+  /* Subtler borders for all elements */
+  --subtle-border-color: hsla(215, 25%, 27%, 0.6);
+  --subtle-border-hover: hsla(215, 25%, 35%, 0.8);
+  --subtle-highlight: hsla(210, 30%, 30%, 0.4);
+  --subtle-separator: hsla(215, 25%, 22%, 0.8);
+}
+
+/* Improved dark mode card borders for better separation */
+.dark .card,
+.dark [data-card="true"],
+.dark [role="dialog"],
+.dark .border,
+.dark [data-state="open"],
+.dark [data-shadow="sm"],
+.dark [data-shadow="md"],
+.dark [data-shadow="lg"] {
+  border-color: var(--subtle-border-color) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1.5px 4px rgba(15,23,42,0.10) !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Fix for dark mode table styling */
+.dark table,
+.dark th,
+.dark td,
+.dark tr,
+.dark thead,
+.dark tbody {
+  border-color: var(--subtle-border-color) !important;
+}
+
+/* Fix for dark mode list styling */
+.dark ul,
+.dark ol,
+.dark li,
+.dark dl,
+.dark dt,
+.dark dd {
+  border-color: var(--subtle-border-color) !important;
+}
+
+/* Fix for all dividers and separators */
+.dark hr,
+.dark .divider,
+.dark .separator,
+.dark [role="separator"] {
+  border-color: var(--subtle-separator) !important;
+}
+
+/* Fix for header line to match navbar line */
+.dark header,
+.dark nav,
+.dark aside,
+.dark main > div:first-child {
+  border-color: var(--subtle-border-color) !important;
+}
+
+/* Fix for main layout header in dark mode */
+.dark main > div.border-b,
+.dark aside.border-r,
+.dark aside.border-l,
+.dark nav.border-b,
+.dark nav.border-r,
+.dark nav.border-l,
+.dark header.border-b {
+  border-color: var(--subtle-border-color) !important;
+  border-width: 1px !important;
+}
+
+/* Dashboard specific improvements for dark mode */
+.dark .upcoming-tasks,
+.dark .compliance-status,
+.dark .recent-assessments,
+.dark .progress-indicator,
+.dark .progress-bar,
+.dark .chart-container {
+  border-color: var(--subtle-border-color) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* Ensure content alignment with navbar */
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+main > .content-area {
+  padding-top: 1.25rem !important;
+}
+
+/* Ensure navbar and content borders align properly */
+aside.border-r,
+main > div.border-b {
+  border-width: 1px !important;
+}
+
+/* Fix progress bars in dark mode */
+.dark progress,
+.dark .progress,
+.dark [role="progressbar"] {
+  background-color: var(--subtle-border-color) !important;
+  border-color: var(--subtle-border-color) !important;
+}
+
+/* Specific fixes for dashboard cards */
+.dark [class*="compliance-card"],
+.dark [class*="assessment-card"],
+.dark [class*="status-card"],
+.dark [class*="metric-card"] {
+  border-color: var(--subtle-border-color) !important;
+  background-color: hsla(210, 30%, 18%, 0.4) !important;
+}
+
+/* Form elements in dark mode */
+.dark input,
+.dark select,
+.dark textarea,
+.dark button,
+.dark .button,
+.dark [role="button"],
+.dark [type="text"],
+.dark [type="password"],
+.dark [type="email"],
+.dark [type="number"],
+.dark [type="search"],
+.dark [type="tel"],
+.dark [type="url"],
+.dark [type="checkbox"],
+.dark [type="radio"] {
+  border-color: var(--subtle-border-color) !important;
+}
+
+.dark input:hover,
+.dark select:hover,
+.dark textarea:hover,
+.dark button:hover,
+.dark .button:hover,
+.dark [role="button"]:hover {
+  border-color: var(--subtle-border-hover) !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: hsl(var(--ring)) !important;
+  outline-color: hsl(var(--ring)) !important;
 }
 
 /* Print styles for PDF export */
@@ -482,38 +661,4 @@
   .supplier-report-content .overflow-hidden {
     overflow: visible !important;
   }
-}
-
-/* Fix for header line to match navbar line */
-.dark header,
-main > div:first-child {
-  border-bottom-color: hsl(var(--border)) !important;
-}
-
-/* Fix for main layout header in dark mode */
-.dark main > div.border-b {
-  border-bottom-color: hsl(var(--border)) !important;
-  border-bottom-width: 1px !important;
-}
-
-/* Improved dark mode card borders for better separation */
-.dark .card,
-.dark [data-card="true"] {
-  border-color: hsl(var(--border)) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1.5px 4px rgba(15,23,42,0.10);
-  border-width: 1px !important;
-  border-style: solid !important;
-  border-radius: 0.5rem !important;
-}
-
-.card, [data-card="true"] {
-  border-color: hsl(var(--border));
-  border-width: var(--border-width);
-  border-style: solid;
-  border-radius: var(--border-radius);
-  box-shadow: 0 1.5px 6px rgba(30, 41, 59, 0.06);
-}
-
-.header-border-align {
-  margin-bottom: -12px;
 }
