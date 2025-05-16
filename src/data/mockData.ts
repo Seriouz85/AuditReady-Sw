@@ -1010,11 +1010,7 @@ export const requirements: Requirement[] = [
     name: 'Information security policies',
     description: 'A set of policies for information security should be defined, approved by management, published and communicated to employees and relevant external parties.',
     guidance: 'Develop and maintain comprehensive information security policies.',
-    auditReadyGuidance: `**Purpose**
-
-A set of policies for information security should be defined, approved by management, published and communicated to employees and relevant external parties.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1039,11 +1035,7 @@ A set of policies for information security should be defined, approved by manage
     name: 'Information security roles and responsibilities',
     description: 'Information security roles and responsibilities should be defined and allocated according to the organization\'s needs.',
     guidance: 'Define clear security roles and responsibilities throughout the organization.',
-    auditReadyGuidance: `**Purpose**
-
-Information security roles and responsibilities should be defined and allocated according to the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Clearly define and document information security roles and responsibilities
 
@@ -1068,11 +1060,7 @@ Information security roles and responsibilities should be defined and allocated 
     name: 'Segregation of duties',
     description: 'Conflicting duties and areas of responsibility should be segregated to reduce opportunities for unauthorized or unintentional modification or misuse of the organization\'s assets.',
     guidance: 'Implement separation of duties to prevent conflicts of interest.',
-    auditReadyGuidance: `**Purpose**
-
-Conflicting duties and areas of responsibility should be segregated to reduce opportunities for unauthorized or unintentional modification or misuse of the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Identify and document conflicting duties and areas of responsibility
 
@@ -1097,11 +1085,7 @@ Conflicting duties and areas of responsibility should be segregated to reduce op
     name: 'Management responsibilities',
     description: 'Management should require all employees and contractors to apply information security in accordance with the established policies and procedures of the organization.',
     guidance: 'Ensure management enforces security policies and procedures.',
-    auditReadyGuidance: `**Purpose**
-
-Management should require all employees and contractors to apply information security in accordance with the established policies and procedures of the organization.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish management oversight of information security policy
 
@@ -1126,11 +1110,7 @@ Management should require all employees and contractors to apply information sec
     name: 'Contact with authorities',
     description: 'Appropriate contacts with relevant authorities should be maintained.',
     guidance: 'Establish and maintain relationships with regulatory and law enforcement agencies.',
-    auditReadyGuidance: `**Purpose**
-
-Appropriate contacts with relevant authorities should be maintained.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Identify and document relevant authorities (e.g., law enforcement, regulatory bodies)
 
@@ -1155,11 +1135,7 @@ Appropriate contacts with relevant authorities should be maintained.
     name: 'Contact with special interest groups',
     description: 'Appropriate contacts with special interest groups or other specialist security forums and professional associations should be maintained.',
     guidance: 'Participate in security communities and professional forums.',
-    auditReadyGuidance: `**Purpose**
-
-Appropriate contacts with special interest groups or other specialist security forums and professional associations should be maintained.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Identify relevant security forums and professional associations
 
@@ -1184,11 +1160,7 @@ Appropriate contacts with special interest groups or other specialist security f
     name: 'Threat intelligence',
     description: 'Information relating to information security threats should be collected and analyzed to produce threat intelligence.',
     guidance: 'Implement threat intelligence gathering and analysis processes.',
-    auditReadyGuidance: `**Purpose**
-
-Information relating to information security threats should be collected and analyzed to produce threat intelligence.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish formal processes for collecting threat intelligence information
 
@@ -1213,11 +1185,7 @@ Information relating to information security threats should be collected and ana
     name: 'Information security in project management',
     description: 'Information security should be integrated into project management, regardless of the type of the project.',
     guidance: 'Include security in all aspects of project management.',
-    auditReadyGuidance: `**Purpose**
-
-Information security should be integrated into project management, regardless of the type of the project.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -1236,11 +1204,7 @@ Information security should be integrated into project management, regardless of
     name: 'Inventory of information and other associated assets',
     description: 'Assets associated with information and information processing facilities should be identified and an inventory of these assets should be drawn up and maintained.',
     guidance: 'Maintain a comprehensive asset inventory.',
-    auditReadyGuidance: `**Purpose**
-
-Assets associated with information and information processing facilities should be identified and an inventory of these assets should be drawn up and maintained.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and maintain a comprehensive asset inventory system
 
@@ -1265,11 +1229,7 @@ Assets associated with information and information processing facilities should 
     name: 'Acceptable use of information and other associated assets',
     description: 'Rules for the acceptable use of information and of assets associated with information and information processing facilities should be identified, documented and implemented.',
     guidance: 'Document and enforce acceptable use policies.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for the acceptable use of information and of assets associated with information and information processing facilities should be identified, documented and implemented.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1294,11 +1254,7 @@ Rules for the acceptable use of information and of assets associated with inform
     name: 'Return of assets',
     description: 'All employees and external party users should return all organizational assets in their possession upon termination of their employment, contract or agreement.',
     guidance: 'Implement and enforce asset return procedures.',
-    auditReadyGuidance: `**Purpose**
-
-All employees and external party users should return all organizational assets in their possession upon termination of their employment, contract or agreement.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1323,11 +1279,7 @@ All employees and external party users should return all organizational assets i
     name: 'Classification of information',
     description: 'Information should be classified in terms of legal requirements, value, criticality and sensitivity to unauthorized disclosure or modification.',
     guidance: 'Implement information classification scheme.',
-    auditReadyGuidance: `**Purpose**
-
-Information should be classified in terms of legal requirements, value, criticality and sensitivity to unauthorized disclosure or modification.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1352,11 +1304,7 @@ Information should be classified in terms of legal requirements, value, critical
     name: 'Labelling of information',
     description: 'An appropriate set of procedures for information labelling should be developed and implemented in accordance with the information classification scheme adopted by the organization.',
     guidance: 'Develop and implement information labeling procedures.',
-    auditReadyGuidance: `**Purpose**
-
-An appropriate set of procedures for information labelling should be developed and implemented in accordance with the information classification scheme adopted by the organization.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1381,11 +1329,7 @@ An appropriate set of procedures for information labelling should be developed a
     name: 'Information transfer',
     description: 'Formal transfer policies, procedures and controls should be in place to protect the transfer of information through the use of all types of communication facilities.',
     guidance: 'Establish secure information transfer procedures.',
-    auditReadyGuidance: `**Purpose**
-
-Formal transfer policies, procedures and controls should be in place to protect the transfer of information through the use of all types of communication facilities.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1410,11 +1354,7 @@ Formal transfer policies, procedures and controls should be in place to protect 
     name: 'Access control',
     description: 'Rules for controlling physical and logical access to information and information processing facilities should be established and implemented.',
     guidance: 'Implement comprehensive access control measures.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for controlling physical and logical access to information and information processing facilities should be established and implemented.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1439,11 +1379,7 @@ Rules for controlling physical and logical access to information and information
     name: 'Identity management',
     description: 'The complete lifecycle of identities should be managed, from initial registration through to final deprovisioning.',
     guidance: 'Implement comprehensive identity lifecycle management.',
-    auditReadyGuidance: `**Purpose**
-
-The complete lifecycle of identities should be managed, from initial registration through to final deprovisioning.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define and document comprehensive information security policies approved by management
 
@@ -1473,11 +1409,7 @@ The complete lifecycle of identities should be managed, from initial registratio
     name: 'Screening',
     description: 'Background verification checks on all candidates for employment should be carried out in accordance with relevant laws, regulations and ethics and should be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.',
     guidance: 'Implement personnel screening procedures.',
-    auditReadyGuidance: `**Purpose**
-
-Background verification checks on all candidates for employment should be carried out in accordance with relevant laws, regulations and ethics and should be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement background verification checks in accordance with laws and regulations
 
@@ -1502,11 +1434,7 @@ Background verification checks on all candidates for employment should be carrie
     name: 'Terms and conditions of employment',
     description: 'The contractual agreements with employees and contractors should state their and the organization\'s responsibilities for information security.',
     guidance: 'Include security responsibilities in employment contracts.',
-    auditReadyGuidance: `**Purpose**
-
-The contractual agreements with employees and contractors should state their and the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Include information security responsibilities in employment contracts
 
@@ -1533,11 +1461,7 @@ The contractual agreements with employees and contractors should state their and
     name: 'Physical security perimeters',
     description: 'Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.',
     guidance: 'Establish physical security boundaries.',
-    auditReadyGuidance: `**Purpose**
-
-Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -1562,11 +1486,7 @@ Security perimeters should be defined and used to protect areas that contain eit
     name: 'Physical entry',
     description: 'Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.',
     guidance: 'Implement physical access controls.',
-    auditReadyGuidance: `**Purpose**
-
-Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement appropriate entry controls based on area sensitivity
 
@@ -1593,11 +1513,7 @@ Secure areas should be protected by appropriate entry controls to ensure that on
     name: 'User endpoint devices',
     description: 'A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.',
     guidance: 'Implement endpoint security controls.',
-    auditReadyGuidance: `**Purpose**
-
-A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1622,11 +1538,7 @@ A policy should be established and appropriate security measures implemented for
     name: 'Privileged access rights',
     description: 'The allocation and use of privileged access rights should be restricted and controlled.',
     guidance: 'Implement privileged access management.',
-    auditReadyGuidance: `**Purpose**
-
-The allocation and use of privileged access rights should be restricted and controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -1652,11 +1564,7 @@ The allocation and use of privileged access rights should be restricted and cont
     name: 'Information access restriction',
     description: 'Access to information and application functions should be restricted in accordance with the access control policy.',
     guidance: 'Implement application-level access controls.',
-    auditReadyGuidance: `**Purpose**
-
-Access to information and application functions should be restricted in accordance with the access control policy.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -1675,11 +1583,7 @@ Access to information and application functions should be restricted in accordan
     name: 'Access to source code',
     description: 'Access to source code should be restricted.',
     guidance: 'Implement source code access controls and secure repositories.',
-    auditReadyGuidance: `**Purpose**
-
-Access to source code should be restricted.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -1698,11 +1602,7 @@ Access to source code should be restricted.
     name: 'Secure authentication',
     description: 'Authentication information should be protected by techniques appropriate to the level of risk.',
     guidance: 'Implement secure authentication mechanisms.',
-    auditReadyGuidance: `**Purpose**
-
-Authentication information should be protected by techniques appropriate to the level of risk.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -1721,11 +1621,7 @@ Authentication information should be protected by techniques appropriate to the 
     name: 'Capacity management',
     description: 'The use of resources should be monitored and adjusted in line with current and expected capacity requirements.',
     guidance: 'Implement capacity management processes and monitoring.',
-    auditReadyGuidance: `**Purpose**
-
-The use of resources should be monitored and adjusted in line with current and expected capacity requirements.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -1744,11 +1640,7 @@ The use of resources should be monitored and adjusted in line with current and e
     name: 'Protection against malware',
     description: 'Protection against malware should be implemented and supported by appropriate user awareness.',
     guidance: 'Implement anti-malware solutions and user awareness training.',
-    auditReadyGuidance: `**Purpose**
-
-Protection against malware should be implemented and supported by appropriate user awareness.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement multi-layered anti-malware protection
 
@@ -1773,11 +1665,7 @@ Protection against malware should be implemented and supported by appropriate us
     name: 'Management of technical vulnerabilities',
     description: 'Information about technical vulnerabilities of information systems in use should be obtained, the organization\'s exposure to such vulnerabilities should be evaluated and appropriate measures should be taken.',
     guidance: 'Implement vulnerability management processes.',
-    auditReadyGuidance: `**Purpose**
-
-Information about technical vulnerabilities of information systems in use should be obtained, the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -1796,11 +1684,7 @@ Information about technical vulnerabilities of information systems in use should
     name: 'Configuration management',
     description: 'Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.',
     guidance: 'Implement configuration management processes.',
-    auditReadyGuidance: `**Purpose**
-
-Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish baseline configurations for all systems and networks
 
@@ -1825,11 +1709,7 @@ Configurations, including security configurations, of hardware, software, servic
     name: 'Information deletion',
     description: 'Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.',
     guidance: 'Implement secure data deletion procedures.',
-    auditReadyGuidance: `**Purpose**
-
-Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1854,11 +1734,7 @@ Information, software and systems should be disposed of or deleted in a way that
     name: 'Data masking',
     description: 'Data masking should be applied in accordance with the organization\'s policy on access control, legal, statutory, regulatory and contractual requirements.',
     guidance: 'Implement data masking techniques for sensitive information.',
-    auditReadyGuidance: `**Purpose**
-
-Data masking should be applied in accordance with the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1883,11 +1759,7 @@ Data masking should be applied in accordance with the organization\
     name: 'Data leakage prevention',
     description: 'Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.',
     guidance: 'Implement data loss prevention (DLP) solutions.',
-    auditReadyGuidance: `**Purpose**
-
-Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1912,11 +1784,7 @@ Data leakage prevention should be applied to systems, networks and endpoint devi
     name: 'Information backup',
     description: 'Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\'s policy.',
     guidance: 'Implement comprehensive backup solutions with regular testing.',
-    auditReadyGuidance: `**Purpose**
-
-Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1941,11 +1809,7 @@ Backup copies of information, software and systems should be taken and regularly
     name: 'Redundancy of information processing facilities',
     description: 'Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.',
     guidance: 'Implement redundant systems for critical services.',
-    auditReadyGuidance: `**Purpose**
-
-Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1970,11 +1834,7 @@ Information processing facilities should be implemented with redundancy sufficie
     name: 'Logging',
     description: 'Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.',
     guidance: 'Implement comprehensive logging across systems and networks.',
-    auditReadyGuidance: `**Purpose**
-
-Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -1999,11 +1859,7 @@ Logs that record user activities, exceptions, faults and information security ev
     name: 'Monitoring activities',
     description: 'Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.',
     guidance: 'Implement security monitoring and anomaly detection.',
-    auditReadyGuidance: `**Purpose**
-
-Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -2028,11 +1884,7 @@ Networks, systems and applications should be monitored for anomalous behavior an
     name: 'Clock synchronization',
     description: 'The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.',
     guidance: 'Implement time synchronization across all systems.',
-    auditReadyGuidance: `**Purpose**
-
-The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -2057,11 +1909,7 @@ The clocks of all relevant information processing systems within an organization
     name: 'Use of privileged utility programs',
     description: 'The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.',
     guidance: 'Control access to and usage of privileged utility programs.',
-    auditReadyGuidance: `**Purpose**
-
-The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -2086,11 +1934,7 @@ The use of utility programs that might be capable of overriding system and appli
     name: 'Installation of software on operational systems',
     description: 'Procedures should be implemented to control the installation of software on operational systems.',
     guidance: 'Implement software installation controls.',
-    auditReadyGuidance: `**Purpose**
-
-Procedures should be implemented to control the installation of software on operational systems.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -2115,11 +1959,7 @@ Procedures should be implemented to control the installation of software on oper
     name: 'Networks security',
     description: 'Networks and network devices should be secured, managed and controlled to protect information in systems and applications.',
     guidance: 'Implement comprehensive network security controls.',
-    auditReadyGuidance: `**Purpose**
-
-Networks and network devices should be secured, managed and controlled to protect information in systems and applications.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2144,11 +1984,7 @@ Networks and network devices should be secured, managed and controlled to protec
     name: 'Security of network services',
     description: 'Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.',
     guidance: 'Define and enforce security requirements for network services.',
-    auditReadyGuidance: `**Purpose**
-
-Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2173,11 +2009,7 @@ Security mechanisms, service levels and management requirements of all network s
     name: 'Segregation of networks',
     description: 'Groups of information services, users and information systems should be segregated on networks.',
     guidance: 'Implement network segmentation.',
-    auditReadyGuidance: `**Purpose**
-
-Groups of information services, users and information systems should be segregated on networks.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2202,11 +2034,7 @@ Groups of information services, users and information systems should be segregat
     name: 'Web filtering',
     description: 'Access to external websites should be managed to reduce exposure to malicious content.',
     guidance: 'Implement web filtering and content control.',
-    auditReadyGuidance: `**Purpose**
-
-Access to external websites should be managed to reduce exposure to malicious content.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2231,11 +2059,7 @@ Access to external websites should be managed to reduce exposure to malicious co
     name: 'Use of cryptography',
     description: 'Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.',
     guidance: 'Implement cryptographic controls and policies.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2260,11 +2084,7 @@ Rules for the effective use of cryptography should be developed and implemented 
     name: 'Secure development lifecycle',
     description: 'Rules for the development of software and systems should be established and applied to developments within the organization.',
     guidance: 'Implement secure development lifecycle practices.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for the development of software and systems should be established and applied to developments within the organization.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2289,11 +2109,7 @@ Rules for the development of software and systems should be established and appl
     name: 'Application security requirements',
     description: 'Security requirements should be identified, specified and approved when developing or acquiring applications.',
     guidance: 'Define security requirements for applications.',
-    auditReadyGuidance: `**Purpose**
-
-Security requirements should be identified, specified and approved when developing or acquiring applications.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2318,11 +2134,7 @@ Security requirements should be identified, specified and approved when developi
     name: 'Secure system architecture and engineering principles',
     description: 'Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.',
     guidance: 'Implement secure-by-design principles.',
-    auditReadyGuidance: `**Purpose**
-
-Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2347,11 +2159,7 @@ Principles for engineering secure systems should be established, documented, mai
     name: 'Secure coding',
     description: 'Secure coding principles should be applied to software development.',
     guidance: 'Implement secure coding practices and standards.',
-    auditReadyGuidance: `**Purpose**
-
-Secure coding principles should be applied to software development.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2376,11 +2184,7 @@ Secure coding principles should be applied to software development.
     name: 'Security testing in development and acceptance',
     description: 'Security testing processes should be defined and implemented in the development lifecycle.',
     guidance: 'Implement security testing as part of the development process.',
-    auditReadyGuidance: `**Purpose**
-
-Security testing processes should be defined and implemented in the development lifecycle.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -2405,11 +2209,7 @@ Security testing processes should be defined and implemented in the development 
     name: 'Outsourced development',
     description: 'The organization should supervise and monitor the activity of outsourced system development.',
     guidance: 'Establish security requirements for outsourced development.',
-    auditReadyGuidance: `**Purpose**
-
-The organization should supervise and monitor the activity of outsourced system development.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2428,11 +2228,7 @@ The organization should supervise and monitor the activity of outsourced system 
     name: 'Separation of development, test and production environments',
     description: 'Development, test and production environments should be separated and secured.',
     guidance: 'Implement environment separation.',
-    auditReadyGuidance: `**Purpose**
-
-Development, test and production environments should be separated and secured.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2451,11 +2247,7 @@ Development, test and production environments should be separated and secured.
     name: 'Change management',
     description: 'Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.',
     guidance: 'Implement security change management processes.',
-    auditReadyGuidance: `**Purpose**
-
-Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2474,11 +2266,7 @@ Changes to the organization, business processes, information processing faciliti
     name: 'Test information',
     description: 'Test information should be carefully selected, protected and controlled.',
     guidance: 'Implement controls for test data.',
-    auditReadyGuidance: `**Purpose**
-
-Test information should be carefully selected, protected and controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2497,11 +2285,7 @@ Test information should be carefully selected, protected and controlled.
     name: 'Protection of information systems during audit testing',
     description: 'Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.',
     guidance: 'Plan and manage security testing and audits.',
-    auditReadyGuidance: `**Purpose**
-
-Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2893,11 +2677,7 @@ Audit requirements involving verification of operational systems should be caref
     name: 'Information security awareness, education and training',
     description: 'All employees and relevant interested parties should receive appropriate information security awareness, education and training and regular updates in organizational policies and procedures.',
     guidance: 'Implement security awareness and training programs.',
-    auditReadyGuidance: `**Purpose**
-
-All employees and relevant interested parties should receive appropriate information security awareness, education and training and regular updates in organizational policies and procedures.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop a comprehensive security awareness program
 
@@ -2922,11 +2702,7 @@ All employees and relevant interested parties should receive appropriate informa
     name: 'Disciplinary process',
     description: 'A disciplinary process should be established to address violations of information security policy or rules.',
     guidance: 'Define and enforce consequences for security violations.',
-    auditReadyGuidance: `**Purpose**
-
-A disciplinary process should be established to address violations of information security policy or rules.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2945,11 +2721,7 @@ A disciplinary process should be established to address violations of informatio
     name: 'Responsibilities after termination or change of employment',
     description: 'Information security responsibilities and duties that remain valid after termination or change of employment should be defined, enforced and communicated to the employee or contractor.',
     guidance: 'Define and enforce post-employment security responsibilities.',
-    auditReadyGuidance: `**Purpose**
-
-Information security responsibilities and duties that remain valid after termination or change of employment should be defined, enforced and communicated to the employee or contractor.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2968,11 +2740,7 @@ Information security responsibilities and duties that remain valid after termina
     name: 'Confidentiality or non-disclosure agreements',
     description: 'Confidentiality or non-disclosure agreements reflecting the organization\'s needs for the protection of information should be identified, documented, regularly reviewed and signed by employees and external parties.',
     guidance: 'Implement appropriate confidentiality agreements.',
-    auditReadyGuidance: `**Purpose**
-
-Confidentiality or non-disclosure agreements reflecting the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -2991,11 +2759,7 @@ Confidentiality or non-disclosure agreements reflecting the organization\
     name: 'Remote working',
     description: 'Security measures should be implemented to protect information accessed, processed or stored at remote working locations.',
     guidance: 'Implement remote work security controls.',
-    auditReadyGuidance: `**Purpose**
-
-Security measures should be implemented to protect information accessed, processed or stored at remote working locations.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish formal policies and procedures for secure remote working
 
@@ -3020,11 +2784,7 @@ Security measures should be implemented to protect information accessed, process
     name: 'Information security event reporting',
     description: 'The organization should provide mechanisms for reporting information security events and weaknesses.',
     guidance: 'Implement security incident reporting processes.',
-    auditReadyGuidance: `**Purpose**
-
-The organization should provide mechanisms for reporting information security events and weaknesses.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish formal procedures for reporting security events and weaknesses
 
@@ -3051,11 +2811,7 @@ The organization should provide mechanisms for reporting information security ev
     name: 'Physical security perimeters',
     description: 'Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.',
     guidance: 'Establish physical security boundaries.',
-    auditReadyGuidance: `**Purpose**
-
-Security perimeters should be defined and used to protect areas that contain either sensitive or critical information or information processing facilities.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -3080,11 +2836,7 @@ Security perimeters should be defined and used to protect areas that contain eit
     name: 'Physical entry',
     description: 'Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.',
     guidance: 'Implement physical access controls.',
-    auditReadyGuidance: `**Purpose**
-
-Secure areas should be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement appropriate entry controls based on area sensitivity
 
@@ -3110,11 +2862,7 @@ Secure areas should be protected by appropriate entry controls to ensure that on
     name: 'Securing offices, rooms and facilities',
     description: 'Physical security for offices, rooms and facilities should be designed and implemented.',
     guidance: 'Implement physical security measures for working spaces.',
-    auditReadyGuidance: `**Purpose**
-
-Physical security for offices, rooms and facilities should be designed and implemented.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3133,11 +2881,7 @@ Physical security for offices, rooms and facilities should be designed and imple
     name: 'Physical security monitoring',
     description: 'Premises should be continuously monitored for unauthorized physical access.',
     guidance: 'Implement physical security monitoring systems.',
-    auditReadyGuidance: `**Purpose**
-
-Premises should be continuously monitored for unauthorized physical access.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement comprehensive monitoring of physical access points
 
@@ -3162,11 +2906,7 @@ Premises should be continuously monitored for unauthorized physical access.
     name: 'Protecting against physical and environmental threats',
     description: 'Protection against physical and environmental threats such as natural disasters, malicious attack or accidents should be designed and implemented.',
     guidance: 'Implement environmental protection controls.',
-    auditReadyGuidance: `**Purpose**
-
-Protection against physical and environmental threats such as natural disasters, malicious attack or accidents should be designed and implemented.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3185,11 +2925,7 @@ Protection against physical and environmental threats such as natural disasters,
     name: 'Working in secure areas',
     description: 'Procedures for working in secure areas should be designed and implemented.',
     guidance: 'Define procedures for working in secure areas.',
-    auditReadyGuidance: `**Purpose**
-
-Procedures for working in secure areas should be designed and implemented.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3208,11 +2944,7 @@ Procedures for working in secure areas should be designed and implemented.
     name: 'Clear desk and clear screen',
     description: 'Rules for maintaining a clear desk for papers and removable storage media and a clear screen for information processing facilities should be established and appropriate for the classification and risks.',
     guidance: 'Implement clear desk and clear screen policies.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for maintaining a clear desk for papers and removable storage media and a clear screen for information processing facilities should be established and appropriate for the classification and risks.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3231,11 +2963,7 @@ Rules for maintaining a clear desk for papers and removable storage media and a 
     name: 'Equipment siting and protection',
     description: 'Equipment should be sited and protected to reduce the risks from environmental threats and hazards, and opportunities for unauthorized access.',
     guidance: 'Implement equipment placement and protection measures.',
-    auditReadyGuidance: `**Purpose**
-
-Equipment should be sited and protected to reduce the risks from environmental threats and hazards, and opportunities for unauthorized access.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3254,11 +2982,7 @@ Equipment should be sited and protected to reduce the risks from environmental t
     name: 'Security of assets off-premises',
     description: 'Off-site assets should be protected taking into account the different risks of working outside the organization\'s premises.',
     guidance: 'Implement controls for assets used outside the organization.',
-    auditReadyGuidance: `**Purpose**
-
-Off-site assets should be protected taking into account the different risks of working outside the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish formal clear desk and clear screen policies
 
@@ -3283,11 +3007,7 @@ Off-site assets should be protected taking into account the different risks of w
     name: 'Storage media',
     description: 'Storage media containing information should be protected against unauthorized access, misuse or corruption during transportation.',
     guidance: 'Secure storage media throughout its lifecycle.',
-    auditReadyGuidance: `**Purpose**
-
-Storage media containing information should be protected against unauthorized access, misuse or corruption during transportation.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -3312,11 +3032,7 @@ Storage media containing information should be protected against unauthorized ac
     name: 'Supporting utilities',
     description: 'Equipment should be protected from power failures and other disruptions caused by failures in supporting utilities.',
     guidance: 'Implement protection for supporting utilities.',
-    auditReadyGuidance: `**Purpose**
-
-Equipment should be protected from power failures and other disruptions caused by failures in supporting utilities.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -3341,11 +3057,7 @@ Equipment should be protected from power failures and other disruptions caused b
     name: 'Cabling security',
     description: 'Power and telecommunications cabling carrying data or supporting information services should be protected from interception, interference or damage.',
     guidance: 'Implement cabling security measures.',
-    auditReadyGuidance: `**Purpose**
-
-Power and telecommunications cabling carrying data or supporting information services should be protected from interception, interference or damage.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -3370,11 +3082,7 @@ Power and telecommunications cabling carrying data or supporting information ser
     name: 'Equipment maintenance',
     description: 'Equipment should be correctly maintained to ensure its continued availability and integrity.',
     guidance: 'Implement equipment maintenance procedures.',
-    auditReadyGuidance: `**Purpose**
-
-Equipment should be correctly maintained to ensure its continued availability and integrity.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -3399,11 +3107,7 @@ Equipment should be correctly maintained to ensure its continued availability an
     name: 'Secure disposal or re-use of equipment',
     description: 'All items of equipment containing storage media should be verified to ensure that any sensitive data and licensed software has been removed or securely overwritten prior to disposal or re-use.',
     guidance: 'Implement secure equipment disposal procedures.',
-    auditReadyGuidance: `**Purpose**
-
-All items of equipment containing storage media should be verified to ensure that any sensitive data and licensed software has been removed or securely overwritten prior to disposal or re-use.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Define clear security perimeters for areas with sensitive information
 
@@ -3430,11 +3134,7 @@ All items of equipment containing storage media should be verified to ensure tha
     name: 'User endpoint devices',
     description: 'A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.',
     guidance: 'Implement endpoint security controls.',
-    auditReadyGuidance: `**Purpose**
-
-A policy should be established and appropriate security measures implemented for the protection of information accessed, processed or stored at user endpoint devices.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3459,11 +3159,7 @@ A policy should be established and appropriate security measures implemented for
     name: 'Privileged access rights',
     description: 'The allocation and use of privileged access rights should be restricted and controlled.',
     guidance: 'Implement privileged access management.',
-    auditReadyGuidance: `**Purpose**
-
-The allocation and use of privileged access rights should be restricted and controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -3489,11 +3185,7 @@ The allocation and use of privileged access rights should be restricted and cont
     name: 'Information access restriction',
     description: 'Access to information and application functions should be restricted in accordance with the access control policy.',
     guidance: 'Implement application-level access controls.',
-    auditReadyGuidance: `**Purpose**
-
-Access to information and application functions should be restricted in accordance with the access control policy.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3512,11 +3204,7 @@ Access to information and application functions should be restricted in accordan
     name: 'Access to source code',
     description: 'Access to source code should be restricted.',
     guidance: 'Implement source code access controls and secure repositories.',
-    auditReadyGuidance: `**Purpose**
-
-Access to source code should be restricted.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3535,11 +3223,7 @@ Access to source code should be restricted.
     name: 'Secure authentication',
     description: 'Authentication information should be protected by techniques appropriate to the level of risk.',
     guidance: 'Implement secure authentication mechanisms.',
-    auditReadyGuidance: `**Purpose**
-
-Authentication information should be protected by techniques appropriate to the level of risk.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3558,11 +3242,7 @@ Authentication information should be protected by techniques appropriate to the 
     name: 'Capacity management',
     description: 'The use of resources should be monitored and adjusted in line with current and expected capacity requirements.',
     guidance: 'Implement capacity management processes and monitoring.',
-    auditReadyGuidance: `**Purpose**
-
-The use of resources should be monitored and adjusted in line with current and expected capacity requirements.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3581,11 +3261,7 @@ The use of resources should be monitored and adjusted in line with current and e
     name: 'Protection against malware',
     description: 'Protection against malware should be implemented and supported by appropriate user awareness.',
     guidance: 'Implement anti-malware solutions and user awareness training.',
-    auditReadyGuidance: `**Purpose**
-
-Protection against malware should be implemented and supported by appropriate user awareness.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement multi-layered anti-malware protection
 
@@ -3610,11 +3286,7 @@ Protection against malware should be implemented and supported by appropriate us
     name: 'Management of technical vulnerabilities',
     description: 'Information about technical vulnerabilities of information systems in use should be obtained, the organization\'s exposure to such vulnerabilities should be evaluated and appropriate measures should be taken.',
     guidance: 'Implement vulnerability management processes.',
-    auditReadyGuidance: `**Purpose**
-
-Information about technical vulnerabilities of information systems in use should be obtained, the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -3633,11 +3305,7 @@ Information about technical vulnerabilities of information systems in use should
     name: 'Configuration management',
     description: 'Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.',
     guidance: 'Implement configuration management processes.',
-    auditReadyGuidance: `**Purpose**
-
-Configurations, including security configurations, of hardware, software, services and networks should be established, documented, implemented, monitored and reviewed.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Establish baseline configurations for all systems and networks
 
@@ -3662,11 +3330,7 @@ Configurations, including security configurations, of hardware, software, servic
     name: 'Information deletion',
     description: 'Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.',
     guidance: 'Implement secure data deletion procedures.',
-    auditReadyGuidance: `**Purpose**
-
-Information, software and systems should be disposed of or deleted in a way that protects the information from unauthorized disclosure.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3691,11 +3355,7 @@ Information, software and systems should be disposed of or deleted in a way that
     name: 'Data masking',
     description: 'Data masking should be applied in accordance with the organization\'s policy on access control, legal, statutory, regulatory and contractual requirements.',
     guidance: 'Implement data masking techniques for sensitive information.',
-    auditReadyGuidance: `**Purpose**
-
-Data masking should be applied in accordance with the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3720,11 +3380,7 @@ Data masking should be applied in accordance with the organization\
     name: 'Data leakage prevention',
     description: 'Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.',
     guidance: 'Implement data loss prevention (DLP) solutions.',
-    auditReadyGuidance: `**Purpose**
-
-Data leakage prevention should be applied to systems, networks and endpoint devices that process, store or transmit sensitive information.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3749,11 +3405,7 @@ Data leakage prevention should be applied to systems, networks and endpoint devi
     name: 'Information backup',
     description: 'Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\'s policy.',
     guidance: 'Implement comprehensive backup solutions with regular testing.',
-    auditReadyGuidance: `**Purpose**
-
-Backup copies of information, software and systems should be taken and regularly tested in accordance with the organization\
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3778,11 +3430,7 @@ Backup copies of information, software and systems should be taken and regularly
     name: 'Redundancy of information processing facilities',
     description: 'Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.',
     guidance: 'Implement redundant systems for critical services.',
-    auditReadyGuidance: `**Purpose**
-
-Information processing facilities should be implemented with redundancy sufficient to meet availability requirements.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3807,11 +3455,7 @@ Information processing facilities should be implemented with redundancy sufficie
     name: 'Logging',
     description: 'Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.',
     guidance: 'Implement comprehensive logging across systems and networks.',
-    auditReadyGuidance: `**Purpose**
-
-Logs that record user activities, exceptions, faults and information security events should be produced, stored, protected and analyzed.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3836,11 +3480,7 @@ Logs that record user activities, exceptions, faults and information security ev
     name: 'Monitoring activities',
     description: 'Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.',
     guidance: 'Implement security monitoring and anomaly detection.',
-    auditReadyGuidance: `**Purpose**
-
-Networks, systems and applications should be monitored for anomalous behavior and appropriate actions taken to evaluate potential information security incidents.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3865,11 +3505,7 @@ Networks, systems and applications should be monitored for anomalous behavior an
     name: 'Clock synchronization',
     description: 'The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.',
     guidance: 'Implement time synchronization across all systems.',
-    auditReadyGuidance: `**Purpose**
-
-The clocks of all relevant information processing systems within an organization or security domain should be synchronized to a single reference time source.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3894,11 +3530,7 @@ The clocks of all relevant information processing systems within an organization
     name: 'Use of privileged utility programs',
     description: 'The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.',
     guidance: 'Control access to and usage of privileged utility programs.',
-    auditReadyGuidance: `**Purpose**
-
-The use of utility programs that might be capable of overriding system and application controls should be restricted and controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3923,11 +3555,7 @@ The use of utility programs that might be capable of overriding system and appli
     name: 'Installation of software on operational systems',
     description: 'Procedures should be implemented to control the installation of software on operational systems.',
     guidance: 'Implement software installation controls.',
-    auditReadyGuidance: `**Purpose**
-
-Procedures should be implemented to control the installation of software on operational systems.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Develop and implement endpoint security policies and procedures
 
@@ -3952,11 +3580,7 @@ Procedures should be implemented to control the installation of software on oper
     name: 'Networks security',
     description: 'Networks and network devices should be secured, managed and controlled to protect information in systems and applications.',
     guidance: 'Implement comprehensive network security controls.',
-    auditReadyGuidance: `**Purpose**
-
-Networks and network devices should be secured, managed and controlled to protect information in systems and applications.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -3981,11 +3605,7 @@ Networks and network devices should be secured, managed and controlled to protec
     name: 'Security of network services',
     description: 'Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.',
     guidance: 'Define and enforce security requirements for network services.',
-    auditReadyGuidance: `**Purpose**
-
-Security mechanisms, service levels and management requirements of all network services should be identified, implemented and monitored.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4010,11 +3630,7 @@ Security mechanisms, service levels and management requirements of all network s
     name: 'Segregation of networks',
     description: 'Groups of information services, users and information systems should be segregated on networks.',
     guidance: 'Implement network segmentation.',
-    auditReadyGuidance: `**Purpose**
-
-Groups of information services, users and information systems should be segregated on networks.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4039,11 +3655,7 @@ Groups of information services, users and information systems should be segregat
     name: 'Web filtering',
     description: 'Access to external websites should be managed to reduce exposure to malicious content.',
     guidance: 'Implement web filtering and content control.',
-    auditReadyGuidance: `**Purpose**
-
-Access to external websites should be managed to reduce exposure to malicious content.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4068,11 +3680,7 @@ Access to external websites should be managed to reduce exposure to malicious co
     name: 'Use of cryptography',
     description: 'Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.',
     guidance: 'Implement cryptographic controls and policies.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for the effective use of cryptography should be developed and implemented to protect the confidentiality, authenticity and/or integrity of information.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4097,11 +3705,7 @@ Rules for the effective use of cryptography should be developed and implemented 
     name: 'Secure development lifecycle',
     description: 'Rules for the development of software and systems should be established and applied to developments within the organization.',
     guidance: 'Implement secure development lifecycle practices.',
-    auditReadyGuidance: `**Purpose**
-
-Rules for the development of software and systems should be established and applied to developments within the organization.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4126,11 +3730,7 @@ Rules for the development of software and systems should be established and appl
     name: 'Application security requirements',
     description: 'Security requirements should be identified, specified and approved when developing or acquiring applications.',
     guidance: 'Define security requirements for applications.',
-    auditReadyGuidance: `**Purpose**
-
-Security requirements should be identified, specified and approved when developing or acquiring applications.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4155,11 +3755,7 @@ Security requirements should be identified, specified and approved when developi
     name: 'Secure system architecture and engineering principles',
     description: 'Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.',
     guidance: 'Implement secure-by-design principles.',
-    auditReadyGuidance: `**Purpose**
-
-Principles for engineering secure systems should be established, documented, maintained and applied to any information system development.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4184,11 +3780,7 @@ Principles for engineering secure systems should be established, documented, mai
     name: 'Secure coding',
     description: 'Secure coding principles should be applied to software development.',
     guidance: 'Implement secure coding practices and standards.',
-    auditReadyGuidance: `**Purpose**
-
-Secure coding principles should be applied to software development.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4213,11 +3805,7 @@ Secure coding principles should be applied to software development.
     name: 'Security testing in development and acceptance',
     description: 'Security testing processes should be defined and implemented in the development lifecycle.',
     guidance: 'Implement security testing as part of the development process.',
-    auditReadyGuidance: `**Purpose**
-
-Security testing processes should be defined and implemented in the development lifecycle.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement strict controls for privileged account management
 
@@ -4242,11 +3830,7 @@ Security testing processes should be defined and implemented in the development 
     name: 'Outsourced development',
     description: 'The organization should supervise and monitor the activity of outsourced system development.',
     guidance: 'Establish security requirements for outsourced development.',
-    auditReadyGuidance: `**Purpose**
-
-The organization should supervise and monitor the activity of outsourced system development.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -4265,11 +3849,7 @@ The organization should supervise and monitor the activity of outsourced system 
     name: 'Separation of development, test and production environments',
     description: 'Development, test and production environments should be separated and secured.',
     guidance: 'Implement environment separation.',
-    auditReadyGuidance: `**Purpose**
-
-Development, test and production environments should be separated and secured.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -4288,11 +3868,7 @@ Development, test and production environments should be separated and secured.
     name: 'Change management',
     description: 'Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.',
     guidance: 'Implement security change management processes.',
-    auditReadyGuidance: `**Purpose**
-
-Changes to the organization, business processes, information processing facilities and systems that affect information security should be controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -4311,11 +3887,7 @@ Changes to the organization, business processes, information processing faciliti
     name: 'Test information',
     description: 'Test information should be carefully selected, protected and controlled.',
     guidance: 'Implement controls for test data.',
-    auditReadyGuidance: `**Purpose**
-
-Test information should be carefully selected, protected and controlled.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -4334,11 +3906,7 @@ Test information should be carefully selected, protected and controlled.
     name: 'Protection of information systems during audit testing',
     description: 'Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.',
     guidance: 'Plan and manage security testing and audits.',
-    auditReadyGuidance: `**Purpose**
-
-Audit requirements involving verification of operational systems should be carefully planned and agreed to minimize disruptions.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 `,
     status: 'not-fulfilled',
@@ -5013,19 +4581,14 @@ Audit requirements involving verification of operational systems should be caref
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,    
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include: end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise’s network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually or more frequently.
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * Implement automated asset discovery tools to maintain an up-to-date inventory
 * Include all enterprise assets: end-user devices, network devices, IoT devices, and servers
 * Record key information for each asset: network address, hardware address, machine name, owner, department
 * Ensure both on-premises and cloud-based assets are included in the inventory
 * Review and update the inventory at least bi-annually
-* For unauthorized assets, establish a formal process for detection and remediation
-`,
+* For unauthorized assets, establish a formal process for detection and remediation`,
     tags: ['tag-device'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -5042,11 +4605,7 @@ Establish and maintain an accurate, detailed, and up-to-date inventory of all en
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -5066,11 +4625,7 @@ Ensure that a process exists to address unauthorized assets on a weekly basis. T
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business  for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -5090,11 +4645,7 @@ Establish and maintain a detailed inventory of all licensed software installed o
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise’s mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -5114,11 +4665,7 @@ Ensure that only currently supported software is designated as authorized in the
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -5138,11 +4685,7 @@ Ensure that unauthorized software is either removed from use on enterprise asset
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -5162,11 +4705,7 @@ Establish and maintain a documented data management process. In the process, add
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a data inventory based on the enterprise’s data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -5186,11 +4725,7 @@ Establish and maintain a data inventory based on the enterprise’s data managem
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure data access control lists based on a user’s need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -5210,11 +4745,7 @@ Configure data access control lists based on a user’s need to know. Apply data
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Retain data according to the enterprise’s documented data management process. Data retention must include both minimum and maximum timelines.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -5234,11 +4765,7 @@ Retain data according to the enterprise’s documented data management process. 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely dispose of data as outlined in the enterprise’s documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -5258,11 +4785,7 @@ Securely dispose of data as outlined in the enterprise’s documented data manag
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Encrypt data on end-user devices containing sensitive data. Example s can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -5282,11 +4805,7 @@ Encrypt data on end-user devices containing sensitive data. Example s can includ
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5306,11 +4825,7 @@ Establish and maintain a documented secure configuration process for enterprise 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5330,11 +4845,7 @@ Establish and maintain a documented secure configuration process for network dev
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure automatic session locking on enterprise assets after a defined period of inactivity. For general  operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5354,11 +4865,7 @@ Configure automatic session locking on enterprise assets after a defined period 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Implement and manage a firewall on servers, where supported. Example s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5378,11 +4885,7 @@ Implement and manage a firewall on servers, where supported. Example s include a
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5402,11 +4905,7 @@ Implement and manage a host-based firewall or port-filtering tool on end-user de
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely manage enterprise assets and software. Example s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet (Teletype Network) and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet (Teletype Network) and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5426,11 +4925,7 @@ Securely manage enterprise assets and software. Example s include managing confi
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example s can include: disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s can include: disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -5450,11 +4945,7 @@ Manage default accounts on enterprise assets and software, such as root, adminis
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person’s name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -5474,11 +4965,7 @@ Establish and maintain an inventory of all accounts managed in the enterprise. T
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use unique passwords for all enterprise assets. Best practice  includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -5498,11 +4985,7 @@ Use unique passwords for all enterprise assets. Best practice  includes, at a mi
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -5522,11 +5005,7 @@ Delete or disable any dormant accounts after a period of 45 days of inactivity, 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user’s primary, non-privileged account.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -5546,11 +5025,7 @@ Restrict administrator privileges to dedicated administrator accounts on enterpr
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -5570,11 +5045,7 @@ Establish and follow a documented process, preferably automated, for granting ac
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -5594,11 +5065,7 @@ Establish and follow a process, preferably automated, for revoking access to ent
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory  of this Safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * of this Safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -5618,11 +5085,7 @@ Require all externally-exposed enterprise or third-party applications to enforce
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require MFA for remote network access.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -5642,11 +5105,7 @@ Require MFA for remote network access.\n\n \n- Document formal processes for gra
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -5666,11 +5125,7 @@ Require MFA for all administrative access accounts, where supported, on all ente
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -5690,11 +5145,7 @@ Establish and maintain a documented vulnerability management process for enterpr
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly, or more frequent, reviews.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -5714,11 +5165,7 @@ Establish and maintain a risk-based remediation strategy documented in a remedia
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform operating system updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -5738,11 +5185,7 @@ Perform operating system updates on enterprise assets through automated patch ma
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform application updates on enterprise assets through automated patch management on a monthly, or more frequent, basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -5762,11 +5205,7 @@ Perform application updates on enterprise assets through automated patch managem
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented audit log management process that defines the enterprise’s logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -5786,11 +5225,7 @@ Establish and maintain a documented audit log management process that defines th
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect audit logs. Ensure that logging, per the enterprise’s audit log management process, has been enabled across enterprise assets.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -5810,11 +5245,7 @@ Collect audit logs. Ensure that logging, per the enterprise’s audit log manage
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that logging destinations maintain adequate storage to comply with the enterprise’s audit log management process.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -5834,11 +5265,7 @@ Ensure that logging destinations maintain adequate storage to comply with the en
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -5858,11 +5285,7 @@ Ensure only fully supported browsers and email clients are allowed to execute in
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -5882,11 +5305,7 @@ Use DNS filtering services on all end-user devices, including remote and on-prem
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy and maintain anti-malware software on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -5906,11 +5325,7 @@ Deploy and maintain anti-malware software on all enterprise assets.\n\n \n- Depl
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure automatic updates for anti-malware signature files on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -5930,11 +5345,7 @@ Configure automatic updates for anti-malware signature files on all enterprise a
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Disable autorun and autoplay auto-execute functionality for removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -5954,11 +5365,7 @@ Disable autorun and autoplay auto-execute functionality for removable media.\n\n
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -5978,11 +5385,7 @@ Establish and maintain a documented data recovery process that includes detailed
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6002,11 +5405,7 @@ Perform automated backups of in-scope enterprise assets. Run backups weekly, or 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6026,11 +5425,7 @@ Protect recovery data with equivalent controls to the original data. Reference e
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an isolated instance of recovery data. Example s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6050,11 +5445,7 @@ Establish and maintain an isolated instance of recovery data. Example s include,
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure network infrastructure is kept up-to-date. Example s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6074,11 +5465,7 @@ Ensure network infrastructure is kept up-to-date. Example s include running the 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice  requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6098,11 +5485,7 @@ Centralize security event alerting across enterprise assets for log correlation 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a security awareness program. The  of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6122,11 +5505,7 @@ Establish and maintain a security awareness program. The  of a security awarenes
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6146,11 +5525,7 @@ Train workforce members to recognize social engineering attacks, such as phishin
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6170,11 +5545,7 @@ Train workforce members on authentication best practices. Example topics include
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6194,11 +5565,7 @@ Train workforce members on how to identify and properly store, transfer, archive
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6218,11 +5585,7 @@ Train workforce members to be aware of causes for unintentional data exposure. E
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to be able to recognize a potential incident and be able to report such an incident.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6242,11 +5605,7 @@ Train workforce members to be able to recognize a potential incident and be able
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6266,11 +5625,7 @@ Train workforce to understand how to verify and report out-of-date software patc
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6290,11 +5645,7 @@ Train workforce members on the dangers of connecting to, and transmitting data o
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6314,11 +5665,7 @@ Establish and maintain an inventory of service providers. The inventory is to li
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6338,11 +5685,7 @@ Establish and maintain a secure application development process. In the process,
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6362,11 +5705,7 @@ Designate one key person, and at least one backup, who will manage the enterpris
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6386,11 +5725,7 @@ Establish and maintain contact information for parties that need to be informed 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -6411,6 +5746,9 @@ Establish and maintain a documented enterprise process for the workforce to repo
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
     tags: ['tag-device'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6427,11 +5765,7 @@ Establish and maintain a documented enterprise process for the workforce to repo
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -6453,6 +5787,9 @@ Ensure that a process exists to address unauthorized assets on a weekly basis. T
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
     tags: ['tag-device'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6470,6 +5807,9 @@ Ensure that a process exists to address unauthorized assets on a weekly basis. T
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
     tags: ['tag-device'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6486,11 +5826,7 @@ Ensure that a process exists to address unauthorized assets on a weekly basis. T
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business  for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually, or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -6511,6 +5847,9 @@ Establish and maintain a detailed inventory of all licensed software installed o
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business purpose, and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
     tags: ['tag-application'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6527,11 +5866,7 @@ Establish and maintain a detailed inventory of all licensed software installed o
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly, or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -6551,11 +5886,7 @@ Ensure that unauthorized software is either removed from use on enterprise asset
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Utilize software inventory tools, when possible, throughout the enterprise to automate the discovery and documentation of installed software.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -6576,6 +5907,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business purpose, and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
     tags: ['tag-application'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6593,6 +5927,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business purpose, and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
     tags: ['tag-application'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6610,6 +5947,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6627,6 +5967,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6644,6 +5987,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6661,6 +6007,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6678,6 +6027,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6695,6 +6047,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6712,6 +6067,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6729,6 +6087,9 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
+    auditReadyGuidance: `**Implementation**
+
+* \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -6746,11 +6107,7 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Encrypt data on removable media.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
@@ -6770,11 +6127,7 @@ Encrypt data on removable media.\n\n \n- Document a formal data management proce
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Encrypt sensitive data in transit. Example implementations can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
@@ -6794,11 +6147,7 @@ Encrypt sensitive data in transit. Example implementations can include Transport
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Encrypt sensitive data at rest on servers, applications, and databases. Storage-layer encryption, also known as server-side encryption, meets the minimum requirement of this safeguard. Additional encryption methods may include application-layer encryption, also known as client-side encryption, where access to the data storage device(s) does not permit access to the plain-text data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
@@ -6818,11 +6167,7 @@ Encrypt sensitive data at rest on servers, applications, and databases. Storage-
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Segment data processing and storage based on the sensitivity of the data. Do not process sensitive data on enterprise assets intended for lower sensitivity data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
     tags: ['tag-data-protection'],
@@ -6842,11 +6187,7 @@ Segment data processing and storage based on the sensitivity of the data. Do not
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -6866,11 +6207,7 @@ Establish and maintain a documented secure configuration process for enterprise 
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -6890,11 +6227,7 @@ Establish and maintain a documented secure configuration process for network dev
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Configure automatic session locking on enterprise assets after a defined period of inactivity. For general operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -6914,11 +6247,7 @@ Configure automatic session locking on enterprise assets after a defined period 
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Implement and manage a firewall on servers, where supported. Example implementations include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -6938,11 +6267,7 @@ Implement and manage a firewall on servers, where supported. Example implementat
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -6962,11 +6287,7 @@ Implement and manage a host-based firewall or port-filtering tool on end-user de
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Securely manage enterprise assets and software. Example implementations include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -6986,11 +6307,7 @@ Securely manage enterprise assets and software. Example implementations include 
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example implementations can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -7010,11 +6327,7 @@ Manage default accounts on enterprise assets and software, such as root, adminis
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Uninstall or disable unnecessary services on enterprise assets and software, such as an unused file sharing service, web application module, or service function.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -7034,11 +6347,7 @@ Uninstall or disable unnecessary services on enterprise assets and software, suc
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Configure trusted DNS servers on network infrastructure. Example implementations include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
     tags: ['tag-technical'],
@@ -7092,11 +6401,7 @@ Configure trusted DNS servers on network infrastructure. Example implementations
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person's name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
@@ -7116,11 +6421,7 @@ Establish and maintain an inventory of all accounts managed in the enterprise. T
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Use unique passwords for all enterprise assets. Best practice implementation includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
@@ -7140,11 +6441,7 @@ Use unique passwords for all enterprise assets. Best practice implementation inc
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
@@ -7164,11 +6461,7 @@ Delete or disable any dormant accounts after a period of 45 days of inactivity, 
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user's primary, non-privileged account.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
@@ -7188,11 +6481,7 @@ Restrict administrator privileges to dedicated administrator accounts on enterpr
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of service accounts. The inventory, at a minimum, must contain department owner, review date, and purpose. Perform service account reviews to validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
@@ -7212,11 +6501,7 @@ Establish and maintain an inventory of service accounts. The inventory, at a min
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Centralize account management through a directory or identity service.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
     tags: ['tag-identity'],
@@ -7236,11 +6521,7 @@ Centralize account management through a directory or identity service.\n\n \n- C
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7260,11 +6541,7 @@ Establish and follow a documented process, preferably automated, for granting ac
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7284,11 +6561,7 @@ Establish and follow a process, preferably automated, for revoking access to ent
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory implementation of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7308,11 +6581,7 @@ Require all externally-exposed enterprise or third-party applications to enforce
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Require MFA for remote network access.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7332,11 +6601,7 @@ Require MFA for remote network access.\n\n \n- Document formal processes for gra
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7356,11 +6621,7 @@ Require MFA for all administrative access accounts, where supported, on all ente
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of the enterprise's authentication and authorization systems, including those hosted on-site or at a remote service provider. Review and update the inventory, at a minimum, annually or more frequently.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7380,11 +6641,7 @@ Establish and maintain an inventory of the enterprise's authentication and autho
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Centralize access control for all enterprise assets through a directory service or SSO provider, where supported.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
     tags: ['tag-access-control'],
@@ -7404,11 +6661,7 @@ Centralize access control for all enterprise assets through a directory service 
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7428,11 +6681,7 @@ Establish and maintain a documented vulnerability management process for enterpr
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly or more frequent reviews.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7452,11 +6701,7 @@ Establish and maintain a risk-based remediation strategy documented in a remedia
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Perform operating system updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7476,11 +6721,7 @@ Perform operating system updates on enterprise assets through automated patch ma
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Perform application updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7500,11 +6741,7 @@ Perform application updates on enterprise assets through automated patch managem
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Perform automated vulnerability scans of internal enterprise assets on a quarterly or more frequent basis. Conduct both authenticated and unauthenticated scans.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7524,11 +6761,7 @@ Perform automated vulnerability scans of internal enterprise assets on a quarter
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Perform automated vulnerability scans of externally-exposed enterprise assets. Perform scans on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7548,11 +6781,7 @@ Perform automated vulnerability scans of externally-exposed enterprise assets. P
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Remediate detected vulnerabilities in software through processes and tooling on a monthly or more frequent basis, based on the remediation process.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
     tags: ['tag-technical'],
@@ -7572,11 +6801,7 @@ Remediate detected vulnerabilities in software through processes and tooling on 
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented audit log management process that defines the enterprise's logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
     tags: ['tag-technical'],
@@ -7596,11 +6821,7 @@ Establish and maintain a documented audit log management process that defines th
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Collect audit logs. Ensure that logging, per the enterprise's audit log management process, has been enabled across enterprise assets.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
     tags: ['tag-technical'],
@@ -7620,11 +6841,7 @@ Collect audit logs. Ensure that logging, per the enterprise's audit log manageme
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    auditReadyGuidance: `**Purpose**
-
-Ensure that logging destinations maintain adequate storage to comply with the enterprise's audit log management process.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
     tags: ['tag-technical'],
@@ -7643,11 +6860,7 @@ Ensure that logging destinations maintain adequate storage to comply with the en
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Standardize time synchronization. Configure at least two synchronized time sources across enterprise assets, where supported.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -7667,11 +6880,7 @@ Standardize time synchronization. Configure at least two synchronized time sourc
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure detailed audit logging for enterprise assets containing sensitive data. Include event source, date, username, timestamp, source addresses, destination addresses, and other useful elements that could assist in a forensic investigation.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7691,11 +6900,7 @@ Configure detailed audit logging for enterprise assets containing sensitive data
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect DNS query audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7715,11 +6920,7 @@ Collect DNS query audit logs on enterprise assets, where appropriate and support
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect URL request audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7739,11 +6940,7 @@ Collect URL request audit logs on enterprise assets, where appropriate and suppo
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect command-line audit logs. Example s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7763,11 +6960,7 @@ Collect command-line audit logs. Example s include collecting audit logs from Po
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize, to the extent possible, audit log collection and retention across enterprise assets in accordance with the documented audit log management process. Example s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7787,11 +6980,7 @@ Centralize, to the extent possible, audit log collection and retention across en
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Retain audit logs across enterprise assets for a minimum of 90 days.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7811,11 +7000,7 @@ Retain audit logs across enterprise assets for a minimum of 90 days.\n\n \n- Con
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Conduct reviews of audit logs to detect anomalies or abnormal events that could indicate a potential threat. Conduct reviews on a weekly, or more frequent, basis.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -7835,11 +7020,7 @@ Conduct reviews of audit logs to detect anomalies or abnormal events that could 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -7859,11 +7040,7 @@ Ensure only fully supported browsers and email clients are allowed to execute in
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -7883,11 +7060,7 @@ Use DNS filtering services on all end-user devices, including remote and on-prem
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Enforce and update network-based URL filters to limit an enterprise asset from connecting to potentially malicious or unapproved websites. Example s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -7907,11 +7080,7 @@ Enforce and update network-based URL filters to limit an enterprise asset from c
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Restrict, either through uninstalling or disabling, any unauthorized or unnecessary browser or email client plugins, extensions, and add-on applications.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -7931,11 +7100,7 @@ Restrict, either through uninstalling or disabling, any unauthorized or unnecess
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-To lower the chance of spoofed or modified emails from valid domains, implement DMARC policy and verification, starting with implementing the Sender Policy Framework (SPF) and the DomainKeys Identified Mail (DKIM) standards.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -7955,11 +7120,7 @@ To lower the chance of spoofed or modified emails from valid domains, implement 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Block unnecessary file types attempting to enter the enterprise’s email gateway.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -7979,11 +7140,7 @@ Block unnecessary file types attempting to enter the enterprise’s email gatewa
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy and maintain anti-malware software on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8003,11 +7160,7 @@ Deploy and maintain anti-malware software on all enterprise assets.\n\n \n- Depl
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure automatic updates for anti-malware signature files on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8027,11 +7180,7 @@ Configure automatic updates for anti-malware signature files on all enterprise a
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Disable autorun and autoplay auto-execute functionality for removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8051,11 +7200,7 @@ Disable autorun and autoplay auto-execute functionality for removable media.\n\n
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure anti-malware software to automatically scan removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8075,11 +7220,7 @@ Configure anti-malware software to automatically scan removable media.\n\n \n- D
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Enable anti-exploitation features on enterprise assets and software, where possible, such as Microsoft® Data Execution Prevention (DEP), Windows® Defender Exploit Guard (WDEG), or Apple® System Integrity Protection (SIP) and Gatekeeper™.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8099,11 +7240,7 @@ Enable anti-exploitation features on enterprise assets and software, where possi
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centrally manage anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8123,11 +7260,7 @@ Centrally manage anti-malware software.\n\n \n- Deploy anti-malware software on 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use behavior-based anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -8147,11 +7280,7 @@ Use behavior-based anti-malware software.\n\n \n- Deploy anti-malware software o
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8171,11 +7300,7 @@ Establish and maintain a documented data recovery process that includes detailed
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8195,11 +7320,7 @@ Perform automated backups of in-scope enterprise assets. Run backups weekly, or 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8219,11 +7340,7 @@ Protect recovery data with equivalent controls to the original data. Reference e
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an isolated instance of recovery data. Example s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8243,11 +7360,7 @@ Establish and maintain an isolated instance of recovery data. Example s include,
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Test backup recovery quarterly, or more frequently, for a sampling of in-scope enterprise assets.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8267,11 +7380,7 @@ Test backup recovery quarterly, or more frequently, for a sampling of in-scope e
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure network infrastructure is kept up-to-date. Example s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8291,11 +7400,7 @@ Ensure network infrastructure is kept up-to-date. Example s include running the 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Design and maintain a secure network architecture. A secure network architecture must address segmentation, least privilege, and availability, at a minimum. Example s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8315,11 +7420,7 @@ Design and maintain a secure network architecture. A secure network architecture
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely manage network infrastructure. Example s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8339,11 +7440,7 @@ Securely manage network infrastructure. Example s include version-controlled Inf
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain architecture diagram(s) and/or other network system documentation. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8363,11 +7460,7 @@ Establish and maintain architecture diagram(s) and/or other network system docum
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize network AAA.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8387,11 +7480,7 @@ Centralize network AAA.\n\n \n- Document formal policies and procedures related 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Adopt secure network management protocols (e.g., 802.1X) and secure communication protocols (e.g., Wi-Fi Protected Access 2 (WPA2) Enterprise or more secure alternatives).\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8411,11 +7500,7 @@ Adopt secure network management protocols (e.g., 802.1X) and secure communicatio
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require users to authenticate to enterprise-managed VPN and authentication services prior to accessing enterprise resources on end-user devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8435,11 +7520,7 @@ Require users to authenticate to enterprise-managed VPN and authentication servi
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice  requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8459,11 +7540,7 @@ Centralize security event alerting across enterprise assets for log correlation 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy a host-based intrusion detection solution on enterprise assets, where appropriate and/or supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8483,11 +7560,7 @@ Deploy a host-based intrusion detection solution on enterprise assets, where app
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy a network intrusion detection solution on enterprise assets, where appropriate. Example s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8507,11 +7580,7 @@ Deploy a network intrusion detection solution on enterprise assets, where approp
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform traffic filtering between network segments, where appropriate.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8531,11 +7600,7 @@ Perform traffic filtering between network segments, where appropriate.\n\n \n- D
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Manage access control for assets remotely connecting to enterprise resources. Determine amount of access to enterprise resources based on: up-to-date anti-malware software installed, configuration compliance with the enterprise’s secure configuration process, and ensuring the operating system and applications are up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8555,11 +7620,7 @@ Manage access control for assets remotely connecting to enterprise resources. De
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect network traffic flow logs and/or network traffic to review and alert upon from network devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8579,11 +7640,7 @@ Collect network traffic flow logs and/or network traffic to review and alert upo
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a security awareness program. The  of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8603,11 +7660,7 @@ Establish and maintain a security awareness program. The  of a security awarenes
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8627,11 +7680,7 @@ Train workforce members to recognize social engineering attacks, such as phishin
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8651,11 +7700,7 @@ Train workforce members on authentication best practices. Example topics include
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8675,11 +7720,7 @@ Train workforce members on how to identify and properly store, transfer, archive
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8699,11 +7740,7 @@ Train workforce members to be aware of causes for unintentional data exposure. E
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to be able to recognize a potential incident and be able to report such an incident.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8723,11 +7760,7 @@ Train workforce members to be able to recognize a potential incident and be able
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8747,11 +7780,7 @@ Train workforce to understand how to verify and report out-of-date software patc
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8771,11 +7800,7 @@ Train workforce members on the dangers of connecting to, and transmitting data o
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8795,11 +7820,7 @@ Establish and maintain an inventory of service providers. The inventory is to li
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a service provider management policy. Ensure the policy addresses the classification, inventory, assessment, monitoring, and decommissioning of service providers. Review and update the policy annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8819,11 +7840,7 @@ Establish and maintain a service provider management policy. Ensure the policy a
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Classify service providers. Classification consideration may include one or more characteristics, such as data sensitivity, data volume, availability requirements, applicable regulations, inherent risk, and mitigated risk. Update and review classifications annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8843,11 +7860,7 @@ Classify service providers. Classification consideration may include one or more
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure service provider contracts include security requirements. Example requirements may include minimum security program requirements, security incident and/or data breach notification and response, data encryption requirements, and data disposal commitments. These security requirements must be consistent with the enterprise’s service provider management policy. Review service provider contracts annually to ensure contracts are not missing security requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8867,11 +7880,7 @@ Ensure service provider contracts include security requirements. Example require
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8891,11 +7900,7 @@ Establish and maintain a secure application development process. In the process,
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a process to accept and address reports of software vulnerabilities, including providing a means for external entities to report. The process is to include such items as: a vulnerability handling policy that identifies reporting process, responsible party for handling vulnerability reports, and a process for intake, assignment, remediation, and remediation testing. As part of the process, use a vulnerability tracking system that includes severity ratings and metrics for measuring timing for identification, analysis, and remediation of vulnerabilities. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8915,11 +7920,7 @@ Establish and maintain a process to accept and address reports of software vulne
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform root cause analysis on security vulnerabilities. When reviewing vulnerabilities, root cause analysis is the task of evaluating underlying issues that create vulnerabilities in code, and allows development teams to move beyond just fixing individual vulnerabilities as they arise.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8939,11 +7940,7 @@ Perform root cause analysis on security vulnerabilities. When reviewing vulnerab
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and manage an updated inventory of third-party components used in development, often referred to as a “bill of materials,” as well as components slated for future use. This inventory is to include any risks that each third-party component could pose. Evaluate the list at least monthly to identify any changes or updates to these components, and validate that the component is still supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8963,11 +7960,7 @@ Establish and manage an updated inventory of third-party components used in deve
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use up-to-date and trusted third-party software components. When possible, choose established and proven frameworks and libraries that provide adequate security. Acquire these components from trusted sources or evaluate the software for vulnerabilities before use.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -8987,11 +7980,7 @@ Use up-to-date and trusted third-party software components. When possible, choos
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a severity rating system and process for application vulnerabilities that facilitates prioritizing the order in which discovered vulnerabilities are fixed. This process includes setting a minimum level of security acceptability for releasing code or applications. Severity ratings bring a systematic way of triaging vulnerabilities that improves risk management and helps ensure the most severe bugs are fixed first. Review and update the system and process annually.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9011,11 +8000,7 @@ Establish and maintain a severity rating system and process for application vuln
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use standard, industry-recommended hardening configuration templates for application infrastructure components. This includes underlying servers, databases, and web servers, and applies to cloud containers, Platform as a Service (PaaS) components, and SaaS components. Do not allow in-house developed software to weaken configuration hardening.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9035,11 +8020,7 @@ Use standard, industry-recommended hardening configuration templates for applica
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Maintain separate environments for production and non-production systems.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9059,11 +8040,7 @@ Maintain separate environments for production and non-production systems.\n\n \n
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that all software development personnel receive training in writing secure code for their specific development environment and responsibilities. Training can include general security principles and application security standard practices. Conduct training at least annually and design in a way to promote security within the development team, and build a culture of security among the developers.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9083,11 +8060,7 @@ Ensure that all software development personnel receive training in writing secur
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Apply secure design principles in application architectures. Secure design principles include the concept of least privilege and enforcing mediation to validate every operation that the user makes, promoting the concept of \"never trust user input.\" Examples include ensuring that explicit error checking is performed and documented for all input, including for size, data type, and acceptable ranges or formats. Secure design also means minimizing the application infrastructure attack surface, such as turning off unprotected ports and services, removing unnecessary programs and files, and renaming or removing default accounts.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9107,11 +8080,7 @@ Apply secure design principles in application architectures. Secure design princ
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Leverage vetted modules or services for application security components, such as identity management, encryption, auditing, and logging. Using platform features in critical security functions will reduce developers’ workload and minimize the likelihood of design or  errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9131,11 +8100,7 @@ Leverage vetted modules or services for application security components, such as
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9155,11 +8120,7 @@ Designate one key person, and at least one backup, who will manage the enterpris
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9179,11 +8140,7 @@ Establish and maintain contact information for parties that need to be informed 
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9203,11 +8160,7 @@ Establish and maintain a documented enterprise process for the workforce to repo
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9227,11 +8180,7 @@ Establish and maintain a documented incident response process that addresses rol
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Assign key roles and responsibilities for incident response, including staff from legal, IT, information security, facilities, public relations, human resources, incident responders, analysts, and relevant third parties. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9251,11 +8200,7 @@ Assign key roles and responsibilities for incident response, including staff fro
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Determine which primary and secondary mechanisms will be used to communicate and report during a security incident. Mechanisms can include phone calls, emails, secure chat, or notification letters. Keep in mind that certain mechanisms, such as emails, can be affected during a security incident. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9275,11 +8220,7 @@ Determine which primary and secondary mechanisms will be used to communicate and
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Plan and conduct routine incident response exercises and scenarios for key personnel involved in the incident response process to prepare for responding to real-world incidents. Exercises need to test communication channels, decision making, and workflows. Conduct testing on an annual basis, at a minimum.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9299,11 +8240,7 @@ Plan and conduct routine incident response exercises and scenarios for key perso
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a penetration testing program appropriate to the size, complexity, industry, and maturity of the enterprise. Penetration testing program characteristics include scope, such as network, web application, Application Programming Interface (API), hosted services, and physical premise controls; frequency; limitations, such as acceptable hours, and excluded attack types; point of contact information; remediation, such as how findings will be routed internally; and retrospective requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9323,11 +8260,7 @@ Establish and maintain a penetration testing program appropriate to the size, co
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform periodic external penetration tests based on program requirements, no less than annually. External penetration testing must include enterprise and environmental reconnaissance to detect exploitable information. Penetration testing requires specialized skills and experience and must be conducted through a qualified party. The testing may be clear box or opaque box.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9347,11 +8280,7 @@ Perform periodic external penetration tests based on program requirements, no le
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9372,11 +8301,7 @@ Remediate penetration test findings based on the enterprise’s documented vulne
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -9397,11 +8322,7 @@ Remediate penetration test findings based on the enterprise’s documented vulne
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to include end-user devices (including portable and mobile), network devices, non-computing/IoT devices, and servers. Ensure the inventory records the network address (if static), hardware address, machine name, enterprise asset owner, department for each asset, and whether the asset has been approved to connect to the network. For mobile end-user devices, MDM type tools can support this process where appropriate. This inventory includes assets connected to the infrastructure physically, virtually, remotely, and those within cloud environments. Additionally, it includes assets that are regularly connected to the enterprise’s network infrastructure, even if they are not under control of the enterprise. Review and update the inventory of all enterprise assets bi-annually or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -9421,11 +8342,7 @@ Establish and maintain an accurate, detailed, and up-to-date inventory of all en
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that a process exists to address unauthorized assets on a weekly basis. The enterprise may choose to remove the asset from the network, deny the asset from connecting remotely to the network, or quarantine the asset.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -9445,11 +8362,7 @@ Ensure that a process exists to address unauthorized assets on a weekly basis. T
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Utilize an active discovery tool to identify assets connected to the enterprise’s network. Configure the active discovery tool to execute daily or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -9469,11 +8382,7 @@ Utilize an active discovery tool to identify assets connected to the enterprise�
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use DHCP logging on all DHCP servers or Internet Protocol (IP) address management tools to update the enterprise’s asset inventory. Review and use logs to update the enterprise’s asset inventory weekly or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -9493,11 +8402,7 @@ Use DHCP logging on all DHCP servers or Internet Protocol (IP) address managemen
     evidence: '',
     notes: '',
     responsibleParty: '',
-    lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use a passive discovery tool to identify assets connected to the enterprise’s network. Review and use scans to update the enterprise’s asset inventory at least weekly or more frequently.\n\n \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation
-
-**Implementation**
+    lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
@@ -9517,11 +8422,7 @@ Use a passive discovery tool to identify assets connected to the enterprise’s 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a detailed inventory of all licensed software installed on enterprise assets. The software inventory must document the title, publisher, initial install/use date, and business  for each entry; where appropriate, include the Uniform Resource Locator (URL), app store(s), version(s), deployment mechanism, decommission date, and number of licenses. Review and update the software inventory bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9541,11 +8442,7 @@ Establish and maintain a detailed inventory of all licensed software installed o
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that only currently supported software is designated as authorized in the software inventory for enterprise assets. If software is unsupported, yet necessary for the fulfillment of the enterprise’s mission, document an exception detailing mitigating controls and residual risk acceptance. For any unsupported software without an exception documentation, designate as unauthorized. Review the software list to verify software support at least monthly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9565,11 +8462,7 @@ Ensure that only currently supported software is designated as authorized in the
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that unauthorized software is either removed from use on enterprise assets or receives a documented exception. Review monthly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9589,11 +8482,7 @@ Ensure that unauthorized software is either removed from use on enterprise asset
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Utilize software inventory tools, when possible, throughout the enterprise to automate the discovery and documentation of installed software.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9613,11 +8502,7 @@ Utilize software inventory tools, when possible, throughout the enterprise to au
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use technical controls, such as application allowlisting, to ensure that only authorized software can execute or be accessed. Reassess bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9637,11 +8522,7 @@ Use technical controls, such as application allowlisting, to ensure that only au
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use technical controls to ensure that only authorized software libraries, such as specific .dll, .ocx, and .so files, are allowed to load into a system process. Block unauthorized libraries from loading into a system process. Reassess bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9661,11 +8542,7 @@ Use technical controls to ensure that only authorized software libraries, such a
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use technical controls, such as digital signatures and version control, to ensure that only authorized scripts, such as specific .ps1 and .py files, are allowed to execute. Block unauthorized scripts from executing. Reassess bi-annually or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
@@ -9685,11 +8562,7 @@ Use technical controls, such as digital signatures and version control, to ensur
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented data management process. In the process, address data sensitivity, data owner, handling of data, data retention limits, and disposal requirements, based on sensitivity and retention standards for the enterprise. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9709,11 +8582,7 @@ Establish and maintain a documented data management process. In the process, add
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a data inventory based on the enterprise’s data management process. Inventory sensitive data, at a minimum. Review and update inventory annually, at a minimum, with a priority on sensitive data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9733,11 +8602,7 @@ Establish and maintain a data inventory based on the enterprise’s data managem
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure data access control lists based on a user’s need to know. Apply data access control lists, also known as access permissions, to local and remote file systems, databases, and applications.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9757,11 +8622,7 @@ Configure data access control lists based on a user’s need to know. Apply data
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Retain data according to the enterprise’s documented data management process. Data retention must include both minimum and maximum timelines.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9781,11 +8642,7 @@ Retain data according to the enterprise’s documented data management process. 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely dispose of data as outlined in the enterprise’s documented data management process. Ensure the disposal process and method are commensurate with the data sensitivity.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9805,11 +8662,7 @@ Securely dispose of data as outlined in the enterprise’s documented data manag
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Encrypt data on end-user devices containing sensitive data. Example s can include Windows BitLocker, Apple FileVault, Linux dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s can include Windows BitLocker, Apple FileVault, Linux dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9829,11 +8682,7 @@ Encrypt data on end-user devices containing sensitive data. Example s can includ
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an overall data classification scheme for the enterprise. Enterprises may use labels, such as Sensitive, Confidential, and Public, and classify their data according to those labels. Review and update the classification scheme annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9853,11 +8702,7 @@ Establish and maintain an overall data classification scheme for the enterprise.
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Document data flows. Data flow documentation includes service provider data flows and should be based on the enterprise’s data management process. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9877,11 +8722,7 @@ Document data flows. Data flow documentation includes service provider data flow
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Encrypt data on removable media.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9901,11 +8742,7 @@ Encrypt data on removable media.\n\n \n- Document a formal data management proce
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Encrypt sensitive data in transit. Example s can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9925,11 +8762,7 @@ Encrypt sensitive data in transit. Example s can include Transport Layer Securit
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Encrypt sensitive data at rest on servers, applications, and databases. Storage-layer encryption, also known as server-side encryption, meets the minimum requirement of this safeguard. Additional encryption methods may include application-layer encryption, also known as client-side encryption, where access to the data storage device(s) does not permit access to the plain-text data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9949,11 +8782,7 @@ Encrypt sensitive data at rest on servers, applications, and databases. Storage-
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Segment data processing and storage based on the sensitivity of the data. Do not process sensitive data on enterprise assets intended for lower sensitivity data.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9973,11 +8802,7 @@ Segment data processing and storage based on the sensitivity of the data. Do not
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Implement an automated tool, such as a host-based Data Loss Prevention (DLP) tool to identify all sensitive data stored, processed, or transmitted through enterprise assets, including those located onsite or at a remote service provider, and update the enterprise’s data inventory.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -9997,11 +8822,7 @@ Implement an automated tool, such as a host-based Data Loss Prevention (DLP) too
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Log sensitive data access, including modification and disposal.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
@@ -10021,11 +8842,7 @@ Log sensitive data access, including modification and disposal.\n\n \n- Document
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented secure configuration process for enterprise assets (end-user devices, including portable and mobile, non-computing/IoT devices, and servers) and software (operating systems and applications). Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10045,11 +8862,7 @@ Establish and maintain a documented secure configuration process for enterprise 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented secure configuration process for network devices. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10069,11 +8882,7 @@ Establish and maintain a documented secure configuration process for network dev
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure automatic session locking on enterprise assets after a defined period of inactivity. For general  operating systems, the period must not exceed 15 minutes. For mobile end-user devices, the period must not exceed 2 minutes.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10093,11 +8902,7 @@ Configure automatic session locking on enterprise assets after a defined period 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Implement and manage a firewall on servers, where supported. Example s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10117,11 +8922,7 @@ Implement and manage a firewall on servers, where supported. Example s include a
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Implement and manage a host-based firewall or port-filtering tool on end-user devices, with a default-deny rule that drops all traffic except those services and ports that are explicitly allowed.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10141,11 +8942,7 @@ Implement and manage a host-based firewall or port-filtering tool on end-user de
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely manage enterprise assets and software. Example s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10165,11 +8962,7 @@ Securely manage enterprise assets and software. Example s include managing confi
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Manage default accounts on enterprise assets and software, such as root, administrator, and other pre-configured vendor accounts. Example s can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10189,11 +8982,7 @@ Manage default accounts on enterprise assets and software, such as root, adminis
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Uninstall or disable unnecessary services on enterprise assets and software, such as an unused file sharing service, web application module, or service function.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10213,11 +9002,7 @@ Uninstall or disable unnecessary services on enterprise assets and software, suc
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure trusted DNS servers on network infrastructure. Example s include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10237,11 +9022,7 @@ Configure trusted DNS servers on network infrastructure. Example s include confi
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Enforce automatic device lockout following a predetermined threshold of local failed authentication attempts on portable end-user devices, where supported. For laptops, do not allow more than 20 failed authentication attempts; for tablets and smartphones, no more than 10 failed authentication attempts. Example s include Microsoft InTune Device Lock and Apple Configuration Profile maxFailedAttempts.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include Microsoft InTune Device Lock and Apple Configuration Profile maxFailedAttempts.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10261,11 +9042,7 @@ Enforce automatic device lockout following a predetermined threshold of local fa
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Remotely wipe enterprise data from enterprise-owned portable end-user devices when deemed appropriate such as lost or stolen devices, or when an individual no longer supports the enterprise.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10285,11 +9062,7 @@ Remotely wipe enterprise data from enterprise-owned portable end-user devices wh
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure separate enterprise workspaces are used on mobile end-user devices, where supported. Example s include using an Apple Configuration Profile or Android Work Profile to separate enterprise applications and data from personal applications and data.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include using an Apple Configuration Profile or Android Work Profile to separate enterprise applications and data from personal applications and data.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
@@ -10309,11 +9082,7 @@ Ensure separate enterprise workspaces are used on mobile end-user devices, where
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of all accounts managed in the enterprise. The inventory must at a minimum include user, administrator, and service accounts. The inventory, at a minimum, should contain the person’s name, username, start/stop dates, and department. Validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -10333,11 +9102,7 @@ Establish and maintain an inventory of all accounts managed in the enterprise. T
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use unique passwords for all enterprise assets. Best practice  includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -10357,11 +9122,7 @@ Use unique passwords for all enterprise assets. Best practice  includes, at a mi
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -10381,11 +9142,7 @@ Delete or disable any dormant accounts after a period of 45 days of inactivity, 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Restrict administrator privileges to dedicated administrator accounts on enterprise assets. Conduct general computing activities, such as internet browsing, email, and productivity suite use, from the user’s primary, non-privileged account.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -10405,11 +9162,7 @@ Restrict administrator privileges to dedicated administrator accounts on enterpr
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of service accounts. The inventory, at a minimum, must contain department owner, review date, and . Perform service account reviews to validate that all active accounts are authorized, on a recurring schedule at a minimum quarterly or more frequently.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -10429,11 +9182,7 @@ Establish and maintain an inventory of service accounts. The inventory, at a min
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize account management through a directory or identity service.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
@@ -10453,11 +9202,7 @@ Centralize account management through a directory or identity service.\n\n \n- C
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and follow a documented process, preferably automated, for granting access to enterprise assets upon new hire or role change of a user.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10477,11 +9222,7 @@ Establish and follow a documented process, preferably automated, for granting ac
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and follow a process, preferably automated, for revoking access to enterprise assets, through disabling accounts immediately upon termination, rights revocation, or role change of a user. Disabling accounts, instead of deleting accounts, may be necessary to preserve audit trails.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10501,11 +9242,7 @@ Establish and follow a process, preferably automated, for revoking access to ent
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require all externally-exposed enterprise or third-party applications to enforce MFA, where supported. Enforcing MFA through a directory service or SSO provider is a satisfactory  of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10525,11 +9262,7 @@ Require all externally-exposed enterprise or third-party applications to enforce
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require MFA for remote network access.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10549,11 +9282,7 @@ Require MFA for remote network access.\n\n \n- Document formal processes for gra
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require MFA for all administrative access accounts, where supported, on all enterprise assets, whether managed on-site or through a service provider.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10573,11 +9302,7 @@ Require MFA for all administrative access accounts, where supported, on all ente
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of the enterprise’s authentication and authorization systems, including those hosted on-site or at a remote service provider. Review and update the inventory, at a minimum, annually or more frequently.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10597,11 +9322,7 @@ Establish and maintain an inventory of the enterprise’s authentication and aut
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize access control for all enterprise assets through a directory service or SSO provider, where supported.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10621,11 +9342,7 @@ Centralize access control for all enterprise assets through a directory service 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Define and maintain role-based access control, through determining and documenting the access rights necessary for each role within the enterprise to successfully carry out its assigned duties. Perform access control reviews of enterprise assets to validate that all privileges are authorized, on a recurring schedule at a minimum annually or more frequently.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
@@ -10645,11 +9362,7 @@ Define and maintain role-based access control, through determining and documenti
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented vulnerability management process for enterprise assets. Review and update documentation annually or when significant enterprise changes occur that could impact this safeguard.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10669,11 +9382,7 @@ Establish and maintain a documented vulnerability management process for enterpr
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a risk-based remediation strategy documented in a remediation process, with monthly or more frequent reviews.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10693,11 +9402,7 @@ Establish and maintain a risk-based remediation strategy documented in a remedia
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform operating system updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10717,11 +9422,7 @@ Perform operating system updates on enterprise assets through automated patch ma
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform application updates on enterprise assets through automated patch management on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10741,11 +9442,7 @@ Perform application updates on enterprise assets through automated patch managem
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform automated vulnerability scans of internal enterprise assets on a quarterly or more frequent basis. Conduct both authenticated and unauthenticated scans.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10765,11 +9462,7 @@ Perform automated vulnerability scans of internal enterprise assets on a quarter
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform automated vulnerability scans of externally-exposed enterprise assets. Perform scans on a monthly or more frequent basis.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10789,11 +9482,7 @@ Perform automated vulnerability scans of externally-exposed enterprise assets. P
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Remediate detected vulnerabilities in software through processes and tooling on a monthly or more frequent basis, based on the remediation process.\n\n \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
@@ -10814,11 +9503,7 @@ Remediate detected vulnerabilities in software through processes and tooling on 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented audit log management process that defines the enterprise’s logging requirements. At a minimum, address the collection, review, and retention of audit logs for enterprise assets. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10838,11 +9523,7 @@ Establish and maintain a documented audit log management process that defines th
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect audit logs. Ensure that logging, per the enterprise’s audit log management process, has been enabled across enterprise assets.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10862,11 +9543,7 @@ Collect audit logs. Ensure that logging, per the enterprise’s audit log manage
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that logging destinations maintain adequate storage to comply with the enterprise’s audit log management process.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10886,11 +9563,7 @@ Ensure that logging destinations maintain adequate storage to comply with the en
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Standardize time synchronization. Configure at least two synchronized time sources across enterprise assets, where supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10910,11 +9583,7 @@ Standardize time synchronization. Configure at least two synchronized time sourc
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure detailed audit logging for enterprise assets containing sensitive data. Include event source, date, username, timestamp, source addresses, destination addresses, and other useful elements that could assist in a forensic investigation.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10934,11 +9603,7 @@ Configure detailed audit logging for enterprise assets containing sensitive data
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect DNS query audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10958,11 +9623,7 @@ Collect DNS query audit logs on enterprise assets, where appropriate and support
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect URL request audit logs on enterprise assets, where appropriate and supported.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -10982,11 +9643,7 @@ Collect URL request audit logs on enterprise assets, where appropriate and suppo
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect command-line audit logs. Example s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -11006,11 +9663,7 @@ Collect command-line audit logs. Example s include collecting audit logs from Po
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize, to the extent possible, audit log collection and retention across enterprise assets in accordance with the documented audit log management process. Example s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -11030,11 +9683,7 @@ Centralize, to the extent possible, audit log collection and retention across en
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Retain audit logs across enterprise assets for a minimum of 90 days.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -11054,11 +9703,7 @@ Retain audit logs across enterprise assets for a minimum of 90 days.\n\n \n- Con
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Conduct reviews of audit logs to detect anomalies or abnormal events that could indicate a potential threat. Conduct reviews on a weekly, or more frequent, basis.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -11078,11 +9723,7 @@ Conduct reviews of audit logs to detect anomalies or abnormal events that could 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect service provider logs, where supported. Example s include collecting authentication and authorization events, data creation and disposal events, and user management events.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include collecting authentication and authorization events, data creation and disposal events, and user management events.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
@@ -11104,11 +9745,7 @@ Collect service provider logs, where supported. Example s include collecting aut
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure only fully supported browsers and email clients are allowed to execute in the enterprise, only using the latest version of browsers and email clients provided through the vendor.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11128,11 +9765,7 @@ Ensure only fully supported browsers and email clients are allowed to execute in
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use DNS filtering services on all end-user devices, including remote and on-premises assets, to block access to known malicious domains.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11152,11 +9785,7 @@ Use DNS filtering services on all end-user devices, including remote and on-prem
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Enforce and update network-based URL filters to limit an enterprise asset from connecting to potentially malicious or unapproved websites. Example s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11176,11 +9805,7 @@ Enforce and update network-based URL filters to limit an enterprise asset from c
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Restrict, either through uninstalling or disabling, any unauthorized or unnecessary browser or email client plugins, extensions, and add-on applications.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11200,11 +9825,7 @@ Restrict, either through uninstalling or disabling, any unauthorized or unnecess
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-To lower the chance of spoofed or modified emails from valid domains, implement DMARC policy and verification, starting with implementing the Sender Policy Framework (SPF) and the DomainKeys Identified Mail (DKIM) standards.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11224,11 +9845,7 @@ To lower the chance of spoofed or modified emails from valid domains, implement 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Block unnecessary file types attempting to enter the enterprise’s email gateway.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11248,11 +9865,7 @@ Block unnecessary file types attempting to enter the enterprise’s email gatewa
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy and maintain email server anti-malware protections, such as attachment scanning and/or sandboxing.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
@@ -11273,11 +9886,7 @@ Deploy and maintain email server anti-malware protections, such as attachment sc
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy and maintain anti-malware software on all enterprise assets, and ensure it is updated regularly to detect and respond to known threats.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11297,11 +9906,7 @@ Deploy and maintain anti-malware software on all enterprise assets, and ensure i
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure automatic updates for anti-malware signature files on all enterprise assets.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11321,11 +9926,7 @@ Configure automatic updates for anti-malware signature files on all enterprise a
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Disable autorun and autoplay auto-execute functionality for removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11345,11 +9946,7 @@ Disable autorun and autoplay auto-execute functionality for removable media.\n\n
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Configure anti-malware software to automatically scan removable media.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11369,11 +9966,7 @@ Configure anti-malware software to automatically scan removable media.\n\n \n- D
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Enable anti-exploitation features on enterprise assets and software, where possible, such as Microsoft® Data Execution Prevention (DEP), Windows® Defender Exploit Guard (WDEG), or Apple® System Integrity Protection (SIP) and Gatekeeper™.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11393,11 +9986,7 @@ Enable anti-exploitation features on enterprise assets and software, where possi
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centrally manage anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11417,11 +10006,7 @@ Centrally manage anti-malware software.\n\n \n- Deploy anti-malware software on 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use behavior-based anti-malware software.\n\n \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
@@ -11442,11 +10027,7 @@ Use behavior-based anti-malware software.\n\n \n- Deploy anti-malware software o
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented data recovery process that includes detailed backup procedures. In the process, address the scope of data recovery activities, recovery prioritization, and the security of backup data. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11466,11 +10047,7 @@ Establish and maintain a documented data recovery process that includes detailed
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform automated backups of in-scope enterprise assets. Run backups weekly, or more frequently, based on the sensitivity of the data.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11490,11 +10067,7 @@ Perform automated backups of in-scope enterprise assets. Run backups weekly, or 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Protect recovery data with equivalent controls to the original data. Reference encryption or data separation, based on requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11514,11 +10087,7 @@ Protect recovery data with equivalent controls to the original data. Reference e
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an isolated instance of recovery data. Example s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11538,11 +10107,7 @@ Establish and maintain an isolated instance of recovery data. Example s include,
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Test backup recovery quarterly, or more frequently, for a sampling of in-scope enterprise assets.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11562,11 +10127,7 @@ Test backup recovery quarterly, or more frequently, for a sampling of in-scope e
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure network infrastructure is kept up-to-date. Example s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11586,11 +10147,7 @@ Ensure network infrastructure is kept up-to-date. Example s include running the 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Design and maintain a secure network architecture. A secure network architecture must address segmentation, least privilege, and availability, at a minimum. Example s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11610,11 +10167,7 @@ Design and maintain a secure network architecture. A secure network architecture
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely manage network infrastructure. Example s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11634,11 +10187,7 @@ Securely manage network infrastructure. Example s include version-controlled Inf
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain architecture diagram(s) and/or other network system documentation. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11658,11 +10207,7 @@ Establish and maintain architecture diagram(s) and/or other network system docum
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize network AAA.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11682,11 +10227,7 @@ Centralize network AAA.\n\n \n- Document formal policies and procedures related 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Adopt secure network management protocols (e.g., 802.1X) and secure communication protocols (e.g., Wi-Fi Protected Access 2 (WPA2) Enterprise or more secure alternatives).\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11706,11 +10247,7 @@ Adopt secure network management protocols (e.g., 802.1X) and secure communicatio
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Require users to authenticate to enterprise-managed VPN and authentication services prior to accessing enterprise resources on end-user devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11747,11 +10284,7 @@ Require users to authenticate to enterprise-managed VPN and authentication servi
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice  requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11771,11 +10304,7 @@ Centralize security event alerting across enterprise assets for log correlation 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy a host-based intrusion detection solution on enterprise assets, where appropriate and/or supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11795,11 +10324,7 @@ Deploy a host-based intrusion detection solution on enterprise assets, where app
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy a network intrusion detection solution on enterprise assets, where appropriate. Example s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11819,11 +10344,7 @@ Deploy a network intrusion detection solution on enterprise assets, where approp
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform traffic filtering between network segments, where appropriate.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11843,11 +10364,7 @@ Perform traffic filtering between network segments, where appropriate.\n\n \n- D
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Manage access control for assets remotely connecting to enterprise resources. Determine amount of access to enterprise resources based on: up-to-date anti-malware software installed, configuration compliance with the enterprise’s secure configuration process, and ensuring the operating system and applications are up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11867,11 +10384,7 @@ Manage access control for assets remotely connecting to enterprise resources. De
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Collect network traffic flow logs and/or network traffic to review and alert upon from network devices.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11892,11 +10405,7 @@ Collect network traffic flow logs and/or network traffic to review and alert upo
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy a host-based intrusion prevention solution on enterprise assets, where appropriate and/or supported. Example s include use of an Endpoint Detection and Response (EDR) client or host-based IPS agent.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include use of an Endpoint Detection and Response (EDR) client or host-based IPS agent.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11916,11 +10425,7 @@ Deploy a host-based intrusion prevention solution on enterprise assets, where ap
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy a network intrusion prevention solution, where appropriate. Example s include the use of a Network Intrusion Prevention System (NIPS) or equivalent CSP service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include the use of a Network Intrusion Prevention System (NIPS) or equivalent CSP service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11940,11 +10445,7 @@ Deploy a network intrusion prevention solution, where appropriate. Example s inc
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Deploy port-level access control. Port-level access control utilizes 802.1x, or similar network access control protocols, such as certificates, and may incorporate user and/or device authentication.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11964,11 +10465,7 @@ Deploy port-level access control. Port-level access control utilizes 802.1x, or 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform application layer filtering. Example s include a filtering proxy, application layer firewall, or gateway.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include a filtering proxy, application layer firewall, or gateway.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -11988,11 +10485,7 @@ Perform application layer filtering. Example s include a filtering proxy, applic
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Tune security event alerting thresholds monthly, or more frequently.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12012,11 +10505,7 @@ Tune security event alerting thresholds monthly, or more frequently.\n\n \n- Doc
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a security awareness program. The  of a security awareness program is to educate the enterprise’s workforce on how to interact with enterprise assets and data in a secure manner. Conduct training at hire and, at a minimum, annually. Review and update content annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12036,11 +10525,7 @@ Establish and maintain a security awareness program. The  of a security awarenes
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to recognize social engineering attacks, such as phishing, business email compromise (BEC), pretexting, and tailgating.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12060,11 +10545,7 @@ Train workforce members to recognize social engineering attacks, such as phishin
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on authentication best practices. Example topics include MFA, password composition, and credential management.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12084,11 +10565,7 @@ Train workforce members on authentication best practices. Example topics include
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on how to identify and properly store, transfer, archive, and destroy sensitive data. This also includes training workforce members on clear screen and desk best practices, such as locking their screen when they step away from their enterprise asset, erasing physical and virtual whiteboards at the end of meetings, and storing data and assets securely.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12108,11 +10585,7 @@ Train workforce members on how to identify and properly store, transfer, archive
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to be aware of causes for unintentional data exposure. Example topics include mis-delivery of sensitive data, losing a portable end-user device, or publishing data to unintended audiences.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12132,11 +10605,7 @@ Train workforce members to be aware of causes for unintentional data exposure. E
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members to be able to recognize a potential incident and be able to report such an incident.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12156,11 +10625,7 @@ Train workforce members to be able to recognize a potential incident and be able
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce to understand how to verify and report out-of-date software patches or any failures in automated processes and tools. Part of this training should include notifying IT personnel of any failures in automated processes and tools.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12180,11 +10645,7 @@ Train workforce to understand how to verify and report out-of-date software patc
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12204,11 +10665,7 @@ Train workforce members on the dangers of connecting to, and transmitting data o
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Conduct role-specific security awareness and skills training. Example s include secure system administration courses for IT professionals, OWASP® Top 10 vulnerability awareness and prevention training for web application developers, and advanced social engineering awareness training for high-profile roles.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * s include secure system administration courses for IT professionals, OWASP® Top 10 vulnerability awareness and prevention training for web application developers, and advanced social engineering awareness training for high-profile roles.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12228,11 +10685,7 @@ Conduct role-specific security awareness and skills training. Example s include 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain an inventory of service providers. The inventory is to list all known service providers, include classification(s), and designate an enterprise contact for each service provider. Review and update the inventory annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12252,11 +10705,7 @@ Establish and maintain an inventory of service providers. The inventory is to li
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a service provider management policy. Ensure the policy addresses the classification, inventory, assessment, monitoring, and decommissioning of service providers. Review and update the policy annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12276,11 +10725,7 @@ Establish and maintain a service provider management policy. Ensure the policy a
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Classify service providers. Classification consideration may include one or more characteristics, such as data sensitivity, data volume, availability requirements, applicable regulations, inherent risk, and mitigated risk. Update and review classifications annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12300,11 +10745,7 @@ Classify service providers. Classification consideration may include one or more
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure service provider contracts include security requirements. Example requirements may include minimum security program requirements, security incident and/or data breach notification and response, data encryption requirements, and data disposal commitments. These security requirements must be consistent with the enterprise’s service provider management policy. Review service provider contracts annually to ensure contracts are not missing security requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12324,11 +10765,7 @@ Ensure service provider contracts include security requirements. Example require
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Assess service providers consistent with the enterprise’s service provider management policy. Assessment scope may vary based on classification(s), and may include review of standardized assessment reports, such as Service Organization Control 2 (SOC 2) and Payment Card Industry (PCI) Attestation of Compliance (AoC), customized questionnaires, or other appropriately rigorous processes. Reassess service providers annually, at a minimum, or with new and renewed contracts.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12348,11 +10785,7 @@ Assess service providers consistent with the enterprise’s service provider man
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Monitor service providers consistent with the enterprise’s service provider management policy. Monitoring may include periodic reassessment of service provider compliance, monitoring service provider release notes, and dark web monitoring.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12372,11 +10805,7 @@ Monitor service providers consistent with the enterprise’s service provider ma
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Securely decommission service providers. Example considerations include user and service account deactivation, termination of data flows, and secure disposal of enterprise data within service provider systems.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12396,11 +10825,7 @@ Securely decommission service providers. Example considerations include user and
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a secure application development process. In the process, address such items as: secure application design standards, secure coding practices, developer training, vulnerability management, security of third-party code, and application security testing procedures. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12420,11 +10845,7 @@ Establish and maintain a secure application development process. In the process,
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a process to accept and address reports of software vulnerabilities, including providing a means for external entities to report. The process is to include such items as: a vulnerability handling policy that identifies reporting process, responsible party for handling vulnerability reports, and a process for intake, assignment, remediation, and remediation testing. As part of the process, use a vulnerability tracking system that includes severity ratings and metrics for measuring timing for identification, analysis, and remediation of vulnerabilities. Review and update documentation annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12444,11 +10865,7 @@ Establish and maintain a process to accept and address reports of software vulne
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform root cause analysis on security vulnerabilities. When reviewing vulnerabilities, root cause analysis is the task of evaluating underlying issues that create vulnerabilities in code, and allows development teams to move beyond just fixing individual vulnerabilities as they arise.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12468,11 +10885,7 @@ Perform root cause analysis on security vulnerabilities. When reviewing vulnerab
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and manage an updated inventory of third-party components used in development, often referred to as a “bill of materials,” as well as components slated for future use. This inventory is to include any risks that each third-party component could pose. Evaluate the list at least monthly to identify any changes or updates to these components, and validate that the component is still supported.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12492,11 +10905,7 @@ Establish and manage an updated inventory of third-party components used in deve
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use up-to-date and trusted third-party software components. When possible, choose established and proven frameworks and libraries that provide adequate security. Acquire these components from trusted sources or evaluate the software for vulnerabilities before use.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12516,11 +10925,7 @@ Use up-to-date and trusted third-party software components. When possible, choos
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a severity rating system and process for application vulnerabilities that facilitates prioritizing the order in which discovered vulnerabilities are fixed. This process includes setting a minimum level of security acceptability for releasing code or applications. Severity ratings bring a systematic way of triaging vulnerabilities that improves risk management and helps ensure the most severe bugs are fixed first. Review and update the system and process annually.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12540,11 +10945,7 @@ Establish and maintain a severity rating system and process for application vuln
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Use standard, industry-recommended hardening configuration templates for application infrastructure components. This includes underlying servers, databases, and web servers, and applies to cloud containers, Platform as a Service (PaaS) components, and SaaS components. Do not allow in-house developed software to weaken configuration hardening.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12564,11 +10965,7 @@ Use standard, industry-recommended hardening configuration templates for applica
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Maintain separate environments for production and non-production systems.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12588,11 +10985,7 @@ Maintain separate environments for production and non-production systems.\n\n \n
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Ensure that all software development personnel receive training in writing secure code for their specific development environment and responsibilities. Training can include general security principles and application security standard practices. Conduct training at least annually and design in a way to promote security within the development team, and build a culture of security among the developers.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12612,11 +11005,7 @@ Ensure that all software development personnel receive training in writing secur
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Apply secure design principles in application architectures. Secure design principles include the concept of least privilege and enforcing mediation to validate every operation that the user makes, promoting the concept of "never trust user input." Examples include ensuring that explicit error checking is performed and documented for all input, including for size, data type, and acceptable ranges or formats. Secure design also means minimizing the application infrastructure attack surface, such as turning off unprotected ports and services, removing unnecessary programs and files, and renaming or removing default accounts.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12636,11 +11025,7 @@ Apply secure design principles in application architectures. Secure design princ
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Leverage vetted modules or services for application security components, such as identity management, encryption, auditing, and logging. Using platform features in critical security functions will reduce developers’ workload and minimize the likelihood of design or  errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12661,11 +11046,7 @@ Leverage vetted modules or services for application security components, such as
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Apply static and dynamic analysis tools within the application life cycle to verify that secure coding practices are being followed.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12685,11 +11066,7 @@ Apply static and dynamic analysis tools within the application life cycle to ver
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Conduct application penetration testing. For critical applications, authenticated penetration testing is better suited to finding business logic vulnerabilities than code scanning and automated security testing. Penetration testing relies on the skill of the tester to manually manipulate an application as an authenticated and unauthenticated user.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12709,11 +11086,7 @@ Conduct application penetration testing. For critical applications, authenticate
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Conduct threat modeling. Threat modeling is the process of identifying and addressing application security design flaws within a design, before code is created. It is conducted through specially trained individuals who evaluate the application design and gauge security risks for each entry point and access level. The goal is to map out the application, architecture, and infrastructure in a structured way to understand its weaknesses.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12733,11 +11106,7 @@ Conduct threat modeling. Threat modeling is the process of identifying and addre
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12757,11 +11126,7 @@ Designate one key person, and at least one backup, who will manage the enterpris
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12781,11 +11146,7 @@ Establish and maintain contact information for parties that need to be informed 
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12805,11 +11166,7 @@ Establish and maintain a documented enterprise process for the workforce to repo
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12829,11 +11186,7 @@ Establish and maintain a documented incident response process that addresses rol
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Assign key roles and responsibilities for incident response, including staff from legal, IT, information security, facilities, public relations, human resources, incident responders, analysts, and relevant third parties. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12853,11 +11206,7 @@ Assign key roles and responsibilities for incident response, including staff fro
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Determine which primary and secondary mechanisms will be used to communicate and report during a security incident. Mechanisms can include phone calls, emails, secure chat, or notification letters. Keep in mind that certain mechanisms, such as emails, can be affected during a security incident. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12877,11 +11226,7 @@ Determine which primary and secondary mechanisms will be used to communicate and
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Plan and conduct routine incident response exercises and scenarios for key personnel involved in the incident response process to prepare for responding to real-world incidents. Exercises need to test communication channels, decision making, and workflows. Conduct testing on an annual basis, at a minimum.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12901,11 +11246,7 @@ Plan and conduct routine incident response exercises and scenarios for key perso
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Conduct post-incident reviews. Post-incident reviews help prevent incident recurrence through identifying lessons learned and follow-up action.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12925,11 +11266,7 @@ Conduct post-incident reviews. Post-incident reviews help prevent incident recur
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain security incident thresholds, including, at a minimum, differentiating between an incident and an event. Examples can include: abnormal activity, security vulnerability, security weakness, data breach, privacy incident, etc. Review annually, or when significant enterprise changes occur that could impact this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12949,11 +11286,7 @@ Establish and maintain security incident thresholds, including, at a minimum, di
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Establish and maintain a penetration testing program appropriate to the size, complexity, industry, and maturity of the enterprise. Penetration testing program characteristics include scope, such as network, web application, Application Programming Interface (API), hosted services, and physical premise controls; frequency; limitations, such as acceptable hours, and excluded attack types; point of contact information; remediation, such as how findings will be routed internally; and retrospective requirements.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12973,11 +11306,7 @@ Establish and maintain a penetration testing program appropriate to the size, co
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform periodic external penetration tests based on program requirements, no less than annually. External penetration testing must include enterprise and environmental reconnaissance to detect exploitable information. Penetration testing requires specialized skills and experience and must be conducted through a qualified party. The testing may be clear box or opaque box.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -12997,11 +11326,7 @@ Perform periodic external penetration tests based on program requirements, no le
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Remediate penetration test findings based on the enterprise’s documented vulnerability remediation process. This should include determining a timeline and level of effort based on the impact and prioritization of each identified finding.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -13021,11 +11346,7 @@ Remediate penetration test findings based on the enterprise’s documented vulne
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Validate security measures after each penetration test. If deemed necessary, modify rulesets and capabilities to detect the techniques used during testing.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
@@ -13045,11 +11366,7 @@ Validate security measures after each penetration test. If deemed necessary, mod
   evidence: '',
   notes: '',
   responsibleParty: '',
-  lastAssessmentDate: null,    auditReadyGuidance: `**Purpose**
-
-Perform periodic internal penetration tests based on program requirements, no less than annually. The testing may be clear box or opaque box.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence
-
-**Implementation**
+  lastAssessmentDate: null,    auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 

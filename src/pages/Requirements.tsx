@@ -224,7 +224,7 @@ const Requirements = () => {
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div>
           {selectedRequirement ? (
-            <h1 className="text-3xl font-bold tracking-tight">{getStandardName(selectedRequirement.standardId)}: {selectedRequirement.code}</h1>
+            <h1 className="text-3xl font-bold tracking-tight sr-only">{selectedRequirement.code}</h1>
           ) : (
             <h1 className="text-3xl font-bold tracking-tight">{t('requirements.title', 'Requirements')}</h1>
           )}
@@ -411,7 +411,7 @@ const Requirements = () => {
               >
                 <Save size={14} className="mr-1" />
                 Save
-                <span className="text-[10px] opacity-70 px-1 py-0.5 rounded bg-muted ml-1">
+                <span className="text-[11px] px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 ml-1.5 border border-gray-400 dark:border-gray-600 font-semibold text-gray-800 dark:text-gray-200 shadow-sm">
                   {navigator.platform.includes('Mac') ? '⌘S' : 'Ctrl+S'}
                 </span>
               </Button>

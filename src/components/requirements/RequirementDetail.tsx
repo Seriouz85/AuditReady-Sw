@@ -74,10 +74,6 @@ export function RequirementDetail({
   
 
 
-  if (requirement.id === 'cis-ig1-1.1' && (!requirement.auditReadyGuidance || requirement.auditReadyGuidance.trim() === '')) {
-    throw new Error('auditReadyGuidance is missing or empty for cis-ig1-1.1');
-  }
-
   const handleStatusChange = (value: RequirementStatus) => {
     setStatus(value);
     setHasChanges(true);
@@ -204,7 +200,7 @@ export function RequirementDetail({
         <div className="flex justify-between items-start">
           <div>
             <div className="text-xs font-medium text-muted-foreground mb-1">
-              {requirement.code} | {requirement.section}
+              {requirement.section} | {requirement.code}
             </div>
             <CardTitle>{t(`requirement.${requirement.id}.name`, requirement.name)}</CardTitle>
             <CardDescription>
@@ -230,13 +226,15 @@ export function RequirementDetail({
         <div>
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-medium">{t('requirement.field.guidance', 'Guidance')}</h3>
-            <Button
-              variant="outline"
-              className="ml-2 px-3 py-1 text-emerald-700 border-emerald-600 hover:bg-emerald-50"
-              onClick={() => setShowAuditReady(true)}
-            >
-              AuditReady guidance
-            </Button>
+            {requirement.auditReadyGuidance && requirement.auditReadyGuidance.trim() !== '' && (
+              <Button
+                variant="outline"
+                className="ml-2 px-3 py-1 text-emerald-700 border-emerald-600 hover:bg-emerald-50"
+                onClick={() => setShowAuditReady(true)}
+              >
+                AuditReady guidance
+              </Button>
+            )}
           </div>
           <Textarea
             value={guidance}
@@ -285,33 +283,23 @@ export function RequirementDetail({
                   size="sm"
                   className="px-3 py-1 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
                   onClick={() => {
-                    // Extract the already parsed content from the modal
-                    const purposeElement = document.querySelector('.prose h4:first-child + p');
+                    // Get bullet points and manually strip any existing dashes or bullet prefixes
                     const bulletElements = document.querySelectorAll('.prose ul li');
-                    
-                    // Get purpose text
-                    const purposeText = purposeElement ? purposeElement.textContent || '' : '';
                     
                     // Get bullet points and manually strip any existing dashes or bullet prefixes
                     const bullets = Array.from(bulletElements)
                       .map(el => {
                         // Remove any leading dash, bullet, or asterisk with whitespace
                         let text = el.textContent || '';
-                        return text.replace(/^[-•*]\s+/, '');
+                        return text.replace(/^[-•*]\s+/, '').trim();
                       })
-                      .join('\n');
+                      .filter(text => text.length > 0) // Remove empty lines
+                      .join('\n• '); // Join with bullet points for better readability
                     
-                    // Format the guidance with clear visual separation between sections
-                    const formattedGuidance = 
-`PURPOSE
-
-${purposeText}
-
-
-
-IMPLEMENTATION
-
-${bullets}`;
+                    // Format the guidance with just the Implementation section and proper bullet formatting
+                    const formattedGuidance = bullets.length > 0 ? 
+                      `Implementation:\n\n• ${bullets}` : 
+                      'No implementation guidance available.';
                     
                     setGuidance(formattedGuidance);
                     setHasChanges(true);
@@ -325,27 +313,20 @@ ${bullets}`;
               <div className="prose dark:prose-invert max-w-none max-h-[70vh] overflow-y-auto w-full px-3">
                 {(() => {
                   const content = requirement.auditReadyGuidance || 'No guidance available.';
+                  
+                  if (!content || content.trim() === '' || content === 'No guidance available.') {
+                    return (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500 dark:text-gray-400">No AuditReady guidance is available for this requirement.</p>
+                      </div>
+                    );
+                  }
+                  
                   const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                  const purposeIdx = lines.findIndex(l =>
-                    l.toLowerCase().includes('purpose') ||
-                    l.includes('**Purpose**')
-                  );
                   const implIdx = lines.findIndex(l =>
                     l.toLowerCase().includes('implementation') ||
                     l.includes('**Implementation**')
                   );
-                  let purposeText = '';
-                  if (purposeIdx >= 0) {
-                    for (let i = purposeIdx + 1; i < lines.length; i++) {
-                      if (i === implIdx) break;
-                      if (!lines[i].toLowerCase().includes('purpose') &&
-                          !lines[i].startsWith('•') &&
-                          !lines[i].startsWith('*')) {
-                        purposeText = lines[i];
-                        break;
-                      }
-                    }
-                  }
                   const bulletPoints: string[] = [];
                   if (implIdx >= 0) {
                     for (let i = implIdx + 1; i < lines.length; i++) {
@@ -365,10 +346,6 @@ ${bullets}`;
                   }
                   return (
                     <>
-                      <div className="mb-6">
-                        <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Purpose</h4>
-                        <p className="text-base">{purposeText || "No purpose information available."}</p>
-                      </div>
                       <div>
                         <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Implementation</h4>
                         {bulletPoints.length > 0 ? (
