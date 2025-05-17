@@ -229,7 +229,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   );
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden" style={{ borderLeft: 'none' }}>
       {/* Mobile Menu Toggle */}
       <Button
         variant="ghost"
@@ -241,8 +241,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </Button>
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20">
-        <div className="p-4 pb-6 flex items-center justify-between border-b border-border">
+      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20" style={{ borderLeft: 'none' }}>
+        <div className="flex items-center justify-between border-b border-border h-[65px] px-4">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -265,8 +265,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           "fixed inset-0 z-40 w-full bg-sidebar transform transition-transform duration-300 ease-in-out md:hidden border-r border-border",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
+        style={{ borderLeft: 'none' }}
       >
-        <div className="p-4 pb-6 flex items-center justify-between border-b border-border">
+        <div className="flex items-center justify-between border-b border-border h-[65px] px-4">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -285,8 +286,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Updated Header Structure with matching padding to sidebar */}
-        <div className="flex justify-end items-center p-4 border-b border-border bg-background sticky top-0 z-10 main-header h-[65px]">
+        {/* Updated Header Structure with same height as sidebar header */}
+        <div className="flex justify-end items-center border-b border-border bg-background sticky top-0 z-10 main-header h-[65px] px-4">
           <div className="flex items-center gap-2">
             <ZoomToggle />
             <ThemeToggle />

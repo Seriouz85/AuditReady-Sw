@@ -1,9 +1,0 @@
-Purpose: Establish and maintain an accurate inventory of all enterprise assets with the potential to store or process data, including end-user devices, network devices, IoT devices, and servers. This provides visibility into your environment and serves as the foundation for security controls.
-
-Implementation: - Implement automated asset discovery tools to continuously scan the network
-- Include all enterprise assets: end-user devices, network devices, IoT devices, servers
-- Record key information: network address, hardware address, machine name, owner, department
-- Mark assets as approved or unapproved for network connection
-- For mobile devices, use MDM solutions to track and manage devices
-- Include both physical and virtual assets, including cloud resources
-- Review and update the inventory at least bi-annually
