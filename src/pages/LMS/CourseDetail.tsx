@@ -183,10 +183,52 @@ const LessonTypeIcon = ({ type }: { type: string }) => {
   }
 };
 
+// Add these interfaces before the component
+interface Lesson {
+  id: string;
+  title: string;
+  type: string;
+  duration: string;
+  completed: boolean;
+  content?: string;
+}
+
+interface Module {
+  id: string;
+  title: string;
+  lessons: Lesson[];
+  completed: boolean;
+  duration: string;
+}
+
+interface Instructor {
+  name: string;
+  role: string;
+  avatar: string;
+}
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  instructor: Instructor;
+  category: string;
+  duration: string;
+  level: string;
+  rating: number;
+  reviews?: number;
+  enrolled?: number;
+  progress: number;
+  modules: Module[];
+  image?: string;
+  materials?: number;
+  lastUpdated?: string;
+}
+
 const CourseDetail: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('content');
   const [currentLesson, setCurrentLesson] = useState<string | null>(null);
@@ -230,7 +272,7 @@ const CourseDetail: React.FC = () => {
     };
     
     fetchCourse();
-  }, [courseId, navigate]);
+  }, [courseId, navigate, currentLesson]);
 
   useEffect(() => { setTheme('light'); }, [setTheme]);
 
@@ -240,8 +282,8 @@ const CourseDetail: React.FC = () => {
     
     // Track activity
     if (course) {
-      const module = course.modules.find((m: any) => m.id === moduleId);
-      const lesson = module?.lessons.find((l: any) => l.id === lessonId);
+      const module = course.modules.find((m: Module) => m.id === moduleId);
+      const lesson = module?.lessons.find((l: Lesson) => l.id === lessonId);
       
       if (lesson) {
         trackActivity('start', lessonId, 'course', `${lesson.title} in ${course.title}`, 0);
@@ -257,9 +299,9 @@ const CourseDetail: React.FC = () => {
     if (!course) return;
     
     // Update course state
-    const updatedModules = course.modules.map((module: any) => {
+    const updatedModules = course.modules.map((module: Module) => {
       if (module.id === moduleId) {
-        const updatedLessons = module.lessons.map((lesson: any) => {
+        const updatedLessons = module.lessons.map((lesson: Lesson) => {
           if (lesson.id === lessonId) {
             return { ...lesson, completed: true };
           }
@@ -267,7 +309,7 @@ const CourseDetail: React.FC = () => {
         });
         
         // Check if all lessons in this module are complete
-        const allLessonsComplete = updatedLessons.every((l: any) => l.completed);
+        const allLessonsComplete = updatedLessons.every((l: Lesson) => l.completed);
         
         return { 
           ...module, 
@@ -279,11 +321,11 @@ const CourseDetail: React.FC = () => {
     });
     
     // Calculate overall progress
-    const totalLessons = updatedModules.reduce((acc: number, module: any) => 
+    const totalLessons = updatedModules.reduce((acc: number, module: Module) => 
       acc + module.lessons.length, 0);
       
-    const completedLessons = updatedModules.reduce((acc: number, module: any) => 
-      acc + module.lessons.filter((l: any) => l.completed).length, 0);
+    const completedLessons = updatedModules.reduce((acc: number, module: Module) => 
+      acc + module.lessons.filter((l: Lesson) => l.completed).length, 0);
     
     const newProgress = Math.round((completedLessons / totalLessons) * 100);
     
@@ -295,8 +337,8 @@ const CourseDetail: React.FC = () => {
     });
     
     // Track activity
-    const module = course.modules.find((m: any) => m.id === moduleId);
-    const lesson = module?.lessons.find((l: any) => l.id === lessonId);
+    const module = course.modules.find((m: Module) => m.id === moduleId);
+    const lesson = module?.lessons.find((l: Lesson) => l.id === lessonId);
     
     if (lesson) {
       trackActivity('complete', lessonId, 'course', `${lesson.title} in ${course.title}`, newProgress);
@@ -307,9 +349,9 @@ const CourseDetail: React.FC = () => {
     let nextLesson = null;
     
     // Check current module first
-    const currentModule = course.modules.find((m: any) => m.id === moduleId);
+    const currentModule = course.modules.find((m: Module) => m.id === moduleId);
     if (currentModule) {
-      const lessonIndex = currentModule.lessons.findIndex((l: any) => l.id === lessonId);
+      const lessonIndex = currentModule.lessons.findIndex((l: Lesson) => l.id === lessonId);
       if (lessonIndex < currentModule.lessons.length - 1) {
         nextLesson = currentModule.lessons[lessonIndex + 1].id;
         foundNext = true;
@@ -318,7 +360,7 @@ const CourseDetail: React.FC = () => {
     
     // If no next lesson in current module, try next module
     if (!foundNext) {
-      const moduleIndex = course.modules.findIndex((m: any) => m.id === moduleId);
+      const moduleIndex = course.modules.findIndex((m: Module) => m.id === moduleId);
       if (moduleIndex < course.modules.length - 1) {
         const nextModule = course.modules[moduleIndex + 1];
         if (nextModule.lessons.length > 0) {
@@ -339,7 +381,7 @@ const CourseDetail: React.FC = () => {
     if (!course) return { completed: 0, total: 0 };
     
     const totalModules = course.modules.length;
-    const completedModules = course.modules.filter((m: any) => m.completed).length;
+    const completedModules = course.modules.filter((m: Module) => m.completed).length;
     
     return {
       completed: completedModules,
@@ -383,7 +425,7 @@ const CourseDetail: React.FC = () => {
     if (!currentLesson) return null;
     
     for (const module of course.modules) {
-      const lesson = module.lessons.find((l: any) => l.id === currentLesson);
+      const lesson = module.lessons.find((l: Lesson) => l.id === currentLesson);
       if (lesson) {
         return { module, lesson };
       }
@@ -610,8 +652,8 @@ const CourseDetail: React.FC = () => {
                 
                 <div>
                   <h3 className="font-semibold mb-4">Course Outline</h3>
-                  <Accordion type="multiple" defaultValue={course.modules.map((m: any) => m.id)}>
-                    {course.modules.map((module: any) => (
+                  <Accordion type="multiple" defaultValue={course.modules.map((m: Module) => m.id)}>
+                    {course.modules.map((module: Module) => (
                       <AccordionItem key={module.id} value={module.id} className="border-0 mb-4 bg-gray-50 rounded-xl overflow-hidden">
                         <AccordionTrigger className="px-4 py-3 hover:bg-gray-100 transition-colors">
                           <div className="flex items-center gap-3 text-left">
@@ -634,7 +676,7 @@ const CourseDetail: React.FC = () => {
                         </AccordionTrigger>
                         <AccordionContent className="px-0">
                           <div className="space-y-1 pl-12 pr-4 pb-3">
-                            {module.lessons.map((lesson: any) => (
+                            {module.lessons.map((lesson: Lesson) => (
                               <div 
                                 key={lesson.id} 
                                 className={`flex items-center justify-between p-2 rounded-lg cursor-pointer ${

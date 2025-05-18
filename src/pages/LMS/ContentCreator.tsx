@@ -79,13 +79,6 @@ const contentTypes: ContentType[] = [
     description: 'Create a structured and sequenced journey for learners to follow.',
     icon: <Layers className="h-10 w-10 text-white" />,
     color: 'from-rose-500 to-red-600'
-  },
-  {
-    id: 'wiki',
-    title: 'Wiki',
-    description: 'Create a knowledge base where information related to the course.',
-    icon: <BookMarked className="h-10 w-10 text-white" />,
-    color: 'from-cyan-500 to-blue-600'
   }
 ];
 
@@ -207,6 +200,9 @@ const ContentCreator: React.FC = () => {
       navigate('/lms/create/course-builder', { 
         state: { courseData: finalData } 
       });
+    } else if (selectedType === 'learning-path') {
+      // For learning paths, go to the learning path builder to create content
+      navigate('/lms/create/learning-path-builder', { state: { learningPathData: finalData } });
     } else {
       // For other content types, go back to the LMS page
       navigate('/lms');
@@ -245,7 +241,9 @@ const ContentCreator: React.FC = () => {
           if (parsed.contentData) setContentData(parsed.contentData);
           if (parsed.selectedType) setSelectedType(parsed.selectedType);
           if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
-        } catch {}
+        } catch (error) {
+          console.error('Error parsing saved content creator data:', error);
+        }
       }
     }
   }, [setTheme, location.search, location.state]);
@@ -254,12 +252,14 @@ const ContentCreator: React.FC = () => {
   useEffect(() => {
     const saved = localStorage.getItem('lms_content_creator');
     if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.contentData) setContentData(parsed.contentData);
-        if (parsed.selectedType) setSelectedType(parsed.selectedType);
-        if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
-      } catch {}
+              try {
+          const parsed = JSON.parse(saved);
+          if (parsed.contentData) setContentData(parsed.contentData);
+          if (parsed.selectedType) setSelectedType(parsed.selectedType);
+          if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
+        } catch (error) {
+          console.error('Error parsing saved content creator data:', error);
+        }
     }
   }, []);
 
@@ -338,6 +338,8 @@ const ContentCreator: React.FC = () => {
                   };
                   if (selectedType === 'course') {
                     navigate('/lms/create/course-builder', { state: { courseData: finalData } });
+                  } else if (selectedType === 'learning-path') {
+                    navigate('/lms/create/learning-path-builder', { state: { learningPathData: finalData } });
                   } else {
                     navigate('/lms');
                   }
@@ -354,7 +356,7 @@ const ContentCreator: React.FC = () => {
         {activeTab === 'type' && (
           <div>
             <h2 className="text-2xl font-bold mb-8 text-center">What would you like to create?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto max-w-6xl">
               {contentTypes.map((type) => (
                 <Card 
                   key={type.id} 

@@ -65,19 +65,17 @@ const CourseBuilder: React.FC = () => {
   const [showGenerateModal, setShowGenerateModal] = useState<boolean>(false);
   
   // Add new state for tab management
-  const [currentTab, setCurrentTab] = useState<'type' | 'details' | 'course-builder'>('type');
   const [activeTab, setActiveTab] = useState<'type' | 'details' | 'course-builder'>('type');
   
   // 1. Add loading state for AI generation
   const [isGenerating, setIsGenerating] = useState(false);
   
-  useEffect(() => { setTheme('light'); setActiveTab('course-builder'); setCurrentTab('course-builder'); }, [setTheme]);
+  useEffect(() => { setTheme('light'); setActiveTab('course-builder'); }, [setTheme]);
   
   // Handle back button click
   const handleBack = () => {
     if (window.confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
       setActiveTab('details');
-      setCurrentTab('details');
       navigate('/lms/create/content?step=details', { state: { courseData: courseDataFromBuilder } });
     }
   };
@@ -231,7 +229,37 @@ const CourseBuilder: React.FC = () => {
     }
     setIsGenerating(true);
     // Ny, tydlig prompt för AI
-    const prompt = `Return ONLY valid JSON.\nCreate a professional training course with the following details:\n- Type: ${courseData.type}\n- Title: ${courseData.title}\n- Target Audience: ${courseData.targetAudience}\n- Difficulty: ${courseData.difficultyLevel}\n- Description: ${courseData.description}\n- Number of sections: ${numSectionsToGenerate}\n\nFor each section, provide:\n- title: string\n- content: string (the main text for the section)\n- quizzes: array of quiz questions (optional, each with question, options, answer)\n\nExample format:\n{\n  \\"sections\\": [\n    {\n      \\"title\\": \\"Section 1 Title\\",\n      \\"content\\": \\"Section 1 main text...\\",\n      \\"quizzes\\": [\n        {\n          \\"question\\": \\"What is GDPR?\\",\n          \\"options\\": [\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"],\n          \\"answer\\": \"Option 2\"\n        }\n      ]\n    }\n  ]\n}\nDo NOT include any introduction or explanation text before or after the JSON.`;
+    const prompt = `Return ONLY valid JSON.
+Create a professional training course with the following details:
+- Type: ${courseData.type}
+- Title: ${courseData.title}
+- Target Audience: ${courseData.targetAudience}
+- Difficulty: ${courseData.difficultyLevel}
+- Description: ${courseData.description}
+- Number of sections: ${numSectionsToGenerate}
+
+For each section, provide:
+- title: string
+- content: string (the main text for the section)
+- quizzes: array of quiz questions (optional, each with question, options, answer)
+
+Example format:
+{
+  "sections": [
+    {
+      "title": "Section 1 Title",
+      "content": "Section 1 main text...",
+      "quizzes": [
+        {
+          "question": "What is GDPR?",
+          "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+          "answer": "Option 2"
+        }
+      ]
+    }
+  ]
+}
+Do NOT include any introduction or explanation text before or after the JSON.`;
 
     try {
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`;
@@ -277,7 +305,7 @@ const CourseBuilder: React.FC = () => {
       }
 
       // Fix: Ensure all modules are expanded and first section gets its content
-      const newSections = parsed.sections.map((section: any, idx: number) => ({
+      const newSections = parsed.sections.map((section: { title?: string; content?: string; quizzes?: Array<{ question?: string; options?: string[]; answer?: string }> }, idx: number) => ({
         id: Math.random().toString(36).substr(2, 9),
         title: section.title || `Section ${idx + 1}`,
         isExpanded: true,
@@ -289,7 +317,7 @@ const CourseBuilder: React.FC = () => {
             content: section.content || '',
             isExpanded: true
           },
-          ...(Array.isArray(section.quizzes) ? section.quizzes.map((quiz: any, qidx: number) => ({
+          ...(Array.isArray(section.quizzes) ? section.quizzes.map((quiz: { question?: string; options?: string[]; answer?: string }, qidx: number) => ({
             id: Math.random().toString(36).substr(2, 9),
             title: quiz.question ? `Quiz: ${quiz.question}` : `Quiz ${qidx + 1}`,
             type: 'quiz',
@@ -309,7 +337,6 @@ const CourseBuilder: React.FC = () => {
       setIsGenerating(false);
       alert('Innehåll genererat och uppdelat i sektioner!');
       setActiveTab('details');
-      setCurrentTab('details');
     } catch (error) {
       setIsGenerating(false);
       console.error('Error generating content:', error);
@@ -323,11 +350,6 @@ const CourseBuilder: React.FC = () => {
     if (sectionElement) {
       sectionElement.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-  
-  const handleTabChange = (tab: 'type' | 'details' | 'course-builder') => {
-    setActiveTab(tab);
-    setCurrentTab(tab);
   };
   
   // Section move up/down handlers
@@ -389,7 +411,6 @@ const CourseBuilder: React.FC = () => {
               className={`flex items-center cursor-pointer transition-colors ${activeTab === 'type' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
               onClick={() => {
                 setActiveTab('type');
-                setCurrentTab('type');
                 navigate('/lms/create/content');
               }}
             >
@@ -402,7 +423,6 @@ const CourseBuilder: React.FC = () => {
               className={`flex items-center cursor-pointer transition-colors ${activeTab === 'details' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
               onClick={() => {
                 setActiveTab('details');
-                setCurrentTab('details');
                 navigate('/lms/create/content?step=details', { state: { courseData: courseDataFromBuilder } });
               }}
             >
@@ -415,7 +435,6 @@ const CourseBuilder: React.FC = () => {
               className={`flex items-center cursor-pointer transition-colors ${activeTab === 'course-builder' ? 'text-blue-500' : 'text-gray-500'} hover:text-blue-600`}
               onClick={() => {
                 setActiveTab('course-builder');
-                setCurrentTab('course-builder');
               }}
             >
               <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center">3</div>
@@ -605,7 +624,9 @@ const CourseBuilder: React.FC = () => {
                                     let quizData: { question: string; options: string[]; answer: string } = { question: '', options: [], answer: '' };
                                     try {
                                       quizData = JSON.parse(module.content);
-                                    } catch {}
+                                    } catch (error) {
+                                      console.error('Error parsing quiz data:', error);
+                                    }
                                     return (
                                       <div className="space-y-3">
                                         <Input

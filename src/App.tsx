@@ -17,6 +17,7 @@ import CourseBuilder from "./pages/LMS/CourseBuilder";
 import Reports from "./pages/LMS/Reports";
 import CourseDetail from "./pages/LMS/CourseDetail";
 import LMSAdmin from "./pages/LMS/Admin";
+import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
 import { LanguageProvider } from "./providers/LanguageProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
@@ -56,6 +57,7 @@ const App = () => (
                 <Route path="/lms/quizzes/edit/:id" element={<QuizEditor />} />
                 <Route path="/lms/reports" element={<Reports />} />
                 <Route path="/lms/course/:courseId" element={<CourseDetail />} />
+                <Route path="/lms/phishing-simulation-manager" element={<PhishingSimulationManager />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

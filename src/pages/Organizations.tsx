@@ -863,7 +863,7 @@ const Organizations: React.FC = () => {
   };
 
   const getSortedAndFilteredOrganizations = () => {
-    let filtered = organizations.filter(org => 
+    const filtered = organizations.filter(org => 
       org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       org.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
       org.address.country.toLowerCase().includes(searchQuery.toLowerCase())

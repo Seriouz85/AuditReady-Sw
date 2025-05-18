@@ -290,7 +290,7 @@ export function RequirementDetail({
                     const bullets = Array.from(bulletElements)
                       .map(el => {
                         // Remove any leading dash, bullet, or asterisk with whitespace
-                        let text = el.textContent || '';
+                        const text = el.textContent || '';
                         return text.replace(/^[-•*]\s+/, '').trim();
                       })
                       .filter(text => text.length > 0) // Remove empty lines

@@ -222,7 +222,7 @@ const QuizEditor: React.FC = () => {
                           <label className="text-sm font-medium mb-1 block">Question Type</label>
                           <Select 
                             value={selectedQuestion.type} 
-                            onValueChange={(value: any) => updateQuestion({ type: value })}
+                            onValueChange={(value: 'multiple_choice' | 'true_false' | 'short_answer' | 'matching') => updateQuestion({ type: value })}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select type" />

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
@@ -22,10 +22,10 @@ import {
   Rocket,
   Brain,
   Award,
-  User,
   Star,
   ChevronLeft,
-  Settings
+  Settings,
+  Fish
 } from 'lucide-react';
 import { getTimeBasedGreeting, updateStreak, trackActivity } from '@/lib/tracking';
 import { useTheme } from 'next-themes';
@@ -134,8 +134,9 @@ const TrenningLMS: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const prevTheme = useRef<string | undefined>();
   const [greeting, setGreeting] = useState(getTimeBasedGreeting());
-  const [userStreak, setUserStreak] = useState(updateStreak());
+  const [userStreak] = useState(updateStreak());
   const [localCourses, setLocalCourses] = useState(courses);
+  const navigate = useNavigate();
   
   // Update greeting based on time of day
   useEffect(() => {
@@ -154,7 +155,7 @@ const TrenningLMS: React.FC = () => {
         setTheme(prevTheme.current);
       }
     };
-  }, []);
+  }, [theme, setTheme]);
   
   const currentUser = {
     name: 'User',
@@ -215,6 +216,11 @@ const TrenningLMS: React.FC = () => {
     trackActivity('enroll', course.id, 'course', course.title);
     // Add to local courses
     setLocalCourses(prev => [...prev, { ...course, status: 'In Progress' }]);
+  };
+
+  // Add navigateCreate function
+  const navigateCreate = () => {
+    navigate('/lms/create/content');
   };
 
   return (
@@ -351,9 +357,9 @@ const TrenningLMS: React.FC = () => {
       
       {/* Main Actions Navigation */}
       <div className="container max-w-7xl mx-auto -mt-8 z-10 relative px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
-          <Link to="/lms/create/content" className="block">
-            <Card className="p-0 h-24 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 auto-rows-fr mb-8">
+          <div className="block" onClick={() => navigateCreate()}>
+            <Card className="p-0 h-32 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
               <div className="flex items-center h-full pl-4 pr-6">
                 <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3 mr-4 flex-shrink-0">
                   <Sparkles className="h-6 w-6 text-white" />
@@ -364,10 +370,10 @@ const TrenningLMS: React.FC = () => {
                 </div>
               </div>
             </Card>
-          </Link>
+          </div>
           
-          <Link to="/lms/courses/edit" className="block">
-            <Card className="p-0 h-24 bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+          <div className="block" onClick={() => navigate("/lms/courses/edit")}>
+            <Card className="p-0 h-32 bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
               <div className="flex items-center h-full pl-4 pr-6">
                 <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3 mr-4 flex-shrink-0">
                   <Edit className="h-6 w-6 text-white" />
@@ -378,24 +384,38 @@ const TrenningLMS: React.FC = () => {
                 </div>
               </div>
             </Card>
-          </Link>
+          </div>
           
-          <Link to="/lms/reports" className="block">
-            <Card className="p-0 h-24 bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+          <div className="block" onClick={() => navigate("/lms/phishing-simulation-manager")}>
+            <Card className="p-0 h-32 bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
               <div className="flex items-center h-full pl-4 pr-6">
                 <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3 mr-4 flex-shrink-0">
+                  <Fish className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base group-hover:text-amber-700 transition-colors">Phishing Simulation</h3>
+                  <p className="text-sm text-muted-foreground">Security awareness training</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          <div className="block" onClick={() => navigate("/lms/analytics")}>
+            <Card className="p-0 h-32 bg-gradient-to-r from-emerald-50 to-teal-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+              <div className="flex items-center h-full pl-4 pr-6">
+                <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 p-3 mr-4 flex-shrink-0">
                   <ChartBar className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base group-hover:text-amber-700 transition-colors">Analytics</h3>
+                  <h3 className="font-semibold text-base group-hover:text-teal-700 transition-colors">Analytics</h3>
                   <p className="text-sm text-muted-foreground">Track learning progress</p>
                 </div>
               </div>
             </Card>
-          </Link>
+          </div>
           
-          <Link to="/lms/admin" className="block">
-            <Card className="p-0 h-24 bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
+          <div className="block" onClick={() => navigate("/lms/admin")}>
+            <Card className="p-0 h-32 bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl">
               <div className="flex items-center h-full pl-4 pr-6">
                 <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3 mr-4 flex-shrink-0">
                   <Settings className="h-6 w-6 text-white" />
@@ -406,7 +426,7 @@ const TrenningLMS: React.FC = () => {
                 </div>
               </div>
             </Card>
-          </Link>
+          </div>
         </div>
       </div>
       
