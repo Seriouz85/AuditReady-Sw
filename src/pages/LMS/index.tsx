@@ -356,73 +356,103 @@ const TrenningLMS: React.FC = () => {
       </div>
       
       {/* Main Actions Navigation */}
-      <div className="container max-w-7xl mx-auto -mt-8 z-10 relative px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 auto-rows-fr mb-8">
-          <div className="block cursor-pointer" onClick={() => navigateCreate()}>
-            <Card className="p-0 h-32 bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
-              <div className="flex items-center h-full pl-5 pr-7">
-                <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3 mr-4 flex-shrink-0">
-                  <Sparkles className="h-6 w-6 text-white" />
+      <div className="container max-w-full mx-auto -mt-8 z-10 relative px-4">
+        <div className="flex justify-center gap-3 mb-8">
+          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigateCreate()}>
+            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+              <div className="flex h-full items-center">
+                <div className="pl-6 pr-4">
+                  <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3">
+                    <Sparkles className="h-6 w-6 text-white" />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-base group-hover:text-indigo-700 transition-colors">Create Course</h3>
-                  <p className="text-sm text-muted-foreground">Design new learning content</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-          
-          <div className="block cursor-pointer" onClick={() => navigate("/lms/courses/edit")}>
-            <Card className="p-0 h-32 bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
-              <div className="flex items-center h-full pl-5 pr-7">
-                <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3 mr-4 flex-shrink-0">
-                  <Edit className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base group-hover:text-purple-700 transition-colors">Edit Courses</h3>
-                  <p className="text-sm text-muted-foreground">Manage existing content</p>
+                <div className="pr-8 w-full flex flex-col justify-center">
+                  <div className="mb-1 h-6 flex items-center">
+                    <h3 className="font-semibold text-base group-hover:text-indigo-700 transition-colors">Create Course</h3>
+                  </div>
+                  <div className="h-5 flex items-center">
+                    <p className="text-sm text-muted-foreground truncate whitespace-nowrap">Design new learning content</p>
+                  </div>
                 </div>
               </div>
             </Card>
           </div>
           
-          <div className="block cursor-pointer" onClick={() => navigate("/lms/phishing-simulation-manager")}>
-            <Card className="p-0 h-32 bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
-              <div className="flex items-center h-full pl-5 pr-7">
-                <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3 mr-4 flex-shrink-0">
-                  <Fish className="h-6 w-6 text-white" />
+          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/courses/edit")}>
+            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+              <div className="flex h-full items-center">
+                <div className="pl-6 pr-4">
+                  <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3">
+                    <Edit className="h-6 w-6 text-white" />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-base group-hover:text-amber-700 transition-colors">Phishing Simulation</h3>
-                  <p className="text-sm text-muted-foreground">Security awareness training</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-          
-          <div className="block cursor-pointer" onClick={() => navigate("/lms/analytics")}>
-            <Card className="p-0 h-32 bg-gradient-to-r from-emerald-50 to-teal-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
-              <div className="flex items-center h-full pl-5 pr-7">
-                <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 p-3 mr-4 flex-shrink-0">
-                  <ChartBar className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base group-hover:text-teal-700 transition-colors">Analytics</h3>
-                  <p className="text-sm text-muted-foreground">Track learning progress</p>
+                <div className="pr-8 w-full flex flex-col justify-center">
+                  <div className="mb-1 h-6 flex items-center">
+                    <h3 className="font-semibold text-base group-hover:text-purple-700 transition-colors">Edit Courses</h3>
+                  </div>
+                  <div className="h-5 flex items-center">
+                    <p className="text-sm text-muted-foreground truncate whitespace-nowrap">Manage existing content</p>
+                  </div>
                 </div>
               </div>
             </Card>
           </div>
           
-          <div className="block cursor-pointer" onClick={() => navigate("/lms/admin")}>
-            <Card className="p-0 h-32 bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
-              <div className="flex items-center h-full pl-5 pr-7">
-                <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3 mr-4 flex-shrink-0">
-                  <Settings className="h-6 w-6 text-white" />
+          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/phishing-simulation-manager")}>
+            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+              <div className="flex h-full items-center">
+                <div className="pl-6 pr-4">
+                  <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3">
+                    <Fish className="h-6 w-6 text-white" />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-base group-hover:text-gray-700 transition-colors">Admin View</h3>
-                  <p className="text-sm text-muted-foreground">System settings & users</p>
+                <div className="pr-8 w-full flex flex-col justify-center">
+                  <div className="mb-1 h-6 flex items-center">
+                    <h3 className="font-semibold text-base group-hover:text-amber-700 transition-colors">Phishing Simulation</h3>
+                  </div>
+                  <div className="h-5 flex items-center">
+                    <p className="text-sm text-muted-foreground truncate whitespace-nowrap">Security awareness training</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/analytics")}>
+            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-emerald-50 to-teal-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+              <div className="flex h-full items-center">
+                <div className="pl-6 pr-4">
+                  <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 p-3">
+                    <ChartBar className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="pr-8 w-full flex flex-col justify-center">
+                  <div className="mb-1 h-6 flex items-center">
+                    <h3 className="font-semibold text-base group-hover:text-teal-700 transition-colors">Analytics</h3>
+                  </div>
+                  <div className="h-5 flex items-center">
+                    <p className="text-sm text-muted-foreground truncate whitespace-nowrap">Track learning progress</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/admin")}>
+            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+              <div className="flex h-full items-center">
+                <div className="pl-6 pr-4">
+                  <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3">
+                    <Settings className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="pr-8 w-full flex flex-col justify-center">
+                  <div className="mb-1 h-6 flex items-center">
+                    <h3 className="font-semibold text-base group-hover:text-gray-700 transition-colors">Admin View</h3>
+                  </div>
+                  <div className="h-5 flex items-center">
+                    <p className="text-sm text-muted-foreground truncate whitespace-nowrap">System settings & users</p>
+                  </div>
                 </div>
               </div>
             </Card>
