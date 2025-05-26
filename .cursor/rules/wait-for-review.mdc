@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Perform actions in smaller steps check for lint errors, and wait for review before continuing.
+By smaller steps I mean 20 implementations max.

@@ -39,6 +39,40 @@
         }(window.location))
       }
     </script>
+
+    <!-- Handle standalone editor pages -->
+    <script type="text/javascript">
+      // Check if we're accessing the editor route
+      if (window.location.pathname === '/editor') {
+        // Add class to body for CSS targeting
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.classList.add('standalone-editor-page');
+          
+          // Force isolation by removing app layout elements after they render
+          function isolateEditor() {
+            const layoutElements = document.querySelectorAll(
+              '.app-layout, .layout, #app-layout, #app-header, #app-sidebar, header, nav, aside, ' + 
+              '.navbar, .sidebar, .app-content'
+            );
+            
+            layoutElements.forEach(function(element) {
+              if (element) {
+                element.style.display = 'none';
+                element.style.visibility = 'hidden';
+                element.style.opacity = '0';
+                element.style.pointerEvents = 'none';
+              }
+            });
+          }
+          
+          // Run multiple times to catch elements as they load
+          isolateEditor();
+          setTimeout(isolateEditor, 100);
+          setTimeout(isolateEditor, 500);
+          setTimeout(isolateEditor, 1000);
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

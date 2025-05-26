@@ -34,8 +34,16 @@ const redirectFromGitHubPages = () => {
 // Run this before rendering the app
 redirectFromGitHubPages();
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// Find the root element
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  console.error('Root element not found');
+} else {
+  // Render the app
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}

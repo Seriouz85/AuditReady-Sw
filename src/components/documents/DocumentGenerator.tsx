@@ -1,23 +1,42 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  FileOutput, 
-  Download, 
-  Loader2, 
-  Send, 
-  Bot, 
-  RefreshCw,
-  FileType,
-  CheckCircle2,
-  User,
-  AlertTriangle
-} from 'lucide-react';
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import DocumentFormatter from "./DocumentFormatter";
+// import ProfessionalEditor from "./ProfessionalEditor";
+import { 
+  Box, 
+  Typography, 
+  Button, 
+  Container, 
+  Paper, 
+  TextField, 
+  IconButton,
+  CircularProgress,
+  Switch,
+  FormControlLabel,
+  Avatar,
+  // Remove unused imports
+  // Grid,
+  // Dialog,
+  // DialogTitle,
+  // DialogContent,
+  // DialogActions,
+  // Snackbar,
+  // Alert
+} from '@mui/material';
+
+import {
+  Description as DescriptionIcon,
+  Send as SendIcon,
+  Refresh as RefreshIcon,
+  Download as DownloadIcon,
+  Person as PersonIcon,
+  SmartToy as BotIcon,
+  Warning as WarningIcon,
+  Brush as BrushIcon
+} from '@mui/icons-material';
+
+// Import docx and file-saver
+import { Document, Paragraph, Packer, TextRun, HeadingLevel } from 'docx';
+import { saveAs } from 'file-saver';
 
 // Custom CSS for handling text overflow
 const customStyles = {
@@ -50,7 +69,7 @@ const documentTypes: DocumentType[] = [
     id: 'security-policy',
     name: 'Information Security Policy',
     description: 'Create a comprehensive security policy document that outlines organization-wide security practices',
-    icon: <FileType className="h-6 w-6" />,
+    icon: <DescriptionIcon />,
     initialQuestions: [
       'What is your organization type (e.g., healthcare, finance, tech startup)?',
       'What are your primary security concerns (e.g., data breaches, compliance, insider threats)?',
@@ -61,7 +80,7 @@ const documentTypes: DocumentType[] = [
     id: 'incident-response',
     name: 'Incident Response Plan',
     description: 'Generate a structured plan for responding to security incidents and breaches',
-    icon: <FileType className="h-6 w-6" />,
+    icon: <DescriptionIcon />,
     initialQuestions: [
       'What types of security incidents are most concerning for your organization?',
       'Who are the key stakeholders that should be involved in incident response?',
@@ -72,7 +91,7 @@ const documentTypes: DocumentType[] = [
     id: 'risk-assessment',
     name: 'Security Risk Assessment',
     description: 'Create a template for assessing and documenting security risks across your organization',
-    icon: <FileType className="h-6 w-6" />,
+    icon: <DescriptionIcon />,
     initialQuestions: [
       'What assets are most critical to protect in your organization?',
       'What threat actors are most concerning for your industry?',
@@ -83,7 +102,7 @@ const documentTypes: DocumentType[] = [
     id: 'system-security-plan',
     name: 'System Security Plan',
     description: 'Document the security controls and configurations for a specific system or application',
-    icon: <FileType className="h-6 w-6" />,
+    icon: <DescriptionIcon />,
     initialQuestions: [
       'What type of system are you documenting (e.g., cloud service, internal application, network)?',
       'What data classification levels will this system handle?',
@@ -94,7 +113,7 @@ const documentTypes: DocumentType[] = [
     id: 'process',
     name: 'Security Process Documentation',
     description: 'Create detailed documentation for security processes with steps, roles, and responsibilities',
-    icon: <FileType className="h-6 w-6" />,
+    icon: <DescriptionIcon />,
     initialQuestions: [
       'What specific security process do you need documented? Type the EXACT name of the process (e.g., "Identity and Access Management", "Vulnerability Management", etc.)',
       'Who are the key stakeholders involved in this specific process?',
@@ -105,16 +124,28 @@ const documentTypes: DocumentType[] = [
     id: 'action-plan',
     name: 'Security Action Plan',
     description: 'Generate a detailed security action plan with tasks, owners, and timelines',
-    icon: <FileType className="h-6 w-6" />,
+    icon: <DescriptionIcon />,
     initialQuestions: [
       'What security issue or initiative does this action plan address?',
       'What is the target completion timeframe?',
       'Who are the key stakeholders responsible for implementation?'
     ]
+  },
+  {
+    id: 'create-custom',
+    name: 'Modern Graphical Editor',
+    description: 'Create professional diagrams with our new Canva-like editor - featuring rich drawing tools, audit-specific shapes, and modern interface',
+    icon: <BrushIcon />,
+    initialQuestions: [
+      'What type of graphical element would you like to create?',
+      'Would you prefer to start with a blank canvas or use a template?',
+      'What is the primary purpose of this visual?'
+    ]
   }
 ];
 
 const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
+  // State for document generation
   const [selectedType, setSelectedType] = React.useState<string>('');
   const [isTypeSelected, setIsTypeSelected] = React.useState(false);
   const [currentQuestion, setCurrentQuestion] = React.useState<string>('');
@@ -123,6 +154,9 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [generatedContent, setGeneratedContent] = React.useState('');
   const [autoGenerateEnabled, setAutoGenerateEnabled] = React.useState(true);
+  
+  // Add state for graphical editor
+  // const [showGraphicalEditor, setShowGraphicalEditor] = React.useState(false);
   
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const selectedDocType = documentTypes.find(t => t.id === selectedType);
@@ -135,9 +169,19 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
     scrollToBottom();
   }, [messages]);
 
+  // Handle document type selection
   const handleTypeSelection = () => {
     if (!selectedType) return;
     
+    // If it's the graphical editor option, open the standalone editor in a new window
+    if (selectedType === 'create-custom') {
+      window.open('/editor', '_blank');
+      // Reset the selected type to prevent further processing
+      setSelectedType('');
+      return;
+    }
+    
+    // For all other document types, proceed normally
     setIsTypeSelected(true);
     setMessages([
       {
@@ -331,7 +375,12 @@ Be concise, professional, and focused.`;
         body: JSON.stringify(requestBody)
       });
 
-      console.log('Response headers:', Object.fromEntries([...response.headers.entries()]));
+      // Fix for handling headers - ensure it works in all browsers
+      const responseHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
+      console.log('Response headers:', responseHeaders);
       console.log('Response status:', response.status);
       
       if (!response.ok) {
@@ -529,7 +578,12 @@ Create the complete "${processName}" process document now, formatted for immedia
         body: JSON.stringify(requestBody)
       });
 
-      console.log('Response headers:', Object.fromEntries([...response.headers.entries()]));
+      // Fix for handling headers - ensure it works in all browsers
+      const responseHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
+      console.log('Response headers:', responseHeaders);
       console.log('Response status:', response.status);
       
       if (!response.ok) {
@@ -585,18 +639,129 @@ Create the complete "${processName}" process document now, formatted for immedia
     }
   };
 
-  const downloadDocument = () => {
+  const downloadDocument = async () => {
     if (!generatedContent || !selectedDocType) return;
     
-    const blob = new Blob([generatedContent], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${selectedDocType.name.toLowerCase().replace(/\s+/g, '-')}.docx`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+    try {
+      // Show loading state
+      setIsGenerating(true);
+      
+      // Parse content into sections for docx conversion
+      const lines = generatedContent.split('\n');
+      const docxContent: any[] = [];
+      
+      // Process line by line for docx format
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // Skip empty lines
+        if (!line) continue;
+        
+        // Check for title (usually first non-empty line)
+        if (i === lines.findIndex(l => l.trim())) {
+          docxContent.push(
+            new Paragraph({
+              text: line,
+              heading: HeadingLevel.TITLE,
+              thematicBreak: true
+            })
+          );
+          continue;
+        }
+        
+        // Check for metadata (Version, Date, etc.)
+        if (line.match(/^(Version|Date|Author|Document Owner|Status|Classification|Owner|Reviewer|Approval):/i)) {
+          const parts = line.split(':');
+          if (parts.length > 1) {
+            docxContent.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: parts[0] + ':', bold: true }),
+                  new TextRun({ text: parts.slice(1).join(':') })
+                ]
+              })
+            );
+          } else {
+            docxContent.push(new Paragraph({ text: line }));
+          }
+          continue;
+        }
+        
+        // Check for section headers
+        if (
+          line.match(/^\d+(\.\d+)*\s/) || // Numbered headers like "1. " or "1.1 "
+          line.toUpperCase() === line && line.length > 3 // ALL CAPS headers
+        ) {
+          // Determine heading level
+          let headingLevelValue;
+          if (line.match(/^\d+\s/)) headingLevelValue = HeadingLevel.HEADING_1;
+          else if (line.match(/^\d+\.\d+\s/)) headingLevelValue = HeadingLevel.HEADING_2;
+          else if (line.match(/^\d+\.\d+\.\d+\s/)) headingLevelValue = HeadingLevel.HEADING_3;
+          else if (line.toUpperCase() === line && line.length > 3) headingLevelValue = HeadingLevel.HEADING_1;
+          else headingLevelValue = HeadingLevel.HEADING_1;
+          
+          docxContent.push(
+            new Paragraph({
+              text: line,
+              heading: headingLevelValue,
+              spacing: {
+                before: 200,
+                after: 80
+              }
+            })
+          );
+          continue;
+        }
+        
+        // Check for bullet points
+        if (line.match(/^[\*\-•]\s/)) {
+          docxContent.push(
+            new Paragraph({
+              text: line.replace(/^[\*\-•]\s/, ''),
+              bullet: {
+                level: 0
+              }
+            })
+          );
+          continue;
+        }
+        
+        // Regular paragraph
+        docxContent.push(new Paragraph({ text: line }));
+      }
+      
+      // Create the document
+      const doc = new Document({
+        sections: [
+          {
+            properties: {},
+            children: docxContent
+          }
+        ]
+      });
+      
+      // Generate DOCX file
+      const fileName = `${selectedDocType?.name?.toLowerCase().replace(/\s+/g, '-') || 'document'}.docx`;
+      
+      // Use Packer to generate the DOCX file
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, fileName);
+
+    } catch (error) {
+      console.error('Error generating DOCX:', error);
+      // Fallback to text download if docx generation fails
+      const blob = new Blob([generatedContent], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedDocType?.name?.toLowerCase().replace(/\s+/g, '-') || 'document'}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const resetGenerator = () => {
@@ -608,235 +773,626 @@ Create the complete "${processName}" process document now, formatted for immedia
     setAutoGenerateEnabled(true);
   };
 
+  // Add a hook to monitor editor visibility
+  // React.useEffect(() => {
+  //   if (showGraphicalEditor) {
+  //     console.log('Graphical editor is visible, showGraphicalEditor =', showGraphicalEditor);
+  //   }
+  // }, [showGraphicalEditor]);
+
+  // Handler function to open the graphical editor
+  const openGraphicalEditor = React.useCallback(() => {
+    console.log('Opening professional diagram editor');
+    // Navigate directly to the graphical editor
+    window.location.href = '/editor';
+  }, []);
+
+  // Handler to return from graphical editor - not used currently but kept for reference
+  // const handleBackFromEditor = React.useCallback(() => {
+  //   console.log('Returning from diagram editor');
+  //   setShowGraphicalEditor(false);
+  // }, []);
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">AI Document Generator</h1>
-          <p className="text-muted-foreground">Create professional documents with AI assistance</p>
-        </div>
-        <div className="flex gap-2 flex-wrap justify-end">
-          {autoGenerateEnabled ? (
-            <Button 
-              variant="outline" 
-              onClick={() => setAutoGenerateEnabled(false)}
-              className="flex items-center gap-1 whitespace-nowrap min-w-[170px]"
+    <Box sx={{ 
+      minHeight: '100vh',
+      height: '100vh',
+      bgcolor: 'background.default',
+      backgroundImage: 'linear-gradient(180deg, rgba(22, 28, 36, 0.08) 0%, rgba(22, 28, 36, 0) 100%)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
+    }}>
+      <Container maxWidth={false} sx={{ 
+        py: { xs: 2, md: 2 },
+        px: { xs: 2, sm: 3, md: 4 },
+        maxWidth: '1800px',
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden'
+      }}>
+        {/* Header */}
+        <Box 
+          display="flex" 
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between" 
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          mb={{ xs: 2, md: 2 }}
+        >
+          <Box mb={{ xs: 2, sm: 0 }}>
+            <Typography 
+              variant="h3" 
+              fontWeight="bold" 
+              sx={{ 
+                mb: 1,
+                background: 'linear-gradient(45deg, #007B55, #00AB55)',
+                backgroundClip: 'text',
+                textFillColor: 'transparent',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}
             >
-              <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span>Auto-Generate ON</span>
-            </Button>
-          ) : (
-            <Button 
-              variant="outline" 
-              onClick={() => setAutoGenerateEnabled(true)}
-              className="flex items-center gap-1 whitespace-nowrap min-w-[170px]"
+              AI Document Generator
+            </Typography>
+            <Typography 
+              variant="subtitle1" 
+              color="text.secondary"
+              sx={{ maxWidth: 600 }}
             >
-              <div className="h-4 w-4 border border-muted-foreground rounded-full flex-shrink-0" />
-              <span>Auto-Generate OFF</span>
-            </Button>
-          )}
-          {generatedContent && (
-            <>
+              Create professional security documentation with AI assistance.
+            </Typography>
+          </Box>
+          <Box 
+            display="flex" 
+            gap={2} 
+            flexWrap="wrap" 
+            justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}
+          >
+            <FormControlLabel
+              control={
+                <Switch 
+                  checked={autoGenerateEnabled}
+                  onChange={() => setAutoGenerateEnabled(!autoGenerateEnabled)}
+                  color="primary"
+                />
+              }
+              label={autoGenerateEnabled ? "Auto-Generate ON" : "Auto-Generate OFF"}
+              sx={{ 
+                bgcolor: 'background.paper', 
+                px: 2, 
+                py: 0.5, 
+                borderRadius: 2,
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
+              }}
+            />
+            {generatedContent && (
               <Button 
-                variant="outline" 
+                variant="outlined" 
                 onClick={resetGenerator}
-                className="whitespace-nowrap"
+                startIcon={<RefreshIcon />}
+                sx={{ 
+                  borderRadius: 2,
+                  px: 2
+                }}
               >
-                <RefreshCw className="mr-2 h-4 w-4 flex-shrink-0" />
                 Start New
               </Button>
-              <Button 
-                onClick={downloadDocument}
-                className="whitespace-nowrap"
+            )}
+          </Box>
+        </Box>
+        
+        {/* Document Type Selector - Now horizontal instead of tabs */}
+        <Paper 
+          elevation={0}
+          sx={{ 
+            borderRadius: 3,
+            mb: 2,
+            bgcolor: 'background.paper',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            p: { xs: 2, md: 3 }
+          }}
+        >
+          {!isTypeSelected ? (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Select a document type to get started
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Choose the type of document you want to create. The AI will guide you through a series of questions.
+              </Typography>
+              
+              <Box 
+                sx={{ 
+                  display: 'grid',
+                  gridTemplateColumns: { 
+                    xs: '1fr', 
+                    sm: 'repeat(2, 1fr)', 
+                    md: 'repeat(3, 1fr)', 
+                    lg: 'repeat(3, 1fr)' 
+                  },
+                  gap: 2
+                }}
               >
-                <Download className="mr-2 h-4 w-4 flex-shrink-0" />
-                Download DOCX
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        {!isTypeSelected ? (
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Select Document Type</CardTitle>
-              <CardDescription>Choose the type of document you want to create</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {documentTypes.map(type => (
-                  <Button
+                {documentTypes.map((type) => (
+                  <Paper
                     key={type.id}
-                    variant={selectedType === type.id ? "default" : "outline"}
-                    size="doctype"
-                    className={cn(
-                      "relative w-full flex flex-col items-start text-left rounded-lg border min-h-[110px] !p-3 overflow-hidden group",
-                      selectedType === type.id && "bg-primary text-primary-foreground"
-                    )}
-                    onClick={() => setSelectedType(type.id)}
-                  >
-                    <div className="flex items-start gap-2 w-full">
-                      {React.cloneElement(type.icon as React.ReactElement, {
-                        className: cn(
-                          "h-5 w-5 shrink-0",
-                          selectedType === type.id ? "text-primary-foreground" : "text-primary"
-                        )
-                      })}
-                      <h3 className="font-semibold text-sm break-words w-full leading-tight line-clamp-1">{type.name}</h3>
-                    </div>
-                    <div className="w-full mt-0.5 mb-auto">
-                      <p className={cn(
-                        "text-xs text-muted-foreground w-full leading-snug whitespace-normal break-words",
-                        selectedType === type.id && "text-primary-foreground/90"
-                      )}>
-                        {type.description}
-                      </p>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-              <Button 
-                className="mt-6 w-full" 
-                onClick={handleTypeSelection}
-                disabled={!selectedType}
-              >
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                Apply Selection
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <Card className="h-[500px] flex flex-col">
-              <CardHeader>
-                <CardTitle>Chat with AI</CardTitle>
-                <CardDescription>Ask questions to generate your {documentTypes.find(t => t.id === selectedType)?.name.toLowerCase()}</CardDescription>
-                <Button 
-                  variant="link" 
-                  onClick={resetGenerator} 
-                  className="p-0 h-auto text-sm">
-                  <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0" />
-                  Change Document Type
-                </Button>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col overflow-hidden p-4">
-                <ScrollArea className="flex-1 -mr-4 pr-4 mb-4">
-                  <div className="space-y-4">
-                    {messages.map((message) => (
-                      <div 
-                        key={message.id}
-                        className={cn(
-                          "flex items-start gap-3 w-full",
-                          message.type === 'user' ? 'justify-end' : 'justify-start',
-                          message.type === 'system' && 'justify-center'
-                        )}
-                      >
-                        {message.type === 'ai' && (
-                           <Avatar className="h-8 w-8 flex-shrink-0">
-                             <AvatarFallback className="bg-primary/10 text-primary"><Bot size={18} /></AvatarFallback>
-                           </Avatar>
-                        )}
-                        <div className={cn(
-                          "max-w-[75%] p-3 rounded-lg shadow-sm",
-                          message.type === 'user' ? 'bg-primary text-primary-foreground' : '',
-                          message.type === 'ai' ? 'bg-muted' : '',
-                          message.type === 'system' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800/50 text-center text-xs w-full max-w-full' : ''
-                        )}>
-                          {message.type === 'system' && <AlertTriangle className="inline-block h-4 w-4 mr-2" />}
-                          {message.thinking ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <div style={customStyles} className={cn(
-                              "whitespace-pre-wrap break-words",
-                               message.type === 'system' ? 'inline' : ''
-                             )}>
-                              {message.content}
-                            </div>
-                          )}
-                        </div>
-                        
-                        {message.type === 'user' && (
-                           <Avatar className="h-8 w-8 flex-shrink-0">
-                             <AvatarFallback className="bg-foreground/10"><User size={18} /></AvatarFallback>
-                           </Avatar>
-                         )}
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </ScrollArea>
-                <div className="flex items-center gap-2 pt-4 border-t">
-                  <Textarea
-                    value={userInput} 
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setUserInput(e.target.value)}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleUserInput();
+                    elevation={0}
+                    onClick={() => {
+                      if (type.id === 'create-custom') {
+                        // Use the dedicated handler for opening the dialog
+                        openGraphicalEditor();
+                      } else {
+                        setSelectedType(type.id);
+                        handleTypeSelection();
                       }
                     }}
-                    placeholder="Type your request..."
-                    disabled={isGenerating}
-                    className="flex-1 resize-none min-h-[40px]"
-                    rows={1}
-                  />
-                  <Button onClick={handleUserInput} disabled={isGenerating || !userInput.trim()} size="icon">
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="h-[500px] flex flex-col">
-              <CardHeader>
-                <CardTitle>Document Preview</CardTitle>
-                <CardDescription>Live preview of the generated document</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full">
-                  {generatedContent ? (
-                    <div className="markdown-content p-4">
-                      <DocumentFormatter content={generatedContent} />
-                    </div>
-                  ) : (
-                    <div className="h-full flex flex-col items-center justify-center gap-4 text-center p-4">
-                      <FileOutput className="h-12 w-12 text-muted-foreground flex-shrink-0" />
-                      <div>
-                        <h3 className="font-semibold mb-1">No Document Generated Yet</h3>
-                        <p className="text-muted-foreground text-sm">
-                          Chat with the AI to start generating your document.
-                          {autoGenerateEnabled && ' Document will automatically generate after your interactions.'}
-                        </p>
-                      </div>
-                      {!autoGenerateEnabled && (
-                        <Button 
-                          onClick={generateFinalDocument}
-                          disabled={isGenerating || messages.length < 2} 
-                          className="mt-2 whitespace-nowrap"
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      border: '1px solid',
+                      borderColor: type.id === 'create-custom' ? 'primary.main' : 'divider',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                        borderColor: 'primary.main',
+                        transform: 'translateY(-2px)'
+                      },
+                      display: 'flex',
+                      gap: 2,
+                      alignItems: 'center',
+                      position: 'relative',
+                      ...(type.id === 'create-custom' && {
+                        background: 'linear-gradient(45deg, rgba(0,171,85,0.05), rgba(0,123,85,0.05))',
+                        borderWidth: '2px'
+                      })
+                    }}
+                  >
+                    {type.id === 'create-custom' && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: -10,
+                          right: -10,
+                          bgcolor: 'primary.main',
+                          color: 'white',
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: '10px',
+                          boxShadow: '0 2px 8px rgba(0,171,85,0.24)'
+                        }}
+                      >
+                        UPGRADED
+                      </Box>
+                    )}
+                    <Box 
+                      sx={{ 
+                        bgcolor: type.id === 'create-custom' ? 'primary.main' : 'primary.lighter',
+                        color: type.id === 'create-custom' ? 'white' : 'primary.main',
+                        borderRadius: '50%',
+                        width: 48,
+                        height: 48,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                    >
+                      {React.cloneElement(type.icon as React.ReactElement, {
+                        fontSize: 'medium'
+                      })}
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {type.name}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{
+                          display: '-webkit-box',
+                          overflow: 'hidden',
+                          WebkitBoxOrient: 'vertical',
+                          WebkitLineClamp: 2
+                        }}
+                      >
+                        {type.description}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                ))}
+              </Box>
+            </>
+          ) : (
+            <Box 
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2
+              }}
+            >
+              <Box 
+                sx={{ 
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  borderRadius: '50%',
+                  width: 48,
+                  height: 48,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                {selectedDocType?.icon && React.cloneElement(selectedDocType.icon as React.ReactElement, {
+                  fontSize: 'medium'
+                })}
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight="bold">
+                  {selectedDocType?.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {selectedDocType?.description}
+                </Typography>
+              </Box>
+              <Button 
+                variant="outlined" 
+                size="small"
+                onClick={() => {
+                  // Reset all state
+                  setIsTypeSelected(false);
+                  setSelectedType('');
+                  setMessages([]);
+                }}
+                sx={{ 
+                  ml: 'auto',
+                  borderRadius: 2
+                }}
+              >
+                Change
+              </Button>
+            </Box>
+          )}
+        </Paper>
+        
+        {/* Main content: Chat and Preview */}
+        {isTypeSelected && (
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', md: 'row' }, 
+              gap: 2,
+              flexGrow: 1,
+              height: { xs: 'auto', md: 'calc(100vh - 180px)' },
+              maxHeight: { md: 'calc(100vh - 180px)' },
+              overflow: 'hidden'
+            }}
+          >
+            {/* Chat Area */}
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                width: { xs: '100%', md: '50%' },
+                borderRadius: 4,
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                flexGrow: { xs: 0, md: 1 },
+                height: { xs: '600px', md: '100%' }
+              }}
+            >
+              <Box 
+                sx={{ 
+                  p: { xs: 2, md: 2.5 },
+                  borderBottom: '1px solid', 
+                  borderColor: 'divider',
+                  bgcolor: 'background.neutral',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                <Typography variant="h6" fontWeight="bold">
+                  {selectedDocType?.name || 'Document'} Assistant
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Answer questions to generate your document
+                </Typography>
+              </Box>
+              
+              <Box 
+                sx={{ 
+                  flexGrow: 1, 
+                  overflowY: 'auto', 
+                  p: { xs: 1.5, md: 2 },
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  bgcolor: 'grey.50'
+                }}
+              >
+                {messages.map((message) => (
+                  <Box 
+                    key={message.id}
+                    sx={{ 
+                      display: 'flex', 
+                      flexDirection: message.type === 'user' ? 'row-reverse' : 'row',
+                      justifyContent: message.type === 'system' ? 'center' : 'flex-start',
+                      gap: 1.5,
+                      maxWidth: '100%'
+                    }}
+                  >
+                    {message.type === 'ai' && (
+                      <Avatar 
+                        sx={{ 
+                          bgcolor: 'primary.main', 
+                          width: 36, 
+                          height: 36,
+                          boxShadow: '0 2px 8px rgba(0,171,85,0.24)'
+                        }}
+                      >
+                        <BotIcon fontSize="small" />
+                      </Avatar>
+                    )}
+                    
+                    {message.type === 'user' && (
+                      <Avatar 
+                        sx={{ 
+                          bgcolor: 'grey.300', 
+                          width: 36, 
+                          height: 36 
+                        }}
+                      >
+                        <PersonIcon fontSize="small" />
+                      </Avatar>
+                    )}
+                    
+                    <Paper 
+                      elevation={0} 
+                      sx={{
+                        py: 1.5,
+                        px: 2,
+                        maxWidth: message.type === 'system' ? '100%' : '80%',
+                        bgcolor: message.type === 'user' 
+                          ? 'primary.main' 
+                          : message.type === 'system'
+                            ? 'warning.lighter'
+                            : 'background.paper',
+                        color: message.type === 'user' ? 'white' : 'text.primary',
+                        borderRadius: 3,
+                        ...(message.type === 'system' && {
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 1,
+                          width: '100%',
+                          border: '1px solid',
+                          borderColor: 'warning.light',
+                          color: 'warning.dark'
+                        }),
+                        ...(message.type === 'ai' && {
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          borderLeft: '4px solid',
+                          borderColor: 'primary.main'
+                        }),
+                        ...(message.type === 'user' && {
+                          boxShadow: '0 2px 8px rgba(0,171,85,0.16)'
+                        })
+                      }}
+                    >
+                      {message.type === 'system' && <WarningIcon fontSize="small" />}
+                      
+                      {message.thinking ? (
+                        <CircularProgress size={20} sx={{ m: 1 }} />
+                      ) : (
+                        <Typography 
+                          variant="body2" 
+                          sx={{
+                            ...customStyles,
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word'
+                          }}
                         >
-                          {isGenerating ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin flex-shrink-0" />
-                              Generating...
-                            </>
-                          ) : (
-                            <>
-                              <FileOutput className="mr-2 h-4 w-4 flex-shrink-0" />
-                              Generate Document
-                            </>
-                          )}
-                        </Button>
+                          {message.content}
+                        </Typography>
                       )}
-                    </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </>
+                    </Paper>
+                  </Box>
+                ))}
+                <div ref={messagesEndRef} />
+              </Box>
+              
+              <Box 
+                sx={{ 
+                  p: { xs: 1.5, md: 2 },
+                  borderTop: '1px solid', 
+                  borderColor: 'divider', 
+                  display: 'flex', 
+                  gap: 1,
+                  bgcolor: 'background.paper' 
+                }}
+              >
+                <TextField
+                  fullWidth
+                  placeholder="Type your answer here..."
+                  size="medium"
+                  multiline
+                  maxRows={4}
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleUserInput();
+                    }
+                  }}
+                  disabled={isGenerating}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      backgroundColor: 'grey.50'
+                    }
+                  }}
+                />
+                <IconButton 
+                  color="primary" 
+                  onClick={handleUserInput} 
+                  disabled={isGenerating || !userInput.trim()}
+                  sx={{ 
+                    alignSelf: 'flex-end',
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    width: 40,
+                    height: 40,
+                    '&:hover': {
+                      bgcolor: 'primary.dark'
+                    },
+                    '&.Mui-disabled': {
+                      bgcolor: 'grey.300',
+                      color: 'grey.500'
+                    }
+                  }}
+                >
+                  <SendIcon />
+                </IconButton>
+              </Box>
+            </Paper>
+            
+            {/* Preview Area */}
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                width: { xs: '100%', md: '50%' },
+                borderRadius: 4,
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                flexGrow: { xs: 0, md: 1 },
+                height: { xs: '600px', md: '100%' }
+              }}
+            >
+              <Box 
+                sx={{ 
+                  p: { xs: 2, md: 2.5 },
+                  borderBottom: '1px solid', 
+                  borderColor: 'divider',
+                  bgcolor: 'background.neutral',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <Box>
+                  <Typography variant="h6" fontWeight="bold">
+                    Document Preview
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Live preview of your generated document
+                  </Typography>
+                </Box>
+                {generatedContent && (
+                  <Button
+                    variant="contained"
+                    onClick={downloadDocument}
+                    startIcon={isGenerating ? <CircularProgress size={16} color="inherit" /> : <DownloadIcon />}
+                    size="small"
+                    disabled={isGenerating}
+                    sx={{ 
+                      borderRadius: 2,
+                      bgcolor: 'primary.main',
+                      '&:hover': {
+                        bgcolor: 'primary.dark'
+                      }
+                    }}
+                  >
+                    {isGenerating ? 'Preparing...' : 'Download DOCX'}
+                  </Button>
+                )}
+              </Box>
+              
+              <Box sx={{ flexGrow: 1, overflow: 'auto', bgcolor: 'white', p: { xs: 1.5, md: 2 } }}>
+                {generatedContent ? (
+                  <Box 
+                    className="markdown-content"
+                    sx={{ 
+                      p: { xs: 1, md: 2 },
+                      bgcolor: 'white',
+                      borderRadius: 2,
+                      boxShadow: 'inset 0 0 0 1px rgba(145, 158, 171, 0.16)',
+                      maxWidth: '100%',
+                      height: '100%',
+                      overflowY: 'auto',
+                      mx: 'auto'
+                    }}
+                  >
+                    <DocumentFormatter content={generatedContent} />
+                  </Box>
+                ) : (
+                  <Box sx={{ 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    gap: 3,
+                    p: 3
+                  }}>
+                    <Box 
+                      sx={{ 
+                        width: 80, 
+                        height: 80, 
+                        borderRadius: '50%',
+                        bgcolor: 'primary.lighter',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <DescriptionIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        No Document Generated Yet
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{ maxWidth: 400, mx: 'auto' }}
+                      >
+                        Chat with the AI assistant to start generating your document.
+                        {autoGenerateEnabled && ' Document will automatically generate after your interactions.'}
+                      </Typography>
+                    </Box>
+                    
+                    {!autoGenerateEnabled && messages.length >= 2 && (
+                      <Button 
+                        variant="contained" 
+                        onClick={generateFinalDocument}
+                        disabled={isGenerating}
+                        startIcon={isGenerating ? <CircularProgress size={16} color="inherit" /> : <DescriptionIcon />}
+                        sx={{ 
+                          borderRadius: 2,
+                          px: 3,
+                          py: 1,
+                          boxShadow: '0 8px 16px rgba(0,171,85,0.24)'
+                        }}
+                      >
+                        {isGenerating ? 'Generating...' : 'Generate Document'}
+                      </Button>
+                    )}
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+          </Box>
         )}
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 };
 

@@ -106,6 +106,12 @@ const OrgChartComponent: React.FC<OrgChartComponentProps> = ({ data, onNodeClick
     setChartError(null);
     
     try {
+      // Clear the container first and add organizational-chart-component class
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+        containerRef.current.classList.add('organizational-chart-component');
+      }
+      
       // Create a new chart instance
       const chart = createOrgChart(containerRef.current, data);
       
@@ -384,7 +390,7 @@ const OrgChartComponent: React.FC<OrgChartComponentProps> = ({ data, onNodeClick
       
       <div 
         ref={containerRef} 
-        className="flex-1 w-full h-full transition-opacity duration-300 bg-transparent overflow-hidden" 
+        className="flex-1 w-full h-full transition-opacity duration-300 bg-transparent overflow-hidden organizational-chart-component" 
         style={{ opacity: isLoading ? 0.3 : 1 }}
       >
         {debug && !isLoading && data.length === 0 && (
@@ -605,7 +611,7 @@ const OrganizationalChart: React.FC = () => {
 
   // Render chart view with improved UI
   const renderChartView = () => (
-    <Card className="h-full overflow-hidden">
+    <Card className="h-full overflow-hidden organizational-chart-component">
       <CardHeader className="pb-2 border-b">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -639,7 +645,7 @@ const OrganizationalChart: React.FC = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="h-[calc(100%-80px)] p-0">
+      <CardContent className="h-[calc(100%-80px)] p-0 organizational-chart-component">
         <OrgChartComponent 
           data={filteredNodes.length > 0 ? filteredNodes : nodes} 
           onNodeClick={(node: OrgNodeExtended) => {
@@ -653,7 +659,7 @@ const OrganizationalChart: React.FC = () => {
 
   // Render chart creation interface with improved UI
   const renderChartCreation = () => (
-    <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
+    <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border organizational-chart-component">
       <ResizablePanel defaultSize={35} minSize={25}>
         <div className="flex h-full flex-col">
           <div className="p-4 space-y-4 border-b">
@@ -796,7 +802,7 @@ const OrganizationalChart: React.FC = () => {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={65} minSize={30}>
-        <div className="flex h-full items-center justify-center p-4">
+        <div className="flex h-full items-center justify-center p-4 organizational-chart-component">
           <OrgChartComponent 
             data={nodes} 
             onNodeClick={(node: OrgNodeExtended) => {
@@ -816,7 +822,7 @@ const OrganizationalChart: React.FC = () => {
 
   // Main render with enhanced UI
   return (
-    <div className="flex flex-col h-full p-4 md:p-6 space-y-4">
+    <div className="flex flex-col h-full p-4 md:p-6 space-y-4 organizational-chart-component">
       <div className="flex justify-between items-center flex-wrap gap-2">
         <h1 className="text-2xl font-bold">Organizational Chart</h1>
         <div className="flex gap-2">

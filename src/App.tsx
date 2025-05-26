@@ -18,6 +18,8 @@ import Reports from "./pages/LMS/Reports";
 import CourseDetail from "./pages/LMS/CourseDetail";
 import LMSAdmin from "./pages/LMS/Admin";
 import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
+import GraphicalEditor from "./pages/documents/GraphicalEditor";
+
 import { LanguageProvider } from "./providers/LanguageProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
@@ -27,11 +29,13 @@ const queryClient = new QueryClient();
 // Check if we're on GitHub Pages
 const isGitHubPages = window.location.hostname.includes('github.io');
 // Use the appropriate basename based on deployment platform
-const basename = import.meta.env.DEV 
-  ? "/" 
-  : isGitHubPages 
-    ? "/audit-readiness-hub/" 
+const basename = import.meta.env.DEV
+  ? "/"
+  : isGitHubPages
+    ? "/audit-readiness-hub/"
     : "/";
+
+// EmptyLayout removed as it was unused
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -43,9 +47,15 @@ const App = () => (
             <Sonner />
             <BrowserRouter basename={basename}>
               <Routes>
+                {/* Pages with main app layout */}
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/app/*" element={<Index />} />
+
+                {/* Standalone editor routes */}
+                <Route path="/editor" element={<GraphicalEditor />} />
+
+                {/* LMS routes */}
                 <Route path="/lms-old" element={<LMS />} />
                 <Route path="/lms" element={<TrenningLMS />} />
                 <Route path="/lms/admin" element={<LMSAdmin />} />

@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock } from "lucide-react";
+import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
@@ -6,13 +6,12 @@ import { dashboardStats, assessments, requirements } from "@/data/mockData";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RequirementStatus } from "@/types";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   console.log("Dashboard component loaded");
   const navigate = useNavigate();
-  
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -22,7 +21,7 @@ const Dashboard = () => {
       }
     }
   };
-  
+
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -35,10 +34,10 @@ const Dashboard = () => {
       }
     }
   };
-  
+
   const fadeInVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: { duration: 0.5 }
     }
@@ -76,7 +75,7 @@ const Dashboard = () => {
   const dynamicRequirementCounts = calculateRequirementCounts();
 
   return (
-    <motion.div 
+    <motion.div
       className="pt-0 space-y-6 pb-8 w-full"
       initial="hidden"
       animate="visible"
@@ -93,7 +92,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold tracking-tight text-blue-800 dark:text-blue-400">Welcome Security User</h2>
         </div>
       </div>
-      
+
       {/* Re-added Recent Trend Card */}
       <motion.div
         variants={fadeInVariants}
@@ -110,7 +109,7 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground">Your compliance is improving by 5% since last month</p>
             </div>
           </div>
-          
+
           <div className="flex flex-row gap-3">
             <div className="flex items-center gap-2 bg-background dark:bg-gray-800/60 p-2 rounded-lg shadow-sm">
               <div className="bg-amber-100 dark:bg-amber-900/50 p-1.5 rounded-lg">
@@ -121,7 +120,7 @@ const Dashboard = () => {
                 <p className="text-sm font-medium">June 15, 2023</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2 bg-background dark:bg-gray-800/60 p-2 rounded-lg shadow-sm">
               <div className="bg-green-100 dark:bg-green-900/50 p-1.5 rounded-lg">
                 <Clock size={14} className="text-green-600 dark:text-green-400" />
@@ -134,8 +133,8 @@ const Dashboard = () => {
           </div>
         </div>
       </motion.div>
-      
-      <motion.div 
+
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
         variants={itemVariants}
       >
@@ -182,16 +181,16 @@ const Dashboard = () => {
           data-card="true"
         />
       </motion.div>
-      
-      <motion.div 
-        className="grid grid-cols-1 lg:grid-cols-5 gap-5 w-full" 
+
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-5 gap-5 w-full"
         variants={itemVariants}
       >
         <div className="flex flex-col gap-5 lg:col-span-2">
           <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden">
             <ComplianceChart data={dynamicRequirementCounts} />
           </motion.div>
-          
+
           <motion.div variants={itemVariants}>
             <Card className="shadow-md hover:shadow-lg transition-all h-full border border-border/70" data-card="true">
               <CardContent className="p-4">
@@ -211,9 +210,9 @@ const Dashboard = () => {
                           <p className="text-xs text-muted-foreground">Due in 3 days</p>
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         className="px-2 py-1 h-auto text-xs"
                         onClick={() => navigate("/app/assessments/1")}
                       >
@@ -226,15 +225,77 @@ const Dashboard = () => {
             </Card>
           </motion.div>
         </div>
-        
+
         <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-3 border border-border/70" data-card="true">
-          <AssessmentProgress 
-            assessments={assessments} 
+          <AssessmentProgress
+            assessments={assessments}
             onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}
           />
         </motion.div>
       </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold">Quick Actions</h3>
+        </div>
+        <QuickActions />
+      </motion.div>
     </motion.div>
+  );
+};
+
+// Add a new "Quick Actions" section to the dashboard
+const QuickActions = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
+      <div
+        onClick={() => navigate('/editor')}
+        className="cursor-pointer"
+      >
+        <Card className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 h-full" data-card="true">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <div className="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full mt-2 mb-3">
+              <Edit size={24} className="text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold">AuditReady Graphical Editor</h3>
+            <p className="text-sm text-muted-foreground mt-1">Create diagrams, flowcharts and visual documentation</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Placeholder for additional quick action cards */}
+      <div
+        className="cursor-pointer opacity-60 hover:opacity-80 transition-opacity"
+        onClick={() => alert("Coming soon!")}
+      >
+        <Card className="shadow-md border border-border/70 h-full" data-card="true">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <div className="bg-purple-100 dark:bg-purple-900/50 p-3 rounded-full mt-2 mb-3">
+              <BookOpen size={24} className="text-purple-600 dark:text-purple-400" />
+            </div>
+            <h3 className="text-lg font-semibold">Documentation Generator</h3>
+            <p className="text-sm text-muted-foreground mt-1">Generate compliance documentation (Coming soon)</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div
+        className="cursor-pointer opacity-60 hover:opacity-80 transition-opacity"
+        onClick={() => alert("Coming soon!")}
+      >
+        <Card className="shadow-md border border-border/70 h-full" data-card="true">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <div className="bg-green-100 dark:bg-green-900/50 p-3 rounded-full mt-2 mb-3">
+              <CheckSquare size={24} className="text-green-600 dark:text-green-400" />
+            </div>
+            <h3 className="text-lg font-semibold">Compliance Wizard</h3>
+            <p className="text-sm text-muted-foreground mt-1">Generate assessments faster (Coming soon)</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 

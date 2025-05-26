@@ -5,12 +5,12 @@ type DocumentFormatterProps = {
 };
 
 const DocumentFormatter: React.FC<DocumentFormatterProps> = ({ content }) => {
-  // If no content, return empty div
-  if (!content) return <div className="h-full w-full"></div>;
-
   // Process the document content
   const formattedContent = React.useMemo(() => {
-    // Split content into sections by lines
+    // If no content, return empty array
+    if (!content) return [];
+    
+         // Split content into sections by lines
     const lines = content.split('\n');
     
     // Track the current section level for styling
@@ -89,6 +89,9 @@ const DocumentFormatter: React.FC<DocumentFormatterProps> = ({ content }) => {
     return processedLines;
   }, [content]);
   
+  // If no content, return empty div
+  if (!content) return <div className="h-full w-full"></div>;
+
   return (
     <div className="document-preview font-sans text-foreground">
       {formattedContent.map((item) => {
