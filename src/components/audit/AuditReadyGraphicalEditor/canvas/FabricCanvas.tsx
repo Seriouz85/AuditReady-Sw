@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as fabric from 'fabric';
 import { useFabricCanvasStore } from '../core/FabricCanvasStore';
 import {
@@ -9,6 +9,8 @@ import {
 } from '../core/fabric-utils';
 import { getEventManager, cleanupEventManager } from '../core/EventManager';
 import { EditorTestUtils } from '../utils/EditorTestUtils';
+import { getGridManager } from '../core/GridManager';
+import { Grid3X3, MousePointer2, ZoomIn, ZoomOut, EyeOff } from 'lucide-react';
 
 interface FabricCanvasProps {
   className?: string;
@@ -19,6 +21,9 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({ className = '' }) => {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const initAttemptedRef = useRef(false);
+  const [showGrid, setShowGrid] = useState(true);
+  const [snapToGrid, setSnapToGrid] = useState(true);
+  const [zoom, setZoom] = useState(1);
 
   const { setCanvas, markAsModified, setShowProperties } = useFabricCanvasStore();
 
@@ -136,6 +141,12 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({ className = '' }) => {
         // Initial render
         fabricCanvas.renderAll();
 
+        const gridManager = getGridManager(fabricCanvas);
+        if (gridManager) {
+          gridManager.setEnabled(true);
+          gridManager.setSnapToGrid(true);
+        }
+
       } catch (error) {
         console.error('Error initializing canvas:', error);
         initAttemptedRef.current = false;
@@ -151,14 +162,83 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({ className = '' }) => {
     };
   }, [setCanvas, markAsModified, setShowProperties]);
 
+  // Canvas controls handlers
+  const handleToggleGrid = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const gridManager = getGridManager(canvas);
+    if (gridManager) {
+      gridManager.setEnabled(!showGrid);
+      setShowGrid(!showGrid);
+    }
+  };
+  const handleToggleSnap = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const gridManager = getGridManager(canvas);
+    if (gridManager) {
+      gridManager.setSnapToGrid(!snapToGrid);
+      setSnapToGrid(!snapToGrid);
+    }
+  };
+  const handleZoomIn = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const newZoom = Math.min(zoom + 0.1, 2);
+    canvas.setZoom(newZoom);
+    setZoom(newZoom);
+    canvas.requestRenderAll();
+  };
+  const handleZoomOut = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const newZoom = Math.max(zoom - 0.1, 0.2);
+    canvas.setZoom(newZoom);
+    setZoom(newZoom);
+    canvas.requestRenderAll();
+  };
+
   return (
     <div className={`relative w-full h-full ${className}`}>
+      {/* Floating Canvas Controls */}
+      <div style={{
+        position: 'absolute',
+        top: 16,
+        left: 16,
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        background: 'rgba(255,255,255,0.95)',
+        borderRadius: 12,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        padding: 10,
+        border: '1px solid #e5e7eb',
+        alignItems: 'center',
+        minWidth: 44
+      }}>
+        <button title={showGrid ? 'Hide Grid' : 'Show Grid'} onClick={handleToggleGrid} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+          {showGrid ? <Grid3X3 color="#3b82f6" /> : <EyeOff color="#9ca3af" />}
+        </button>
+        <button title={snapToGrid ? 'Disable Snap to Grid' : 'Enable Snap to Grid'} onClick={handleToggleSnap} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+          <MousePointer2 color={snapToGrid ? '#3b82f6' : '#9ca3af'} />
+        </button>
+        <button title="Zoom In" onClick={handleZoomIn} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+          <ZoomIn color="#3b82f6" />
+        </button>
+        <button title="Zoom Out" onClick={handleZoomOut} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+          <ZoomOut color="#3b82f6" />
+        </button>
+      </div>
       {/* Canvas container with scrollbar support */}
       <div
         ref={canvasContainerRef}
-        className="w-full h-full overflow-auto"
         style={{
-          // Custom scrollbar styling for webkit browsers
+          display: 'inline-block',
+          width: 'auto',
+          height: 'auto',
+          overflow: 'auto',
+          position: 'relative',
           scrollbarWidth: 'thin',
           scrollbarColor: `${AUDIT_COLORS.primary} ${AUDIT_COLORS.background}`,
         }}
@@ -193,8 +273,8 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({ className = '' }) => {
           ref={canvasRef}
           className="block"
           style={{
-            minWidth: '100%',
-            minHeight: '100%'
+            display: 'block',
+            background: 'transparent'
           }}
         />
       </div>

@@ -17,6 +17,7 @@ import TemplateGalleryPanel from './ui/TemplateGalleryPanel';
 import WorkflowAutomationPanel from './ui/WorkflowAutomationPanel';
 import SmartFormsPanel from './ui/SmartFormsPanel';
 import ModernAnalyticsDashboard from './ui/ModernAnalyticsDashboard';
+import { parseMermaidToDiagram } from './utils/mermaid-interop';
 
 
 interface FabricEditorProps {
@@ -201,6 +202,9 @@ const FabricEditor: React.FC<FabricEditorProps> = ({ designId, showBackButton, o
   const [showWorkflowAutomation, setShowWorkflowAutomation] = useState(false);
   const [showSmartForms, setShowSmartForms] = useState(false);
   const [showAnalyticsDashboard, setShowAnalyticsDashboard] = useState(false);
+  const [showMermaidModal, setShowMermaidModal] = useState(false);
+  const [mermaidMode] = useState<'import' | 'export'>('import');
+  const [mermaidText, setMermaidText] = useState('');
 
   const {
     setDesignId,
@@ -382,6 +386,16 @@ const FabricEditor: React.FC<FabricEditorProps> = ({ designId, showBackButton, o
   const handleButtonLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
     e.currentTarget.style.transform = 'translateY(0)';
+  };
+
+  // Handler for import
+  const handleMermaidImport = () => {
+    try {
+      parseMermaidToDiagram(mermaidText);
+      alert('Import not yet implemented');
+    } catch (e) {
+      alert('Import not yet implemented');
+    }
   };
 
   return (
@@ -738,6 +752,30 @@ const FabricEditor: React.FC<FabricEditorProps> = ({ designId, showBackButton, o
 
       {/* Export Modal */}
       <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} />
+
+      {/* Mermaid Modal */}
+      {showMermaidModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', zIndex: 9999999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'white', borderRadius: 12, padding: 32, minWidth: 400, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+            <h3 style={{ marginBottom: 16 }}>{mermaidMode === 'import' ? 'Import Mermaid Diagram' : 'Export Mermaid Diagram'}</h3>
+            <textarea
+              value={mermaidText}
+              onChange={e => setMermaidText(e.target.value)}
+              rows={10}
+              style={{ width: '100%', fontFamily: 'monospace', fontSize: 14, marginBottom: 16 }}
+              readOnly={mermaidMode === 'export'}
+            />
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button onClick={() => setShowMermaidModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #e2e8f0', background: '#f1f5f9', color: '#374151', fontWeight: 600 }}>Close</button>
+              {mermaidMode === 'import' ? (
+                <button onClick={handleMermaidImport} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #3b82f6', background: '#3b82f6', color: 'white', fontWeight: 600 }}>Import</button>
+              ) : (
+                <button onClick={() => { navigator.clipboard.writeText(mermaidText); }} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #3b82f6', background: '#3b82f6', color: 'white', fontWeight: 600 }}>Copy</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

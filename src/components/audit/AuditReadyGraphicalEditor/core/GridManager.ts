@@ -1,5 +1,4 @@
 import * as fabric from 'fabric';
-import { AUDIT_COLORS } from './fabric-utils';
 
 export interface GridOptions {
   size: number;
@@ -35,15 +34,24 @@ export class GridManager {
     if (!this.options.snapToGrid) return;
 
     const obj = e.target;
-    if (!obj || obj.isConnectionPoint || obj.isConnector) return;
+    if (!obj || ((obj as any)['isConnectionPoint']) || ((obj as any)['isConnector'])) return;
+
+    // If Shift is held, do not snap
+    if (e.e && e.e.shiftKey) return;
 
     const gridSize = this.options.size;
-    const snappedLeft = Math.round((obj.left || 0) / gridSize) * gridSize;
-    const snappedTop = Math.round((obj.top || 0) / gridSize) * gridSize;
+    const left = obj.left || 0;
+    const top = obj.top || 0;
+    const snappedLeft = Math.round(left / gridSize) * gridSize;
+    const snappedTop = Math.round(top / gridSize) * gridSize;
+    const threshold = 8; // px
 
+    // Only snap if within threshold
+    const dx = Math.abs(left - snappedLeft);
+    const dy = Math.abs(top - snappedTop);
     obj.set({
-      left: snappedLeft,
-      top: snappedTop
+      left: dx < threshold ? snappedLeft : left,
+      top: dy < threshold ? snappedTop : top
     });
   }
 
@@ -211,13 +219,13 @@ export class GridManager {
   public snapAllObjectsToGrid(): void {
     if (!this.options.snapToGrid) return;
 
-    const objects = this.canvas.getObjects().filter(obj => 
+    const objects = this.canvas.getObjects().filter((obj: any) => 
       !obj.isConnectionPoint && 
       !obj.isConnector && 
       obj !== this.gridGroup
     );
 
-    objects.forEach(obj => {
+    objects.forEach((obj: any) => {
       this.snapObjectToGrid(obj);
     });
 

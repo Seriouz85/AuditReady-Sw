@@ -259,8 +259,8 @@ const QuickActions = () => {
             <div className="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full mt-2 mb-3">
               <Edit size={24} className="text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold">AuditReady Graphical Editor</h3>
-            <p className="text-sm text-muted-foreground mt-1">Create diagrams, flowcharts and visual documentation</p>
+            <h3 className="text-lg font-semibold">AuditReady Mermaid Editor</h3>
+            <p className="text-sm text-muted-foreground mt-1">Create stunning professional diagrams with Mermaid.js - 14+ diagram types, glassmorphic design, audit themes</p>
           </CardContent>
         </Card>
       </div>

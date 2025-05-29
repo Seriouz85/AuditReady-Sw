@@ -3,6 +3,7 @@ import { getSmartPlacementManager } from './SmartPlacementManager';
 import { getViewportManager } from './ViewportManager';
 import { createAuditShape } from '../utils/shape-factory';
 import { showConnectionPoints, hideAllConnectionPoints, updateConnectionPoints, hideConnectionPointsForObject } from '../utils/connection-points';
+import { expandCanvasIfNeeded } from './expandCanvasIfNeeded';
 
 // Audit-ready color palette
 export const AUDIT_COLORS = {
@@ -407,122 +408,50 @@ export const centerCanvas = (canvas: fabric.Canvas): void => {
   canvasWrapper.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
 };
 
-// Smart positioning system - places objects side by side, not stacked
-const getSmartPosition = (canvas: fabric.Canvas, objectWidth: number = 100, objectHeight: number = 100) => {
-  const zoom = canvas.getZoom();
-  const vpt = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
-
-  // Calculate visible area
-  const visibleLeft = -vpt[4] / zoom;
-  const visibleTop = -vpt[5] / zoom;
-  const visibleWidth = canvas.getWidth() / zoom;
-  const visibleHeight = canvas.getHeight() / zoom;
-
-  const objects = canvas.getObjects().filter(obj => !(obj as any).isConnectionPoint && !(obj as any).isConnector);
-  const spacing = 20; // Space between objects
-  const margin = 50; // Margin from edges
-
-  // If no objects exist, place at top-left with margin
+// Guarantee perfect horizontal alignment: always add new shapes in a straight line from left to right
+const getLeftToRightPosition = (canvas: fabric.Canvas, objectWidth: number = 100, spacing: number = 60) => {
+  // Set margins for better UX - closer to top left but with enough room for expansion
+  const leftMargin = 40; // Reduced left margin to be closer to left edge
+  const topMargin = 40;  // Consistent top margin for all shapes
+  const canvasWidth = canvas.width || 800;
+  
+  // Get only shape objects (exclude lines, arrows, connection points, etc.)
+  const objects = canvas.getObjects().filter((obj: any) => 
+    obj.type !== 'line' && 
+    obj.type !== 'arrow' && 
+    obj.type !== 'path' &&
+    !(obj as any).isConnectionPoint && 
+    !(obj as any).isConnector
+  );
+  
+  // If this is the first shape, place it at the top-left corner with margins
   if (objects.length === 0) {
-    return {
-      left: visibleLeft + margin,
-      top: visibleTop + margin
-    };
+    return { left: leftMargin, top: topMargin };
   }
 
-  // Check for overlap with existing objects
-  const hasOverlap = (testX: number, testY: number) => {
-    const testBounds = {
-      left: testX,
-      top: testY,
-      right: testX + objectWidth,
-      bottom: testY + objectHeight
-    };
-
-    return objects.some(obj => {
-      const objBounds = obj.getBoundingRect();
-      const buffer = spacing / 2; // Add buffer for spacing
-      return !(
-        testBounds.right + buffer < objBounds.left ||
-        testBounds.left - buffer > objBounds.left + objBounds.width ||
-        testBounds.bottom + buffer < objBounds.top ||
-        testBounds.top - buffer > objBounds.top + objBounds.height
-      );
-    });
-  };
-
-  // Strategy 1: Try to place to the right of the last object
-  const lastObject = objects[objects.length - 1];
-  if (lastObject) {
-    const lastBounds = lastObject.getBoundingRect();
-    let x = lastBounds.left + lastBounds.width + spacing;
-    let y = lastBounds.top;
-
-    // Check if it fits horizontally in visible area
-    if (x + objectWidth <= visibleLeft + visibleWidth - margin) {
-      if (!hasOverlap(x, y)) {
-        return { left: x, top: y };
-      }
-    }
-  }
-
-  // Strategy 2: Try placing in a grid pattern starting from top-left
-  const startX = visibleLeft + margin;
-  const startY = visibleTop + margin;
-  const maxCols = Math.floor((visibleWidth - 2 * margin) / (objectWidth + spacing));
-
-  let row = 0;
-  let col = 0;
-  let attempts = 0;
-  const maxAttempts = 100;
-
-  while (attempts < maxAttempts) {
-    const x = startX + col * (objectWidth + spacing);
-    const y = startY + row * (objectHeight + spacing);
-
-    // Check if position is within visible bounds
-    if (x + objectWidth <= visibleLeft + visibleWidth - margin &&
-        y + objectHeight <= visibleTop + visibleHeight - margin) {
-
-      if (!hasOverlap(x, y)) {
-        return { left: x, top: y };
-      }
-    }
-
-    // Move to next grid position
-    col++;
-    if (col >= maxCols || x + objectWidth > visibleLeft + visibleWidth - margin) {
-      col = 0;
-      row++;
-    }
-
-    attempts++;
-  }
-
-  // Strategy 3: Find the rightmost object and place to its right
-  let rightmostX = visibleLeft + margin;
-  let rightmostY = visibleTop + margin;
-
-  objects.forEach(obj => {
+  // Find the rightmost shape to place the new shape to its right
+  let rightmostX = leftMargin;
+  
+  objects.forEach((obj: fabric.Object) => {
     const bounds = obj.getBoundingRect();
-    if (bounds.left + bounds.width > rightmostX) {
-      rightmostX = bounds.left + bounds.width + spacing;
-      rightmostY = bounds.top;
+    const objRightEdge = bounds.left + bounds.width;
+    if (objRightEdge > rightmostX) {
+      rightmostX = objRightEdge;
     }
   });
-
-  // Ensure it's within canvas bounds
-  const canvasWidth = canvas.width || 1200;
-  if (rightmostX + objectWidth > canvasWidth) {
-    // Move to next row
-    rightmostX = visibleLeft + margin;
-    rightmostY = Math.max(rightmostY + objectHeight + spacing, visibleTop + margin);
+  
+  // Place new shape to the right of the rightmost shape
+  const left = rightmostX + spacing;
+  
+  // Always maintain the same top position for perfect horizontal alignment
+  const top = topMargin;
+  
+  // Check if we're going beyond canvas width and need to expand
+  if (left + objectWidth + leftMargin > canvasWidth) {
+    // Canvas will be expanded in addShapeToCanvas
   }
-
-  return {
-    left: rightmostX,
-    top: rightmostY
-  };
+  
+  return { left, top };
 };
 
 // Add shape to canvas following inspiration pattern
@@ -540,12 +469,24 @@ export const addShapeToCanvas = async (
       return null;
     }
 
-    // Get smart position to avoid overlap
+    // Get shape dimensions
     const defaultProps = definition.defaultProps as any;
     const defaultWidth = defaultProps.width || defaultProps.radius * 2 || 100;
-    const defaultHeight = defaultProps.height || defaultProps.radius * 2 || 100;
-    const position = getSmartPosition(canvas, defaultWidth, defaultHeight);
+    
+    // Ensure canvas has a minimum size before adding objects
+    const minCanvasWidth = 800;
+    const minCanvasHeight = 600;
+    if (canvas.getWidth() < minCanvasWidth || canvas.getHeight() < minCanvasHeight) {
+      canvas.setDimensions({
+        width: Math.max(canvas.getWidth() || 0, minCanvasWidth),
+        height: Math.max(canvas.getHeight() || 0, minCanvasHeight)
+      });
+    }
+    
+    // Get optimal position with strict left-to-right flow
+    const position = getLeftToRightPosition(canvas, defaultWidth, 60);
 
+    // Create the shape with the optimized position
     const shape = createAuditShape(fabric, shapeType, definition, {
       left: position.left,
       top: position.top,
@@ -562,8 +503,28 @@ export const addShapeToCanvas = async (
       canvas.add(shape);
       canvas.setActiveObject(shape);
 
-      // Expand canvas if needed to accommodate new content
-      expandCanvasIfNeeded(canvas);
+      // Ensure canvas expands properly to accommodate the new shape
+      // but keeps objects in upper left
+      expandCanvasIfNeeded(canvas, 80);
+      
+      // Reset viewport to show upper left content if this is the first few shapes
+      const viewportManager = getViewportManager();
+      if (viewportManager) {
+        const shapeCount = canvas.getObjects().filter(obj => 
+          obj.type !== 'line' && 
+          obj.type !== 'arrow' &&
+          !(obj as any).isConnectionPoint && 
+          !(obj as any).isConnector
+        ).length;
+        
+        if (shapeCount <= 3) {
+          // Reset the view to show the upper left portion of the canvas
+          viewportManager.resetView(false);
+        } else {
+          // For additional shapes, just ensure the new shape is visible
+          viewportManager.ensureObjectVisible(shape);
+        }
+      }
 
       canvas.renderAll();
       console.log(`Shape ${shapeType} added at position:`, { left: shape.left, top: shape.top });
@@ -673,7 +634,7 @@ export const addTextToCanvas = async (
     const estimatedWidth = text.length * 12; // Rough estimate
     const estimatedHeight = 24;
     const placement = smartPlacement?.findOptimalPlacement(estimatedWidth, estimatedHeight) ||
-                     getSmartPosition(canvas, estimatedWidth, estimatedHeight);
+                     getLeftToRightPosition(canvas, estimatedWidth, estimatedHeight);
 
     const position = typeof placement === 'object' && 'x' in placement ?
                      { left: placement.x, top: placement.y } : placement;
@@ -1049,55 +1010,6 @@ export const setupTrackpadZoom = (canvas: fabric.Canvas, container: HTMLElement 
 };
 
 // Dynamic canvas expansion - expand canvas when content goes beyond bounds
-export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 100): void => {
-  if (!canvas) return;
-
-  const objects = canvas.getObjects();
-  if (objects.length === 0) return;
-
-  let maxRight = 0;
-  let maxBottom = 0;
-
-  // Find the furthest extent of all objects
-  objects.forEach(obj => {
-    const bounds = obj.getBoundingRect();
-    maxRight = Math.max(maxRight, bounds.left + bounds.width);
-    maxBottom = Math.max(maxBottom, bounds.top + bounds.height);
-  });
-
-  const currentWidth = canvas.width || 1200;
-  const currentHeight = canvas.height || 600;
-
-  // Calculate new dimensions with margin
-  const neededWidth = maxRight + margin;
-  const neededHeight = maxBottom + margin;
-
-  let needsResize = false;
-  let newWidth = currentWidth;
-  let newHeight = currentHeight;
-
-  // Expand width if needed
-  if (neededWidth > currentWidth) {
-    newWidth = Math.max(neededWidth, currentWidth * 1.2); // At least 20% larger
-    needsResize = true;
-  }
-
-  // Expand height if needed
-  if (neededHeight > currentHeight) {
-    newHeight = Math.max(neededHeight, currentHeight * 1.2); // At least 20% larger
-    needsResize = true;
-  }
-
-  if (needsResize) {
-    canvas.setDimensions({
-      width: newWidth,
-      height: newHeight
-    });
-    canvas.renderAll();
-    console.log(`Canvas expanded to ${newWidth}x${newHeight} to accommodate content`);
-  }
-};
-
 export const toggleObjectVisibility = (canvas: fabric.Canvas): boolean => {
   if (!canvas) return false;
 

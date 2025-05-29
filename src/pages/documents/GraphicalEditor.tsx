@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FabricEditor from '../../components/audit/AuditReadyGraphicalEditor/FabricEditor';
+import MermaidVisualEditor from '../../components/editor/MermaidVisualEditor';
 
-// Standalone Graphical Editor
+// Standalone Mermaid Visual Editor
 const GraphicalEditor: React.FC = () => {
   const navigate = useNavigate();
 
@@ -25,11 +25,15 @@ const GraphicalEditor: React.FC = () => {
   };
 
   useEffect(() => {
-    document.title = 'AuditReady Graphical Editor';
+    document.title = 'AI Security Architect - Visual Editor';
   }, []);
 
   return (
-    <FabricEditor designId="standalone-editor" showBackButton={true} onBack={handleBack} />
+    <MermaidVisualEditor
+      designId="standalone-visual-editor"
+      showBackButton={true}
+      onBack={handleBack}
+    />
   );
 };
 

@@ -30,9 +30,9 @@ export class ViewportManager {
   private setupResizeObserver(): void {
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          this.handleContainerResize(entry.contentRect);
-        }
+        entries.forEach(() => {
+          this.handleContainerResize();
+        });
       });
     }
   }
@@ -51,7 +51,7 @@ export class ViewportManager {
     this.updateCanvasSize();
   }
 
-  private handleContainerResize(rect: DOMRectReadOnly): void {
+  private handleContainerResize(): void {
     // Debounce resize events
     setTimeout(() => {
       this.updateCanvasSize();
@@ -113,7 +113,7 @@ export class ViewportManager {
 
   public getCanvasMetrics(): CanvasMetrics {
     const objects = this.canvas.getObjects().filter(obj => 
-      !obj.isConnectionPoint && !obj.isConnector
+      !(obj as any).isConnectionPoint && !(obj as any).isConnector
     );
 
     if (objects.length === 0) {
@@ -324,6 +324,47 @@ export class ViewportManager {
     }
     this.resizeObserver = null;
     this.containerElement = null;
+  }
+
+  // Center all content in the canvas viewport
+  public centerContent(): void {
+    const metrics = this.getCanvasMetrics();
+    
+    if (metrics.isEmpty) {
+      return;
+    }
+
+    // Get the canvas dimensions
+    const canvasWidth = this.canvas.getWidth();
+    const canvasHeight = this.canvas.getHeight();
+    
+    // Calculate content center
+    const contentCenterX = metrics.contentBounds.left + metrics.contentBounds.width / 2;
+    const contentCenterY = metrics.contentBounds.top + metrics.contentBounds.height / 2;
+    
+    // Calculate canvas center
+    const canvasCenterX = canvasWidth / 2;
+    const canvasCenterY = canvasHeight / 2;
+    
+    // Calculate the offset needed to center content
+    const offsetX = canvasCenterX - contentCenterX;
+    const offsetY = canvasCenterY - contentCenterY;
+    
+    // Only move objects if there's a significant offset
+    if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
+      // Move all objects by the offset
+      const objects = this.canvas.getObjects();
+      objects.forEach(obj => {
+        obj.set({
+          left: obj.left! + offsetX,
+          top: obj.top! + offsetY
+        });
+        obj.setCoords();
+      });
+      
+      this.canvas.renderAll();
+      console.log(`Content centered with offset (${offsetX}, ${offsetY})`);
+    }
   }
 }
 

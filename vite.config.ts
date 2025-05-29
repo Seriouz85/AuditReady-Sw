@@ -11,12 +11,30 @@ export default defineConfig({
         name: 'html-transform',
         transformIndexHtml(html) {
           return html.replace(
-            /(href|src)="\/audit-readiness-hub\//g, 
+            /(href|src)="\/audit-readiness-hub\//g,
             '$1="https://seriouz85.github.io/audit-readiness-hub/'
           );
         },
       },
     ],
+    optimizeDeps: {
+      exclude: [
+        'mermaid',
+        '@mermaid-js/mermaid',
+        'quadrantDiagram-120e2f19',
+        'cytoscape',
+        'cytoscape-cose-bilkent',
+        'cytoscape-fcose',
+        'd3',
+        'dagre-d3',
+        'elkjs'
+      ],
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom'
+      ]
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

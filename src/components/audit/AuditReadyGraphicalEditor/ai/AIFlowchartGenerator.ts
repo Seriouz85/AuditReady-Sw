@@ -4,29 +4,7 @@
  */
 
 import * as fabric from 'fabric';
-
-export interface FlowchartNode {
-  id: string;
-  type: 'start' | 'process' | 'decision' | 'end' | 'connector';
-  text: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  connections: string[];
-  metadata?: {
-    riskLevel?: 'low' | 'medium' | 'high';
-    controlType?: 'preventive' | 'detective' | 'corrective';
-    compliance?: string[];
-  };
-}
-
-export interface FlowchartData {
-  nodes: FlowchartNode[];
-  title: string;
-  description: string;
-  category: 'audit-process' | 'risk-assessment' | 'compliance-check' | 'control-flow';
-}
+import { DiagramNode, DiagramTemplate } from 'src/types/diagram/types';
 
 export interface AIFlowchartRequest {
   prompt: string;
@@ -42,17 +20,15 @@ export interface AIFlowchartRequest {
 
 export class AIFlowchartGenerator {
   private canvas: fabric.Canvas;
-  private apiEndpoint: string;
 
-  constructor(canvas: fabric.Canvas, apiEndpoint: string = '/api/ai/flowchart') {
+  constructor(canvas: fabric.Canvas) {
     this.canvas = canvas;
-    this.apiEndpoint = apiEndpoint;
   }
 
   /**
    * Generate flowchart from natural language prompt
    */
-  async generateFromPrompt(request: AIFlowchartRequest): Promise<FlowchartData> {
+  async generateFromPrompt(request: AIFlowchartRequest): Promise<DiagramTemplate> {
     try {
       console.log('Generating flowchart from prompt:', request.prompt);
 
@@ -70,29 +46,29 @@ export class AIFlowchartGenerator {
   /**
    * Generate sample flowchart based on prompt analysis
    */
-  private generateSampleFlowchart(request: AIFlowchartRequest): FlowchartData {
+  private generateSampleFlowchart(request: AIFlowchartRequest): DiagramTemplate {
     const prompt = request.prompt.toLowerCase();
 
     if (prompt.includes('audit') || prompt.includes('review')) {
-      return this.generateAuditProcessFlowchart(request);
+      return this.generateAuditProcessFlowchart();
     } else if (prompt.includes('risk') || prompt.includes('assessment')) {
-      return this.generateRiskAssessmentFlowchart(request);
+      return this.generateRiskAssessmentFlowchart();
     } else if (prompt.includes('compliance') || prompt.includes('control')) {
       return this.generateComplianceFlowchart(request);
     } else {
-      return this.generateGenericProcessFlowchart(request);
+      return this.generateGenericProcessFlowchart();
     }
   }
 
   /**
    * Generate audit process flowchart
    */
-  private generateAuditProcessFlowchart(request: AIFlowchartRequest): FlowchartData {
-    const nodes: FlowchartNode[] = [
+  private generateAuditProcessFlowchart(): DiagramTemplate {
+    const nodes: DiagramNode[] = [
       {
         id: 'start',
         type: 'start',
-        text: 'Start Audit',
+        label: 'Start Audit',
         x: 100,
         y: 50,
         width: 120,
@@ -102,7 +78,7 @@ export class AIFlowchartGenerator {
       {
         id: 'planning',
         type: 'process',
-        text: 'Audit Planning\n& Risk Assessment',
+        label: 'Audit Planning\n& Risk Assessment',
         x: 100,
         y: 150,
         width: 160,
@@ -113,7 +89,7 @@ export class AIFlowchartGenerator {
       {
         id: 'fieldwork',
         type: 'process',
-        text: 'Fieldwork\n& Testing',
+        label: 'Fieldwork\n& Testing',
         x: 100,
         y: 280,
         width: 140,
@@ -124,7 +100,7 @@ export class AIFlowchartGenerator {
       {
         id: 'evaluation',
         type: 'decision',
-        text: 'Issues\nIdentified?',
+        label: 'Issues\nIdentified?',
         x: 100,
         y: 410,
         width: 120,
@@ -134,7 +110,7 @@ export class AIFlowchartGenerator {
       {
         id: 'findings',
         type: 'process',
-        text: 'Document\nFindings',
+        label: 'Document\nFindings',
         x: 300,
         y: 410,
         width: 120,
@@ -145,7 +121,7 @@ export class AIFlowchartGenerator {
       {
         id: 'reporting',
         type: 'process',
-        text: 'Audit\nReporting',
+        label: 'Audit\nReporting',
         x: 100,
         y: 540,
         width: 120,
@@ -155,7 +131,7 @@ export class AIFlowchartGenerator {
       {
         id: 'end',
         type: 'end',
-        text: 'Audit Complete',
+        label: 'Audit Complete',
         x: 100,
         y: 670,
         width: 120,
@@ -166,21 +142,23 @@ export class AIFlowchartGenerator {
 
     return {
       nodes,
-      title: 'Audit Process Flow',
+      name: 'Audit Process Flow',
       description: 'Standard audit process from planning to completion',
-      category: 'audit-process'
+      category: 'audit-process',
+      id: 'ai-audit-process',
+      edges: []
     };
   }
 
   /**
    * Generate risk assessment flowchart
    */
-  private generateRiskAssessmentFlowchart(request: AIFlowchartRequest): FlowchartData {
-    const nodes: FlowchartNode[] = [
+  private generateRiskAssessmentFlowchart(): DiagramTemplate {
+    const nodes: DiagramNode[] = [
       {
         id: 'start',
         type: 'start',
-        text: 'Risk Assessment',
+        label: 'Risk Assessment',
         x: 100,
         y: 50,
         width: 140,
@@ -190,7 +168,7 @@ export class AIFlowchartGenerator {
       {
         id: 'identify',
         type: 'process',
-        text: 'Identify\nRisks',
+        label: 'Identify\nRisks',
         x: 100,
         y: 150,
         width: 120,
@@ -201,7 +179,7 @@ export class AIFlowchartGenerator {
       {
         id: 'analyze',
         type: 'process',
-        text: 'Analyze\nLikelihood & Impact',
+        label: 'Analyze\nLikelihood & Impact',
         x: 100,
         y: 280,
         width: 160,
@@ -212,7 +190,7 @@ export class AIFlowchartGenerator {
       {
         id: 'evaluate',
         type: 'decision',
-        text: 'Risk Level\nAcceptable?',
+        label: 'Risk Level\nAcceptable?',
         x: 100,
         y: 410,
         width: 140,
@@ -222,7 +200,7 @@ export class AIFlowchartGenerator {
       {
         id: 'mitigate',
         type: 'process',
-        text: 'Develop\nMitigation Plan',
+        label: 'Develop\nMitigation Plan',
         x: 320,
         y: 410,
         width: 140,
@@ -233,7 +211,7 @@ export class AIFlowchartGenerator {
       {
         id: 'accept',
         type: 'process',
-        text: 'Accept\nRisk',
+        label: 'Accept\nRisk',
         x: 100,
         y: 540,
         width: 100,
@@ -244,7 +222,7 @@ export class AIFlowchartGenerator {
       {
         id: 'monitor',
         type: 'process',
-        text: 'Monitor\n& Review',
+        label: 'Monitor\n& Review',
         x: 210,
         y: 540,
         width: 120,
@@ -255,7 +233,7 @@ export class AIFlowchartGenerator {
       {
         id: 'end',
         type: 'end',
-        text: 'Risk Managed',
+        label: 'Risk Managed',
         x: 210,
         y: 670,
         width: 120,
@@ -266,23 +244,25 @@ export class AIFlowchartGenerator {
 
     return {
       nodes,
-      title: 'Risk Assessment Process',
+      name: 'Risk Assessment Process',
       description: 'Comprehensive risk identification and management workflow',
-      category: 'risk-assessment'
+      category: 'risk-assessment',
+      id: 'ai-risk-assessment',
+      edges: []
     };
   }
 
   /**
    * Generate compliance flowchart
    */
-  private generateComplianceFlowchart(request: AIFlowchartRequest): FlowchartData {
+  private generateComplianceFlowchart(request: AIFlowchartRequest): DiagramTemplate {
     const framework = request.context?.framework || 'ISO 27001';
 
-    const nodes: FlowchartNode[] = [
+    const nodes: DiagramNode[] = [
       {
         id: 'start',
         type: 'start',
-        text: `${framework}\nCompliance Check`,
+        label: `${framework}\nCompliance Check`,
         x: 100,
         y: 50,
         width: 140,
@@ -292,7 +272,7 @@ export class AIFlowchartGenerator {
       {
         id: 'requirements',
         type: 'process',
-        text: 'Review\nRequirements',
+        label: 'Review\nRequirements',
         x: 100,
         y: 180,
         width: 140,
@@ -303,7 +283,7 @@ export class AIFlowchartGenerator {
       {
         id: 'assess',
         type: 'process',
-        text: 'Assess Current\nControls',
+        label: 'Assess Current\nControls',
         x: 100,
         y: 310,
         width: 140,
@@ -314,7 +294,7 @@ export class AIFlowchartGenerator {
       {
         id: 'gaps',
         type: 'decision',
-        text: 'Gaps\nIdentified?',
+        label: 'Gaps\nIdentified?',
         x: 100,
         y: 440,
         width: 120,
@@ -324,7 +304,7 @@ export class AIFlowchartGenerator {
       {
         id: 'remediate',
         type: 'process',
-        text: 'Remediation\nPlan',
+        label: 'Remediation\nPlan',
         x: 300,
         y: 440,
         width: 120,
@@ -335,7 +315,7 @@ export class AIFlowchartGenerator {
       {
         id: 'implement',
         type: 'process',
-        text: 'Implement\nControls',
+        label: 'Implement\nControls',
         x: 300,
         y: 570,
         width: 120,
@@ -346,7 +326,7 @@ export class AIFlowchartGenerator {
       {
         id: 'verify',
         type: 'process',
-        text: 'Verify\nEffectiveness',
+        label: 'Verify\nEffectiveness',
         x: 200,
         y: 700,
         width: 120,
@@ -357,7 +337,7 @@ export class AIFlowchartGenerator {
       {
         id: 'compliant',
         type: 'end',
-        text: 'Compliant',
+        label: 'Compliant',
         x: 100,
         y: 570,
         width: 100,
@@ -368,21 +348,23 @@ export class AIFlowchartGenerator {
 
     return {
       nodes,
-      title: `${framework} Compliance Process`,
+      name: `${framework} Compliance Process`,
       description: `Compliance verification workflow for ${framework}`,
-      category: 'compliance-check'
+      category: 'compliance-check',
+      id: 'ai-compliance-check',
+      edges: []
     };
   }
 
   /**
    * Generate generic process flowchart
    */
-  private generateGenericProcessFlowchart(request: AIFlowchartRequest): FlowchartData {
-    const nodes: FlowchartNode[] = [
+  private generateGenericProcessFlowchart(): DiagramTemplate {
+    const nodes: DiagramNode[] = [
       {
         id: 'start',
         type: 'start',
-        text: 'Start Process',
+        label: 'Start Process',
         x: 100,
         y: 50,
         width: 120,
@@ -392,7 +374,7 @@ export class AIFlowchartGenerator {
       {
         id: 'step1',
         type: 'process',
-        text: 'Process Step 1',
+        label: 'Process Step 1',
         x: 100,
         y: 150,
         width: 140,
@@ -402,7 +384,7 @@ export class AIFlowchartGenerator {
       {
         id: 'decision',
         type: 'decision',
-        text: 'Decision\nPoint?',
+        label: 'Decision\nPoint?',
         x: 100,
         y: 280,
         width: 120,
@@ -412,7 +394,7 @@ export class AIFlowchartGenerator {
       {
         id: 'step2a',
         type: 'process',
-        text: 'Option A',
+        label: 'Option A',
         x: 50,
         y: 410,
         width: 100,
@@ -422,7 +404,7 @@ export class AIFlowchartGenerator {
       {
         id: 'step2b',
         type: 'process',
-        text: 'Option B',
+        label: 'Option B',
         x: 200,
         y: 410,
         width: 100,
@@ -432,7 +414,7 @@ export class AIFlowchartGenerator {
       {
         id: 'end',
         type: 'end',
-        text: 'End Process',
+        label: 'End Process',
         x: 125,
         y: 520,
         width: 120,
@@ -443,17 +425,19 @@ export class AIFlowchartGenerator {
 
     return {
       nodes,
-      title: 'Generic Process Flow',
+      name: 'Generic Process Flow',
       description: 'Basic process workflow template',
-      category: 'audit-process'
+      category: 'audit-process',
+      id: 'ai-generic-process-flow',
+      edges: []
     };
   }
 
   /**
    * Render flowchart on canvas
    */
-  async renderFlowchart(flowchartData: FlowchartData): Promise<void> {
-    console.log('Rendering flowchart:', flowchartData.title);
+  async renderFlowchart(flowchartData: DiagramTemplate): Promise<void> {
+    console.log('Rendering flowchart:', flowchartData.name);
 
     // Clear existing objects
     this.canvas.clear();
@@ -484,7 +468,7 @@ export class AIFlowchartGenerator {
     fabricObjects.forEach(obj => this.canvas.add(obj));
 
     // Add title
-    const title = new fabric.Text(flowchartData.title, {
+    const title = new fabric.Text(flowchartData.name, {
       left: 50,
       top: 10,
       fontSize: 20,
@@ -499,7 +483,7 @@ export class AIFlowchartGenerator {
   /**
    * Create fabric object for flowchart node
    */
-  private createFlowchartNode(node: FlowchartNode): fabric.Group {
+  private createFlowchartNode(node: DiagramNode): fabric.Group {
     let shape: fabric.Object;
     const colors = this.getNodeColors(node);
 
@@ -540,7 +524,7 @@ export class AIFlowchartGenerator {
         });
     }
 
-    const text = new fabric.Text(node.text, {
+    const text = new fabric.Text(node.label, {
       fontSize: 12,
       fill: '#1f2937',
       textAlign: 'center',
@@ -564,15 +548,16 @@ export class AIFlowchartGenerator {
   /**
    * Get colors for node based on type and metadata
    */
-  private getNodeColors(node: FlowchartNode): { fill: string; stroke: string } {
+  private getNodeColors(node: DiagramNode): { fill: string; stroke: string } {
     const riskColors = {
       low: { fill: '#d1fae5', stroke: '#10b981' },
       medium: { fill: '#fef3c7', stroke: '#f59e0b' },
       high: { fill: '#fee2e2', stroke: '#ef4444' }
     };
 
-    if (node.metadata?.riskLevel) {
-      return riskColors[node.metadata.riskLevel];
+    const riskLevel = node.metadata?.riskLevel as 'low' | 'medium' | 'high' | undefined;
+    if (riskLevel && riskColors[riskLevel]) {
+      return riskColors[riskLevel];
     }
 
     switch (node.type) {
@@ -590,7 +575,7 @@ export class AIFlowchartGenerator {
   /**
    * Create connection line between nodes
    */
-  private createConnection(fromNode: FlowchartNode, toNode: FlowchartNode): fabric.Line {
+  private createConnection(fromNode: DiagramNode, toNode: DiagramNode): fabric.Line {
     const fromX = fromNode.x + fromNode.width / 2;
     const fromY = fromNode.y + fromNode.height;
     const toX = toNode.x + toNode.width / 2;

@@ -1,0 +1,518 @@
+/**
+ * Save & Export Modal - Comprehensive save and export functionality
+ * Supports multiple formats and local storage management
+ */
+
+import React, { useState, useCallback } from 'react';
+import {
+  Download, Save, FolderOpen, X, Image, FileText,
+  HardDrive, Cloud, Settings
+} from 'lucide-react';
+import {
+  GlassPanel,
+  GlassButton,
+  GlassInput,
+  MermaidDesignTokens
+} from '../ui';
+import { exportAsPng, exportAsJpg, exportAsSVG, exportAsPDF } from '../../services/export-service';
+import { generateUniqueNameFromDesired, projectNameExists, validateProjectName } from '../../utils/projectUtils';
+
+interface SaveExportModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+  diagramText: string;
+  projectName?: string;
+  canvasBackground?: string;
+  onProjectNameChange?: (name: string) => void;
+  onProjectLoad?: (diagramText: string, canvasBackground?: string, flowData?: any) => void;
+  onProjectSaved?: (projectName: string) => void;
+  reactFlowInstance?: any;
+}
+
+interface ExportFormat {
+  id: string;
+  name: string;
+  extension: string;
+  description: string;
+  icon: React.ComponentType<any>;
+  category: 'image' | 'document' | 'data';
+}
+
+const EXPORT_FORMATS: ExportFormat[] = [
+  {
+    id: 'png',
+    name: 'PNG Image',
+    extension: 'png',
+    description: 'High quality raster image',
+    icon: Image,
+    category: 'image'
+  },
+  {
+    id: 'jpg',
+    name: 'JPG Image',
+    extension: 'jpg',
+    description: 'Compressed raster image',
+    icon: Image,
+    category: 'image'
+  },
+  {
+    id: 'svg',
+    name: 'SVG Vector',
+    extension: 'svg',
+    description: 'Scalable vector graphics',
+    icon: Image,
+    category: 'image'
+  },
+  {
+    id: 'pdf',
+    name: 'PDF Document',
+    extension: 'pdf',
+    description: 'Portable document format',
+    icon: FileText,
+    category: 'document'
+  },
+  {
+    id: 'mermaid',
+    name: 'Mermaid Code',
+    extension: 'mmd',
+    description: 'Source code file',
+    icon: FileText,
+    category: 'data'
+  }
+];
+
+export const SaveExportModal: React.FC<SaveExportModalProps> = ({
+  isVisible,
+  onClose,
+  diagramText,
+  projectName = '',
+  canvasBackground = '#f8fafc',
+  onProjectNameChange,
+  onProjectLoad,
+  onProjectSaved,
+  reactFlowInstance
+}) => {
+  const [selectedFormat, setSelectedFormat] = useState<string>('png');
+  const [fileName, setFileName] = useState(projectName || 'mermaid-diagram');
+  const [isExporting, setIsExporting] = useState(false);
+  const [activeTab, setActiveTab] = useState<'export' | 'save' | 'open'>('export');
+
+  // Handle export
+  const handleExport = useCallback(async () => {
+    if (!fileName.trim()) return;
+
+    setIsExporting(true);
+    try {
+      const format = EXPORT_FORMATS.find(f => f.id === selectedFormat);
+      if (!format) return;
+
+      const finalFileName = fileName.endsWith(`.${format.extension}`)
+        ? fileName.slice(0, -format.extension.length - 1)
+        : fileName;
+
+      switch (selectedFormat) {
+        case 'png':
+          await exportAsPng(reactFlowInstance, finalFileName, 1.0, canvasBackground);
+          break;
+        case 'jpg':
+          await exportAsJpg(reactFlowInstance, finalFileName, 0.9, canvasBackground);
+          break;
+        case 'svg':
+          exportAsSVG(reactFlowInstance, finalFileName);
+          break;
+        case 'pdf':
+          await exportAsPDF(reactFlowInstance, finalFileName, canvasBackground);
+          break;
+        case 'mermaid':
+          const blob = new Blob([diagramText], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${finalFileName}.mmd`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          break;
+      }
+
+      // Close modal after successful export
+      setTimeout(() => onClose(), 500);
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [selectedFormat, fileName, diagramText, reactFlowInstance, onClose]);
+
+  // Handle save to local storage
+  const handleSaveToLocalStorage = useCallback(() => {
+    if (!fileName.trim()) return;
+
+    // Get the complete React Flow state including nodes and edges
+    const flowData = reactFlowInstance ? reactFlowInstance.toObject() : null;
+
+    const projectData = {
+      name: fileName,
+      diagramText,
+      canvasBackground,
+      flowData, // Include complete React Flow state
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    console.log('Saving project with flow data:', projectData); // Debug log
+
+    // Validate project name
+    const validation = validateProjectName(fileName);
+    if (!validation.isValid) {
+      alert(validation.error);
+      return;
+    }
+
+    // Check if project name already exists and generate unique name if needed
+    let finalFileName = fileName;
+    if (projectNameExists(fileName) && fileName !== projectName) {
+      // Only ask for confirmation if this is a different project name
+      const useUniqueName = window.confirm(
+        `A project named "${fileName}" already exists. Would you like to save with a unique name instead?`
+      );
+
+      if (useUniqueName) {
+        finalFileName = generateUniqueNameFromDesired(fileName);
+      } else {
+        // User wants to overwrite
+        const confirmOverwrite = window.confirm(`Are you sure you want to overwrite "${fileName}"?`);
+        if (!confirmOverwrite) return;
+      }
+    }
+
+    // Update project data with final name
+    projectData.name = finalFileName;
+
+    const savedProjects = JSON.parse(localStorage.getItem('mermaid-projects') || '[]');
+    const existingIndex = savedProjects.findIndex((p: any) => p.name === finalFileName);
+
+    if (existingIndex >= 0) {
+      savedProjects[existingIndex] = { ...projectData, createdAt: savedProjects[existingIndex].createdAt };
+      console.log('Overwriting existing project');
+    } else {
+      savedProjects.push(projectData);
+      console.log('Creating new project');
+    }
+
+    localStorage.setItem('mermaid-projects', JSON.stringify(savedProjects));
+    console.log('Projects saved to localStorage:', savedProjects);
+
+    onProjectNameChange?.(finalFileName);
+    onProjectSaved?.(finalFileName);
+
+    // Show success message
+    alert(`Project "${finalFileName}" saved successfully!`);
+    onClose();
+  }, [fileName, diagramText, canvasBackground, projectName, reactFlowInstance, onProjectNameChange, onProjectSaved, onClose]);
+
+  // Get saved projects
+  const getSavedProjects = useCallback(() => {
+    const projects = JSON.parse(localStorage.getItem('mermaid-projects') || '[]');
+    console.log('Retrieved projects from localStorage:', projects);
+    return projects;
+  }, []);
+
+  // Handle open project
+  const handleOpenProject = useCallback((project: any) => {
+    console.log('Opening project:', project);
+
+    // Confirm loading if current work might be lost
+    const confirmLoad = window.confirm(`Load project "${project.name}"? Any unsaved changes will be lost.`);
+    if (!confirmLoad) return;
+
+    onProjectNameChange?.(project.name);
+    onProjectLoad?.(project.diagramText, project.canvasBackground, project.flowData);
+
+    // Show success message
+    alert(`Project "${project.name}" loaded successfully!`);
+    onClose();
+  }, [onProjectNameChange, onProjectLoad, onClose]);
+
+  if (!isVisible) return null;
+
+  const selectedFormatData = EXPORT_FORMATS.find(f => f.id === selectedFormat);
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999
+    }}>
+      <GlassPanel variant="elevated" padding="0" style={{
+        width: '600px',
+        maxHeight: '80vh',
+        borderRadius: MermaidDesignTokens.borderRadius.xl,
+        overflow: 'hidden'
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: MermaidDesignTokens.spacing[6],
+          borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <h2 style={{
+            fontSize: MermaidDesignTokens.typography.fontSize.xl,
+            fontWeight: MermaidDesignTokens.typography.fontWeight.bold,
+            color: MermaidDesignTokens.colors.text.primary,
+            margin: 0
+          }}>
+            Save & Export Project
+          </h2>
+          <GlassButton
+            variant="ghost"
+            size="sm"
+            icon={<X size={18} />}
+            onClick={onClose}
+          />
+        </div>
+
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`
+        }}>
+          {[
+            { id: 'export', label: 'Export', icon: Download },
+            { id: 'save', label: 'Save', icon: Save },
+            { id: 'open', label: 'Open', icon: FolderOpen }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  flex: 1,
+                  padding: MermaidDesignTokens.spacing[4],
+                  background: activeTab === tab.id
+                    ? MermaidDesignTokens.colors.glass.secondary
+                    : 'transparent',
+                  border: 'none',
+                  borderBottom: activeTab === tab.id
+                    ? `2px solid ${MermaidDesignTokens.colors.accent.blue}`
+                    : '2px solid transparent',
+                  color: activeTab === tab.id
+                    ? MermaidDesignTokens.colors.text.primary
+                    : MermaidDesignTokens.colors.text.secondary,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: MermaidDesignTokens.spacing[2],
+                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        <div style={{ padding: MermaidDesignTokens.spacing[6] }}>
+          {activeTab === 'export' && (
+            <div>
+              {/* File Name Input */}
+              <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                  color: MermaidDesignTokens.colors.text.primary,
+                  marginBottom: MermaidDesignTokens.spacing[2]
+                }}>
+                  File Name
+                </label>
+                <GlassInput
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  placeholder="Enter file name..."
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              {/* Format Selection */}
+              <div style={{ marginBottom: MermaidDesignTokens.spacing[6] }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                  color: MermaidDesignTokens.colors.text.primary,
+                  marginBottom: MermaidDesignTokens.spacing[3]
+                }}>
+                  Export Format
+                </label>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: MermaidDesignTokens.spacing[3]
+                }}>
+                  {EXPORT_FORMATS.map((format) => {
+                    const Icon = format.icon;
+                    return (
+                      <div
+                        key={format.id}
+                        onClick={() => setSelectedFormat(format.id)}
+                        style={{
+                          padding: MermaidDesignTokens.spacing[3],
+                          border: `2px solid ${selectedFormat === format.id
+                            ? MermaidDesignTokens.colors.accent.blue
+                            : MermaidDesignTokens.colors.glass.border}`,
+                          borderRadius: MermaidDesignTokens.borderRadius.lg,
+                          cursor: 'pointer',
+                          background: selectedFormat === format.id
+                            ? MermaidDesignTokens.colors.glass.secondary
+                            : 'transparent',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: MermaidDesignTokens.spacing[2],
+                          marginBottom: MermaidDesignTokens.spacing[1]
+                        }}>
+                          <Icon size={18} color={MermaidDesignTokens.colors.accent.blue} />
+                          <span style={{
+                            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                            fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                            color: MermaidDesignTokens.colors.text.primary
+                          }}>
+                            {format.name}
+                          </span>
+                        </div>
+                        <p style={{
+                          fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                          color: MermaidDesignTokens.colors.text.secondary,
+                          margin: 0
+                        }}>
+                          {format.description}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Export Button */}
+              <GlassButton
+                variant="primary"
+                size="base"
+                icon={<Download size={18} />}
+                onClick={handleExport}
+                disabled={!fileName.trim() || isExporting}
+                style={{ width: '100%' }}
+                glow
+              >
+                {isExporting ? 'Exporting...' : `Export as ${selectedFormatData?.name || 'File'}`}
+              </GlassButton>
+            </div>
+          )}
+
+          {activeTab === 'save' && (
+            <div>
+              <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                  color: MermaidDesignTokens.colors.text.primary,
+                  marginBottom: MermaidDesignTokens.spacing[2]
+                }}>
+                  Project Name
+                </label>
+                <GlassInput
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  placeholder="Enter project name..."
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <GlassButton
+                variant="primary"
+                size="base"
+                icon={<HardDrive size={18} />}
+                onClick={handleSaveToLocalStorage}
+                disabled={!fileName.trim()}
+                style={{ width: '100%' }}
+                glow
+              >
+                Save to Local Storage
+              </GlassButton>
+            </div>
+          )}
+
+          {activeTab === 'open' && (
+            <div>
+              <h3 style={{
+                fontSize: MermaidDesignTokens.typography.fontSize.lg,
+                fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
+                color: MermaidDesignTokens.colors.text.primary,
+                marginBottom: MermaidDesignTokens.spacing[4]
+              }}>
+                Saved Projects
+              </h3>
+
+              <div style={{
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                {getSavedProjects().map((project: any, index: number) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: MermaidDesignTokens.spacing[3],
+                      border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
+                      borderRadius: MermaidDesignTokens.borderRadius.md,
+                      marginBottom: MermaidDesignTokens.spacing[2],
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={() => handleOpenProject(project)}
+                  >
+                    <div style={{
+                      fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                      fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                      color: MermaidDesignTokens.colors.text.primary,
+                      marginBottom: MermaidDesignTokens.spacing[1]
+                    }}>
+                      {project.name}
+                    </div>
+                    <div style={{
+                      fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                      color: MermaidDesignTokens.colors.text.secondary
+                    }}>
+                      Updated: {new Date(project.updatedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </GlassPanel>
+    </div>
+  );
+};
+
+export default SaveExportModal;

@@ -120,7 +120,7 @@ export default function Landing() {
             <Button 
               size="lg" 
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-12 text-lg"
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate("/login")}
             >
               Start Your Journey
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -131,7 +131,7 @@ export default function Landing() {
               className={`${theme === 'light' 
                 ? 'border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 hover:border-blue-300' 
                 : 'border-blue-800 text-blue-300 hover:bg-blue-900/40 hover:text-blue-200'} px-8 h-12 text-lg`}
-              onClick={() => navigate("/demo")}
+              onClick={() => navigate("/login")}
             >
               Watch Demo
             </Button>
