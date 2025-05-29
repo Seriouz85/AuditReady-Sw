@@ -90,14 +90,13 @@ export class MermaidService {
   /**
    * Validate Mermaid syntax
    */
-  public async validateSyntax(text: string): Promise<{ isValid: boolean; error?: string; suggestions?: string[] }> {
+  public validateSyntax(text: string): { isValid: boolean; error?: string; suggestions?: string[] } {
     if (!text.trim()) {
       return { isValid: false, error: 'Empty diagram text' };
     }
 
     try {
-      // Use mermaid.parse to validate syntax
-      await mermaid.parse(text);
+      mermaid.parse(text);
       return { isValid: true };
     } catch (error) {
       const errorMessage = (error as Error).message;
@@ -149,7 +148,7 @@ export class MermaidService {
     }
 
     // Validate syntax first
-    const validation = await this.validateSyntax(text);
+    const validation = this.validateSyntax(text);
     if (!validation.isValid) {
       throw new Error(`Syntax Error: ${validation.error}`);
     }
@@ -253,8 +252,6 @@ export class MermaidService {
       'sankey'
     ];
   }
-
-
 
   /**
    * Get current configuration

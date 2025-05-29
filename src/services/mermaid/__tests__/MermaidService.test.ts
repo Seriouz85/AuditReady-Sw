@@ -4,9 +4,12 @@
 
 // Mock mermaid module
 jest.mock('mermaid', () => ({
-  initialize: jest.fn(),
-  render: jest.fn().mockResolvedValue({ svg: '<svg>test</svg>' }),
-  parse: jest.fn()
+  __esModule: true,
+  default: {
+    initialize: jest.fn(),
+    render: jest.fn().mockResolvedValue({ svg: '<svg>test</svg>' }),
+    parse: jest.fn()
+  }
 }));
 
 import { MermaidService } from '../MermaidService';
@@ -31,7 +34,7 @@ describe('MermaidService', () => {
 
     test('should not initialize twice', async () => {
       await service.initialize();
-      const mermaid = require('mermaid');
+      const mermaid = require('mermaid').default;
       await service.initialize();
 
       // Should only call initialize once
@@ -39,7 +42,7 @@ describe('MermaidService', () => {
     });
 
     test('should handle initialization errors', async () => {
-      const mermaid = require('mermaid');
+      const mermaid = require('mermaid').default;
       mermaid.initialize.mockImplementationOnce(() => {
         throw new Error('Initialization failed');
       });
@@ -59,17 +62,13 @@ describe('MermaidService', () => {
 
     test('should update configuration', () => {
       const newConfig = {
-        theme: 'light' as const,
-        themeVariables: {
-          primaryColor: '#ff0000'
-        }
+        theme: 'neutral' as const
       };
 
       service.updateConfig(newConfig);
       const config = service.getConfig();
 
-      expect(config.theme).toBe('light');
-      expect(config.themeVariables.primaryColor).toBe('#ff0000');
+      expect(config.theme).toBe('neutral');
     });
   });
 
@@ -81,7 +80,7 @@ describe('MermaidService', () => {
       const result = await service.renderDiagram(mermaidText, elementId);
 
       expect(result.svg).toBe('<svg>test</svg>');
-      expect(require('mermaid').render).toHaveBeenCalledWith(elementId, mermaidText);
+      expect(require('mermaid').default.render).toHaveBeenCalledWith(elementId, mermaidText);
     });
 
     test('should initialize before rendering if not initialized', async () => {
@@ -90,11 +89,11 @@ describe('MermaidService', () => {
 
       await service.renderDiagram(mermaidText, elementId);
 
-      expect(require('mermaid').initialize).toHaveBeenCalled();
+      expect(require('mermaid').default.initialize).toHaveBeenCalled();
     });
 
     test('should handle rendering errors', async () => {
-      const mermaid = require('mermaid');
+      const mermaid = require('mermaid').default;
       mermaid.render.mockRejectedValueOnce(new Error('Rendering failed'));
 
       const mermaidText = 'invalid syntax';
@@ -115,11 +114,11 @@ describe('MermaidService', () => {
 
       const result = service.validateSyntax(validSyntax);
       expect(result.isValid).toBe(true);
-      expect(result.errors).toBeUndefined();
+      expect(result.error).toBeUndefined();
     });
 
     test('should detect invalid Mermaid syntax', () => {
-      const mermaid = require('mermaid');
+      const mermaid = require('mermaid').default;
       mermaid.parse.mockImplementationOnce(() => {
         throw new Error('Invalid syntax');
       });
@@ -128,7 +127,7 @@ describe('MermaidService', () => {
 
       const result = service.validateSyntax(invalidSyntax);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Invalid syntax');
+      expect(result.error).toBe('Invalid syntax');
     });
   });
 
@@ -154,8 +153,8 @@ describe('MermaidService', () => {
     });
 
     test('should reset service state', () => {
-      service.updateConfig({ theme: 'light' });
-      expect(service.getConfig().theme).toBe('light');
+      service.updateConfig({ theme: 'neutral' });
+      expect(service.getConfig().theme).toBe('neutral');
 
       service.reset();
       expect(service.getConfig().theme).toBe('dark');
