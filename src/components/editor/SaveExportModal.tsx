@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react';
 import {
   Download, Save, FolderOpen, X, Image, FileText,
-  HardDrive, Cloud, Settings
+  HardDrive
 } from 'lucide-react';
 import {
   GlassPanel,
@@ -110,40 +110,60 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
         ? fileName.slice(0, -format.extension.length - 1)
         : fileName;
 
+      console.log('Starting export:', { format: selectedFormat, fileName: finalFileName, canvasBackground });
+
+      let exportSuccess = false;
+
       switch (selectedFormat) {
         case 'png':
-          await exportAsPng(reactFlowInstance, finalFileName, 1.0, canvasBackground);
+          exportSuccess = await exportAsPng(reactFlowInstance, finalFileName, 1.0, canvasBackground);
           break;
         case 'jpg':
-          await exportAsJpg(reactFlowInstance, finalFileName, 0.9, canvasBackground);
+          exportSuccess = await exportAsJpg(reactFlowInstance, finalFileName, 0.9, canvasBackground);
           break;
         case 'svg':
-          exportAsSVG(reactFlowInstance, finalFileName);
+          exportSuccess = exportAsSVG(reactFlowInstance, finalFileName);
           break;
         case 'pdf':
-          await exportAsPDF(reactFlowInstance, finalFileName, canvasBackground);
+          exportSuccess = await exportAsPDF(reactFlowInstance, finalFileName, canvasBackground);
           break;
         case 'mermaid':
-          const blob = new Blob([diagramText], { type: 'text/plain' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `${finalFileName}.mmd`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
+          try {
+            const blob = new Blob([diagramText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${finalFileName}.mmd`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            exportSuccess = true;
+          } catch (error) {
+            console.error('Mermaid export failed:', error);
+            exportSuccess = false;
+          }
           break;
       }
 
-      // Close modal after successful export
-      setTimeout(() => onClose(), 500);
+      if (exportSuccess) {
+        console.log('Export completed successfully');
+        // Show success message
+        alert(`Successfully exported as ${format.name}!`);
+        // Close modal after successful export
+        setTimeout(() => onClose(), 500);
+      } else {
+        console.error('Export failed');
+        alert(`Export failed. Please check the console for details and try again.`);
+      }
     } catch (error) {
       console.error('Export failed:', error);
+      alert(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`);
     } finally {
       setIsExporting(false);
     }
-  }, [selectedFormat, fileName, diagramText, reactFlowInstance, onClose]);
+  }, [selectedFormat, fileName, diagramText, reactFlowInstance, canvasBackground, onClose]);
 
   // Handle save to local storage
   const handleSaveToLocalStorage = useCallback(() => {
@@ -252,7 +272,7 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
       justifyContent: 'center',
       zIndex: 9999
     }}>
-      <GlassPanel variant="elevated" padding="0" style={{
+      <GlassPanel variant="elevated" padding={0} style={{
         width: '600px',
         maxHeight: '80vh',
         borderRadius: MermaidDesignTokens.borderRadius.xl,

@@ -39,6 +39,7 @@ import {
 import { NodePropertiesPanel } from './NodePropertiesPanel';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
 import { BackgroundColorPicker } from './BackgroundColorPicker';
+import { SaveExportModal } from './SaveExportModal';
 
 import { EnhancedMermaidAI } from '../../services/ai/EnhancedMermaidAI';
 import { applyAutoAdjustedColors, getAutoAdjustedEdgeColors, getOptimalColors } from '../../utils/colorUtils';
@@ -621,7 +622,9 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showEdgePropertiesPanel, setShowEdgePropertiesPanel] = useState(false);
   const [showBackgroundPicker, setShowBackgroundPicker] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [autoAdjustEnabled, setAutoAdjustEnabled] = useState(false);
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
   // Undo/Redo functionality
   const {
@@ -1054,7 +1057,10 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
             markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
           };
         })()}
-        onInit={(instance) => onReactFlowInstanceChange?.(instance)}
+        onInit={(instance) => {
+          setReactFlowInstance(instance);
+          onReactFlowInstanceChange?.(instance);
+        }}
       >
         <Background
           variant={BackgroundVariant.Dots}
@@ -1187,6 +1193,7 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
                 variant="ghost"
                 size="sm"
                 icon={<Download size={18} />}
+                onClick={() => setShowExportModal(true)}
                 title="Export Diagram"
               />
             </div>
@@ -1322,6 +1329,14 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onAutoAdjustChange={setAutoAdjustEnabled}
       />
 
+      {/* Save Export Modal */}
+      <SaveExportModal
+        isVisible={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        diagramText={generateMermaidCode()}
+        canvasBackground={canvasBackground}
+        reactFlowInstance={reactFlowInstance}
+      />
 
     </div>
   );
