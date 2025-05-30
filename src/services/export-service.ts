@@ -26,6 +26,12 @@ interface ReactFlowInstance {
   setViewport: (viewport: { x: number; y: number; zoom: number }) => void;
 }
 
+// === EXPORT AREA CONSTANTS ===
+const EXTRA_BUFFER = 150; // Increased buffer for content bounds (was 50)
+const EXPORT_PADDING = 180; // Increased padding for export dimensions (was 80/100)
+const MIN_ASPECT_RATIO = 1.0; // Never thinner than 1:1 (square)
+const MAX_ASPECT_RATIO = 2.0; // Never wider than 2:1 (width:height or height:width)
+
 /**
  * Detect platform and browser for cross-platform compatibility
  */
@@ -180,11 +186,10 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   }
 
   // Add platform-specific extra buffer to ensure we capture everything
-  const extraBuffer = 50; // REVERT TO ORIGINAL WORKING VALUE
-  minX -= extraBuffer;
-  minY -= extraBuffer;
-  maxX += extraBuffer;
-  maxY += extraBuffer;
+  minX -= EXTRA_BUFFER;
+  minY -= EXTRA_BUFFER;
+  maxX += EXTRA_BUFFER;
+  maxY += EXTRA_BUFFER;
 
   const contentWidth = maxX - minX;
   const contentHeight = maxY - minY;
@@ -195,7 +200,7 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
     height: contentHeight,
     nodeCount: nodes.length,
     edgeCount: edges?.length || 0,
-    extraBuffer,
+    extraBuffer: EXTRA_BUFFER,
     platformAdjustments
   });
 
@@ -223,31 +228,42 @@ const calculateExportDimensions = (
     contentWidth, contentHeight, exportType, platformAdjustments
   });
   
-  // Use reasonable padding to ensure content is not cut off but minimize dead space
-  let padding = 80; // REVERT TO ORIGINAL WORKING VALUE
+  // Use robust padding to ensure content is not cut off but minimize dead space
+  let padding = EXPORT_PADDING;
   
-  // Add extra padding for larger content
-  if (contentWidth > 1000 || contentHeight > 800) {
-    padding = 100; // REVERT TO ORIGINAL WORKING VALUE
-  }
-  
-  // Adjust padding based on export type
+  // Adjust padding based on export type (keep at least EXPORT_PADDING)
   switch (exportType) {
     case 'pdf':
-      padding = Math.max(padding, 80); // REVERT TO ORIGINAL WORKING VALUE
+      padding = Math.max(padding, EXPORT_PADDING);
       break;
     case 'svg':
-      padding = Math.max(padding, 60); // REVERT TO ORIGINAL WORKING VALUE
+      padding = Math.max(padding, EXPORT_PADDING - 20); // SVG can use slightly less
       break;
     case 'png':
     case 'jpg':
-      padding = Math.max(padding, 80); // REVERT TO ORIGINAL WORKING VALUE
+      padding = Math.max(padding, EXPORT_PADDING);
       break;
   }
   
-  const exportWidth = contentWidth + (padding * 2);
-  const exportHeight = contentHeight + (padding * 2);
-  
+  let exportWidth = contentWidth + (padding * 2);
+  let exportHeight = contentHeight + (padding * 2);
+
+  // Enforce aspect ratio (never too thin or too wide)
+  let aspectRatio = exportWidth / exportHeight;
+  if (aspectRatio < MIN_ASPECT_RATIO) {
+    // Too tall and thin, add width
+    exportWidth = exportHeight * MIN_ASPECT_RATIO;
+    aspectRatio = exportWidth / exportHeight;
+  } else if (aspectRatio > MAX_ASPECT_RATIO) {
+    // Too wide, add height
+    exportHeight = exportWidth / MAX_ASPECT_RATIO;
+    aspectRatio = exportWidth / exportHeight;
+  } else if (1 / aspectRatio < MIN_ASPECT_RATIO) {
+    // Too wide and short, add height
+    exportHeight = exportWidth * MIN_ASPECT_RATIO;
+    aspectRatio = exportWidth / exportHeight;
+  }
+
   // Ensure reasonable minimums but don't force large empty areas
   const minWidth = Math.max(400, exportWidth);
   const minHeight = Math.max(300, exportHeight);

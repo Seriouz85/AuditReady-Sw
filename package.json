@@ -67,6 +67,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@xyflow/react": "^12.6.4",
     "antd": "^5.24.9",
+    "canvg": "^4.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
