@@ -5,8 +5,8 @@
 
 import React, { useState, useCallback } from 'react';
 import {
-  Type, Palette, Square, Circle, Diamond,
-  Plus, Minus, Eye, EyeOff, Trash2, Copy
+  Type, Square, Circle, Diamond,
+  EyeOff, Trash2, Copy
 } from 'lucide-react';
 import {
   GlassPanel,
@@ -117,12 +117,12 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
       position: 'fixed',
       top: '80px',
       right: '20px',
-      width: '320px',
+      width: '300px',
       maxHeight: 'calc(100vh - 100px)',
       overflowY: 'auto',
       zIndex: 1000
     }}>
-      <GlassPanel variant="elevated" padding="4" style={{
+      <GlassPanel variant="elevated" padding={3} style={{
         borderRadius: MermaidDesignTokens.borderRadius.xl,
         boxShadow: MermaidDesignTokens.shadows.glass.xl
       }}>
@@ -131,12 +131,12 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: MermaidDesignTokens.spacing[4],
-          paddingBottom: MermaidDesignTokens.spacing[3],
+          marginBottom: MermaidDesignTokens.spacing[3],
+          paddingBottom: MermaidDesignTokens.spacing[2],
           borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`
         }}>
           <h3 style={{
-            fontSize: MermaidDesignTokens.typography.fontSize.lg,
+            fontSize: MermaidDesignTokens.typography.fontSize.base,
             fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
             color: MermaidDesignTokens.colors.text.primary,
             margin: 0
@@ -152,13 +152,13 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
         </div>
 
         {/* Text Content */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Main Text
           </label>
@@ -173,13 +173,13 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
           />
 
           {/* Description Field */}
-          <div style={{ marginTop: MermaidDesignTokens.spacing[3] }}>
+          <div style={{ marginTop: MermaidDesignTokens.spacing[2] }}>
             <label style={{
               display: 'block',
-              fontSize: MermaidDesignTokens.typography.fontSize.sm,
+              fontSize: MermaidDesignTokens.typography.fontSize.xs,
               fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
               color: MermaidDesignTokens.colors.text.primary,
-              marginBottom: MermaidDesignTokens.spacing[2]
+              marginBottom: MermaidDesignTokens.spacing[1]
             }}>
               Description (Optional)
             </label>
@@ -192,19 +192,12 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
               placeholder="Enter description text..."
               icon={<Type size={14} />}
             />
-            <div style={{
-              fontSize: MermaidDesignTokens.typography.fontSize.xs,
-              color: MermaidDesignTokens.colors.text.secondary,
-              marginTop: MermaidDesignTokens.spacing[1]
-            }}>
-              Description appears as smaller text below main text
-            </div>
           </div>
 
-          {/* Live Text Preview */}
+          {/* Compact Live Text Preview */}
           <div style={{
-            marginTop: MermaidDesignTokens.spacing[3],
-            padding: MermaidDesignTokens.spacing[3],
+            marginTop: MermaidDesignTokens.spacing[2],
+            padding: MermaidDesignTokens.spacing[2],
             background: MermaidDesignTokens.colors.glass.secondary,
             borderRadius: MermaidDesignTokens.borderRadius.md,
             border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
@@ -213,17 +206,17 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
             <div style={{
               fontSize: MermaidDesignTokens.typography.fontSize.xs,
               color: MermaidDesignTokens.colors.text.secondary,
-              marginBottom: MermaidDesignTokens.spacing[2]
+              marginBottom: MermaidDesignTokens.spacing[1]
             }}>
-              Live Preview:
+              Preview:
             </div>
             <div style={{
               color: localTextColor,
               background: localFillColor,
               border: `2px solid ${localStrokeColor}`,
               borderRadius: MermaidDesignTokens.borderRadius.md,
-              padding: MermaidDesignTokens.spacing[2],
-              minHeight: '60px',
+              padding: MermaidDesignTokens.spacing[1],
+              minHeight: '40px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -231,7 +224,7 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
               gap: MermaidDesignTokens.spacing[1]
             }}>
               <div style={{
-                fontSize: localDescription ? MermaidDesignTokens.typography.fontSize.sm : MermaidDesignTokens.typography.fontSize.base,
+                fontSize: localDescription ? MermaidDesignTokens.typography.fontSize.xs : MermaidDesignTokens.typography.fontSize.sm,
                 fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                 lineHeight: 1.2
               }}>
@@ -239,7 +232,7 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
               </div>
               {localDescription && (
                 <div style={{
-                  fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                  fontSize: '10px',
                   opacity: 0.8,
                   lineHeight: 1.1,
                   maxWidth: '100%',
@@ -253,20 +246,20 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
         </div>
 
         {/* Shape Selection */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Shape
           </label>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: MermaidDesignTokens.spacing[2]
+            gap: MermaidDesignTokens.spacing[1]
           }}>
             {SHAPE_OPTIONS.map((shape) => {
               const Icon = shape.icon;
@@ -275,9 +268,9 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
                   key={shape.value}
                   variant={selectedNode.data.shape === shape.value ? 'primary' : 'ghost'}
                   size="sm"
-                  icon={<Icon size={16} />}
+                  icon={<Icon size={14} />}
                   onClick={() => handleUpdate('shape', shape.value)}
-                  style={{ justifyContent: 'center' }}
+                  style={{ justifyContent: 'center', fontSize: '11px' }}
                 >
                   {shape.label}
                 </GlassButton>
@@ -287,28 +280,28 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
         </div>
 
         {/* Color Presets */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Color Presets
           </label>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: MermaidDesignTokens.spacing[2]
+            gap: MermaidDesignTokens.spacing[1]
           }}>
             {COLOR_PRESETS.map((preset) => (
               <button
                 key={preset.name}
                 onClick={() => handleColorPreset(preset)}
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '32px',
+                  height: '32px',
                   borderRadius: MermaidDesignTokens.borderRadius.md,
                   background: preset.fill,
                   border: `2px solid ${preset.stroke}`,
@@ -324,29 +317,29 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
         </div>
 
         {/* Custom Colors */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Custom Colors
           </label>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr 1fr',
-            gap: MermaidDesignTokens.spacing[2]
+            gap: MermaidDesignTokens.spacing[1]
           }}>
             <div>
               <label style={{
-                fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                fontSize: '10px',
                 color: MermaidDesignTokens.colors.text.secondary,
                 marginBottom: MermaidDesignTokens.spacing[1],
                 display: 'block'
               }}>
-                Fill Color
+                Fill
               </label>
               <input
                 type="color"
@@ -354,7 +347,7 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
                 onChange={(e) => handleUpdate('fillColor', e.target.value)}
                 style={{
                   width: '100%',
-                  height: '40px',
+                  height: '32px',
                   border: 'none',
                   borderRadius: MermaidDesignTokens.borderRadius.md,
                   cursor: 'pointer'
@@ -363,12 +356,12 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
             </div>
             <div>
               <label style={{
-                fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                fontSize: '10px',
                 color: MermaidDesignTokens.colors.text.secondary,
                 marginBottom: MermaidDesignTokens.spacing[1],
                 display: 'block'
               }}>
-                Border Color
+                Border
               </label>
               <input
                 type="color"
@@ -376,7 +369,7 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
                 onChange={(e) => handleUpdate('strokeColor', e.target.value)}
                 style={{
                   width: '100%',
-                  height: '40px',
+                  height: '32px',
                   border: 'none',
                   borderRadius: MermaidDesignTokens.borderRadius.md,
                   cursor: 'pointer'
@@ -385,12 +378,12 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
             </div>
             <div>
               <label style={{
-                fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                fontSize: '10px',
                 color: MermaidDesignTokens.colors.text.secondary,
                 marginBottom: MermaidDesignTokens.spacing[1],
                 display: 'block'
               }}>
-                Text Color
+                Text
               </label>
               <input
                 type="color"
@@ -398,7 +391,7 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
                 onChange={(e) => handleUpdate('textColor', e.target.value)}
                 style={{
                   width: '100%',
-                  height: '40px',
+                  height: '32px',
                   border: 'none',
                   borderRadius: MermaidDesignTokens.borderRadius.md,
                   cursor: 'pointer'
@@ -409,13 +402,13 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
         </div>
 
         {/* Border Width */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Border Width: {localStrokeWidth}px
           </label>
@@ -439,25 +432,29 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
         {/* Actions */}
         <div style={{
           display: 'flex',
-          gap: MermaidDesignTokens.spacing[2],
-          paddingTop: MermaidDesignTokens.spacing[3],
+          gap: MermaidDesignTokens.spacing[1],
+          paddingTop: MermaidDesignTokens.spacing[2],
           borderTop: `1px solid ${MermaidDesignTokens.colors.glass.border}`
         }}>
           <GlassButton
             variant="ghost"
             size="sm"
-            icon={<Copy size={16} />}
+            icon={<Copy size={14} />}
             onClick={() => onNodeDuplicate(selectedNode.id)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, fontSize: '11px' }}
           >
             Duplicate
           </GlassButton>
           <GlassButton
             variant="ghost"
             size="sm"
-            icon={<Trash2 size={16} />}
+            icon={<Trash2 size={14} />}
             onClick={() => onNodeDelete(selectedNode.id)}
-            style={{ flex: 1, color: MermaidDesignTokens.colors.semantic.error[500] }}
+            style={{ 
+              flex: 1, 
+              color: MermaidDesignTokens.colors.semantic.error[500],
+              fontSize: '11px'
+            }}
           >
             Delete
           </GlassButton>

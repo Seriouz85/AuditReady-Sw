@@ -4,9 +4,9 @@ import { getViewportManager } from './ViewportManager';
 /**
  * Dynamically expands the canvas when content goes beyond bounds
  * Ensures the canvas is properly sized to accommodate all objects
- * while maintaining content closer to the top-left corner
+ * with generous space for user expansion
  */
-export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 80): void => {
+export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 200): void => {
   if (!canvas) return;
 
   const objects = canvas.getObjects();
@@ -27,19 +27,19 @@ export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 80)
     maxBottom = Math.max(maxBottom, bounds.top + bounds.height);
   });
 
-  // Fixed minimum canvas size
-  const minCanvasWidth = 800;
-  const minCanvasHeight = 600;
+  // More generous minimum canvas size to allow for expansion
+  const minCanvasWidth = 1200;
+  const minCanvasHeight = 1000;
   
   // Current canvas dimensions
   const currentWidth = canvas.width || minCanvasWidth;
   const currentHeight = canvas.height || minCanvasHeight;
 
-  // Ensure minimum margins at left and top (smaller values to keep objects in upper left)
-  const minLeftMargin = 40;
-  const minTopMargin = 40;
+  // Allow content to get closer to edges before expanding
+  const minLeftMargin = 100;
+  const minTopMargin = 100;
   
-  // Calculate needed dimensions with margins
+  // Calculate needed dimensions with generous margins
   const neededWidth = Math.max(maxRight + margin, minCanvasWidth);
   const neededHeight = Math.max(maxBottom + margin, minCanvasHeight);
   
@@ -51,15 +51,15 @@ export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 80)
   let newWidth = currentWidth;
   let newHeight = currentHeight;
 
-  // Calculate necessary width
+  // Calculate necessary width - be more generous
   if (maxRight + margin > currentWidth) {
-    newWidth = maxRight + margin;
+    newWidth = Math.max(maxRight + margin, currentWidth * 1.5); // Expand by at least 50%
     needsResize = true;
   }
 
-  // Calculate necessary height
+  // Calculate necessary height - be more generous
   if (maxBottom + margin > currentHeight) {
-    newHeight = maxBottom + margin;
+    newHeight = Math.max(maxBottom + margin, currentHeight * 1.5); // Expand by at least 50%
     needsResize = true;
   }
   
@@ -71,11 +71,10 @@ export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 80)
     });
     
     canvas.renderAll();
-    console.log(`Canvas expanded to ${newWidth}x${newHeight}`);
+    console.log(`Canvas expanded to ${newWidth}x${newHeight} to accommodate content`);
   }
   
-  // If content is too close to the edges, reposition all objects slightly
-  // but maintain upper-left positioning as much as possible
+  // If content is too close to the edges, add some space but don't move content unnecessarily
   if (objectsTooClose) {
     // Calculate minimum offsets needed to maintain margins
     const offsetX = minLeft < minLeftMargin ? (minLeftMargin - minLeft) : 0;
@@ -91,29 +90,24 @@ export const expandCanvasIfNeeded = (canvas: fabric.Canvas, margin: number = 80)
         obj.setCoords();
       });
       
+      // Also expand canvas to accommodate the moved content
+      const newCanvasWidth = Math.max(newWidth + offsetX, minCanvasWidth);
+      const newCanvasHeight = Math.max(newHeight + offsetY, minCanvasHeight);
+      
+      canvas.setDimensions({
+        width: newCanvasWidth,
+        height: newCanvasHeight
+      });
+      
       canvas.renderAll();
-      console.log(`Content adjusted by (${offsetX}, ${offsetY}) to maintain margins`);
+      console.log(`Content adjusted by (${offsetX}, ${offsetY}) and canvas expanded to ${newCanvasWidth}x${newCanvasHeight}`);
     }
   }
   
-  // Ensure viewport shows the upper-left content
+  // Ensure viewport shows the content appropriately
   const viewportManager = getViewportManager();
   if (viewportManager && objects.length > 0) {
-    // Find the object in the upper left
-    let upperLeftObject = objects[0];
-    let minDistance = Infinity;
-    
-    objects.forEach(obj => {
-      const bounds = obj.getBoundingRect();
-      // Calculate distance from origin (0,0)
-      const distance = Math.sqrt(bounds.left * bounds.left + bounds.top * bounds.top);
-      if (distance < minDistance) {
-        minDistance = distance;
-        upperLeftObject = obj;
-      }
-    });
-    
-    // Ensure the upper-left object is visible
-    viewportManager.ensureObjectVisible(upperLeftObject);
+    // Update canvas metrics after expansion
+    viewportManager.updateCanvasSize();
   }
 }; 

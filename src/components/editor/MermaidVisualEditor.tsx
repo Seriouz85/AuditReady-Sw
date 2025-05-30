@@ -4,62 +4,30 @@
  * No visible code - pure visual interface
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  ArrowLeft, Download, Palette,
-  Undo, Redo, ZoomIn, ZoomOut,
-  Brain, Sparkles, Plus, Search, X, Edit3, Eye,
-  PanelLeftClose, PanelLeftOpen, Save, FolderOpen
+  ArrowLeft, Save, FolderOpen, PanelLeftOpen
 } from 'lucide-react';
 import {
   GlassPanel,
   GlassButton,
-  GlassInput,
   AnimationProvider,
-  FadeInContainer,
   MermaidDesignTokens
 } from '../ui';
-import { MermaidPreviewPane } from './MermaidPreviewPane';
 import { InteractiveMermaidEditor } from './InteractiveMermaidEditor';
-import { MermaidAIService } from '../../services/ai/MermaidAIService';
 import { MermaidTemplatePanel } from './MermaidTemplatePanel';
 import { SaveExportModal } from './SaveExportModal';
-import { exportAsPng, exportAsJpg, exportAsSVG, exportAsPDF } from '../../services/export-service';
-import { PREMIUM_TEMPLATES, getTemplatesByCategory, getPopularTemplates, searchTemplates } from '../../data/premiumTemplates';
-import {
-  generateUniqueProjectName,
-  hasUnsavedChanges as checkUnsavedChanges,
-  generateStateHash,
-  autoAssignProjectName
-} from '../../utils/projectUtils';
 
 interface MermaidVisualEditorProps {
-  designId?: string;
   showBackButton?: boolean;
   onBack?: () => void;
 }
 
-// Template categories from premium library
-const TEMPLATE_CATEGORIES = [
-  { id: 'all', name: 'All Templates', count: PREMIUM_TEMPLATES.length },
-  { id: 'security', name: 'Security & Risk', count: getTemplatesByCategory('security').length },
-  { id: 'compliance', name: 'Compliance & Audit', count: getTemplatesByCategory('compliance').length },
-  { id: 'business', name: 'Business Process', count: getTemplatesByCategory('business').length },
-  { id: 'technical', name: 'Technical Architecture', count: getTemplatesByCategory('technical').length },
-  { id: 'project', name: 'Project Management', count: getTemplatesByCategory('project').length }
-];
-
-// Using premium template library
-
 export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
-  designId = 'visual-mermaid-editor',
   showBackButton = true,
   onBack
 }) => {
   // State Management
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [showLeftPanel, setShowLeftPanel] = useState(true);
   const [diagramText, setDiagramText] = useState(`flowchart TD
     A[Start Your Secure Design Journey] --> B[Select Template]
@@ -70,123 +38,10 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
     style B fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff
     style C fill:#60a5fa,stroke:#3b82f6,stroke-width:2px,color:#fff
     style D fill:#93c5fd,stroke:#60a5fa,stroke-width:2px,color:#fff`);
-  const [zoom, setZoom] = useState(1);
-  const [isRendering, setIsRendering] = useState(false);
   const [showSaveExportModal, setShowSaveExportModal] = useState(false);
   const [projectName, setProjectName] = useState('');
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   const [canvasBackground, setCanvasBackground] = useState('#f8fafc');
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [lastSavedState, setLastSavedState] = useState<string>('');
-
-  // Track changes and auto-assign project names
-  React.useEffect(() => {
-    const currentState = generateStateHash(diagramText, canvasBackground, reactFlowInstance?.toObject());
-    const hasChanges = checkUnsavedChanges(currentState, lastSavedState, projectName);
-    setHasUnsavedChanges(hasChanges);
-
-    // Auto-assign project name if starting new project
-    if (!projectName.trim() && diagramText.trim()) {
-      const newName = autoAssignProjectName(projectName, diagramText, hasChanges);
-      if (newName !== projectName) {
-        setProjectName(newName);
-      }
-    }
-  }, [diagramText, canvasBackground, reactFlowInstance, projectName, lastSavedState]);
-
-  // Filter templates based on category and search using premium library
-  const filteredTemplates = React.useMemo(() => {
-    let templates = PREMIUM_TEMPLATES;
-
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      templates = getTemplatesByCategory(selectedCategory);
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      templates = searchTemplates(searchQuery);
-      // If we have a category filter, apply it to search results
-      if (selectedCategory !== 'all') {
-        templates = templates.filter(t => t.category === selectedCategory);
-      }
-    }
-
-    return templates;
-  }, [selectedCategory, searchQuery]);
-
-  // Handle template selection - Convert Mermaid to React Flow nodes
-  const handleTemplateSelect = useCallback((template: typeof PREMIUM_TEMPLATES[0]) => {
-    setSelectedTemplate(template.id);
-    setDiagramText(template.mermaidCode);
-    setIsRendering(true);
-
-    // For now, we'll trigger the interactive editor to update
-    // In a full implementation, we'd parse the Mermaid code and convert to nodes/edges
-    console.log('Loading template:', template.name);
-    console.log('Mermaid code:', template.mermaidCode);
-
-    setTimeout(() => setIsRendering(false), 500);
-  }, []);
-
-  // Handle AI generation
-  const handleAIGenerate = useCallback(async (prompt: string) => {
-    setIsRendering(true);
-    try {
-      const aiService = new MermaidAIService();
-      const generatedCode = await aiService.generateDiagram(prompt);
-      setDiagramText(generatedCode);
-    } catch (error) {
-      console.error('AI generation failed:', error);
-    } finally {
-      setIsRendering(false);
-    }
-  }, []);
-
-  // Handle export with multiple formats
-  const handleExport = useCallback(async (format: 'png' | 'jpg' | 'svg' | 'pdf' | 'mermaid') => {
-    try {
-      if (format === 'mermaid') {
-        // Export Mermaid code
-        const blob = new Blob([diagramText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'diagram.mmd';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        return;
-      }
-
-      // Create a mock ReactFlow instance for export functions
-      const mockReactFlowInstance = {
-        getNodes: () => [],
-        toObject: () => ({ nodes: [], edges: [] })
-      } as any;
-
-      const fileName = `mermaid-diagram-${Date.now()}`;
-
-      switch (format) {
-        case 'png':
-          await exportAsPng(mockReactFlowInstance, fileName);
-          break;
-        case 'jpg':
-          await exportAsJpg(mockReactFlowInstance, fileName);
-          break;
-        case 'svg':
-          exportAsSVG(mockReactFlowInstance, fileName);
-          break;
-        case 'pdf':
-          await exportAsPDF(mockReactFlowInstance, fileName);
-          break;
-      }
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Export failed. Please try again.');
-    }
-  }, [diagramText]);
 
   return (
     <AnimationProvider>
@@ -199,7 +54,7 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
         overflow: 'hidden'
       }}>
         {/* Header */}
-        <GlassPanel variant="elevated" padding="4" style={{
+        <GlassPanel variant="elevated" padding={4} style={{
           borderRadius: 0,
           borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
           display: 'flex',
@@ -312,10 +167,7 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
             isVisible={showLeftPanel}
             onHide={() => setShowLeftPanel(false)}
             onTemplateSelect={(template) => {
-              setSelectedTemplate(template.id);
               setDiagramText(template.code);
-              setIsRendering(true);
-              setTimeout(() => setIsRendering(false), 300);
             }}
           />
 
@@ -324,8 +176,6 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
             <InteractiveMermaidEditor
               onMermaidCodeChange={(code) => {
                 setDiagramText(code);
-                setIsRendering(true);
-                setTimeout(() => setIsRendering(false), 300);
               }}
               onReactFlowInstanceChange={setReactFlowInstance}
               canvasBackground={canvasBackground}
@@ -343,10 +193,7 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
           canvasBackground={canvasBackground}
           onProjectNameChange={setProjectName}
           onProjectSaved={(savedProjectName) => {
-            // Update last saved state when project is saved
-            const currentState = generateStateHash(diagramText, canvasBackground, reactFlowInstance?.toObject());
-            setLastSavedState(currentState);
-            setHasUnsavedChanges(false);
+            console.log('Project saved:', savedProjectName);
           }}
           onProjectLoad={(loadedDiagramText, loadedCanvasBackground, flowData) => {
             console.log('Loading diagram text:', loadedDiagramText);
@@ -373,10 +220,6 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
                 console.error('Error restoring React Flow state:', error);
               }
             }
-
-            // Trigger re-rendering
-            setIsRendering(true);
-            setTimeout(() => setIsRendering(false), 300);
           }}
           reactFlowInstance={reactFlowInstance}
         />

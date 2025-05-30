@@ -18,9 +18,9 @@ export class ViewportManager {
   private canvas: fabric.Canvas;
   private containerElement: HTMLElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
-  private minCanvasSize = { width: 800, height: 600 };
-  private maxCanvasSize = { width: 4000, height: 3000 };
-  private padding = 100; // Padding around content
+  private minCanvasSize = { width: 1200, height: 1000 }; // Larger minimum size
+  private maxCanvasSize = { width: 8000, height: 6000 }; // Much larger maximum size
+  private padding = 200; // Increased padding for more generous bounds
 
   constructor(canvas: fabric.Canvas) {
     this.canvas = canvas;

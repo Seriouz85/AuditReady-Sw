@@ -1,0 +1,120 @@
+/**
+ * React Flow Export Fixes
+ * Ensures proper dimensions for React Flow containers during export
+ */
+
+/* Ensure React Flow containers always have dimensions */
+.react-flow {
+  min-width: 100%;
+  min-height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure React Flow renderer has proper dimensions */
+.react-flow__renderer {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Ensure React Flow viewport has proper dimensions */
+.react-flow__viewport {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Ensure React Flow pane has proper dimensions */
+.react-flow__pane {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Fallback dimensions for export scenarios */
+.react-flow:not([style*="width"]) {
+  width: 1200px !important;
+}
+
+.react-flow:not([style*="height"]) {
+  height: 800px !important;
+}
+
+/* Ensure parent containers of React Flow have dimensions */
+.react-flow-wrapper,
+.reactflow-wrapper,
+[data-testid="rf__wrapper"] {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Fix for containers without explicit dimensions */
+.react-flow-wrapper:not([style*="height"]) {
+  height: 600px; /* Updated to match InteractiveMermaidEditor */
+}
+
+.react-flow-wrapper:not([style*="width"]) {
+  width: 100%;
+}
+
+/* Ensure proper sizing during export operations */
+.react-flow.exporting {
+  width: 1200px !important;
+  height: 800px !important;
+  min-width: 1200px !important;
+  min-height: 800px !important;
+}
+
+/* Fix for React Flow components in modals or hidden containers */
+.react-flow[style*="display: none"] {
+  display: block !important;
+  visibility: hidden;
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1200px !important;
+  height: 800px !important;
+}
+
+/* Specific fixes for common container patterns */
+.h-\[800px\] .react-flow,
+.h-\[600px\] .react-flow {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fix for percentage-based containers */
+div[style*="height: 100%"] .react-flow {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 400px; /* Fallback minimum */
+}
+
+/* Ensure React Flow works in flex containers */
+.flex .react-flow,
+.flex-1 .react-flow {
+  flex: 1;
+  min-height: 400px;
+}
+
+/* Fix for grid containers */
+.grid .react-flow {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
+
+/* Emergency fallback for any React Flow without dimensions */
+.react-flow:not([style*="height"]):not([style*="width"]) {
+  width: 100vw !important;
+  height: 60vh !important;
+  min-width: 800px !important;
+  min-height: 400px !important;
+} 

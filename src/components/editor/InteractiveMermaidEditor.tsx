@@ -50,310 +50,375 @@ function ensureObject(val: any): Record<string, any> {
   return val && typeof val === 'object' ? val : {};
 }
 
-// Custom Node Types for different shapes
-const CustomNode: React.FC<any> = ({ data, selected }) => {
+// Type definition for CustomNode props
+interface CustomNodeProps {
+  data: {
+    label?: string;
+    shape?: 'rectangle' | 'circle' | 'diamond' | 'star' | 'text';
+    fillColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    textColor?: string;
+    onLabelChange?: (nodeId: string, newLabel: string) => void;
+    description?: string;
+    onUpdate?: (nodeId: string, updates: any) => void;
+  };
+  selected?: boolean;
+  id?: string;
+}
+
+// Custom Node Component - Moved outside to prevent recreation
+const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [label, setLabel] = useState(data.label || 'Node');
   const [isHovered, setIsHovered] = useState(false);
+  const [localLabel, setLocalLabel] = useState(data.label || 'Node');
 
-  const handleDoubleClick = () => {
+  // Update local state when data changes
+  React.useEffect(() => {
+    setLocalLabel(data.label || 'Node');
+  }, [data.label]);
+
+  const handleDoubleClick = useCallback(() => {
     setIsEditing(true);
-  };
+  }, []);
 
-  const handleLabelChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      setIsEditing(false);
-      data.onLabelChange?.(data.id, label);
+  const handleLabelChange = useCallback((newLabel: string) => {
+    setLocalLabel(newLabel);
+    if (data.onUpdate) {
+      data.onUpdate(id, { label: newLabel });
     }
-  };
+  }, [data, id]);
 
-  // Extract colors for use in both styles and handles
-  const fillColor = data.fillColor || (selected ? MermaidDesignTokens.colors.accent.blue : MermaidDesignTokens.colors.glass.primary);
-  const strokeColor = data.strokeColor || (selected ? MermaidDesignTokens.colors.accent.darkBlue : MermaidDesignTokens.colors.glass.border);
-  const strokeWidth = data.strokeWidth || 2;
-  const textColor = data.textColor || MermaidDesignTokens.colors.text.primary;
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      setIsEditing(false);
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+    }
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setIsEditing(false);
+  }, []);
+
+  // Determine if handles should be visible
+  const showHandles = selected || isHovered;
+
+  const {
+    shape = 'rectangle',
+    fillColor = '#f8fafc',
+    strokeColor = '#2563eb',
+    strokeWidth = 2,
+    textColor = '#1e293b'
+  } = data;
 
   const getNodeStyle = () => {
     const baseStyle = {
-      padding: '12px 16px',
-      background: fillColor,
-      border: `${strokeWidth}px solid ${strokeColor}`,
-      color: textColor,
-      fontSize: MermaidDesignTokens.typography.fontSize.sm,
-      fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-      minWidth: '80px',
-      textAlign: 'center' as const,
+      width: '80px',
+      height: '80px',
+      position: 'relative' as const,
       cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: selected ? MermaidDesignTokens.shadows.glow.blue : 'none'
+      transition: 'all 0.2s ease'
     };
 
-    // Shape-specific styling following Mermaid best practices
-    switch (data.shape) {
+    if (selected) {
+      return {
+        ...baseStyle,
+        transform: 'scale(1.05)',
+        filter: 'drop-shadow(0 4px 8px rgba(37, 99, 235, 0.3))'
+      };
+    }
+
+    return baseStyle;
+  };
+
+  const renderShape = () => {
+    switch (shape) {
       case 'circle':
-        return {
-          ...baseStyle,
-          borderRadius: '50%',
-          width: '80px',
-          height: '80px',
-          padding: '0'
-        };
+        return (
+          <div
+            style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              border: `${strokeWidth}px solid ${strokeColor}`,
+              background: fillColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: textColor,
+              fontSize: MermaidDesignTokens.typography.fontSize.sm,
+              fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+              textAlign: 'center' as const,
+              padding: '6px', // Reduced padding for more text space
+              lineHeight: '1.1' // Tighter line height
+            }}
+            onDoubleClick={handleDoubleClick}
+          >
+            {isEditing ? (
+              <input
+                type="text"
+                value={localLabel}
+                onChange={(e) => handleLabelChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: textColor,
+                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                  textAlign: 'center',
+                  width: '100%'
+                }}
+                autoFocus
+              />
+            ) : (
+              <span style={{ 
+                lineHeight: '1.1',
+                wordWrap: 'break-word'
+              }}>{localLabel}</span>
+            )}
+          </div>
+        );
+
       case 'diamond':
-        return {
-          ...baseStyle,
-          width: '80px',
-          height: '80px',
-          padding: '0',
-          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-          borderRadius: '0',
-          // For diamond shapes, we need to handle border differently due to clip-path
-          border: 'none',
-          position: 'relative' as const
-        };
+        return (
+          <div
+            style={{
+              width: '80px',
+              height: '80px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onDoubleClick={handleDoubleClick}
+          >
+            {/* SVG-based diamond shape for better export compatibility */}
+            <svg
+              width="80"
+              height="80"
+              viewBox="0 0 80 80"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0
+              }}
+            >
+              <polygon
+                points="40,10 70,40 40,70 10,40"
+                fill={fillColor}
+                stroke={strokeColor}
+                strokeWidth={strokeWidth}
+                style={{
+                  filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))'
+                }}
+              />
+            </svg>
+            {/* Text container - properly centered */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: textColor,
+                fontSize: MermaidDesignTokens.typography.fontSize.sm, // Increased from xs
+                fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                textAlign: 'center' as const,
+                maxWidth: '50px', // Increased from 40px
+                lineHeight: '1.1', // Tighter line height
+                wordWrap: 'break-word',
+                overflow: 'hidden',
+                zIndex: 1
+              }}
+            >
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={localLabel}
+                  onChange={(e) => handleLabelChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onBlur={handleBlur}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    color: textColor,
+                    fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                    fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                    textAlign: 'center',
+                    width: '100%'
+                  }}
+                  autoFocus
+                />
+              ) : (
+                <span style={{ 
+                  display: 'block',
+                  wordWrap: 'break-word',
+                  lineHeight: '1.1'
+                }}>{localLabel}</span>
+              )}
+            </div>
+          </div>
+        );
+
       case 'star':
-        return {
-          ...baseStyle,
-          width: '100px',
-          height: '100px',
-          padding: '0',
-          clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
-          borderRadius: '0',
-          // For star shapes, we need to handle border differently due to clip-path
-          border: 'none',
-          position: 'relative' as const,
-          fontSize: MermaidDesignTokens.typography.fontSize.sm, // Smaller text for better fit
-          fontWeight: MermaidDesignTokens.typography.fontWeight.bold
-        };
-      case 'text':
-        return {
-          ...baseStyle,
-          background: 'transparent',
-          border: 'none',
-          minWidth: '120px',
-          padding: '8px 12px',
-          borderRadius: '4px',
-          fontSize: MermaidDesignTokens.typography.fontSize.base,
-          fontWeight: MermaidDesignTokens.typography.fontWeight.normal
-        };
+        return (
+          <div
+            style={{
+              width: '80px',
+              height: '80px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onDoubleClick={handleDoubleClick}
+          >
+            {/* SVG-based star shape for better export compatibility */}
+            <svg
+              width="80"
+              height="80"
+              viewBox="0 0 80 80"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0
+              }}
+            >
+              <polygon
+                points="40,8 48,28 70,28 52,42 60,62 40,48 20,62 28,42 10,28 32,28"
+                fill={fillColor}
+                stroke={strokeColor}
+                strokeWidth={strokeWidth}
+                style={{
+                  filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))'
+                }}
+              />
+            </svg>
+            {/* Text container */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: textColor,
+                fontSize: MermaidDesignTokens.typography.fontSize.sm, // Increased from xs
+                fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                textAlign: 'center' as const,
+                maxWidth: '55px', // Increased from 45px
+                lineHeight: '1.1', // Tighter line height
+                wordWrap: 'break-word',
+                overflow: 'hidden',
+                zIndex: 1
+              }}
+            >
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={localLabel}
+                  onChange={(e) => handleLabelChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onBlur={handleBlur}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    color: textColor,
+                    fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                    fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                    textAlign: 'center',
+                    width: '100%'
+                  }}
+                  autoFocus
+                />
+              ) : (
+                <span style={{ 
+                  display: 'block',
+                  wordWrap: 'break-word',
+                  lineHeight: '1.1'
+                }}>{localLabel}</span>
+              )}
+            </div>
+          </div>
+        );
+
       default: // rectangle
-        return {
-          ...baseStyle,
-          borderRadius: '8px'
-        };
+        return (
+          <div
+            style={{
+              width: '80px',
+              height: '80px',
+              border: `${strokeWidth}px solid ${strokeColor}`,
+              borderRadius: '8px',
+              background: fillColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: textColor,
+              fontSize: MermaidDesignTokens.typography.fontSize.sm,
+              fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+              textAlign: 'center' as const,
+              padding: '6px', // Reduced padding for more text space
+              lineHeight: '1.1' // Tighter line height
+            }}
+            onDoubleClick={handleDoubleClick}
+          >
+            {isEditing ? (
+              <input
+                type="text"
+                value={localLabel}
+                onChange={(e) => handleLabelChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: textColor,
+                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                  textAlign: 'center',
+                  width: '100%'
+                }}
+                autoFocus
+              />
+            ) : (
+              <span style={{ 
+                lineHeight: '1.1',
+                wordWrap: 'break-word'
+              }}>{localLabel}</span>
+            )}
+          </div>
+        );
     }
   };
 
-  // Special diamond border component
-  const DiamondWithBorder = () => (
-    <div style={{ position: 'relative', width: '80px', height: '80px' }}>
-      {/* Border diamond (slightly larger) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          width: '80px',
-          height: '80px',
-          background: strokeColor,
-          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
-        }}
-      />
-      {/* Inner diamond (fill) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: `${strokeWidth}px`,
-          left: `${strokeWidth}px`,
-          width: `${80 - strokeWidth * 2}px`,
-          height: `${80 - strokeWidth * 2}px`,
-          background: fillColor,
-          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: textColor,
-          fontSize: MermaidDesignTokens.typography.fontSize.sm,
-          fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-          textAlign: 'center' as const,
-          padding: '4px'
-        }}
-      >
-        {isEditing ? (
-          <input
-            type="text"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            onKeyDown={handleLabelChange}
-            onBlur={() => setIsEditing(false)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              color: textColor,
-              fontSize: MermaidDesignTokens.typography.fontSize.sm,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-              textAlign: 'center',
-              width: '100%'
-            }}
-            autoFocus
-          />
-        ) : (
-          <div style={{ textAlign: 'center', lineHeight: 1.2 }}>
-            <div style={{
-              fontSize: data.description ? MermaidDesignTokens.typography.fontSize.xs : MermaidDesignTokens.typography.fontSize.sm,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.medium
-            }}>
-              {label}
-            </div>
-            {data.description && (
-              <div style={{
-                fontSize: '10px',
-                opacity: 0.8,
-                marginTop: '1px',
-                lineHeight: 1.0,
-                maxWidth: '100%',
-                wordBreak: 'break-word'
-              }}>
-                {data.description}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  // Special star border component
-  const StarWithBorder = () => (
-    <div style={{ position: 'relative', width: '100px', height: '100px' }}>
-      {/* Border star (slightly larger) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          width: '100px',
-          height: '100px',
-          background: strokeColor,
-          clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'
-        }}
-      />
-      {/* Inner star (fill) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: `${strokeWidth}px`,
-          left: `${strokeWidth}px`,
-          width: `${100 - strokeWidth * 2}px`,
-          height: `${100 - strokeWidth * 2}px`,
-          background: fillColor,
-          clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: textColor,
-          fontSize: MermaidDesignTokens.typography.fontSize.sm,
-          fontWeight: MermaidDesignTokens.typography.fontWeight.bold,
-          textAlign: 'center' as const,
-          padding: '8px' // Add padding for better text spacing
-        }}
-      >
-        {isEditing ? (
-          <input
-            type="text"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            onKeyDown={handleLabelChange}
-            onBlur={() => setIsEditing(false)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              color: textColor,
-              fontSize: MermaidDesignTokens.typography.fontSize.sm,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-              textAlign: 'center',
-              width: '100%'
-            }}
-            autoFocus
-          />
-        ) : (
-          <div style={{ textAlign: 'center', lineHeight: 1.2 }}>
-            <div style={{
-              fontSize: data.description ? MermaidDesignTokens.typography.fontSize.xs : MermaidDesignTokens.typography.fontSize.sm,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.bold
-            }}>
-              {label}
-            </div>
-            {data.description && (
-              <div style={{
-                fontSize: '10px',
-                opacity: 0.8,
-                marginTop: '1px',
-                lineHeight: 1.0,
-                maxWidth: '100%',
-                wordBreak: 'break-word'
-              }}>
-                {data.description}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
-    <div
+    <div 
       style={getNodeStyle()}
-      onDoubleClick={handleDoubleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Visible Source Handles - 4 blue handles */}
+      {/* Single handles per side that can act as both source and target */}
       <Handle
         type="source"
         position={Position.Top}
         id="top"
         style={{
-          background: '#2563eb',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
-          border: '2px solid white',
-          borderRadius: '50%',
-          opacity: isHovered || selected ? 1 : 0,
-          visibility: isHovered || selected ? 'visible' : 'hidden',
-          transition: 'all 0.2s ease',
-          top: '-6px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
+          border: 'none',
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease'
         }}
-        isConnectable={true}
-      />
-      
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="right"
-        style={{
-          background: '#2563eb',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
-          border: '2px solid white',
-          borderRadius: '50%',
-          opacity: isHovered || selected ? 1 : 0,
-          visibility: isHovered || selected ? 'visible' : 'hidden',
-          transition: 'all 0.2s ease',
-          right: '-6px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 10
-        }}
-        isConnectable={true}
+        isConnectable={showHandles}
       />
       
       <Handle
@@ -361,20 +426,14 @@ const CustomNode: React.FC<any> = ({ data, selected }) => {
         position={Position.Bottom}
         id="bottom"
         style={{
-          background: '#2563eb',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
-          border: '2px solid white',
-          borderRadius: '50%',
-          opacity: isHovered || selected ? 1 : 0,
-          visibility: isHovered || selected ? 'visible' : 'hidden',
-          transition: 'all 0.2s ease',
-          bottom: '-6px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
+          border: 'none',
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease'
         }}
-        isConnectable={true}
+        isConnectable={showHandles}
       />
       
       <Handle
@@ -382,154 +441,40 @@ const CustomNode: React.FC<any> = ({ data, selected }) => {
         position={Position.Left}
         id="left"
         style={{
-          background: '#2563eb',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
-          border: '2px solid white',
-          borderRadius: '50%',
-          opacity: isHovered || selected ? 1 : 0,
-          visibility: isHovered || selected ? 'visible' : 'hidden',
-          transition: 'all 0.2s ease',
-          left: '-6px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 10
-        }}
-        isConnectable={true}
-      />
-
-      {/* Invisible Target Handles - Same positions as source handles for connection compatibility */}
-      <Handle
-        type="target"
-        position={Position.Top}
-        id="top-target"
-        style={{
-          background: 'transparent',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
           border: 'none',
-          opacity: 0,
-          top: '-6px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 9,
-          pointerEvents: 'none'
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease'
         }}
-        isConnectable={true}
+        isConnectable={showHandles}
       />
       
       <Handle
-        type="target"
+        type="source"
         position={Position.Right}
-        id="right-target"
+        id="right"
         style={{
-          background: 'transparent',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
           border: 'none',
-          opacity: 0,
-          right: '-6px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 9,
-          pointerEvents: 'none'
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease'
         }}
-        isConnectable={true}
+        isConnectable={showHandles}
       />
       
-      <Handle
-        type="target"
-        position={Position.Bottom}
-        id="bottom-target"
-        style={{
-          background: 'transparent',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
-          border: 'none',
-          opacity: 0,
-          bottom: '-6px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 9,
-          pointerEvents: 'none'
-        }}
-        isConnectable={true}
-      />
-      
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="left-target"
-        style={{
-          background: 'transparent',
-          width: isHovered || selected ? '16px' : '8px',
-          height: isHovered || selected ? '16px' : '8px',
-          border: 'none',
-          opacity: 0,
-          left: '-6px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 9,
-          pointerEvents: 'none'
-        }}
-        isConnectable={true}
-      />
-
-      {/* Node Content */}
-      {data.shape === 'star' ? (
-        <StarWithBorder key={`${strokeColor}-${fillColor}`} />
-      ) : data.shape === 'diamond' ? (
-        <DiamondWithBorder key={`${strokeColor}-${fillColor}`} />
-      ) : (
-        <>
-          {isEditing ? (
-            <input
-              type="text"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              onKeyDown={handleLabelChange}
-              onBlur={() => setIsEditing(false)}
-              autoFocus
-              style={{
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: 'inherit',
-                fontSize: 'inherit',
-                fontWeight: 'inherit',
-                textAlign: 'center',
-                width: '100%'
-              }}
-            />
-          ) : (
-            <div style={{ textAlign: 'center', lineHeight: 1.2 }}>
-              <div style={{
-                fontSize: data.description ? MermaidDesignTokens.typography.fontSize.sm : 'inherit',
-                fontWeight: 'inherit'
-              }}>
-                {label}
-              </div>
-              {data.description && (
-                <div style={{
-                  fontSize: MermaidDesignTokens.typography.fontSize.xs,
-                  opacity: 0.8,
-                  marginTop: '2px',
-                  lineHeight: 1.1,
-                  maxWidth: '100%',
-                  wordBreak: 'break-word'
-                }}>
-                  {data.description}
-                </div>
-              )}
-            </div>
-          )}
-        </>
-      )}
+      {renderShape()}
     </div>
   );
-};
+});
 
-// Node types
+// Set display name for debugging
+CustomNode.displayName = 'CustomNode';
+
+// Node types - defined outside component with stable reference
 const nodeTypes: NodeTypes = {
   custom: CustomNode
 };
@@ -539,7 +484,7 @@ const initialNodes: Node[] = [
   {
     id: '1',
     type: 'custom',
-    position: { x: 250, y: 100 },
+    position: { x: 200, y: 80 },
     data: {
       label: 'Start Process',
       shape: 'rectangle',
@@ -553,7 +498,7 @@ const initialNodes: Node[] = [
   {
     id: '2',
     type: 'custom',
-    position: { x: 250, y: 200 },
+    position: { x: 200, y: 180 },
     data: {
       label: 'Decision Point',
       shape: 'diamond',
@@ -567,7 +512,7 @@ const initialNodes: Node[] = [
   {
     id: '3',
     type: 'custom',
-    position: { x: 150, y: 300 },
+    position: { x: 100, y: 280 },
     data: {
       label: 'Process A',
       shape: 'rectangle',
@@ -581,7 +526,7 @@ const initialNodes: Node[] = [
   {
     id: '4',
     type: 'custom',
-    position: { x: 350, y: 300 },
+    position: { x: 300, y: 280 },
     data: {
       label: 'Process B',
       shape: 'rectangle',
@@ -595,9 +540,45 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1-2', source: '1', target: '2', animated: true },
-  { id: 'e2-3', source: '2', target: '3', label: 'Yes' },
-  { id: 'e2-4', source: '2', target: '4', label: 'No' }
+  { 
+    id: 'e1-2', 
+    source: '1', 
+    target: '2', 
+    sourceHandle: 'bottom',
+    targetHandle: 'top',
+    animated: true,
+    style: { stroke: '#1e293b', strokeWidth: 2 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: '#1e293b'
+    }
+  },
+  { 
+    id: 'e2-3', 
+    source: '2', 
+    target: '3', 
+    sourceHandle: 'left',
+    targetHandle: 'top',
+    label: 'Yes',
+    style: { stroke: '#1e293b', strokeWidth: 2 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: '#1e293b'
+    }
+  },
+  { 
+    id: 'e2-4', 
+    source: '2', 
+    target: '4', 
+    sourceHandle: 'right',
+    targetHandle: 'top',
+    label: 'No',
+    style: { stroke: '#1e293b', strokeWidth: 2 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: '#1e293b'
+    }
+  }
 ];
 
 interface InteractiveMermaidEditorProps {
@@ -637,8 +618,6 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
 
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [aiMessages, setAiMessages] = useState<Array<{ role: 'user' | 'ai', text: string }>>([]);
-  const [pendingClarification, setPendingClarification] = useState<string | null>(null);
 
   // Ref for the palette button to position the color picker
   const paletteButtonRef = useRef<HTMLButtonElement>(null);
@@ -710,17 +689,29 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
   // Handle new connections
   const onConnect = useCallback(
     (params: Connection) => {
+      // Get the appropriate edge color based on auto-adjust setting
+      let edgeColor = '#1e293b'; // Default color
+      if (autoAdjustEnabled) {
+        const edgeColors = getAutoAdjustedEdgeColors(canvasBackground);
+        edgeColor = edgeColors.stroke;
+      }
+
       const newEdge = {
         ...params,
         id: `edge-${params.source}-${params.target}-${Date.now()}`,
         type: 'smoothstep',
-        animated: false
+        animated: false,
+        style: { stroke: edgeColor, strokeWidth: 2 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edgeColor // Ensure arrow color matches line color
+        }
       };
       setEdges((eds) => addEdge(newEdge, eds));
       // Save undo state after connection
       setTimeout(() => saveUndoState(), 100);
     },
-    [setEdges, saveUndoState]
+    [setEdges, saveUndoState, autoAdjustEnabled, canvasBackground]
   );
 
   // Handle node label changes
@@ -772,10 +763,24 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
       };
     }
 
+    // Calculate position within canvas bounds (accounting for node size)
+    const nodeSize = 80;
+    const canvasWidth = 920; // From nodeExtent
+    const canvasHeight = 620; // From nodeExtent
+    const margin = 50; // Margin from edges
+    
+    const maxX = canvasWidth - nodeSize - margin;
+    const maxY = canvasHeight - nodeSize - margin;
+    const minX = margin;
+    const minY = margin;
+    
+    const x = Math.random() * (maxX - minX) + minX;
+    const y = Math.random() * (maxY - minY) + minY;
+
     const newNode: Node = {
       id: nodeIdCounter.toString(),
       type: 'custom',
-      position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
+      position: { x, y },
       data: {
         label: `New ${shape}`,
         shape,
@@ -891,25 +896,18 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
 
   // Refactor handleAIGenerate to support conversation and clarification
   const handleAIGenerate = useCallback(async () => {
-    if (!aiPrompt.trim() && !pendingClarification) return;
+    if (!aiPrompt.trim()) return;
 
     setIsGenerating(true);
-    let userInput = aiPrompt.trim();
-    if (pendingClarification) {
-      userInput = aiPrompt.trim();
-      setPendingClarification(null);
-    }
-    setAiMessages((msgs) => [...msgs, { role: 'user', text: userInput }]);
     try {
       const aiService = EnhancedMermaidAI.getInstance();
       let generatedDiagram;
       try {
-        generatedDiagram = await aiService.generateProcessFlow(userInput);
+        generatedDiagram = await aiService.generateProcessFlow(aiPrompt.trim());
       } catch (error) {
         if (error instanceof Error && error.message.startsWith('I need more information')) {
           // Show clarification request in the message area
-          setAiMessages((msgs) => [...msgs, { role: 'ai', text: error.message.replace('I need more information: ', '') }]);
-          setPendingClarification(error.message.replace('I need more information: ', ''));
+          setAiPrompt(error.message.replace('I need more information: ', ''));
           setIsGenerating(false);
           return;
         } else {
@@ -994,15 +992,14 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
       setNodes(generatedNodes);
       setEdges(generatedEdges);
       onMermaidCodeChange?.(generatedDiagram.mermaidCode);
-      setAiMessages((msgs) => [...msgs, { role: 'ai', text: 'Diagram generated.' }]);
       setAiPrompt('');
     } catch (error) {
-      setAiMessages((msgs) => [...msgs, { role: 'ai', text: 'AI generation failed. Please try again.' }]);
+      setAiPrompt('AI generation failed. Please try again.');
       // fallback logic omitted for brevity
     } finally {
       setIsGenerating(false);
     }
-  }, [aiPrompt, onMermaidCodeChange, setNodes, setEdges, handleNodeLabelChange, pendingClarification]);
+  }, [aiPrompt, onMermaidCodeChange, setNodes, setEdges, handleNodeLabelChange]);
 
   // Update existing nodes with label change handler
   React.useEffect(() => {
@@ -1015,12 +1012,17 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
   }, [handleNodeLabelChange, setNodes]);
 
   return (
-    <div style={{
-      height: '100%',
-      width: '100%',
-      background: MermaidDesignTokens.colors.secondary.gradient,
-      position: 'relative'
-    }}>
+    <div 
+      className="react-flow-wrapper"
+      style={{
+        height: '600px', // Explicit height
+        width: '100%',   // Explicit width
+        minHeight: '600px', // Minimum height
+        minWidth: '800px',  // Minimum width
+        background: MermaidDesignTokens.colors.secondary.gradient,
+        position: 'relative'
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -1032,14 +1034,28 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onPaneClick={handleCanvasClick}
         nodeTypes={nodeTypes}
         fitView
-        style={{ background: canvasBackground }}
+        style={{ 
+          background: canvasBackground,
+          width: '100%',
+          height: '100%'
+        }}
         snapToGrid={false}
         snapGrid={[1, 1]}
         connectionRadius={50}
         connectOnClick={false}
         connectionMode={ConnectionMode.Loose}
+        // Add canvas bounds to prevent nodes from being dragged outside
+        nodesDraggable={true}
+        nodesConnectable={true}
+        elementsSelectable={true}
+        // Enhanced zoom capabilities - allow much more zoom out
+        minZoom={0.05} // Allow zooming out to 5% (was default 0.5)
+        maxZoom={4} // Allow zooming in to 400% (was default 2)
+        // Much more generous bounds to allow for large diagrams
+        translateExtent={[[-5000, -5000], [10000, 8000]]} // Massive bounds for panning
+        nodeExtent={[[-4000, -4000], [8000, 6000]]} // Allow nodes to be placed in a much larger area
         isValidConnection={(connection) => {
-          // Allow connections between any handles
+          // Allow connections between any handles on different nodes
           return connection.source !== connection.target;
         }}
         defaultEdgeOptions={(() => {
@@ -1048,12 +1064,12 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
             return {
               type: 'smoothstep',
               style: { stroke: edgeColors.stroke, strokeWidth: 2 },
-              markerEnd: { type: MarkerType.ArrowClosed, color: edgeColors.markerColor }
+              markerEnd: { type: MarkerType.ArrowClosed, color: edgeColors.stroke }
             };
           }
           return {
             type: 'smoothstep',
-            style: { stroke: '#1e293b', strokeWidth: 2 }, // Almost black color
+            style: { stroke: '#1e293b', strokeWidth: 2 },
             markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
           };
         })()}
@@ -1214,35 +1230,10 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
             {/* AI Icon */}
             <Brain size={18} color={MermaidDesignTokens.colors.accent.blue} />
 
-            {/* AI Conversation/Clarification Area */}
-            {aiMessages.length > 0 && (
-              <div style={{
-                width: '100%',
-                background: 'rgba(59,130,246,0.07)',
-                borderRadius: MermaidDesignTokens.borderRadius.lg,
-                marginBottom: MermaidDesignTokens.spacing[2],
-                padding: MermaidDesignTokens.spacing[2],
-                maxHeight: 120,
-                overflowY: 'auto',
-                fontSize: MermaidDesignTokens.typography.fontSize.sm
-              }}>
-                {aiMessages.map((msg, idx) => (
-                  <div key={idx} style={{
-                    color: msg.role === 'ai' ? MermaidDesignTokens.colors.accent.blue : MermaidDesignTokens.colors.text.primary,
-                    marginBottom: 4,
-                    textAlign: msg.role === 'ai' ? 'left' : 'right',
-                    fontStyle: msg.role === 'ai' ? 'italic' : 'normal'
-                  }}>
-                    {msg.role === 'ai' ? 'AI: ' : 'You: '}{msg.text}
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* AI Input Field */}
             <GlassInput
               placeholder="Describe your diagram and let AI create it..."
-              value={pendingClarification ? aiPrompt : aiPrompt}
+              value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAIGenerate()}
               style={{

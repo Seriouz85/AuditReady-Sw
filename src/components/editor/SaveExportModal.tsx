@@ -96,6 +96,8 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
   const [fileName, setFileName] = useState(projectName || 'mermaid-diagram');
   const [isExporting, setIsExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<'export' | 'save' | 'open'>('export');
+  const [exportQuality, setExportQuality] = useState<number>(2.0); // Default 2x scale for higher quality
+  const [jpgQuality, setJpgQuality] = useState<number>(0.95); // High quality for JPG
 
   // Handle export
   const handleExport = useCallback(async () => {
@@ -116,16 +118,18 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
 
       switch (selectedFormat) {
         case 'png':
-          exportSuccess = await exportAsPng(reactFlowInstance, finalFileName, 1.0, canvasBackground);
+          exportSuccess = await exportAsPng(finalFileName, exportQuality, canvasBackground, reactFlowInstance);
           break;
         case 'jpg':
-          exportSuccess = await exportAsJpg(reactFlowInstance, finalFileName, 0.9, canvasBackground);
+          exportSuccess = await exportAsJpg(finalFileName, jpgQuality, canvasBackground, reactFlowInstance);
           break;
         case 'svg':
-          exportSuccess = exportAsSVG(reactFlowInstance, finalFileName);
+          if (reactFlowInstance) {
+            exportSuccess = exportAsSVG(reactFlowInstance, finalFileName);
+          }
           break;
         case 'pdf':
-          exportSuccess = await exportAsPDF(reactFlowInstance, finalFileName, canvasBackground);
+          exportSuccess = await exportAsPDF(finalFileName, canvasBackground, reactFlowInstance);
           break;
         case 'mermaid':
           try {
@@ -154,8 +158,12 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
         // Close modal after successful export
         setTimeout(() => onClose(), 500);
       } else {
-        console.error('Export failed');
-        alert(`Export failed. Please check the console for details and try again.`);
+        console.error('Export failed - function returned false');
+        // Add debugging information
+        console.log('Debug: You can test the export system by opening browser console and running:');
+        console.log('- window.debugExportService() - to check container detection');
+        console.log('- window.testExport() - to test the export process');
+        alert(`Export failed. Please check the console for details and try again.\n\nFor debugging, open browser console and run:\n- window.debugExportService()\n- window.testExport()`);
       }
     } catch (error) {
       console.error('Export failed:', error);
@@ -163,7 +171,7 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [selectedFormat, fileName, diagramText, reactFlowInstance, canvasBackground, onClose]);
+  }, [selectedFormat, fileName, diagramText, reactFlowInstance, canvasBackground, onClose, exportQuality, jpgQuality]);
 
   // Handle save to local storage
   const handleSaveToLocalStorage = useCallback(() => {
@@ -273,14 +281,16 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
       zIndex: 9999
     }}>
       <GlassPanel variant="elevated" padding={0} style={{
-        width: '600px',
-        maxHeight: '80vh',
+        width: '480px',
+        maxHeight: '85vh',
         borderRadius: MermaidDesignTokens.borderRadius.xl,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
       }}>
         {/* Header */}
         <div style={{
-          padding: MermaidDesignTokens.spacing[6],
+          padding: MermaidDesignTokens.spacing[4],
           borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
           display: 'flex',
           alignItems: 'center',
@@ -319,7 +329,7 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
                 onClick={() => setActiveTab(tab.id as any)}
                 style={{
                   flex: 1,
-                  padding: MermaidDesignTokens.spacing[4],
+                  padding: MermaidDesignTokens.spacing[3],
                   background: activeTab === tab.id
                     ? MermaidDesignTokens.colors.glass.secondary
                     : 'transparent',
@@ -348,17 +358,22 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
         </div>
 
         {/* Content */}
-        <div style={{ padding: MermaidDesignTokens.spacing[6] }}>
+        <div style={{ 
+          padding: MermaidDesignTokens.spacing[3],
+          flex: 1,
+          overflowY: 'auto',
+          maxHeight: 'calc(85vh - 120px)'
+        }}>
           {activeTab === 'export' && (
             <div>
               {/* File Name Input */}
-              <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+              <div style={{ marginBottom: MermaidDesignTokens.spacing[2] }}>
                 <label style={{
                   display: 'block',
                   fontSize: MermaidDesignTokens.typography.fontSize.sm,
                   fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                   color: MermaidDesignTokens.colors.text.primary,
-                  marginBottom: MermaidDesignTokens.spacing[2]
+                  marginBottom: MermaidDesignTokens.spacing[1]
                 }}>
                   File Name
                 </label>
@@ -371,20 +386,20 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
               </div>
 
               {/* Format Selection */}
-              <div style={{ marginBottom: MermaidDesignTokens.spacing[6] }}>
+              <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
                 <label style={{
                   display: 'block',
                   fontSize: MermaidDesignTokens.typography.fontSize.sm,
                   fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                   color: MermaidDesignTokens.colors.text.primary,
-                  marginBottom: MermaidDesignTokens.spacing[3]
+                  marginBottom: MermaidDesignTokens.spacing[2]
                 }}>
                   Export Format
                 </label>
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: MermaidDesignTokens.spacing[3]
+                  gap: MermaidDesignTokens.spacing[2]
                 }}>
                   {EXPORT_FORMATS.map((format) => {
                     const Icon = format.icon;
@@ -393,7 +408,7 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
                         key={format.id}
                         onClick={() => setSelectedFormat(format.id)}
                         style={{
-                          padding: MermaidDesignTokens.spacing[3],
+                          padding: MermaidDesignTokens.spacing[2],
                           border: `2px solid ${selectedFormat === format.id
                             ? MermaidDesignTokens.colors.accent.blue
                             : MermaidDesignTokens.colors.glass.border}`,
@@ -433,24 +448,109 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
                 </div>
               </div>
 
+              {/* Quality Settings */}
+              {(selectedFormat === 'png' || selectedFormat === 'jpg') && (
+                <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                    fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                    color: MermaidDesignTokens.colors.text.primary,
+                    marginBottom: MermaidDesignTokens.spacing[1]
+                  }}>
+                    Export Quality
+                  </label>
+                  
+                  {selectedFormat === 'png' && (
+                    <div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: MermaidDesignTokens.spacing[1]
+                      }}>
+                        <span style={{
+                          fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                          color: MermaidDesignTokens.colors.text.secondary
+                        }}>
+                          Resolution: {exportQuality}x
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1"
+                        max="4"
+                        step="0.5"
+                        value={exportQuality}
+                        onChange={(e) => setExportQuality(parseFloat(e.target.value))}
+                        style={{
+                          width: '100%',
+                          height: '4px',
+                          borderRadius: '2px',
+                          background: MermaidDesignTokens.colors.glass.border,
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    </div>
+                  )}
+                  
+                  {selectedFormat === 'jpg' && (
+                    <div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: MermaidDesignTokens.spacing[1]
+                      }}>
+                        <span style={{
+                          fontSize: MermaidDesignTokens.typography.fontSize.xs,
+                          color: MermaidDesignTokens.colors.text.secondary
+                        }}>
+                          Quality: {Math.round(jpgQuality * 100)}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="1.0"
+                        step="0.05"
+                        value={jpgQuality}
+                        onChange={(e) => setJpgQuality(parseFloat(e.target.value))}
+                        style={{
+                          width: '100%',
+                          height: '4px',
+                          borderRadius: '2px',
+                          background: MermaidDesignTokens.colors.glass.border,
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Export Button */}
-              <GlassButton
-                variant="primary"
-                size="base"
-                icon={<Download size={18} />}
-                onClick={handleExport}
-                disabled={!fileName.trim() || isExporting}
-                style={{ width: '100%' }}
-                glow
-              >
-                {isExporting ? 'Exporting...' : `Export as ${selectedFormatData?.name || 'File'}`}
-              </GlassButton>
+              <div style={{ marginTop: MermaidDesignTokens.spacing[3] }}>
+                <GlassButton
+                  variant="primary"
+                  size="base"
+                  icon={<Download size={18} />}
+                  onClick={handleExport}
+                  disabled={!fileName.trim() || isExporting}
+                  style={{ width: '100%' }}
+                  glow
+                >
+                  {isExporting ? 'Exporting...' : `Export as ${selectedFormatData?.name || 'File'}`}
+                </GlassButton>
+              </div>
             </div>
           )}
 
           {activeTab === 'save' && (
             <div>
-              <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+              <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
                 <label style={{
                   display: 'block',
                   fontSize: MermaidDesignTokens.typography.fontSize.sm,
@@ -488,23 +588,23 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
                 fontSize: MermaidDesignTokens.typography.fontSize.lg,
                 fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
                 color: MermaidDesignTokens.colors.text.primary,
-                marginBottom: MermaidDesignTokens.spacing[4]
+                marginBottom: MermaidDesignTokens.spacing[3]
               }}>
                 Saved Projects
               </h3>
 
               <div style={{
-                maxHeight: '300px',
+                maxHeight: '250px',
                 overflowY: 'auto'
               }}>
                 {getSavedProjects().map((project: any, index: number) => (
                   <div
                     key={index}
                     style={{
-                      padding: MermaidDesignTokens.spacing[3],
+                      padding: MermaidDesignTokens.spacing[2],
                       border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
                       borderRadius: MermaidDesignTokens.borderRadius.md,
-                      marginBottom: MermaidDesignTokens.spacing[2],
+                      marginBottom: MermaidDesignTokens.spacing[1],
                       cursor: 'pointer',
                       transition: 'all 0.2s ease'
                     }}

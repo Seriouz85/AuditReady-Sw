@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './styles/react-flow-export.css';
 import App from './App';
 
 // This script handles GitHub Pages SPA routing issues

@@ -5,9 +5,9 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import {
-  ArrowRight, ArrowLeft, ArrowUp, ArrowDown,
-  Minus, Plus, Palette, Type, Trash2, Copy,
-  RotateCcw, Lock, Unlock
+  ArrowRight, ArrowLeft, ArrowUp,
+  Minus, Type, Trash2, Copy,
+  Lock, Unlock
 } from 'lucide-react';
 import {
   GlassPanel,
@@ -123,6 +123,13 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
           ...selectedEdge.style,
           stroke: value
         };
+        // Update arrow color to match line color
+        if (selectedEdge.markerEnd) {
+          updates.markerEnd = {
+            ...selectedEdge.markerEnd,
+            color: value
+          };
+        }
         setLocalColor(value);
         break;
       case 'width':
@@ -194,8 +201,26 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
   }, [selectedEdge, onEdgeUpdate, localColor]);
 
   const handleColorPreset = useCallback((color: string) => {
-    handleUpdate('color', color);
-  }, [handleUpdate]);
+    if (!selectedEdge) return;
+    
+    const updates: any = {
+      style: {
+        ...selectedEdge.style,
+        stroke: color
+      }
+    };
+    
+    // Update arrow color to match line color
+    if (selectedEdge.markerEnd) {
+      updates.markerEnd = {
+        ...selectedEdge.markerEnd,
+        color: color
+      };
+    }
+    
+    onEdgeUpdate(selectedEdge.id, updates);
+    setLocalColor(color);
+  }, [selectedEdge, onEdgeUpdate]);
 
   if (!isVisible || !selectedEdge) {
     return null;
@@ -206,12 +231,12 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
       position: 'fixed',
       top: '80px',
       right: '20px',
-      width: '320px',
+      width: '300px',
       maxHeight: 'calc(100vh - 100px)',
       overflowY: 'auto',
       zIndex: 1000
     }}>
-      <GlassPanel variant="elevated" padding="4" style={{
+      <GlassPanel variant="elevated" padding={3} style={{
         borderRadius: MermaidDesignTokens.borderRadius.xl,
         boxShadow: MermaidDesignTokens.shadows.glass.xl
       }}>
@@ -220,12 +245,12 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: MermaidDesignTokens.spacing[4],
-          paddingBottom: MermaidDesignTokens.spacing[3],
+          marginBottom: MermaidDesignTokens.spacing[3],
+          paddingBottom: MermaidDesignTokens.spacing[2],
           borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`
         }}>
           <h3 style={{
-            fontSize: MermaidDesignTokens.typography.fontSize.lg,
+            fontSize: MermaidDesignTokens.typography.fontSize.base,
             fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
             color: MermaidDesignTokens.colors.text.primary,
             margin: 0
@@ -241,13 +266,13 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         </div>
 
         {/* Label */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Connection Label
           </label>
@@ -260,20 +285,20 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         </div>
 
         {/* Arrow Type */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Arrow Type
           </label>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: MermaidDesignTokens.spacing[2]
+            gap: MermaidDesignTokens.spacing[1]
           }}>
             {ARROW_TYPES.map((arrow) => {
               const Icon = arrow.icon;
@@ -282,9 +307,9 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
                   key={arrow.value}
                   variant={localArrowType === arrow.value ? 'primary' : 'ghost'}
                   size="sm"
-                  icon={<Icon size={16} />}
+                  icon={<Icon size={14} />}
                   onClick={() => handleUpdate('arrowType', arrow.value)}
-                  style={{ justifyContent: 'center', fontSize: MermaidDesignTokens.typography.fontSize.xs }}
+                  style={{ justifyContent: 'center', fontSize: '11px' }}
                 >
                   {arrow.label}
                 </GlassButton>
@@ -294,20 +319,20 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         </div>
 
         {/* Line Style */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Line Style
           </label>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: MermaidDesignTokens.spacing[2]
+            gap: MermaidDesignTokens.spacing[1]
           }}>
             {LINE_STYLES.map((style) => (
               <GlassButton
@@ -315,7 +340,7 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
                 variant={localLineStyle === style.value ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => handleUpdate('lineStyle', style.value)}
-                style={{ justifyContent: 'center', fontSize: MermaidDesignTokens.typography.fontSize.xs }}
+                style={{ justifyContent: 'center', fontSize: '11px' }}
               >
                 {style.label}
               </GlassButton>
@@ -324,29 +349,29 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         </div>
 
         {/* Color Presets */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Line Color
           </label>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(6, 1fr)',
-            gap: MermaidDesignTokens.spacing[2],
-            marginBottom: MermaidDesignTokens.spacing[3]
+            gap: MermaidDesignTokens.spacing[1],
+            marginBottom: MermaidDesignTokens.spacing[2]
           }}>
             {COLOR_PRESETS.map((preset) => (
               <button
                 key={preset.name}
                 onClick={() => handleColorPreset(preset.color)}
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '28px',
+                  height: '28px',
                   borderRadius: MermaidDesignTokens.borderRadius.md,
                   background: preset.color,
                   border: localColor === preset.color ? `3px solid ${MermaidDesignTokens.colors.accent.blue}` : '1px solid #e2e8f0',
@@ -367,7 +392,7 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
             onChange={(e) => handleUpdate('color', e.target.value)}
             style={{
               width: '100%',
-              height: '40px',
+              height: '32px',
               border: 'none',
               borderRadius: MermaidDesignTokens.borderRadius.md,
               cursor: 'pointer'
@@ -376,13 +401,13 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         </div>
 
         {/* Line Width */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <label style={{
             display: 'block',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm,
+            fontSize: MermaidDesignTokens.typography.fontSize.xs,
             fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
             color: MermaidDesignTokens.colors.text.primary,
-            marginBottom: MermaidDesignTokens.spacing[2]
+            marginBottom: MermaidDesignTokens.spacing[1]
           }}>
             Line Width: {localWidth}px
           </label>
@@ -404,13 +429,13 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         </div>
 
         {/* Lock/Unlock */}
-        <div style={{ marginBottom: MermaidDesignTokens.spacing[4] }}>
+        <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
           <GlassButton
             variant={isLocked ? 'primary' : 'ghost'}
             size="sm"
-            icon={isLocked ? <Lock size={16} /> : <Unlock size={16} />}
+            icon={isLocked ? <Lock size={14} /> : <Unlock size={14} />}
             onClick={() => handleUpdate('locked', !isLocked)}
-            style={{ width: '100%' }}
+            style={{ width: '100%', fontSize: '11px' }}
           >
             {isLocked ? 'Locked Position' : 'Unlock Position'}
           </GlassButton>
@@ -419,25 +444,25 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
         {/* Actions */}
         <div style={{
           display: 'flex',
-          gap: MermaidDesignTokens.spacing[2],
-          paddingTop: MermaidDesignTokens.spacing[3],
+          gap: MermaidDesignTokens.spacing[1],
+          paddingTop: MermaidDesignTokens.spacing[2],
           borderTop: `1px solid ${MermaidDesignTokens.colors.glass.border}`
         }}>
           <GlassButton
             variant="ghost"
             size="sm"
-            icon={<Copy size={16} />}
+            icon={<Copy size={14} />}
             onClick={() => onEdgeDuplicate(selectedEdge.id)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, fontSize: '11px' }}
           >
             Duplicate
           </GlassButton>
           <GlassButton
             variant="ghost"
             size="sm"
-            icon={<Trash2 size={16} />}
+            icon={<Trash2 size={14} />}
             onClick={() => onEdgeDelete(selectedEdge.id)}
-            style={{ flex: 1, color: MermaidDesignTokens.colors.semantic.error[500] }}
+            style={{ flex: 1, color: MermaidDesignTokens.colors.semantic.error[500], fontSize: '11px' }}
           >
             Delete
           </GlassButton>
