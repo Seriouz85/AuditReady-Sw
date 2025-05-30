@@ -6,16 +6,6 @@ import path from "path";
 export default defineConfig({
     plugins: [
       react(),
-      // Generate base HTML with absolute paths for GitHub Pages
-      {
-        name: 'html-transform',
-        transformIndexHtml(html) {
-          return html.replace(
-            /(href|src)="\/audit-readiness-hub\//g,
-            '$1="https://seriouz85.github.io/audit-readiness-hub/'
-          );
-        },
-      },
     ],
     optimizeDeps: {
       exclude: [
