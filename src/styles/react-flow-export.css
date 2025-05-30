@@ -14,40 +14,34 @@
   left: -9999px !important;
 }
 
-/* Remove any footer space at the bottom of React Flow containers */
+/* Fix the space below AI input by ensuring proper container sizing */
+.react-flow-wrapper {
+  /* Revert to original height */
+  height: 600px !important;
+  max-height: 600px !important;
+  /* Ensure no extra margin/padding creates space */
+  margin: 0 !important;
+  padding: 0 !important;
+  /* Prevent container from expanding beyond intended size */
+  box-sizing: border-box !important;
+}
+
+/* Ensure React Flow fills container exactly */
 .react-flow {
-  min-width: 100%;
-  min-height: 100%;
-  width: 100%;
-  height: 100%;
-  overflow: hidden !important;
-}
-
-/* Ensure React Flow renderer has proper dimensions with no footer space */
-.react-flow__renderer {
   width: 100% !important;
   height: 100% !important;
-  min-width: 100%;
-  min-height: 100%;
-  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* Ensure React Flow viewport has proper dimensions with no footer space */
-.react-flow__viewport {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 100%;
-  min-height: 100%;
-  overflow: hidden !important;
-}
-
-/* Ensure React Flow pane has proper dimensions with no footer space */
-.react-flow__pane {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 100%;
-  min-height: 100%;
-  overflow: hidden !important;
+/* Fix bottom panel positioning to eliminate space below it */
+.react-flow__panel[data-position="bottom-center"] {
+  position: absolute !important;
+  bottom: 5px !important; /* Reduced from 10px to bring even closer to bottom */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Fallback dimensions for export scenarios */
@@ -59,25 +53,13 @@
   height: 800px !important;
 }
 
-/* Ensure parent containers of React Flow have dimensions */
-.react-flow-wrapper,
-.reactflow-wrapper,
-[data-testid="rf__wrapper"] {
-  width: 100%;
-  height: 100%;
-  min-width: 100%;
-  min-height: 100%;
-  position: relative;
-  overflow: hidden !important;
-}
-
 /* Fix for containers without explicit dimensions */
 .react-flow-wrapper:not([style*="height"]) {
-  height: 600px; /* Updated to match InteractiveMermaidEditor */
+  height: 600px !important;
 }
 
 .react-flow-wrapper:not([style*="width"]) {
-  width: 100%;
+  width: 100% !important;
 }
 
 /* Ensure proper sizing during export operations */
@@ -135,20 +117,6 @@ div[style*="height: 100%"] .react-flow {
   min-height: 400px !important;
 }
 
-/* Remove any potential margin or padding that could create footer space */
-.react-flow,
-.react-flow__renderer,
-.react-flow__viewport,
-.react-flow__pane {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* Ensure no extra space is added by any React Flow internal elements */
-.react-flow * {
-  box-sizing: border-box;
-}
-
 /* Hide any other potential footer elements */
 .react-flow__footer,
 .react-flow__watermark,
@@ -159,38 +127,18 @@ div[style*="height: 100%"] .react-flow {
   width: 0 !important;
 }
 
-/* Visual Process Designer specific fixes */
-.react-flow-wrapper {
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  box-sizing: border-box !important;
-}
-
-/* Ensure the main canvas area in Visual Process Designer has no extra space */
-div[style*="flex: 1"][style*="display: flex"][style*="flexDirection: column"] .react-flow-wrapper {
-  height: 100% !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Remove any potential bottom spacing in the Visual Process Designer */
-.react-flow-wrapper::after,
-.react-flow::after,
-.react-flow__renderer::after {
+/* Remove any potential spacer elements that might appear after panels */
+.react-flow__panel ~ div:empty,
+.react-flow__panel ~ span:empty,
+.react-flow__panel ~ br {
   display: none !important;
-  content: none !important;
 }
 
-/* Ensure React Flow panels don't create extra space */
-.react-flow__panel {
-  position: absolute !important;
-  z-index: 1000 !important;
-}
-
-/* Make sure the bottom panel doesn't push content down */
-.react-flow__panel[data-position="bottom-center"] {
-  bottom: 20px !important;
-  position: absolute !important;
-  pointer-events: auto !important;
+/* Fix the parent flex container that creates extra space */
+div[style*="flex: 1"][style*="display: flex"][style*="flexDirection: column"] {
+  /* Prevent the parent container from expanding and creating space below */
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  max-height: 600px !important;
+  overflow: hidden !important;
 } 
