@@ -1,5 +1,5 @@
 /**
- * Enhanced Export Service - Complete Content Capture with Proper Gradient Coverage
+ * Enhanced Export Service - Complete Content Capture with Cross-Platform Compatibility
  * 
  * This service provides intelligent export functionality that:
  * ✅ Captures ALL content including content above, below, left, and right
@@ -9,6 +9,8 @@
  * ✅ Provides consistent quality regardless of export settings
  * ✅ Adapts boundaries to actual content size
  * ✅ Maintains visual consistency during export process
+ * ✅ Handles cross-platform rendering differences (Mac vs PC)
+ * ✅ Ensures consistent font rendering and layout calculations
  */
 
 import html2canvas from 'html2canvas';
@@ -25,8 +27,71 @@ interface ReactFlowInstance {
 }
 
 /**
+ * Detect platform and browser for cross-platform compatibility
+ */
+const getPlatformInfo = () => {
+  const userAgent = navigator.userAgent;
+  const platform = navigator.platform;
+  
+  const isMac = /Mac|iPhone|iPad|iPod/.test(platform);
+  const isWindows = /Win/.test(platform);
+  const isLinux = /Linux/.test(platform);
+  const isChrome = /Chrome/.test(userAgent);
+  const isFirefox = /Firefox/.test(userAgent);
+  const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+  
+  return {
+    isMac,
+    isWindows,
+    isLinux,
+    isChrome,
+    isFirefox,
+    isSafari,
+    userAgent,
+    platform
+  };
+};
+
+/**
+ * Get platform-specific rendering adjustments
+ */
+const getPlatformAdjustments = () => {
+  const platformInfo = getPlatformInfo();
+  
+  // Platform-specific adjustments for consistent rendering
+  const adjustments = {
+    // Font rendering differences
+    fontSmoothing: platformInfo.isMac ? 'antialiased' : 'auto',
+    textRendering: platformInfo.isMac ? 'optimizeLegibility' : 'auto',
+    
+    // Canvas scaling for different DPI
+    pixelRatio: platformInfo.isMac ? window.devicePixelRatio : Math.min(window.devicePixelRatio, 2),
+    
+    // Buffer adjustments for different browsers
+    extraBuffer: platformInfo.isWindows ? 60 : 50,
+    
+    // Padding adjustments for consistent spacing
+    paddingMultiplier: platformInfo.isWindows ? 1.2 : 1.0,
+    
+    // Background rendering adjustments
+    backgroundFix: platformInfo.isWindows || platformInfo.isLinux,
+    
+    // Text measurement adjustments
+    textMeasurementFix: platformInfo.isWindows
+  };
+  
+  console.log('Platform adjustments applied:', {
+    platformInfo,
+    adjustments
+  });
+  
+  return adjustments;
+};
+
+/**
  * Calculate absolute content bounds that captures EVERYTHING on the canvas
  * This ensures we never miss content above, below, left, or right
+ * Now includes platform-specific adjustments for consistent rendering
  */
 const calculateAbsoluteContentBounds = (reactFlowInstance: any): { 
   minX: number; 
@@ -38,6 +103,8 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   isEmpty: boolean;
 } => {
   console.log('Calculating absolute content bounds to capture ALL content...');
+  
+  const platformAdjustments = getPlatformAdjustments();
   
   if (!reactFlowInstance) {
     console.warn('No React Flow instance available');
@@ -67,8 +134,14 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   nodes.forEach((node: any) => {
     const x = node.position.x;
     const y = node.position.y;
-    const width = node.measured?.width || node.width || node.data?.width || 150;
-    const height = node.measured?.height || node.height || node.data?.height || 100;
+    let width = node.measured?.width || node.width || node.data?.width || 150;
+    let height = node.measured?.height || node.height || node.data?.height || 100;
+    
+    // Apply platform-specific text measurement adjustments
+    if (platformAdjustments.textMeasurementFix) {
+      width = Math.ceil(width * 1.1); // Add 10% buffer for Windows text rendering
+      height = Math.ceil(height * 1.05); // Add 5% buffer for Windows text rendering
+    }
     
     // Include the full node area
     minX = Math.min(minX, x);
@@ -86,10 +159,18 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
       const targetNode = nodes.find((n: any) => n.id === edge.target);
       
       if (sourceNode && targetNode) {
-        const sourceWidth = sourceNode.measured?.width || sourceNode.width || 150;
-        const sourceHeight = sourceNode.measured?.height || sourceNode.height || 100;
-        const targetWidth = targetNode.measured?.width || targetNode.width || 150;
-        const targetHeight = targetNode.measured?.height || targetNode.height || 100;
+        let sourceWidth = sourceNode.measured?.width || sourceNode.width || 150;
+        let sourceHeight = sourceNode.measured?.height || sourceNode.height || 100;
+        let targetWidth = targetNode.measured?.width || targetNode.width || 150;
+        let targetHeight = targetNode.measured?.height || targetNode.height || 100;
+        
+        // Apply platform adjustments to edge calculations
+        if (platformAdjustments.textMeasurementFix) {
+          sourceWidth = Math.ceil(sourceWidth * 1.1);
+          sourceHeight = Math.ceil(sourceHeight * 1.05);
+          targetWidth = Math.ceil(targetWidth * 1.1);
+          targetHeight = Math.ceil(targetHeight * 1.05);
+        }
         
         const sourceX = sourceNode.position.x + sourceWidth / 2;
         const sourceY = sourceNode.position.y + sourceHeight / 2;
@@ -112,8 +193,8 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
     });
   }
 
-  // Add extra buffer to ensure we capture everything including content that might be slightly outside
-  const extraBuffer = 50; // Reverted back from 20 to 50
+  // Add platform-specific extra buffer to ensure we capture everything
+  const extraBuffer = platformAdjustments.extraBuffer;
   minX -= extraBuffer;
   minY -= extraBuffer;
   maxX += extraBuffer;
@@ -122,13 +203,14 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   const contentWidth = maxX - minX;
   const contentHeight = maxY - minY;
 
-  console.log('Absolute content bounds calculated:', {
+  console.log('Absolute content bounds calculated with platform adjustments:', {
     minX, minY, maxX, maxY, 
     width: contentWidth, 
     height: contentHeight,
     nodeCount: nodes.length,
     edgeCount: edges?.length || 0,
-    extraBuffer
+    extraBuffer,
+    platformAdjustments
   });
 
   return { 
@@ -141,6 +223,7 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
 
 /**
  * Calculate export dimensions with generous padding to ensure nothing is cut off
+ * Now includes platform-specific adjustments for consistent rendering
  */
 const calculateExportDimensions = (
   contentBounds: { minX: number; minY: number; maxX: number; maxY: number; width: number; height: number },
@@ -148,30 +231,31 @@ const calculateExportDimensions = (
 ): { width: number; height: number; padding: number } => {
   const contentWidth = contentBounds.width;
   const contentHeight = contentBounds.height;
+  const platformAdjustments = getPlatformAdjustments();
   
   console.log('Calculating export dimensions for content:', {
-    contentWidth, contentHeight, exportType
+    contentWidth, contentHeight, exportType, platformAdjustments
   });
   
-  // Use reasonable padding to ensure content is not cut off but minimize dead space
-  let padding = 80; // Reverted back from 40 to 80
+  // Use platform-specific padding to ensure content is not cut off
+  let padding = Math.ceil(80 * platformAdjustments.paddingMultiplier);
   
   // Add extra padding for larger content
   if (contentWidth > 1000 || contentHeight > 800) {
-    padding = 100; // Reverted back from 60 to 100
+    padding = Math.ceil(100 * platformAdjustments.paddingMultiplier);
   }
   
-  // Adjust padding based on export type
+  // Adjust padding based on export type and platform
   switch (exportType) {
     case 'pdf':
-      padding = Math.max(padding, 80); // Reverted back from 50 to 80
+      padding = Math.max(padding, Math.ceil(80 * platformAdjustments.paddingMultiplier));
       break;
     case 'svg':
-      padding = Math.max(padding, 60); // Reverted back from 30 to 60
+      padding = Math.max(padding, Math.ceil(60 * platformAdjustments.paddingMultiplier));
       break;
     case 'png':
     case 'jpg':
-      padding = Math.max(padding, 80); // Reverted back from 40 to 80
+      padding = Math.max(padding, Math.ceil(80 * platformAdjustments.paddingMultiplier));
       break;
   }
   
@@ -179,8 +263,8 @@ const calculateExportDimensions = (
   const exportHeight = contentHeight + (padding * 2);
   
   // Ensure reasonable minimums but don't force large empty areas
-  const minWidth = Math.max(400, exportWidth); // Reverted back from 200 to 400
-  const minHeight = Math.max(300, exportHeight); // Reverted back from 150 to 300
+  const minWidth = Math.max(400, exportWidth);
+  const minHeight = Math.max(300, exportHeight);
   
   // Ensure reasonable maximums for performance
   const maxWidth = 6000;
@@ -189,9 +273,10 @@ const calculateExportDimensions = (
   const finalWidth = Math.min(Math.max(exportWidth, minWidth), maxWidth);
   const finalHeight = Math.min(Math.max(exportHeight, minHeight), maxHeight);
   
-  console.log('Export dimensions calculated:', {
+  console.log('Export dimensions calculated with platform adjustments:', {
     contentSize: { width: contentWidth, height: contentHeight },
     padding,
+    platformMultiplier: platformAdjustments.paddingMultiplier,
     finalSize: { width: finalWidth, height: finalHeight },
     efficiency: `${((contentWidth * contentHeight) / (finalWidth * finalHeight) * 100).toFixed(1)}% content coverage`
   });
@@ -218,6 +303,9 @@ const prepareContainerForExport = (
   backgroundInfo: { hasGradient: boolean; originalBackground: string };
 } => {
   console.log('Preparing container for export WITHOUT flickering...');
+  
+  // Get platform adjustments for consistent rendering
+  const platformAdjustments = getPlatformAdjustments();
   
   // Calculate absolute content bounds
   const contentBounds = calculateAbsoluteContentBounds(reactFlowInstance);
@@ -333,6 +421,17 @@ const prepareContainerForExport = (
   container.style.maxHeight = `${exportDimensions.height}px`;
   container.style.overflow = 'visible';
   container.style.position = 'relative';
+
+  // Apply platform-specific styling for consistent rendering
+  (container.style as any).webkitFontSmoothing = platformAdjustments.fontSmoothing;
+  (container.style as any).textRendering = platformAdjustments.textRendering;
+  
+  // Additional cross-platform fixes
+  if (platformAdjustments.backgroundFix) {
+    (container.style as any).backfaceVisibility = 'hidden';
+    (container.style as any).webkitBackfaceVisibility = 'hidden';
+    container.style.transform = container.style.transform || 'translateZ(0)';
+  }
 
   // Apply background properly - handle both gradients and solid colors
   if (hasGradient && originalBackground) {
@@ -551,8 +650,17 @@ export const exportAsPng = async (
 
     console.log('Capturing canvas with html2canvas - proper gradient coverage mode...');
     
-    // Use consistent scale for content capture
-    const captureScale = 2.0;
+    // Get platform adjustments for html2canvas options
+    const platformAdjustments = getPlatformAdjustments();
+    
+    // Use platform-specific scale for content capture
+    const captureScale = platformAdjustments.pixelRatio;
+    
+    console.log('Using platform-specific capture settings:', {
+      captureScale,
+      pixelRatio: window.devicePixelRatio,
+      platformAdjustments
+    });
     
     // Enhanced background handling for gradients
     let finalBackgroundColor = null;
