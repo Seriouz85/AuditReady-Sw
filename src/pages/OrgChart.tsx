@@ -542,6 +542,7 @@ const OrgChartContent = () => {
                     onEdgesChange={onEdgesChange}
                     nodeTypes={nodeTypes}
                     fitView
+                    proOptions={{ hideAttribution: true }}
                     minZoom={0.1}
                     maxZoom={2}
                     snapToGrid={true}
@@ -650,6 +651,7 @@ const OrgChartContent = () => {
                       nodeTypes={nodeTypes}
                       nodeOrigin={nodeOrigin}
                       fitView
+                      proOptions={{ hideAttribution: true }}
                       snapToGrid={true}
                       snapGrid={[20, 20]}
                       edgesUpdatable={true}

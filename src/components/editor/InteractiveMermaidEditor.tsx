@@ -1034,6 +1034,7 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onPaneClick={handleCanvasClick}
         nodeTypes={nodeTypes}
         fitView
+        proOptions={{ hideAttribution: true }}
         style={{ 
           background: canvasBackground,
           width: '100%',

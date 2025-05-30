@@ -76,6 +76,7 @@ export const ReactFlowTest: React.FC = () => {
         edges={testEdges}
         nodeTypes={memoizedNodeTypes}
         fitView
+        proOptions={{ hideAttribution: true }}
         style={{
           width: '100%',
           height: '100%'
