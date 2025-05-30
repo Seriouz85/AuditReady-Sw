@@ -134,14 +134,8 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   nodes.forEach((node: any) => {
     const x = node.position.x;
     const y = node.position.y;
-    let width = node.measured?.width || node.width || node.data?.width || 150;
-    let height = node.measured?.height || node.height || node.data?.height || 100;
-    
-    // Apply platform-specific text measurement adjustments
-    if (platformAdjustments.textMeasurementFix) {
-      width = Math.ceil(width * 1.1); // Add 10% buffer for Windows text rendering
-      height = Math.ceil(height * 1.05); // Add 5% buffer for Windows text rendering
-    }
+    const width = node.measured?.width || node.width || node.data?.width || 150;
+    const height = node.measured?.height || node.height || node.data?.height || 100;
     
     // Include the full node area
     minX = Math.min(minX, x);
@@ -159,18 +153,10 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
       const targetNode = nodes.find((n: any) => n.id === edge.target);
       
       if (sourceNode && targetNode) {
-        let sourceWidth = sourceNode.measured?.width || sourceNode.width || 150;
-        let sourceHeight = sourceNode.measured?.height || sourceNode.height || 100;
-        let targetWidth = targetNode.measured?.width || targetNode.width || 150;
-        let targetHeight = targetNode.measured?.height || targetNode.height || 100;
-        
-        // Apply platform adjustments to edge calculations
-        if (platformAdjustments.textMeasurementFix) {
-          sourceWidth = Math.ceil(sourceWidth * 1.1);
-          sourceHeight = Math.ceil(sourceHeight * 1.05);
-          targetWidth = Math.ceil(targetWidth * 1.1);
-          targetHeight = Math.ceil(targetHeight * 1.05);
-        }
+        const sourceWidth = sourceNode.measured?.width || sourceNode.width || 150;
+        const sourceHeight = sourceNode.measured?.height || sourceNode.height || 100;
+        const targetWidth = targetNode.measured?.width || targetNode.width || 150;
+        const targetHeight = targetNode.measured?.height || targetNode.height || 100;
         
         const sourceX = sourceNode.position.x + sourceWidth / 2;
         const sourceY = sourceNode.position.y + sourceHeight / 2;
@@ -194,7 +180,7 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   }
 
   // Add platform-specific extra buffer to ensure we capture everything
-  const extraBuffer = platformAdjustments.extraBuffer;
+  const extraBuffer = 50; // REVERT TO ORIGINAL WORKING VALUE
   minX -= extraBuffer;
   minY -= extraBuffer;
   maxX += extraBuffer;
@@ -237,25 +223,25 @@ const calculateExportDimensions = (
     contentWidth, contentHeight, exportType, platformAdjustments
   });
   
-  // Use platform-specific padding to ensure content is not cut off
-  let padding = Math.ceil(80 * platformAdjustments.paddingMultiplier);
+  // Use reasonable padding to ensure content is not cut off but minimize dead space
+  let padding = 80; // REVERT TO ORIGINAL WORKING VALUE
   
   // Add extra padding for larger content
   if (contentWidth > 1000 || contentHeight > 800) {
-    padding = Math.ceil(100 * platformAdjustments.paddingMultiplier);
+    padding = 100; // REVERT TO ORIGINAL WORKING VALUE
   }
   
-  // Adjust padding based on export type and platform
+  // Adjust padding based on export type
   switch (exportType) {
     case 'pdf':
-      padding = Math.max(padding, Math.ceil(80 * platformAdjustments.paddingMultiplier));
+      padding = Math.max(padding, 80); // REVERT TO ORIGINAL WORKING VALUE
       break;
     case 'svg':
-      padding = Math.max(padding, Math.ceil(60 * platformAdjustments.paddingMultiplier));
+      padding = Math.max(padding, 60); // REVERT TO ORIGINAL WORKING VALUE
       break;
     case 'png':
     case 'jpg':
-      padding = Math.max(padding, Math.ceil(80 * platformAdjustments.paddingMultiplier));
+      padding = Math.max(padding, 80); // REVERT TO ORIGINAL WORKING VALUE
       break;
   }
   
@@ -653,8 +639,8 @@ export const exportAsPng = async (
     // Get platform adjustments for html2canvas options
     const platformAdjustments = getPlatformAdjustments();
     
-    // Use platform-specific scale for content capture
-    const captureScale = platformAdjustments.pixelRatio;
+    // Use consistent scale for content capture - REVERT TO WORKING VERSION
+    const captureScale = 2.0; // Fixed scale that was working properly
     
     console.log('Using platform-specific capture settings:', {
       captureScale,
