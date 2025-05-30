@@ -113,7 +113,7 @@ const calculateAbsoluteContentBounds = (reactFlowInstance: any): {
   }
 
   // Add extra buffer to ensure we capture everything including content that might be slightly outside
-  const extraBuffer = 100;
+  const extraBuffer = 50; // Reverted back from 20 to 50
   minX -= extraBuffer;
   minY -= extraBuffer;
   maxX += extraBuffer;
@@ -153,34 +153,34 @@ const calculateExportDimensions = (
     contentWidth, contentHeight, exportType
   });
   
-  // Use generous padding to ensure we never cut off content
-  let padding = 150; // Increased base padding
+  // Use reasonable padding to ensure content is not cut off but minimize dead space
+  let padding = 80; // Reverted back from 40 to 80
   
   // Add extra padding for larger content
   if (contentWidth > 1000 || contentHeight > 800) {
-    padding = 200;
+    padding = 100; // Reverted back from 60 to 100
   }
   
   // Adjust padding based on export type
   switch (exportType) {
     case 'pdf':
-      padding = Math.max(padding, 150); // PDFs need more padding
+      padding = Math.max(padding, 80); // Reverted back from 50 to 80
       break;
     case 'svg':
-      padding = Math.max(padding, 100); // SVGs can be a bit tighter
+      padding = Math.max(padding, 60); // Reverted back from 30 to 60
       break;
     case 'png':
     case 'jpg':
-      padding = Math.max(padding, 150); // Standard padding
+      padding = Math.max(padding, 80); // Reverted back from 40 to 80
       break;
   }
   
   const exportWidth = contentWidth + (padding * 2);
   const exportHeight = contentHeight + (padding * 2);
   
-  // Ensure reasonable minimums
-  const minWidth = Math.max(600, exportWidth);
-  const minHeight = Math.max(400, exportHeight);
+  // Ensure reasonable minimums but don't force large empty areas
+  const minWidth = Math.max(400, exportWidth); // Reverted back from 200 to 400
+  const minHeight = Math.max(300, exportHeight); // Reverted back from 150 to 300
   
   // Ensure reasonable maximums for performance
   const maxWidth = 6000;
@@ -210,6 +210,8 @@ const prepareContainerForExport = (
   originalViewport: { x: number; y: number; zoom: number } | null;
   originalTransform: string;
   originalDimensions: { width: string; height: string };
+  computedDimensions: { width: string; height: string } | null;
+  isPercentageBased: boolean;
   originalStyles: { [key: string]: string };
   contentBounds: { minX: number; minY: number; maxX: number; maxY: number; width: number; height: number };
   exportDimensions: { width: number; height: number; padding: number };
@@ -231,6 +233,21 @@ const prepareContainerForExport = (
 
   // Detect and store background information - check multiple sources
   const computedStyle = window.getComputedStyle(container);
+  
+  // For containers with percentage-based dimensions, store computed pixel values for restoration
+  const isPercentageBased = originalDimensions.width.includes('%') || originalDimensions.height.includes('%');
+  const computedDimensions = isPercentageBased ? {
+    width: computedStyle.width,
+    height: computedStyle.height
+  } : null;
+  
+  console.log('Container dimensions:', {
+    original: originalDimensions,
+    computed: computedDimensions,
+    isPercentageBased,
+    note: isPercentageBased ? 'Will use computed dimensions for restoration' : 'Will use original dimensions'
+  });
+  
   let originalBackground = computedStyle.background || computedStyle.backgroundColor || '';
   
   // Also check parent containers for gradient backgrounds
@@ -343,6 +360,8 @@ const prepareContainerForExport = (
     originalViewport,
     originalTransform,
     originalDimensions,
+    computedDimensions,
+    isPercentageBased,
     originalStyles,
     contentBounds,
     exportDimensions,
@@ -359,14 +378,32 @@ const restoreContainerAfterExport = (
     originalViewport: { x: number; y: number; zoom: number } | null;
     originalTransform: string;
     originalDimensions: { width: string; height: string };
+    computedDimensions: { width: string; height: string } | null;
+    isPercentageBased: boolean;
     originalStyles: { [key: string]: string };
   }
 ): void => {
   console.log('Restoring container to original state...');
   
-  // Restore container dimensions
-  container.style.width = originalState.originalDimensions.width;
-  container.style.height = originalState.originalDimensions.height;
+  // Restore container dimensions - use computed dimensions for percentage-based containers
+  if (originalState.isPercentageBased && originalState.computedDimensions) {
+    // For percentage-based containers, temporarily use computed dimensions to ensure proper restoration
+    container.style.width = originalState.computedDimensions.width;
+    container.style.height = originalState.computedDimensions.height;
+    
+    // Then restore the original percentage values
+    setTimeout(() => {
+      container.style.width = originalState.originalDimensions.width;
+      container.style.height = originalState.originalDimensions.height;
+    }, 100);
+    
+    console.log('Restored percentage-based container dimensions via computed values');
+  } else {
+    // For fixed dimensions, restore directly
+    container.style.width = originalState.originalDimensions.width;
+    container.style.height = originalState.originalDimensions.height;
+    console.log('Restored fixed container dimensions');
+  }
   
   // Restore all original styles
   Object.keys(originalState.originalStyles).forEach(property => {
@@ -414,7 +451,12 @@ const hideUIElements = (): HTMLElement[] => {
     '.react-flow__controls',
     '.react-flow__minimap',
     '.react-flow__panel',
-    '.react-flow__attribution'
+    '.react-flow__attribution',
+    '.react-flow__handle', // Hide connection handles/anchor points
+    '.react-flow__handle-top',
+    '.react-flow__handle-bottom', 
+    '.react-flow__handle-left',
+    '.react-flow__handle-right'
   ];
   
   const hiddenElements: HTMLElement[] = [];
@@ -548,15 +590,37 @@ export const exportAsPng = async (
       foreignObjectRendering: true,
       removeContainer: false,
       ignoreElements: (element) => {
-        // Ignore React Flow UI elements
+        // Ignore React Flow UI elements and handles/anchor points
         return element.classList.contains('react-flow__controls') ||
                element.classList.contains('react-flow__minimap') ||
                element.classList.contains('react-flow__panel') ||
-               element.classList.contains('react-flow__attribution');
+               element.classList.contains('react-flow__attribution') ||
+               element.classList.contains('react-flow__handle') ||
+               element.classList.contains('react-flow__handle-top') ||
+               element.classList.contains('react-flow__handle-bottom') ||
+               element.classList.contains('react-flow__handle-left') ||
+               element.classList.contains('react-flow__handle-right');
       },
       onclone: (clonedDoc) => {
         try {
-          // Ensure SVG elements are properly rendered
+          // Hide all React Flow handles/anchor points in cloned document
+          const handleSelectors = [
+            '.react-flow__handle',
+            '.react-flow__handle-top',
+            '.react-flow__handle-bottom',
+            '.react-flow__handle-left',
+            '.react-flow__handle-right'
+          ];
+          
+          handleSelectors.forEach(selector => {
+            const handles = clonedDoc.querySelectorAll(selector) as NodeListOf<HTMLElement>;
+            handles.forEach(handle => {
+              handle.style.display = 'none';
+              handle.style.visibility = 'hidden';
+              handle.style.opacity = '0';
+            });
+          });
+          
           const svgElements = clonedDoc.querySelectorAll('svg');
           svgElements.forEach((svg) => {
             svg.style.display = 'block';
@@ -565,54 +629,11 @@ export const exportAsPng = async (
             if (!svg.getAttribute('height')) svg.setAttribute('height', '80');
           });
           
-          // Ensure polygon elements are visible
           const polygons = clonedDoc.querySelectorAll('polygon');
           polygons.forEach((polygon) => {
             polygon.style.display = 'block';
             polygon.style.visibility = 'visible';
           });
-          
-          // Apply gradient background to cloned container with exact dimensions
-          const clonedContainer = clonedDoc.querySelector('.react-flow') || 
-                                 clonedDoc.querySelector('.react-flow-wrapper') ||
-                                 clonedDoc.body;
-          
-          if (clonedContainer && clonedContainer instanceof HTMLElement) {
-            // Determine which background to apply
-            let backgroundToApply = '';
-            
-            if (backgroundColor && backgroundColor.includes('gradient')) {
-              backgroundToApply = backgroundColor;
-            } else if (originalState.backgroundInfo.hasGradient) {
-              backgroundToApply = originalState.backgroundInfo.originalBackground;
-            } else if (backgroundColor && !backgroundColor.includes('gradient')) {
-              clonedContainer.style.backgroundColor = backgroundColor;
-              console.log('Applied solid background to cloned container:', backgroundColor);
-              return;
-            }
-            
-            if (backgroundToApply && backgroundToApply.includes('gradient')) {
-              // Apply gradient with exact export dimensions
-              clonedContainer.style.background = backgroundToApply;
-              clonedContainer.style.backgroundSize = `${originalState.exportDimensions.width}px ${originalState.exportDimensions.height}px`;
-              clonedContainer.style.backgroundRepeat = 'no-repeat';
-              clonedContainer.style.backgroundPosition = '0 0';
-              clonedContainer.style.backgroundAttachment = 'local';
-              clonedContainer.style.backgroundClip = 'border-box';
-              clonedContainer.style.backgroundOrigin = 'border-box';
-              
-              // Ensure container dimensions match export dimensions
-              clonedContainer.style.width = `${originalState.exportDimensions.width}px`;
-              clonedContainer.style.height = `${originalState.exportDimensions.height}px`;
-              clonedContainer.style.minWidth = `${originalState.exportDimensions.width}px`;
-              clonedContainer.style.minHeight = `${originalState.exportDimensions.height}px`;
-              clonedContainer.style.maxWidth = `${originalState.exportDimensions.width}px`;
-              clonedContainer.style.maxHeight = `${originalState.exportDimensions.height}px`;
-              
-              console.log('Applied gradient to cloned container with exact dimensions:', backgroundToApply);
-              console.log('Cloned container background size set to exact export dimensions:', `${originalState.exportDimensions.width}x${originalState.exportDimensions.height}`);
-            }
-          }
         } catch (error) {
           console.warn('Error in onclone callback:', error);
         }
@@ -748,10 +769,34 @@ export const exportAsJpg = async (
       ignoreElements: (element) => {
         return element.classList.contains('react-flow__controls') ||
                element.classList.contains('react-flow__minimap') ||
-               element.classList.contains('react-flow__panel');
+               element.classList.contains('react-flow__panel') ||
+               element.classList.contains('react-flow__attribution') ||
+               element.classList.contains('react-flow__handle') ||
+               element.classList.contains('react-flow__handle-top') ||
+               element.classList.contains('react-flow__handle-bottom') ||
+               element.classList.contains('react-flow__handle-left') ||
+               element.classList.contains('react-flow__handle-right');
       },
       onclone: (clonedDoc) => {
         try {
+          // Hide all React Flow handles/anchor points in cloned document
+          const handleSelectors = [
+            '.react-flow__handle',
+            '.react-flow__handle-top',
+            '.react-flow__handle-bottom',
+            '.react-flow__handle-left',
+            '.react-flow__handle-right'
+          ];
+          
+          handleSelectors.forEach(selector => {
+            const handles = clonedDoc.querySelectorAll(selector) as NodeListOf<HTMLElement>;
+            handles.forEach(handle => {
+              handle.style.display = 'none';
+              handle.style.visibility = 'hidden';
+              handle.style.opacity = '0';
+            });
+          });
+          
           const svgElements = clonedDoc.querySelectorAll('svg');
           svgElements.forEach((svg) => {
             svg.style.display = 'block';
@@ -874,10 +919,34 @@ export const exportAsPDF = async (
       ignoreElements: (element) => {
         return element.classList.contains('react-flow__controls') ||
                element.classList.contains('react-flow__minimap') ||
-               element.classList.contains('react-flow__panel');
+               element.classList.contains('react-flow__panel') ||
+               element.classList.contains('react-flow__attribution') ||
+               element.classList.contains('react-flow__handle') ||
+               element.classList.contains('react-flow__handle-top') ||
+               element.classList.contains('react-flow__handle-bottom') ||
+               element.classList.contains('react-flow__handle-left') ||
+               element.classList.contains('react-flow__handle-right');
       },
       onclone: (clonedDoc) => {
         try {
+          // Hide all React Flow handles/anchor points in cloned document
+          const handleSelectors = [
+            '.react-flow__handle',
+            '.react-flow__handle-top',
+            '.react-flow__handle-bottom',
+            '.react-flow__handle-left',
+            '.react-flow__handle-right'
+          ];
+          
+          handleSelectors.forEach(selector => {
+            const handles = clonedDoc.querySelectorAll(selector) as NodeListOf<HTMLElement>;
+            handles.forEach(handle => {
+              handle.style.display = 'none';
+              handle.style.visibility = 'hidden';
+              handle.style.opacity = '0';
+            });
+          });
+          
           const svgElements = clonedDoc.querySelectorAll('svg');
           svgElements.forEach((svg) => {
             svg.style.display = 'block';

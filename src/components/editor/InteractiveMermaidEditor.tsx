@@ -1015,9 +1015,9 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
     <div 
       className="react-flow-wrapper"
       style={{
-        height: '100%', // Changed from '600px' to fill parent container
+        height: '100%', // Fill the flex parent container
         width: '100%',   
-        minHeight: '100%', // Changed from '600px' to match height
+        minHeight: '100%', // Match height to ensure consistency
         minWidth: '800px',  
         background: MermaidDesignTokens.colors.secondary.gradient,
         position: 'relative',
