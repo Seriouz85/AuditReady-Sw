@@ -10,26 +10,38 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      - name: Install dependencies
+          cache: 'npm'
+      
+      - name: Install Dependencies
         run: npm ci
-
+      
       - name: Build
         run: npm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist 
+      
+      - name: Copy build files to repository root
+        run: |
+          cp -r dist/* .
+          cp dist/index.html dist/404.html
+          touch .nojekyll
+      
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Deploy website updates" || echo "No changes to commit"
+          git push 
