@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Grid3X3, Brain, PanelLeftClose } from 'lucide-react';
 import { GlassButton, GlassPanel, MermaidDesignTokens } from '../ui';
 import { MermaidTemplatePanel } from './MermaidTemplatePanel';
-import { ConversationalAI } from './ConversationalAI';
+import ConversationalAI from './ConversationalAI';
 
 interface VisualEditorSidebarProps {
   isVisible: boolean;
