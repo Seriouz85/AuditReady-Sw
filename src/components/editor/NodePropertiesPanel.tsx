@@ -20,11 +20,13 @@ interface NodePropertiesProps {
   onNodeUpdate: (nodeId: string, updates: any) => void;
   onNodeDelete: (nodeId: string) => void;
   onNodeDuplicate: (nodeId: string) => void;
+  onApplyToAll?: (updates: any) => void;
   isVisible: boolean;
   onClose: () => void;
 }
 
 const COLOR_PRESETS = [
+  // First row - Original colors
   { name: 'Primary Blue', fill: '#2563eb', stroke: '#1d4ed8' },
   { name: 'Success Green', fill: '#10b981', stroke: '#059669' },
   { name: 'Warning Orange', fill: '#f59e0b', stroke: '#d97706' },
@@ -32,7 +34,17 @@ const COLOR_PRESETS = [
   { name: 'Purple', fill: '#8b5cf6', stroke: '#7c3aed' },
   { name: 'Cyan', fill: '#06b6d4', stroke: '#0891b2' },
   { name: 'Gray', fill: '#6b7280', stroke: '#4b5563' },
-  { name: 'Dark', fill: '#1f2937', stroke: '#111827' }
+  { name: 'Dark', fill: '#1f2937', stroke: '#111827' },
+  
+  // Second row - Additional colors including black
+  { name: 'Black', fill: '#000000', stroke: '#374151' },
+  { name: 'White', fill: '#ffffff', stroke: '#d1d5db' },
+  { name: 'Light Blue', fill: '#3b82f6', stroke: '#2563eb' },
+  { name: 'Light Green', fill: '#22c55e', stroke: '#16a34a' },
+  { name: 'Pink', fill: '#ec4899', stroke: '#db2777' },
+  { name: 'Indigo', fill: '#6366f1', stroke: '#4f46e5' },
+  { name: 'Yellow', fill: '#eab308', stroke: '#ca8a04' },
+  { name: 'Slate', fill: '#64748b', stroke: '#475569' }
 ];
 
 const SHAPE_OPTIONS = [
@@ -46,6 +58,7 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
   onNodeUpdate,
   onNodeDelete,
   onNodeDuplicate,
+  onApplyToAll,
   isVisible,
   onClose
 }) => {
@@ -194,55 +207,6 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
             />
           </div>
 
-          {/* Compact Live Text Preview */}
-          <div style={{
-            marginTop: MermaidDesignTokens.spacing[2],
-            padding: MermaidDesignTokens.spacing[2],
-            background: MermaidDesignTokens.colors.glass.secondary,
-            borderRadius: MermaidDesignTokens.borderRadius.md,
-            border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
-            textAlign: 'center'
-          }}>
-            <div style={{
-              fontSize: MermaidDesignTokens.typography.fontSize.xs,
-              color: MermaidDesignTokens.colors.text.secondary,
-              marginBottom: MermaidDesignTokens.spacing[1]
-            }}>
-              Preview:
-            </div>
-            <div style={{
-              color: localTextColor,
-              background: localFillColor,
-              border: `2px solid ${localStrokeColor}`,
-              borderRadius: MermaidDesignTokens.borderRadius.md,
-              padding: MermaidDesignTokens.spacing[1],
-              minHeight: '40px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: MermaidDesignTokens.spacing[1]
-            }}>
-              <div style={{
-                fontSize: localDescription ? MermaidDesignTokens.typography.fontSize.xs : MermaidDesignTokens.typography.fontSize.sm,
-                fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-                lineHeight: 1.2
-              }}>
-                {localLabel || 'Main Text'}
-              </div>
-              {localDescription && (
-                <div style={{
-                  fontSize: '10px',
-                  opacity: 0.8,
-                  lineHeight: 1.1,
-                  maxWidth: '100%',
-                  wordBreak: 'break-word'
-                }}>
-                  {localDescription}
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Shape Selection */}
@@ -292,7 +256,8 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
           </label>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(8, 1fr)',
+            gridTemplateRows: 'repeat(2, 1fr)',
             gap: MermaidDesignTokens.spacing[1]
           }}>
             {COLOR_PRESETS.map((preset) => (
@@ -300,8 +265,8 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
                 key={preset.name}
                 onClick={() => handleColorPreset(preset)}
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '28px',
+                  height: '28px',
                   borderRadius: MermaidDesignTokens.borderRadius.md,
                   background: preset.fill,
                   border: `2px solid ${preset.stroke}`,
@@ -428,6 +393,32 @@ export const NodePropertiesPanel: React.FC<NodePropertiesProps> = ({
             }}
           />
         </div>
+
+        {/* Apply to All Button */}
+        {onApplyToAll && (
+          <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
+            <GlassButton
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                // Gather current node properties
+                const currentShape = selectedNode?.data?.shape || 'rectangle';
+                const updates = {
+                  fillColor: localFillColor,
+                  strokeColor: localStrokeColor,
+                  strokeWidth: localStrokeWidth,
+                  textColor: localTextColor,
+                  // Only apply shape if it makes sense (e.g., don't turn all nodes into diamonds)
+                  ...(currentShape !== 'text' && { shape: currentShape })
+                };
+                onApplyToAll(updates);
+              }}
+              style={{ width: '100%' }}
+            >
+              Apply Style to All Shapes
+            </GlassButton>
+          </div>
+        )}
 
         {/* Actions */}
         <div style={{

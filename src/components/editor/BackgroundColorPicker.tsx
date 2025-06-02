@@ -11,6 +11,7 @@ import {
   GlassInput,
   MermaidDesignTokens
 } from '../ui';
+import { gradientPresets } from '../../utils/colorUtils';
 
 interface BackgroundColorPickerProps {
   isVisible: boolean;
@@ -33,38 +34,8 @@ const PRESET_COLORS = [
   { name: 'Pink Light', value: '#fdf2f8', type: 'solid' }
 ];
 
-const PRESET_GRADIENTS = [
-  {
-    name: 'Blue Gradient',
-    value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    type: 'gradient'
-  },
-  {
-    name: 'Purple Gradient',
-    value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    type: 'gradient'
-  },
-  {
-    name: 'Ocean Gradient',
-    value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    type: 'gradient'
-  },
-  {
-    name: 'Sunset Gradient',
-    value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    type: 'gradient'
-  },
-  {
-    name: 'Forest Gradient',
-    value: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    type: 'gradient'
-  },
-  {
-    name: 'Night Gradient',
-    value: 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
-    type: 'gradient'
-  }
-];
+// Use enhanced gradient presets from colorUtils
+const PRESET_GRADIENTS = gradientPresets;
 
 export const BackgroundColorPicker: React.FC<BackgroundColorPickerProps> = ({
   isVisible,
@@ -141,7 +112,7 @@ export const BackgroundColorPicker: React.FC<BackgroundColorPickerProps> = ({
         width: '280px'
       }}
     >
-      <GlassPanel variant="elevated" padding="0" style={{
+      <GlassPanel variant="elevated" padding={0} style={{
         borderRadius: MermaidDesignTokens.borderRadius.xl,
         overflow: 'hidden',
         boxShadow: MermaidDesignTokens.shadows.glass.xl
@@ -315,7 +286,7 @@ export const BackgroundColorPicker: React.FC<BackgroundColorPickerProps> = ({
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}
-                    title={gradient.name}
+                    title={`${gradient.name} - ${gradient.category}`}
                   >
                     <span style={{
                       fontSize: MermaidDesignTokens.typography.fontSize.xs,

@@ -21,6 +21,7 @@ interface EdgePropertiesProps {
   onEdgeUpdate: (edgeId: string, updates: any) => void;
   onEdgeDelete: (edgeId: string) => void;
   onEdgeDuplicate: (edgeId: string) => void;
+  onApplyToAll?: (updates: any) => void;
   isVisible: boolean;
   onClose: () => void;
 }
@@ -55,6 +56,7 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
   onEdgeUpdate,
   onEdgeDelete,
   onEdgeDuplicate,
+  onApplyToAll,
   isVisible,
   onClose
 }) => {
@@ -440,6 +442,44 @@ export const EdgePropertiesPanel: React.FC<EdgePropertiesProps> = ({
             {isLocked ? 'Locked Position' : 'Unlock Position'}
           </GlassButton>
         </div>
+
+        {/* Apply to All Button */}
+        {onApplyToAll && (
+          <div style={{ marginBottom: MermaidDesignTokens.spacing[3] }}>
+            <GlassButton
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                // Gather current edge properties
+                const updates = {
+                  style: {
+                    stroke: localColor,
+                    strokeWidth: localWidth,
+                    strokeDasharray: (() => {
+                      if (localLineStyle === 'dashed') return '5,5';
+                      if (localLineStyle === 'dotted') return '2,2';
+                      return undefined;
+                    })()
+                  },
+                  markerEnd: {
+                    type: localArrowType === 'none' ? undefined : localArrowType,
+                    color: localColor
+                  },
+                  type: (() => {
+                    if (localLineStyle === 'curved') return 'default';
+                    if (localLineStyle === 'step') return 'step';
+                    return 'smoothstep';
+                  })(),
+                  animated: localLineStyle === 'dynamic'
+                };
+                onApplyToAll(updates);
+              }}
+              style={{ width: '100%' }}
+            >
+              Apply to All Connections
+            </GlassButton>
+          </div>
+        )}
 
         {/* Actions */}
         <div style={{

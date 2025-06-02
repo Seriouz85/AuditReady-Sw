@@ -662,3 +662,48 @@ main > div.border-b {
     overflow: visible !important;
   }
 }
+
+/* Template animations for enhanced visual appeal */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) translateY(-20px) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) translateY(-20px) scale(1.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Template card hover effects */
+.template-card:hover .template-preview {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.template-card:hover .template-icon {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Glass morphic effects for better visual appeal */
+.glass-effect {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}

@@ -25,6 +25,7 @@ export interface GeneratedDiagram {
   steps: ProcessStep[];
   layout: 'top-down' | 'left-right' | 'flowchart';
   theme: 'professional' | 'security' | 'compliance' | 'business';
+  isAdditive?: boolean; // New: indicates if this is an additive operation
 }
 
 export class EnhancedMermaidAI {
@@ -47,6 +48,54 @@ export class EnhancedMermaidAI {
   }
 
   /**
+   * Set current diagram from React Flow nodes and edges
+   */
+  public setCurrentDiagramFromNodes(nodes: any[], edges: any[]) {
+    if (!nodes.length) {
+      this.currentDiagram = null;
+      return;
+    }
+
+    // Convert React Flow nodes back to ProcessStep format
+    const steps: ProcessStep[] = nodes.map(node => ({
+      id: node.id,
+      label: node.data.label || 'Node',
+      type: this.getStepTypeFromShape(node.data.shape || 'rectangle'),
+      position: node.position,
+      connections: edges
+        .filter(edge => edge.source === node.id)
+        .map(edge => edge.target),
+      metadata: {
+        description: node.data.description,
+        responsible: node.data.responsible,
+        duration: node.data.duration
+      }
+    }));
+
+    // Create a GeneratedDiagram from the nodes
+    this.currentDiagram = {
+      title: 'Current Process Flow',
+      description: 'Existing diagram from canvas',
+      mermaidCode: this.generateMermaidCode(steps, 'flowchart', 'professional'),
+      steps,
+      layout: 'flowchart',
+      theme: 'professional'
+    };
+  }
+
+  /**
+   * Helper to convert React Flow shape back to step type
+   */
+  private getStepTypeFromShape(shape: string): ProcessStep['type'] {
+    switch (shape) {
+      case 'circle': return 'start';
+      case 'diamond': return 'decision';
+      case 'star': return 'parallel';
+      default: return 'process';
+    }
+  }
+
+  /**
    * Generate intelligent process flow from natural language description
    */
   public async generateProcessFlow(prompt: string): Promise<GeneratedDiagram> {
@@ -56,6 +105,11 @@ export class EnhancedMermaidAI {
     // Check if this is an edit request for existing diagram
     if (this.currentDiagram && this.isEditRequest(prompt)) {
       return this.editExistingDiagram(prompt);
+    }
+
+    // Check if this is an additive request and we have existing content
+    if (this.currentDiagram && this.isAdditiveRequest(prompt)) {
+      return this.addToExistingDiagram(prompt);
     }
 
     // Check if we need to ask clarifying questions
@@ -82,7 +136,8 @@ export class EnhancedMermaidAI {
       mermaidCode,
       steps,
       layout,
-      theme: analysis.theme
+      theme: analysis.theme,
+      isAdditive: false
     };
 
     // Store as current diagram for future edits
@@ -95,8 +150,23 @@ export class EnhancedMermaidAI {
    * Check if prompt is requesting edits to existing diagram
    */
   private isEditRequest(prompt: string): boolean {
-    const editKeywords = ['add', 'remove', 'change', 'modify', 'update', 'edit', 'delete', 'insert'];
+    const editKeywords = ['remove', 'change', 'modify', 'update', 'edit', 'delete', 'replace'];
     return editKeywords.some(keyword => prompt.toLowerCase().includes(keyword));
+  }
+
+  /**
+   * Check if prompt is requesting additions to existing diagram
+   */
+  private isAdditiveRequest(prompt: string): boolean {
+    const addKeywords = [
+      'add', 'append', 'extend', 'continue', 'also add', 'then add', 'include',
+      'insert', 'attach', 'connect', 'link', 'follow up', 'next step',
+      'additional', 'plus', 'and then', 'after that', 'furthermore',
+      'expand', 'enhance', 'supplement', 'augment'
+    ];
+    
+    const lowerPrompt = prompt.toLowerCase();
+    return addKeywords.some(keyword => lowerPrompt.includes(keyword));
   }
 
   /**
@@ -148,6 +218,94 @@ export class EnhancedMermaidAI {
 
     this.currentDiagram = updatedDiagram;
     return updatedDiagram;
+  }
+
+  /**
+   * Add to existing diagram based on prompt
+   */
+  private addToExistingDiagram(prompt: string): GeneratedDiagram {
+    if (!this.currentDiagram) {
+      throw new Error('No existing diagram to add to');
+    }
+
+    // Analyze the prompt to understand what to add
+    const analysis = this.analyzePrompt(prompt);
+    
+    // Generate new steps based on the prompt
+    const newSteps = this.generateAdditiveSteps(prompt, analysis);
+    
+    // Merge with existing steps
+    const allSteps = [...this.currentDiagram.steps];
+    const lastStep = allSteps[allSteps.length - 1];
+    
+    // Position new steps after existing ones
+    newSteps.forEach((step, index) => {
+      const yOffset = lastStep ? lastStep.position.y + 100 + (index * 100) : 100 + (index * 100);
+      step.position = { x: 250, y: yOffset };
+      
+      // Connect the first new step to the last existing step if appropriate
+      if (index === 0 && lastStep && lastStep.type !== 'end') {
+        lastStep.connections.push(step.id);
+      }
+      
+      allSteps.push(step);
+    });
+
+    // Regenerate Mermaid code with all steps
+    const mermaidCode = this.generateMermaidCode(allSteps, this.currentDiagram.layout, this.currentDiagram.theme);
+
+    const updatedDiagram = {
+      ...this.currentDiagram,
+      steps: newSteps, // Return only the new steps for additive rendering
+      mermaidCode,
+      isAdditive: true
+    };
+
+    // Update current diagram with all steps for future operations
+    this.currentDiagram = {
+      ...this.currentDiagram,
+      steps: allSteps,
+      mermaidCode
+    };
+
+    return updatedDiagram;
+  }
+
+  /**
+   * Generate steps specifically for additive operations
+   */
+  private generateAdditiveSteps(prompt: string, analysis: any): ProcessStep[] {
+    // Extract what the user wants to add from the prompt
+    const stepText = this.extractStepLabel(prompt);
+    
+    // Create 1-3 steps based on complexity
+    const steps: ProcessStep[] = [];
+    const baseId = Date.now();
+    
+    if (analysis.complexity === 'simple' || stepText.split(' ').length <= 3) {
+      // Single step addition
+      steps.push({
+        id: `add-${baseId}`,
+        label: stepText || 'New Step',
+        type: 'process',
+        position: { x: 250, y: 100 }, // Will be repositioned
+        connections: []
+      });
+    } else {
+      // Multi-step addition for complex requests
+      const keywords = analysis.keywords.slice(0, 3);
+      keywords.forEach((keyword: string, index: number) => {
+        steps.push({
+          id: `add-${baseId}-${index}`,
+          label: this.capitalizeWords(keyword.replace(/_/g, ' ')),
+          type: index === keywords.length - 1 ? 'end' : 'process',
+          position: { x: 250, y: 100 + index * 100 }, // Will be repositioned
+          connections: index < keywords.length - 1 ? [`add-${baseId}-${index + 1}`] : []
+        });
+      });
+    }
+    
+    return steps;
   }
 
   /**
@@ -648,7 +806,7 @@ export class EnhancedMermaidAI {
       .slice(0, 10);
   }
 
-  private generateTitle(prompt: string, type: string): string {
+  private generateTitle(prompt: string, _type: string): string {
     const words = prompt.split(' ').slice(0, 5);
     return this.capitalizeWords(words.join(' '));
   }
