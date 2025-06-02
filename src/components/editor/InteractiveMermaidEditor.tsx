@@ -42,7 +42,7 @@ import { BackgroundColorPicker } from './BackgroundColorPicker';
 import { SaveExportModal } from './SaveExportModal';
 
 import { EnhancedMermaidAI } from '../../services/ai/EnhancedMermaidAI';
-import { applyAutoAdjustedColors, getAutoAdjustedEdgeColors, getOptimalColors } from '../../utils/colorUtils';
+import { applyAutoAdjustedColors, getAutoAdjustedEdgeColors, getOptimalColors, getSmartGradientAdjustment } from '../../utils/colorUtils';
 import { useReactFlowUndoRedo } from '../../hooks/useUndoRedo';
 
 // Helper to ensure we always spread from an object
@@ -196,6 +196,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
               justifyContent: 'center'
             }}
             onDoubleClick={handleDoubleClick}
+            title={localLabel} // Show full text on hover
           >
             {/* SVG-based diamond shape for better export compatibility */}
             <svg
@@ -218,7 +219,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 }}
               />
             </svg>
-            {/* Text container - properly centered */}
+            {/* Text container - optimized for diamond shape */}
             <div
               style={{
                 position: 'absolute',
@@ -226,14 +227,21 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 color: textColor,
-                fontSize: MermaidDesignTokens.typography.fontSize.sm, // Increased from xs
-                fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                fontSize: getDiamondFontSize(localLabel), // Dynamic font size based on text length
+                fontWeight: MermaidDesignTokens.typography.fontWeight.semibold, // Slightly bolder for better readability
                 textAlign: 'center' as const,
-                maxWidth: '50px', // Increased from 40px
-                lineHeight: '1.1', // Tighter line height
-                wordWrap: 'break-word',
+                maxWidth: '54px', // Slightly larger for better text fit
+                maxHeight: '54px', // Larger height constraint
+                lineHeight: '1.1', // Optimal line height for diamond text
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
                 overflow: 'hidden',
-                zIndex: 1
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2px', // Less padding to give more space for text
+                whiteSpace: 'pre-line' // Preserve line breaks from \n
               }}
             >
               {isEditing ? (
@@ -248,10 +256,12 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                     border: 'none',
                     outline: 'none',
                     color: textColor,
-                    fontSize: MermaidDesignTokens.typography.fontSize.sm,
-                    fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+                    fontSize: getDiamondFontSize(localLabel), // Match display size for diamond
+                    fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
                     textAlign: 'center',
-                    width: '100%'
+                    width: '100%',
+                    maxWidth: '40px', // Constrain input width for diamond
+                    lineHeight: '1.0'
                   }}
                   autoFocus
                 />
@@ -259,8 +269,13 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 <span style={{ 
                   display: 'block',
                   wordWrap: 'break-word',
-                  lineHeight: '1.1'
-                }}>{localLabel}</span>
+                  lineHeight: '1.0', // Match container line height
+                  fontSize: 'inherit', // Inherit from parent
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'pre-line' // Allow line breaks
+                }}>{formatConstrainedText(localLabel, 'diamond')}</span>
               )}
             </div>
           </div>
@@ -300,7 +315,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 }}
               />
             </svg>
-            {/* Text container */}
+            {/* Text container - optimized for star shape */}
             <div
               style={{
                 position: 'absolute',
@@ -308,14 +323,19 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 color: textColor,
-                fontSize: MermaidDesignTokens.typography.fontSize.sm, // Increased from xs
+                fontSize: MermaidDesignTokens.typography.fontSize.xs, // Smaller for better fit in star
                 fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                 textAlign: 'center' as const,
-                maxWidth: '55px', // Increased from 45px
-                lineHeight: '1.1', // Tighter line height
+                maxWidth: '48px', // Optimized for star shape
+                maxHeight: '48px', // Add height constraint for star
+                lineHeight: '1.0', // Tighter line height
                 wordWrap: 'break-word',
                 overflow: 'hidden',
-                zIndex: 1
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2px' // Small padding to prevent edge touching
               }}
             >
               {isEditing ? (
@@ -330,10 +350,12 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                     border: 'none',
                     outline: 'none',
                     color: textColor,
-                    fontSize: MermaidDesignTokens.typography.fontSize.sm,
+                    fontSize: MermaidDesignTokens.typography.fontSize.xs, // Match display size for star
                     fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                     textAlign: 'center',
-                    width: '100%'
+                    width: '100%',
+                    maxWidth: '44px', // Constrain input width for star
+                    lineHeight: '1.0'
                   }}
                   autoFocus
                 />
@@ -341,7 +363,11 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 <span style={{ 
                   display: 'block',
                   wordWrap: 'break-word',
-                  lineHeight: '1.1'
+                  lineHeight: '1.0', // Match container line height
+                  fontSize: 'inherit', // Inherit from parent
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}>{localLabel}</span>
               )}
             </div>
@@ -405,63 +431,131 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Single handles per side that can act as both source and target */}
+      {/* Properly defined handles - both source and target types */}
+      {/* Top Handle */}
       <Handle
         type="source"
         position={Position.Top}
-        id="top"
+        id="top-source"
         style={{
           background: strokeColor,
           width: '8px',
           height: '8px',
           border: 'none',
           opacity: showHandles ? 1 : 0,
-          transition: 'opacity 0.2s ease'
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
+        }}
+        isConnectable={showHandles}
+      />
+      <Handle
+        type="target"
+        position={Position.Top}
+        id="top-target"
+        style={{
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
+          border: 'none',
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
         }}
         isConnectable={showHandles}
       />
       
+      {/* Bottom Handle */}
       <Handle
         type="source"
         position={Position.Bottom}
-        id="bottom"
+        id="bottom-source"
         style={{
           background: strokeColor,
           width: '8px',
           height: '8px',
           border: 'none',
           opacity: showHandles ? 1 : 0,
-          transition: 'opacity 0.2s ease'
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
+        }}
+        isConnectable={showHandles}
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        id="bottom-target"
+        style={{
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
+          border: 'none',
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
         }}
         isConnectable={showHandles}
       />
       
+      {/* Left Handle */}
       <Handle
         type="source"
         position={Position.Left}
-        id="left"
+        id="left-source"
         style={{
           background: strokeColor,
           width: '8px',
           height: '8px',
           border: 'none',
           opacity: showHandles ? 1 : 0,
-          transition: 'opacity 0.2s ease'
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
+        }}
+        isConnectable={showHandles}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left-target"
+        style={{
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
+          border: 'none',
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
         }}
         isConnectable={showHandles}
       />
       
+      {/* Right Handle */}
       <Handle
         type="source"
         position={Position.Right}
-        id="right"
+        id="right-source"
         style={{
           background: strokeColor,
           width: '8px',
           height: '8px',
           border: 'none',
           opacity: showHandles ? 1 : 0,
-          transition: 'opacity 0.2s ease'
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
+        }}
+        isConnectable={showHandles}
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right-target"
+        style={{
+          background: strokeColor,
+          width: '8px',
+          height: '8px',
+          border: 'none',
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          zIndex: 10
         }}
         isConnectable={showHandles}
       />
@@ -473,6 +567,91 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
 
 // Set display name for debugging
 CustomNode.displayName = 'CustomNode';
+
+// Enhanced helper function for diamond text with auto-sizing
+const formatConstrainedText = (text: string, shape: string): string => {
+  if (shape !== 'diamond') return text;
+  
+  // Best practices for diamond text with improved formatting
+  const lowerText = text.toLowerCase();
+  
+  // Common decision patterns - keep these short and readable
+  if (lowerText.includes('decision') || lowerText.includes('choice')) return 'Decision';
+  if (lowerText.includes('valid') || lowerText.includes('check')) return 'Valid?';
+  if (lowerText.includes('approve') || lowerText.includes('approval')) return 'Approve?';
+  if (lowerText.includes('continue')) return 'Continue?';
+  if (lowerText.includes('findings') && lowerText.includes('analysis')) return 'Findings\nAnalysis';
+  
+  // Smart text formatting for diamonds
+  const words = text.split(' ');
+  
+  if (words.length === 1) {
+    // Single word - check length and wrap if needed
+    if (text.length <= 8) return text;
+    if (text.length <= 12) return text; // Allow slightly longer single words
+    return text.substring(0, 10) + '...';
+  } 
+  
+  if (words.length === 2) {
+    // Two words - put on separate lines for better readability
+    const word1 = words[0];
+    const word2 = words[1];
+    
+    // If both words are short, keep on separate lines
+    if (word1.length <= 8 && word2.length <= 8) {
+      return word1 + '\n' + word2;
+    }
+    
+    // If words are long, abbreviate
+    if (word1.length > 8) {
+      const abbrev1 = word1.substring(0, 6) + '.';
+      return abbrev1 + '\n' + (word2.length > 8 ? word2.substring(0, 6) + '.' : word2);
+    }
+    
+    return word1 + '\n' + (word2.length > 8 ? word2.substring(0, 6) + '.' : word2);
+  }
+  
+  if (words.length >= 3) {
+    // Multiple words - create more intelligent abbreviations
+    const importantWords = words.filter(w => 
+      w.length > 3 && 
+      !['the', 'and', 'or', 'but', 'for', 'nor', 'yet', 'so', 'a', 'an'].includes(w.toLowerCase())
+    );
+    
+    if (importantWords.length >= 2) {
+      // Use first two important words
+      const word1 = importantWords[0];
+      const word2 = importantWords[1];
+      
+      return (word1.length > 8 ? word1.substring(0, 7) + '.' : word1) + 
+             '\n' + 
+             (word2.length > 8 ? word2.substring(0, 7) + '.' : word2);
+    }
+    
+    if (importantWords.length === 1) {
+      // One important word + context
+      return importantWords[0].length > 10 
+        ? importantWords[0].substring(0, 10) + '...'
+        : importantWords[0];
+    }
+    
+    // Fallback to first two words
+    return words[0] + '\n' + words[1];
+  }
+  
+  return text;
+};
+
+// Calculate optimal font size for diamond shape based on text length
+const getDiamondFontSize = (text: string): string => {
+  const textLength = text.replace('\n', '').length;
+  
+  if (textLength <= 6) return '11px';      // Very short text - can be larger
+  if (textLength <= 10) return '10px';     // Short text
+  if (textLength <= 16) return '9px';      // Medium text
+  if (textLength <= 24) return '8px';      // Longer text
+  return '7px';                            // Very long text - smallest readable size
+};
 
 // Node types - defined outside component with stable reference
 const nodeTypes: NodeTypes = {
@@ -544,8 +723,8 @@ const initialEdges: Edge[] = [
     id: 'e1-2', 
     source: '1', 
     target: '2', 
-    sourceHandle: 'bottom',
-    targetHandle: 'top',
+    sourceHandle: 'bottom-source',
+    targetHandle: 'top-target',
     animated: true,
     style: { stroke: '#1e293b', strokeWidth: 2 },
     markerEnd: {
@@ -557,8 +736,8 @@ const initialEdges: Edge[] = [
     id: 'e2-3', 
     source: '2', 
     target: '3', 
-    sourceHandle: 'left',
-    targetHandle: 'top',
+    sourceHandle: 'left-source',
+    targetHandle: 'top-target',
     label: 'Yes',
     style: { stroke: '#1e293b', strokeWidth: 2 },
     markerEnd: {
@@ -570,8 +749,8 @@ const initialEdges: Edge[] = [
     id: 'e2-4', 
     source: '2', 
     target: '4', 
-    sourceHandle: 'right',
-    targetHandle: 'top',
+    sourceHandle: 'right-source',
+    targetHandle: 'top-target',
     label: 'No',
     style: { stroke: '#1e293b', strokeWidth: 2 },
     markerEnd: {
@@ -586,16 +765,35 @@ interface InteractiveMermaidEditorProps {
   onReactFlowInstanceChange?: (instance: any) => void;
   canvasBackground?: string;
   onCanvasBackgroundChange?: (color: string) => void;
+  onNodesChange?: (nodes: any[]) => void;
+  onEdgesChange?: (edges: any[]) => void;
 }
 
 export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> = ({
   onMermaidCodeChange,
   onReactFlowInstanceChange,
   canvasBackground = '#f8fafc',
-  onCanvasBackgroundChange
+  onCanvasBackgroundChange,
+  onNodesChange: onNodesChangeCallback,
+  onEdgesChange: onEdgesChangeCallback
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges, originalOnEdgesChange] = useEdgesState(initialEdges);
+
+  // Enhanced edge change handler to prevent unwanted modifications
+  const onEdgesChange = useCallback((changes: any) => {
+    // Filter out edge update changes that could cause splitting
+    const filteredChanges = changes.filter((change: any) => {
+      // Allow only edge removal and selection changes, prevent position updates
+      if (change.type === 'remove' || change.type === 'select') {
+        return true;
+      }
+      // Block any other edge modifications that could cause splitting
+      return false;
+    });
+    
+    originalOnEdgesChange(filteredChanges);
+  }, [originalOnEdgesChange]);
   const [selectedTool, setSelectedTool] = useState<'select' | 'rectangle' | 'circle' | 'diamond' | 'star' | 'text'>('select');
   const [nodeIdCounter, setNodeIdCounter] = useState(5);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -606,6 +804,8 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
   const [showExportModal, setShowExportModal] = useState(false);
   const [autoAdjustEnabled, setAutoAdjustEnabled] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [alignmentGuides, setAlignmentGuides] = useState<{x: number[], y: number[]}>({x: [], y: []});
 
   // Undo/Redo functionality
   const {
@@ -621,6 +821,60 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
 
   // Ref for the palette button to position the color picker
   const paletteButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Calculate alignment guides based on other nodes
+  const calculateAlignmentGuides = useCallback((draggedNode: Node, allNodes: Node[]) => {
+    const threshold = 10; // Snap distance in pixels
+    const guides: { x: number[], y: number[] } = { x: [], y: [] };
+    
+    // Get positions of other nodes (excluding the dragged one)
+    const otherNodes = allNodes.filter(node => node.id !== draggedNode.id);
+    
+    otherNodes.forEach(node => {
+      const nodeX = node.position.x;
+      const nodeY = node.position.y;
+      const nodeCenterX = nodeX + 40; // Assuming 80px node width, center is +40
+      const nodeCenterY = nodeY + 40; // Assuming 80px node height, center is +40
+      
+      const draggedX = draggedNode.position.x;
+      const draggedY = draggedNode.position.y;
+      const draggedCenterX = draggedX + 40;
+      const draggedCenterY = draggedY + 40;
+      
+      // Check for X-axis alignment (vertical lines)
+      if (Math.abs(nodeX - draggedX) < threshold) guides.x.push(nodeX);
+      if (Math.abs(nodeCenterX - draggedCenterX) < threshold) guides.x.push(nodeCenterX);
+      
+      // Check for Y-axis alignment (horizontal lines) 
+      if (Math.abs(nodeY - draggedY) < threshold) guides.y.push(nodeY);
+      if (Math.abs(nodeCenterY - draggedCenterY) < threshold) guides.y.push(nodeCenterY);
+    });
+    
+    // Remove duplicates and return
+    return {
+      x: [...new Set(guides.x)],
+      y: [...new Set(guides.y)]
+    };
+  }, []);
+
+  // Handle node drag start
+  const onNodeDragStart = useCallback((_: any, _node: Node) => {
+    setIsDragging(true);
+  }, []);
+
+  // Handle node drag
+  const onNodeDrag = useCallback((_: any, node: Node) => {
+    if (!isDragging) return;
+    
+    const guides = calculateAlignmentGuides(node, nodes);
+    setAlignmentGuides(guides);
+  }, [isDragging, nodes, calculateAlignmentGuides]);
+
+  // Handle node drag stop
+  const onNodeDragStop = useCallback(() => {
+    setIsDragging(false);
+    setAlignmentGuides({x: [], y: []});
+  }, []);
 
   // Generate Mermaid code from current nodes and edges following official syntax
   const generateMermaidCode = useCallback(() => {
@@ -686,9 +940,26 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
     return () => clearTimeout(timeoutId);
   }, [nodes, edges, saveUndoState]);
 
-  // Handle new connections
+  // Handle new connections with improved validation
   const onConnect = useCallback(
     (params: Connection) => {
+      // Additional validation to prevent unwanted connections
+      if (!params.source || !params.target || params.source === params.target) {
+        return;
+      }
+
+      // Check for existing connections between the same handles
+      const existingConnection = edges.find(edge => 
+        edge.source === params.source && 
+        edge.target === params.target &&
+        edge.sourceHandle === params.sourceHandle &&
+        edge.targetHandle === params.targetHandle
+      );
+
+      if (existingConnection) {
+        return; // Prevent duplicate connections
+      }
+
       // Get the appropriate edge color based on auto-adjust setting
       let edgeColor = '#1e293b'; // Default color
       if (autoAdjustEnabled) {
@@ -705,13 +976,17 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         markerEnd: {
           type: MarkerType.ArrowClosed,
           color: edgeColor // Ensure arrow color matches line color
-        }
+        },
+        updatable: false, // Prevent edge updates that could cause splitting
+        focusable: true,
+        selectable: true
       };
+      
       setEdges((eds) => addEdge(newEdge, eds));
       // Save undo state after connection
       setTimeout(() => saveUndoState(), 100);
     },
-    [setEdges, saveUndoState, autoAdjustEnabled, canvasBackground]
+    [setEdges, saveUndoState, autoAdjustEnabled, canvasBackground, edges]
   );
 
   // Handle node label changes
@@ -732,7 +1007,8 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
     let colors;
 
     if (autoAdjustEnabled) {
-      // Use auto-adjusted colors for new nodes
+      // Use smart gradient-aware auto-adjusted colors for new nodes
+      const smartColors = getSmartGradientAdjustment(canvasBackground);
       const optimalColors = getOptimalColors(canvasBackground);
       colors = {
         fill: shape === 'text' ? 'transparent' : optimalColors.shapeFill,
@@ -745,7 +1021,8 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
             default: return optimalColors.rectangleBorder;
           }
         })(),
-        text: optimalColors.textColor
+        text: optimalColors.textColor,
+        width: (smartColors as any).borderWidth || 2
       };
     } else {
       // Use default colors
@@ -786,7 +1063,7 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         shape,
         fillColor: colors.fill,
         strokeColor: colors.stroke,
-        strokeWidth: 2,
+        strokeWidth: colors.width || 2,
         textColor: colors.text,
         onLabelChange: handleNodeLabelChange
       }
@@ -1011,19 +1288,37 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
     );
   }, [handleNodeLabelChange, setNodes]);
 
+  // Notify parent when nodes change
+  React.useEffect(() => {
+    onNodesChangeCallback?.(nodes);
+  }, [nodes, onNodesChangeCallback]);
+
+  // Notify parent when edges change
+  React.useEffect(() => {
+    onEdgesChangeCallback?.(edges);
+  }, [edges, onEdgesChangeCallback]);
+
   return (
-    <div 
-      className="react-flow-wrapper"
-      style={{
-        height: '100%', // Fill the flex parent container
-        width: '100%',   
-        minHeight: '100%', // Match height to ensure consistency
-        minWidth: '800px',  
-        background: MermaidDesignTokens.colors.secondary.gradient,
-        position: 'relative',
-        overflow: 'hidden' // Prevent any overflow that creates extra space
-      }}
-    >
+    <>
+      {/* CSS for subtle alignment guides */}
+      <style>{`
+        .alignment-guide {
+          transition: opacity 0.2s ease;
+        }
+      `}</style>
+      
+      <div 
+        className="react-flow-wrapper"
+        style={{
+          height: '100%', // Fill the flex parent container
+          width: '100%',   
+          minHeight: '100%', // Match height to ensure consistency
+          minWidth: '800px',  
+          background: MermaidDesignTokens.colors.secondary.gradient,
+          position: 'relative',
+          overflow: 'hidden' // Prevent any overflow that creates extra space
+        }}
+      >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -1033,8 +1328,12 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onNodeClick={handleNodeClick}
         onEdgeClick={handleEdgeClick}
         onPaneClick={handleCanvasClick}
+        onNodeDragStart={onNodeDragStart}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
+        fitViewOptions={{ padding: 0.4, maxZoom: 1.2 }}
         proOptions={{ hideAttribution: true }}
         style={{ 
           background: canvasBackground,
@@ -1043,9 +1342,12 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         }}
         snapToGrid={false}
         snapGrid={[1, 1]}
-        connectionRadius={50}
-        connectOnClick={false}
+        connectionRadius={20}
+        connectOnClick={true}
         connectionMode={ConnectionMode.Loose}
+        edgesUpdatable={false}
+        edgesFocusable={true}
+        elevateEdgesOnSelect={true}
         // Add canvas bounds to prevent nodes from being dragged outside
         nodesDraggable={true}
         nodesConnectable={true}
@@ -1057,8 +1359,21 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         translateExtent={[[-5000, -5000], [10000, 8000]]} // Massive bounds for panning
         nodeExtent={[[-4000, -4000], [8000, 6000]]} // Allow nodes to be placed in a much larger area
         isValidConnection={(connection) => {
-          // Allow connections between any handles on different nodes
-          return connection.source !== connection.target;
+          // Prevent self-connections
+          if (connection.source === connection.target) return false;
+          
+          // Prevent duplicate connections between the same nodes with same handles
+          const existingConnection = edges.find(edge => 
+            edge.source === connection.source && 
+            edge.target === connection.target &&
+            edge.sourceHandle === connection.sourceHandle &&
+            edge.targetHandle === connection.targetHandle
+          );
+          
+          if (existingConnection) return false;
+          
+          // Allow more flexible connections - don't require specific handle types
+          return true;
         }}
         defaultEdgeOptions={(() => {
           if (autoAdjustEnabled) {
@@ -1078,6 +1393,10 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onInit={(instance) => {
           setReactFlowInstance(instance);
           onReactFlowInstanceChange?.(instance);
+          // Set a more reasonable default zoom
+          setTimeout(() => {
+            instance.fitView({ padding: 0.3, maxZoom: 0.8 });
+          }, 50);
         }}
       >
         <Background
@@ -1261,12 +1580,76 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         </Panel>
       </ReactFlow>
 
+      {/* Alignment Guides Overlay - Fixed positioning and subtle styling */}
+      {isDragging && reactFlowInstance && (alignmentGuides.x.length > 0 || alignmentGuides.y.length > 0) && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 1000
+        }}>
+          {/* Vertical alignment guides */}
+          {alignmentGuides.x.map((x, index) => {
+            const viewport = reactFlowInstance.getViewport();
+            const screenX = x * viewport.zoom + viewport.x;
+            return (
+              <div
+                key={`v-guide-${index}`}
+                style={{
+                  position: 'absolute',
+                  left: `${screenX}px`,
+                  top: 0,
+                  width: '1px',
+                  height: '100%',
+                  backgroundColor: '#60a5fa',
+                  opacity: 0.4,
+                  boxShadow: '0 0 2px rgba(96, 165, 250, 0.3)',
+                  transition: 'opacity 0.2s ease'
+                }}
+              />
+            );
+          })}
+          
+          {/* Horizontal alignment guides */}
+          {alignmentGuides.y.map((y, index) => {
+            const viewport = reactFlowInstance.getViewport();
+            const screenY = y * viewport.zoom + viewport.y;
+            return (
+              <div
+                key={`h-guide-${index}`}
+                style={{
+                  position: 'absolute',
+                  top: `${screenY}px`,
+                  left: 0,
+                  height: '1px',
+                  width: '100%',
+                  backgroundColor: '#60a5fa',
+                  opacity: 0.4,
+                  boxShadow: '0 0 2px rgba(96, 165, 250, 0.3)',
+                  transition: 'opacity 0.2s ease'
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
+
       {/* Node Properties Panel */}
       <NodePropertiesPanel
         selectedNode={selectedNode}
         onNodeUpdate={handleNodeUpdate}
         onNodeDelete={handleNodeDelete}
         onNodeDuplicate={handleNodeDuplicate}
+        onApplyToAll={(updates) => {
+          // Apply updates to all nodes
+          setNodes((nds) => nds.map(node => ({
+            ...node,
+            data: { ...node.data, ...updates }
+          })));
+        }}
         isVisible={showPropertiesPanel}
         onClose={() => setShowPropertiesPanel(false)}
       />
@@ -1277,6 +1660,15 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onEdgeUpdate={handleEdgeUpdate}
         onEdgeDelete={handleEdgeDelete}
         onEdgeDuplicate={handleEdgeDuplicate}
+        onApplyToAll={(updates) => {
+          // Apply updates to all edges
+          setEdges((eds) => eds.map(edge => ({
+            ...edge,
+            ...updates,
+            style: { ...edge.style, ...updates.style },
+            markerEnd: updates.markerEnd.type ? updates.markerEnd : edge.markerEnd
+          })));
+        }}
         isVisible={showEdgePropertiesPanel}
         onClose={() => setShowEdgePropertiesPanel(false)}
       />
@@ -1331,7 +1723,8 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         reactFlowInstance={reactFlowInstance}
       />
 
-    </div>
+      </div>
+    </>
   );
 };
 

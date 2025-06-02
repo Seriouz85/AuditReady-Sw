@@ -6,9 +6,9 @@
 import React, { useState, useEffect } from 'react';
 import { GlassButton, GlassPanel, GlassInput, MermaidDesignTokens } from '../ui';
 import {
-  Search, Grid3X3, List, Filter, Star, Clock,
-  Zap, BarChart3, GitBranch, Calendar, Users,
-  Database, PieChart, Target, Brain, PanelLeftClose, X
+  Search, Grid3X3, List, Star,
+  BarChart3, GitBranch, Calendar, Users,
+  Database, Target, PanelLeftClose
 } from 'lucide-react';
 
 interface MermaidTemplate {
@@ -307,7 +307,7 @@ export const MermaidTemplatePanel: React.FC<MermaidTemplatePanelProps> = ({
         </div>
       )}
       {/* Header */}
-      <GlassPanel variant="elevated" padding="4" style={{
+      <GlassPanel variant="elevated" padding={4} style={{
         borderRadius: 0,
         borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
         position: 'relative'
@@ -428,7 +428,19 @@ export const MermaidTemplatePanel: React.FC<MermaidTemplatePanelProps> = ({
               <TemplateCard
                 key={template.id}
                 template={template}
-                onSelect={onTemplateSelect}
+                onSelect={(selectedTemplate) => {
+                  // Add loading state and smooth transition
+                  const cardElement = document.querySelector(`[data-template-id="${template.id}"]`) as HTMLElement;
+                  if (cardElement) {
+                    cardElement.style.transform = 'scale(0.95)';
+                    cardElement.style.opacity = '0.7';
+                    setTimeout(() => {
+                      cardElement.style.transform = 'scale(1)';
+                      cardElement.style.opacity = '1';
+                    }, 200);
+                  }
+                  onTemplateSelect(selectedTemplate);
+                }}
               />
             ))}
           </div>
@@ -470,20 +482,20 @@ const TemplateCard: React.FC<{
   onSelect: (template: MermaidTemplate) => void;
 }> = ({ template, onSelect }) => {
   return (
-    <GlassPanel
-      variant="elevated"
-      padding="3"
-      style={{
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-        border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
-        ':hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: MermaidDesignTokens.shadows.glass.lg
-        }
-      }}
-      onClick={() => onSelect(template)}
+    <div 
+      data-template-id={template.id}
+      style={{ transition: 'all 0.3s ease' }}
     >
+      <GlassPanel
+        variant="elevated"
+        padding={3}
+        style={{
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          border: `1px solid ${MermaidDesignTokens.colors.glass.border}`
+        }}
+        onClick={() => onSelect(template)}
+      >
       {/* Thumbnail */}
       <div style={{
         width: '100%',
@@ -496,15 +508,146 @@ const TemplateCard: React.FC<{
         fontSize: '48px',
         marginBottom: MermaidDesignTokens.spacing[3],
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease'
       }}>
-        {template.thumbnail}
+        {/* Enhanced Visual preview with animated mini diagram */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `linear-gradient(135deg, 
+            ${template.category === 'audit' ? 'rgba(37, 99, 235, 0.15)' : 
+              template.category === 'process' ? 'rgba(16, 185, 129, 0.15)' : 
+              template.category === 'organization' ? 'rgba(139, 92, 246, 0.15)' : 
+              'rgba(37, 99, 235, 0.1)'}, 
+            rgba(255, 255, 255, 0.05))`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: 0.8
+        }}>
+          {/* Enhanced mini flow diagram based on template type */}
+          {template.id === 'infinity-loop-process' ? (
+            // Circular infinity loop representation
+            <div style={{
+              position: 'relative',
+              width: '60px',
+              height: '60px'
+            }}>
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    width: '8px',
+                    height: '8px',
+                    background: `hsl(${220 + i * 30}, 70%, 60%)`,
+                    borderRadius: '50%',
+                    top: '50%',
+                    left: '50%',
+                    transform: `translate(-50%, -50%) rotate(${i * 60}deg) translateY(-20px)`,
+                    animation: `pulse 2s infinite ${i * 0.2}s`
+                  }}
+                />
+              ))}
+            </div>
+          ) : template.id === 'business-process' ? (
+            // Horizontal flow representation
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              opacity: 0.8
+            }}>
+              <div style={{ width: '12px', height: '12px', background: '#3b82f6', borderRadius: '50%' }}></div>
+              <div style={{ width: '12px', height: '2px', background: '#3b82f6' }}></div>
+              <div style={{ width: '14px', height: '14px', background: '#f59e0b', borderRadius: '2px', transform: 'rotate(45deg)' }}></div>
+              <div style={{ width: '12px', height: '2px', background: '#16a34a' }}></div>
+              <div style={{ width: '12px', height: '12px', background: '#16a34a', borderRadius: '50%' }}></div>
+            </div>
+          ) : template.id === 'risk-assessment' ? (
+            // Risk matrix representation
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridTemplateRows: '1fr 1fr',
+              gap: '3px',
+              width: '40px',
+              height: '40px'
+            }}>
+              <div style={{ background: '#16a34a', borderRadius: '2px', opacity: 0.7 }}></div>
+              <div style={{ background: '#f59e0b', borderRadius: '2px', opacity: 0.8 }}></div>
+              <div style={{ background: '#f59e0b', borderRadius: '2px', opacity: 0.8 }}></div>
+              <div style={{ background: '#dc2626', borderRadius: '2px', opacity: 0.9 }}></div>
+            </div>
+          ) : (
+            // Standard vertical flow representation
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px',
+              opacity: 0.8
+            }}>
+              <div style={{
+                width: '28px',
+                height: '10px',
+                background: MermaidDesignTokens.colors.accent.blue,
+                borderRadius: '5px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}></div>
+              <div style={{
+                width: '2px',
+                height: '6px',
+                background: MermaidDesignTokens.colors.accent.blue,
+                opacity: 0.7
+              }}></div>
+              <div style={{
+                width: '20px',
+                height: '20px',
+                background: template.category === 'audit' ? '#dc2626' : 
+                           template.category === 'process' ? '#16a34a' : 
+                           '#8b5cf6',
+                borderRadius: template.id === 'risk-assessment' ? '3px' : '50%',
+                transform: template.id === 'risk-assessment' ? 'rotate(45deg)' : 'none',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}></div>
+              <div style={{
+                width: '2px',
+                height: '6px',
+                background: MermaidDesignTokens.colors.accent.blue,
+                opacity: 0.7
+              }}></div>
+              <div style={{
+                width: '26px',
+                height: '9px',
+                background: '#16a34a',
+                borderRadius: '4px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}></div>
+            </div>
+          )}
+        </div>
+        
+        {/* Main emoji/icon */}
+        <div style={{ 
+          position: 'relative', 
+          zIndex: 1,
+          fontSize: '36px',
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+        }}>
+          {template.thumbnail}
+        </div>
         {template.featured && (
           <div style={{
             position: 'absolute',
             top: MermaidDesignTokens.spacing[2],
             right: MermaidDesignTokens.spacing[2],
-            background: MermaidDesignTokens.colors.accent.purple,
+            background: MermaidDesignTokens.colors.accent.warning,
             borderRadius: MermaidDesignTokens.borderRadius.full,
             padding: MermaidDesignTokens.spacing[1],
             display: 'flex',
@@ -560,6 +703,7 @@ const TemplateCard: React.FC<{
         ))}
       </div>
     </GlassPanel>
+    </div>
   );
 };
 
@@ -571,7 +715,7 @@ const TemplateListItem: React.FC<{
   return (
     <GlassPanel
       variant="primary"
-      padding="3"
+      padding={3}
       style={{
         cursor: 'pointer',
         display: 'flex',
