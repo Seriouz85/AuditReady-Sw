@@ -188,7 +188,7 @@ export class EnhancedMermaidAI {
         id: `step-${Date.now()}`,
         label: newStepLabel,
         type: 'process',
-        position: { x: 250, y: updatedSteps.length * 100 + 50 },
+        position: { x: 400, y: updatedSteps.length * 200 + 80 },
         connections: []
       };
       updatedSteps.push(newStep);
@@ -240,8 +240,8 @@ export class EnhancedMermaidAI {
     
     // Position new steps after existing ones
     newSteps.forEach((step, index) => {
-      const yOffset = lastStep ? lastStep.position.y + 100 + (index * 100) : 100 + (index * 100);
-      step.position = { x: 250, y: yOffset };
+      const yOffset = lastStep ? lastStep.position.y + 200 + (index * 200) : 100 + (index * 200);
+      step.position = { x: 400, y: yOffset };
       
       // Connect the first new step to the last existing step if appropriate
       if (index === 0 && lastStep && lastStep.type !== 'end') {
@@ -288,7 +288,7 @@ export class EnhancedMermaidAI {
         id: `add-${baseId}`,
         label: stepText || 'New Step',
         type: 'process',
-        position: { x: 250, y: 100 }, // Will be repositioned
+        position: { x: 400, y: 100 }, // Will be repositioned
         connections: []
       });
     } else {
@@ -299,7 +299,7 @@ export class EnhancedMermaidAI {
           id: `add-${baseId}-${index}`,
           label: this.capitalizeWords(keyword.replace(/_/g, ' ')),
           type: index === keywords.length - 1 ? 'end' : 'process',
-          position: { x: 250, y: 100 + index * 100 }, // Will be repositioned
+          position: { x: 400, y: 100 + index * 200 }, // Will be repositioned
           connections: index < keywords.length - 1 ? [`add-${baseId}-${index + 1}`] : []
         });
       });
@@ -457,14 +457,14 @@ export class EnhancedMermaidAI {
         id: 'start',
         label: 'Risk Assessment Initiated',
         type: 'start',
-        position: { x: 250, y: 50 },
+        position: { x: 400, y: 50 },
         connections: ['identify']
       },
       {
         id: 'identify',
         label: 'Identify Risk Sources',
         type: 'process',
-        position: { x: 250, y: 150 },
+        position: { x: 400, y: 200 },
         connections: ['analyze'],
         metadata: { responsible: 'Risk Team', duration: '2-3 days' }
       },
@@ -472,7 +472,7 @@ export class EnhancedMermaidAI {
         id: 'analyze',
         label: 'Analyze Risk Impact',
         type: 'process',
-        position: { x: 250, y: 250 },
+        position: { x: 400, y: 350 },
         connections: ['evaluate'],
         metadata: { responsible: 'Risk Analyst', duration: '1-2 days' }
       },
@@ -480,22 +480,14 @@ export class EnhancedMermaidAI {
         id: 'evaluate',
         label: 'Risk Level Acceptable?',
         type: 'decision',
-        position: { x: 250, y: 350 },
-        connections: ['accept', 'mitigate']
-      },
-      {
-        id: 'accept',
-        label: 'Accept Risk',
-        type: 'process',
-        position: { x: 100, y: 450 },
-        connections: ['monitor'],
-        metadata: { risk: 'low' }
+        position: { x: 400, y: 500 },
+        connections: ['mitigate']
       },
       {
         id: 'mitigate',
         label: 'Implement Mitigation',
         type: 'process',
-        position: { x: 400, y: 450 },
+        position: { x: 400, y: 650 },
         connections: ['monitor'],
         metadata: { risk: 'high' }
       },
@@ -503,14 +495,14 @@ export class EnhancedMermaidAI {
         id: 'monitor',
         label: 'Monitor & Review',
         type: 'process',
-        position: { x: 250, y: 550 },
+        position: { x: 400, y: 800 },
         connections: ['end']
       },
       {
         id: 'end',
         label: 'Risk Management Complete',
         type: 'end',
-        position: { x: 250, y: 650 },
+        position: { x: 400, y: 950 },
         connections: []
       }
     ];
@@ -525,49 +517,49 @@ export class EnhancedMermaidAI {
         id: 'start',
         label: 'Audit Planning',
         type: 'start',
-        position: { x: 250, y: 50 },
+        position: { x: 400, y: 50 },
         connections: ['scope']
       },
       {
         id: 'scope',
         label: 'Define Audit Scope',
         type: 'process',
-        position: { x: 250, y: 150 },
+        position: { x: 400, y: 200 },
         connections: ['evidence']
       },
       {
         id: 'evidence',
         label: 'Collect Evidence',
         type: 'process',
-        position: { x: 250, y: 250 },
+        position: { x: 600, y: 500 },
         connections: ['test']
       },
       {
         id: 'test',
         label: 'Test Controls',
         type: 'process',
-        position: { x: 250, y: 350 },
+        position: { x: 400, y: 350 },
         connections: ['findings']
       },
       {
         id: 'findings',
         label: 'Document Findings',
         type: 'process',
-        position: { x: 250, y: 450 },
+        position: { x: 600, y: 500 },
         connections: ['report']
       },
       {
         id: 'report',
         label: 'Generate Report',
         type: 'process',
-        position: { x: 250, y: 550 },
+        position: { x: 400, y: 550 },
         connections: ['end']
       },
       {
         id: 'end',
         label: 'Audit Complete',
         type: 'end',
-        position: { x: 250, y: 650 },
+        position: { x: 400, y: 650 },
         connections: []
       }
     ];
@@ -582,56 +574,42 @@ export class EnhancedMermaidAI {
         id: 'start',
         label: 'Incident Detected',
         type: 'start',
-        position: { x: 250, y: 50 },
+        position: { x: 400, y: 50 },
         connections: ['assess']
       },
       {
         id: 'assess',
         label: 'Initial Assessment',
         type: 'process',
-        position: { x: 250, y: 150 },
-        connections: ['severity']
-      },
-      {
-        id: 'severity',
-        label: 'High Severity?',
-        type: 'decision',
-        position: { x: 250, y: 250 },
-        connections: ['escalate', 'contain']
-      },
-      {
-        id: 'escalate',
-        label: 'Escalate to CISO',
-        type: 'process',
-        position: { x: 100, y: 350 },
+        position: { x: 400, y: 200 },
         connections: ['contain']
       },
       {
         id: 'contain',
         label: 'Contain Incident',
         type: 'process',
-        position: { x: 250, y: 450 },
+        position: { x: 400, y: 350 },
         connections: ['investigate']
       },
       {
         id: 'investigate',
         label: 'Investigate Root Cause',
         type: 'process',
-        position: { x: 250, y: 550 },
+        position: { x: 400, y: 500 },
         connections: ['recover']
       },
       {
         id: 'recover',
         label: 'Recovery & Lessons',
         type: 'process',
-        position: { x: 250, y: 650 },
+        position: { x: 400, y: 650 },
         connections: ['end']
       },
       {
         id: 'end',
         label: 'Incident Closed',
         type: 'end',
-        position: { x: 250, y: 750 },
+        position: { x: 400, y: 800 },
         connections: []
       }
     ];
@@ -646,49 +624,42 @@ export class EnhancedMermaidAI {
         id: 'start',
         label: 'New Hire Request',
         type: 'start',
-        position: { x: 250, y: 50 },
+        position: { x: 400, y: 50 },
         connections: ['approve']
       },
       {
         id: 'approve',
-        label: 'Manager Approval?',
-        type: 'decision',
-        position: { x: 250, y: 150 },
-        connections: ['reject', 'background']
-      },
-      {
-        id: 'reject',
-        label: 'Request Rejected',
-        type: 'end',
-        position: { x: 100, y: 250 },
-        connections: []
+        label: 'Manager Approval',
+        type: 'process',
+        position: { x: 400, y: 200 },
+        connections: ['background']
       },
       {
         id: 'background',
         label: 'Background Check',
         type: 'process',
-        position: { x: 400, y: 250 },
+        position: { x: 400, y: 350 },
         connections: ['setup']
       },
       {
         id: 'setup',
         label: 'Setup Accounts',
         type: 'process',
-        position: { x: 400, y: 350 },
+        position: { x: 400, y: 500 },
         connections: ['orientation']
       },
       {
         id: 'orientation',
         label: 'Employee Orientation',
         type: 'process',
-        position: { x: 400, y: 450 },
+        position: { x: 400, y: 650 },
         connections: ['end']
       },
       {
         id: 'end',
         label: 'Onboarding Complete',
         type: 'end',
-        position: { x: 400, y: 550 },
+        position: { x: 400, y: 800 },
         connections: []
       }
     ];
@@ -697,42 +668,42 @@ export class EnhancedMermaidAI {
   // Add new process step generators for information security/business topics
   private generateInformationClassificationSteps(): ProcessStep[] {
     return [
-      { id: 'start', label: 'Start Classification', type: 'start', position: { x: 250, y: 50 }, connections: ['identify'] },
-      { id: 'identify', label: 'Identify Information Assets', type: 'process', position: { x: 250, y: 150 }, connections: ['categorize'] },
-      { id: 'categorize', label: 'Categorize Data Types', type: 'process', position: { x: 250, y: 250 }, connections: ['assign'] },
-      { id: 'assign', label: 'Assign Classification Levels', type: 'process', position: { x: 250, y: 350 }, connections: ['label'] },
-      { id: 'label', label: 'Label Information', type: 'process', position: { x: 250, y: 450 }, connections: ['protect'] },
-      { id: 'protect', label: 'Apply Protection Measures', type: 'process', position: { x: 250, y: 550 }, connections: ['review'] },
-      { id: 'review', label: 'Review & Update', type: 'process', position: { x: 250, y: 650 }, connections: ['end'] },
-      { id: 'end', label: 'Classification Complete', type: 'end', position: { x: 250, y: 750 }, connections: [] }
+      { id: 'start', label: 'Start Classification', type: 'start', position: { x: 400, y: 50 }, connections: ['identify'] },
+      { id: 'identify', label: 'Identify Information Assets', type: 'process', position: { x: 400, y: 200 }, connections: ['categorize'] },
+      { id: 'categorize', label: 'Categorize Data Types', type: 'process', position: { x: 400, y: 350 }, connections: ['assign'] },
+      { id: 'assign', label: 'Assign Classification Levels', type: 'process', position: { x: 400, y: 500 }, connections: ['label'] },
+      { id: 'label', label: 'Label Information', type: 'process', position: { x: 400, y: 650 }, connections: ['protect'] },
+      { id: 'protect', label: 'Apply Protection Measures', type: 'process', position: { x: 400, y: 800 }, connections: ['review'] },
+      { id: 'review', label: 'Review & Update', type: 'process', position: { x: 400, y: 950 }, connections: ['end'] },
+      { id: 'end', label: 'Classification Complete', type: 'end', position: { x: 400, y: 1100 }, connections: [] }
     ];
   }
 
   private generateDataManagementSteps(): ProcessStep[] {
     return [
-      { id: 'start', label: 'Start Data Management', type: 'start', position: { x: 250, y: 50 }, connections: ['collect'] },
-      { id: 'collect', label: 'Data Collection', type: 'process', position: { x: 250, y: 150 }, connections: ['store'] },
-      { id: 'store', label: 'Data Storage', type: 'process', position: { x: 250, y: 250 }, connections: ['use'] },
-      { id: 'use', label: 'Data Usage', type: 'process', position: { x: 250, y: 350 }, connections: ['share'] },
-      { id: 'share', label: 'Data Sharing', type: 'process', position: { x: 250, y: 450 }, connections: ['archive'] },
-      { id: 'archive', label: 'Data Archiving', type: 'process', position: { x: 250, y: 550 }, connections: ['delete'] },
-      { id: 'delete', label: 'Data Deletion', type: 'process', position: { x: 250, y: 650 }, connections: ['end'] },
-      { id: 'end', label: 'Data Management Complete', type: 'end', position: { x: 250, y: 750 }, connections: [] }
+      { id: 'start', label: 'Start Data Management', type: 'start', position: { x: 400, y: 50 }, connections: ['collect'] },
+      { id: 'collect', label: 'Data Collection', type: 'process', position: { x: 400, y: 200 }, connections: ['store'] },
+      { id: 'store', label: 'Data Storage', type: 'process', position: { x: 400, y: 350 }, connections: ['use'] },
+      { id: 'use', label: 'Data Usage', type: 'process', position: { x: 400, y: 500 }, connections: ['share'] },
+      { id: 'share', label: 'Data Sharing', type: 'process', position: { x: 400, y: 650 }, connections: ['archive'] },
+      { id: 'archive', label: 'Data Archiving', type: 'process', position: { x: 400, y: 800 }, connections: ['delete'] },
+      { id: 'delete', label: 'Data Deletion', type: 'process', position: { x: 400, y: 950 }, connections: ['end'] },
+      { id: 'end', label: 'Data Management Complete', type: 'end', position: { x: 400, y: 1100 }, connections: [] }
     ];
   }
 
   private generateYearlyPlanSteps(): ProcessStep[] {
     return [
-      { id: 'start', label: 'Start Planning', type: 'start', position: { x: 250, y: 50 }, connections: ['gather'] },
-      { id: 'gather', label: 'Gather Requirements', type: 'process', position: { x: 250, y: 150 }, connections: ['setgoals'] },
-      { id: 'setgoals', label: 'Set Goals & Objectives', type: 'process', position: { x: 250, y: 250 }, connections: ['develop'] },
-      { id: 'develop', label: 'Develop Action Plan', type: 'process', position: { x: 250, y: 350 }, connections: ['allocate'] },
-      { id: 'allocate', label: 'Allocate Resources', type: 'process', position: { x: 250, y: 450 }, connections: ['timeline'] },
-      { id: 'timeline', label: 'Establish Timeline', type: 'process', position: { x: 250, y: 550 }, connections: ['review'] },
-      { id: 'review', label: 'Review & Approve', type: 'process', position: { x: 250, y: 650 }, connections: ['implement'] },
-      { id: 'implement', label: 'Implement Plan', type: 'process', position: { x: 250, y: 750 }, connections: ['monitor'] },
-      { id: 'monitor', label: 'Monitor Progress', type: 'process', position: { x: 250, y: 850 }, connections: ['end'] },
-      { id: 'end', label: 'Plan Complete', type: 'end', position: { x: 250, y: 950 }, connections: [] }
+      { id: 'start', label: 'Start Planning', type: 'start', position: { x: 400, y: 50 }, connections: ['gather'] },
+      { id: 'gather', label: 'Gather Requirements', type: 'process', position: { x: 400, y: 200 }, connections: ['setgoals'] },
+      { id: 'setgoals', label: 'Set Goals & Objectives', type: 'process', position: { x: 400, y: 350 }, connections: ['develop'] },
+      { id: 'develop', label: 'Develop Action Plan', type: 'process', position: { x: 400, y: 500 }, connections: ['allocate'] },
+      { id: 'allocate', label: 'Allocate Resources', type: 'process', position: { x: 400, y: 650 }, connections: ['timeline'] },
+      { id: 'timeline', label: 'Establish Timeline', type: 'process', position: { x: 400, y: 800 }, connections: ['review'] },
+      { id: 'review', label: 'Review & Approve', type: 'process', position: { x: 400, y: 950 }, connections: ['implement'] },
+      { id: 'implement', label: 'Implement Plan', type: 'process', position: { x: 400, y: 1100 }, connections: ['monitor'] },
+      { id: 'monitor', label: 'Monitor Progress', type: 'process', position: { x: 400, y: 1250 }, connections: ['end'] },
+      { id: 'end', label: 'Plan Complete', type: 'end', position: { x: 400, y: 1400 }, connections: [] }
     ];
   }
 
@@ -741,21 +712,21 @@ export class EnhancedMermaidAI {
     // If no keywords, fallback to a basic process
     if (!keywords.length) {
       return [
-        { id: 'start', label: 'Start', type: 'start', position: { x: 250, y: 50 }, connections: ['step1'] },
-        { id: 'step1', label: 'Describe Process', type: 'process', position: { x: 250, y: 150 }, connections: ['end'] },
-        { id: 'end', label: 'Complete', type: 'end', position: { x: 250, y: 250 }, connections: [] }
+        { id: 'start', label: 'Start', type: 'start', position: { x: 400, y: 50 }, connections: ['step1'] },
+        { id: 'step1', label: 'Describe Process', type: 'process', position: { x: 400, y: 200 }, connections: ['end'] },
+        { id: 'end', label: 'Complete', type: 'end', position: { x: 600, y: 500 }, connections: [] }
       ];
     }
     // Use keywords as step names, but make them more readable
     const steps: ProcessStep[] = [
-      { id: 'start', label: `Start: ${title}`, type: 'start', position: { x: 250, y: 50 }, connections: ['step1'] }
+      { id: 'start', label: `Start: ${title}`, type: 'start', position: { x: 400, y: 50 }, connections: ['step1'] }
     ];
     keywords.forEach((kw, idx) => {
       steps.push({
         id: `step${idx + 1}`,
         label: this.capitalizeWords(kw.replace(/_/g, ' ')),
         type: 'process',
-        position: { x: 250, y: 150 + idx * 100 },
+        position: { x: 400, y: 200 + idx * 200 },
         connections: [idx < keywords.length - 1 ? `step${idx + 2}` : 'end']
       });
     });
@@ -763,7 +734,7 @@ export class EnhancedMermaidAI {
       id: 'end',
       label: 'Complete',
       type: 'end',
-      position: { x: 250, y: 150 + keywords.length * 100 },
+      position: { x: 400, y: 200 + keywords.length * 200 },
       connections: []
     });
     return steps;

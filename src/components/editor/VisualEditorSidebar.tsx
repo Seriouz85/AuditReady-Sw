@@ -121,7 +121,17 @@ export const VisualEditorSidebar: React.FC<VisualEditorSidebarProps> = ({
           <ConversationalAI
             isVisible={true}
             onDiagramGenerate={onDiagramGenerate}
-            onReactFlowGenerate={onReactFlowGenerate}
+            onReactFlowGenerate={(nodes, edges) => {
+              console.log('VisualEditorSidebar - Received onReactFlowGenerate call with:', { nodes: nodes.length, edges: edges.length });
+              console.log('VisualEditorSidebar - Nodes:', nodes);
+              console.log('VisualEditorSidebar - Edges:', edges);
+              if (onReactFlowGenerate) {
+                console.log('VisualEditorSidebar - Calling parent onReactFlowGenerate');
+                onReactFlowGenerate(nodes, edges);
+              } else {
+                console.error('VisualEditorSidebar - onReactFlowGenerate is not available!');
+              }
+            }}
             onReactFlowAdd={onReactFlowAdd}
             currentNodes={currentNodes}
             currentEdges={currentEdges}

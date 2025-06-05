@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { GlassButton, GlassPanel, GlassInput, MermaidDesignTokens } from '../ui';
 import { EnhancedMermaidAI } from '../../services/ai/EnhancedMermaidAI';
+import { MarkerType } from 'reactflow';
 
 interface Message {
   id: string;
@@ -55,21 +56,159 @@ export const ConversationalAI: React.FC<ConversationalAIProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Suggested prompts for IT security professionals
-  const securityPrompts = [
-    "Create an incident response workflow with escalation procedures",
-    "Design a comprehensive vulnerability assessment process",
-    "Build a compliance audit checklist flow for SOC 2",
-    "Map out access control procedures with multi-factor authentication",
-    "Create a data breach response plan with notification timelines",
-    "Design security awareness training workflow for employees",
-    "Generate risk assessment matrix with probability and impact scoring",
-    "Create information classification process with data labeling",
-    "Design yearly security planning process with quarterly reviews"
+  // Professional security process templates - generates complete flows directly
+  const securityProcesses = [
+    {
+      id: 'incident-response',
+      title: "Create an incident response workflow with escalation procedures",
+      description: "Complete incident response process with CISO escalation",
+      process: {
+        nodes: [
+          { id: '1', label: 'Incident Detected', type: 'start', position: { x: 250, y: 50 } },
+          { id: '2', label: 'Initial Assessment', type: 'process', position: { x: 250, y: 200 } },
+          { id: '3', label: 'High Severity?', type: 'decision', position: { x: 250, y: 350 } },
+          { id: '4', label: 'Escalate to CISO', type: 'process', position: { x: 100, y: 500 } },
+          { id: '5', label: 'Contain Incident', type: 'process', position: { x: 400, y: 500 } },
+          { id: '6', label: 'Investigate Root Cause', type: 'process', position: { x: 250, y: 650 } },
+          { id: '7', label: 'Recovery & Lessons', type: 'process', position: { x: 250, y: 800 } },
+          { id: '8', label: 'Incident Closed', type: 'end', position: { x: 250, y: 950 } }
+        ],
+        edges: [
+          { source: '1', target: '2', label: '' },
+          { source: '2', target: '3', label: '' },
+          { source: '3', target: '4', label: 'Yes' },
+          { source: '3', target: '5', label: 'No' },
+          { source: '4', target: '6', label: '' },
+          { source: '5', target: '6', label: '' },
+          { source: '6', target: '7', label: '' },
+          { source: '7', target: '8', label: '' }
+        ]
+      }
+    },
+    {
+      id: 'vulnerability-assessment',
+      title: "Design a comprehensive vulnerability assessment process",
+      description: "Complete vulnerability assessment workflow",
+      process: {
+        nodes: [
+          { id: '1', label: 'Plan Assessment', type: 'start', position: { x: 250, y: 50 } },
+          { id: '2', label: 'Asset Discovery', type: 'process', position: { x: 250, y: 200 } },
+          { id: '3', label: 'Vulnerability Scanning', type: 'process', position: { x: 250, y: 350 } },
+          { id: '4', label: 'Risk Analysis', type: 'process', position: { x: 250, y: 500 } },
+          { id: '5', label: 'Critical Risk?', type: 'decision', position: { x: 250, y: 650 } },
+          { id: '6', label: 'Immediate Remediation', type: 'process', position: { x: 100, y: 800 } },
+          { id: '7', label: 'Prioritize & Schedule', type: 'process', position: { x: 400, y: 800 } },
+          { id: '8', label: 'Generate Report', type: 'process', position: { x: 250, y: 950 } },
+          { id: '9', label: 'Assessment Complete', type: 'end', position: { x: 250, y: 1100 } }
+        ],
+        edges: [
+          { source: '1', target: '2', label: '' },
+          { source: '2', target: '3', label: '' },
+          { source: '3', target: '4', label: '' },
+          { source: '4', target: '5', label: '' },
+          { source: '5', target: '6', label: 'Yes' },
+          { source: '5', target: '7', label: 'No' },
+          { source: '6', target: '8', label: '' },
+          { source: '7', target: '8', label: '' },
+          { source: '8', target: '9', label: '' }
+        ]
+      }
+    },
+    {
+      id: 'compliance-audit',
+      title: "Build a compliance audit checklist flow for SOC 2",
+      description: "SOC 2 compliance audit process",
+      process: {
+        nodes: [
+          { id: '1', label: 'Audit Planning', type: 'start', position: { x: 250, y: 50 } },
+          { id: '2', label: 'Control Testing', type: 'process', position: { x: 250, y: 200 } },
+          { id: '3', label: 'Evidence Collection', type: 'process', position: { x: 250, y: 350 } },
+          { id: '4', label: 'Control Deficiency?', type: 'decision', position: { x: 250, y: 500 } },
+          { id: '5', label: 'Document Finding', type: 'process', position: { x: 100, y: 650 } },
+          { id: '6', label: 'Continue Testing', type: 'process', position: { x: 400, y: 650 } },
+          { id: '7', label: 'Audit Report', type: 'process', position: { x: 250, y: 800 } },
+          { id: '8', label: 'Management Review', type: 'process', position: { x: 250, y: 950 } },
+          { id: '9', label: 'Audit Complete', type: 'end', position: { x: 250, y: 1100 } }
+        ],
+        edges: [
+          { source: '1', target: '2', label: '' },
+          { source: '2', target: '3', label: '' },
+          { source: '3', target: '4', label: '' },
+          { source: '4', target: '5', label: 'Yes' },
+          { source: '4', target: '6', label: 'No' },
+          { source: '5', target: '7', label: '' },
+          { source: '6', target: '7', label: '' },
+          { source: '7', target: '8', label: '' },
+          { source: '8', target: '9', label: '' }
+        ]
+      }
+    }
   ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Convert security process to React Flow nodes and edges
+  const generateSecurityProcess = (processConfig: any) => {
+    const nodes = processConfig.nodes.map((node: any) => ({
+      id: `qs-${node.id}`,
+      type: 'custom',
+      position: node.position,
+      data: {
+        label: node.label,
+        shape: node.type === 'start' ? 'circle' : 
+               node.type === 'end' ? 'circle' :
+               node.type === 'decision' ? 'diamond' : 'rectangle',
+        fillColor: node.type === 'start' ? '#dbeafe' :
+                   node.type === 'end' ? '#dcfce7' :
+                   node.type === 'decision' ? '#fef3c7' : '#f8fafc',
+        strokeColor: node.type === 'start' ? '#2563eb' :
+                     node.type === 'end' ? '#16a34a' :
+                     node.type === 'decision' ? '#f59e0b' : '#475569',
+        strokeWidth: 2,
+        textColor: '#1e293b',
+        onLabelChange: () => {},
+        onUpdate: () => {}
+      }
+    }));
+
+    const edges = processConfig.edges.map((edge: any, index: number) => {
+      // Smart handle selection based on node positions
+      const sourceNode = processConfig.nodes.find((n: any) => n.id === edge.source);
+      const targetNode = processConfig.nodes.find((n: any) => n.id === edge.target);
+      
+      let sourceHandle = 'bottom-source';
+      let targetHandle = 'top-target';
+      
+      if (sourceNode && targetNode) {
+        // If target is to the left, use left/right handles
+        if (targetNode.position.x < sourceNode.position.x) {
+          sourceHandle = 'left-source';
+          targetHandle = 'right-target';
+        }
+        // If target is to the right, use right/left handles  
+        else if (targetNode.position.x > sourceNode.position.x) {
+          sourceHandle = 'right-source';
+          targetHandle = 'left-target';
+        }
+        // Otherwise use default bottom/top for vertical flows
+      }
+      
+      return {
+        id: `qs-edge-${edge.source}-${edge.target}-${index}`,
+        source: `qs-${edge.source}`,
+        target: `qs-${edge.target}`,
+        sourceHandle,
+        targetHandle,
+        type: 'smoothstep',
+        animated: false,
+        style: { stroke: '#1e293b', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' },
+        label: edge.label || undefined
+      };
+    });
+    return { nodes, edges };
   };
 
   useEffect(() => {
@@ -143,6 +282,39 @@ export const ConversationalAI: React.FC<ConversationalAIProps> = ({
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  // Handle Quick Start process generation
+  const handleQuickStartProcess = (processTemplate: any) => {
+    // Generate complete process directly
+    const { nodes, edges } = generateSecurityProcess(processTemplate.process);
+    
+    console.log('Quick Start - Process template:', processTemplate.process);
+    console.log('Quick Start - Raw edges in template:', processTemplate.process.edges);
+    console.log('Quick Start - Generated nodes:', nodes.length);
+    console.log('Quick Start - Generated edges:', edges.length);
+    console.log('Quick Start - Generated edges details:', edges);
+    console.log('Quick Start - Node IDs:', nodes.map(n => n.id));
+    console.log('Quick Start - Edge connections:', edges.map(e => `${e.source} -> ${e.target} (${e.sourceHandle} to ${e.targetHandle})`));
+    console.log('Quick Start - Calling onReactFlowGenerate with:', { nodes, edges });
+    
+    // Add system message
+    const systemMessage: Message = {
+      id: Date.now().toString(),
+      type: 'ai',
+      content: `I've created a ${processTemplate.description} for you. This diagram includes ${processTemplate.process.nodes.length} key steps in the process. The diagram shows security styling and follows top-down layout. You can modify any part of it or ask me to adjust specific aspects.`,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, systemMessage]);
+
+    // Generate React Flow nodes and edges directly
+    if (onReactFlowGenerate) {
+      console.log('Quick Start - onReactFlowGenerate is available, calling it now');
+      onReactFlowGenerate(nodes, edges);
+    } else {
+      console.error('Quick Start - onReactFlowGenerate is not available!');
     }
   };
 
@@ -286,27 +458,58 @@ export const ConversationalAI: React.FC<ConversationalAIProps> = ({
           textColor: '#1e293b',
           description: step.metadata?.description,
           responsible: step.metadata?.responsible,
-          duration: step.metadata?.duration
+          duration: step.metadata?.duration,
+          onLabelChange: () => {},
+          onUpdate: () => {}
         }
       };
     });
 
-    // Generate edges from connections
-    const edges = response.steps.reduce((acc: any[], step: any) => {
-      step.connections.forEach((targetId: string) => {
-        acc.push({
-          id: `${step.id}-${targetId}`,
-          source: step.id,
-          target: targetId,
-          type: 'smoothstep',
-          animated: false,
-          style: { stroke: '#475569', strokeWidth: 2 },
-          markerEnd: {
-            type: 'ArrowClosed',
-            color: '#475569'
+    // Generate edges from connections with proper handle assignment
+    const edges = response.steps.reduce((acc: any[], step: any, stepIndex: number) => {
+      if (step.connections && step.connections.length > 0) {
+        step.connections.forEach((targetId: string, connIndex: number) => {
+          // Find source and target nodes for handle assignment
+          const sourceNode = response.steps.find((s: any) => s.id === step.id);
+          const targetNode = response.steps.find((s: any) => s.id === targetId);
+          
+          let sourceHandle = 'bottom-source';
+          let targetHandle = 'top-target';
+          
+          if (sourceNode && targetNode) {
+            // Simple vertical flow - use bottom to top connections
+            if (targetNode.position.y > sourceNode.position.y) {
+              sourceHandle = 'bottom-source';
+              targetHandle = 'top-target';
+            }
+            // If target is to the left, use left/right handles
+            else if (targetNode.position.x < sourceNode.position.x) {
+              sourceHandle = 'left-source';
+              targetHandle = 'right-target';
+            }
+            // If target is to the right, use right/left handles  
+            else if (targetNode.position.x > sourceNode.position.x) {
+              sourceHandle = 'right-source';
+              targetHandle = 'left-target';
+            }
           }
+          
+          acc.push({
+            id: `ai-conv-edge-${step.id}-${targetId}-${stepIndex}-${connIndex}`,
+            source: step.id,
+            target: targetId,
+            sourceHandle,
+            targetHandle,
+            type: 'smoothstep',
+            animated: false,
+            style: { stroke: '#475569', strokeWidth: 2 },
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              color: '#475569'
+            }
+          });
         });
-      });
+      }
       return acc;
     }, []);
 
@@ -392,12 +595,12 @@ export const ConversationalAI: React.FC<ConversationalAIProps> = ({
           maxHeight: '200px',
           overflowY: 'auto'
         }}>
-          {securityPrompts.slice(0, 6).map((prompt, index) => (
+          {securityProcesses.map((process, index) => (
             <GlassButton
-              key={index}
+              key={process.id}
               variant="ghost"
               size="sm"
-              onClick={() => handlePromptClick(prompt)}
+              onClick={() => handleQuickStartProcess(process)}
               style={{
                 justifyContent: 'flex-start',
                 fontSize: MermaidDesignTokens.typography.fontSize.xs,
@@ -418,7 +621,7 @@ export const ConversationalAI: React.FC<ConversationalAIProps> = ({
                   color: MermaidDesignTokens.colors.accent.blue,
                   flexShrink: 0
                 }} />
-                <span>{prompt}</span>
+                <span>{process.title}</span>
               </div>
             </GlassButton>
           ))}

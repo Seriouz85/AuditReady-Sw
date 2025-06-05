@@ -21,7 +21,9 @@ import ReactFlow, {
   Handle,
   Position,
   MarkerType,
-  ConnectionMode
+  ConnectionMode,
+  ConnectionLineType,
+  NodeResizer
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -62,6 +64,8 @@ interface CustomNodeProps {
     onLabelChange?: (nodeId: string, newLabel: string) => void;
     description?: string;
     onUpdate?: (nodeId: string, updates: any) => void;
+    width?: number;
+    height?: number;
   };
   selected?: boolean;
   id?: string;
@@ -86,6 +90,8 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
     setLocalLabel(newLabel);
     if (data.onUpdate) {
       data.onUpdate(id, { label: newLabel });
+    } else if (data.onLabelChange) {
+      data.onLabelChange(id, newLabel);
     }
   }, [data, id]);
 
@@ -102,6 +108,58 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
     setIsEditing(false);
   }, []);
 
+  // Render text content with main label and optional description
+  const renderTextContent = (fontSize: number) => {
+    if (isEditing) {
+      return (
+        <input
+          type="text"
+          value={localLabel}
+          onChange={(e) => handleLabelChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: textColor,
+            fontSize: `${fontSize}px`,
+            fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+            textAlign: 'center',
+            width: '100%'
+          }}
+          autoFocus
+        />
+      );
+    }
+
+    return (
+      <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
+        {/* Main label */}
+        <div style={{ 
+          fontSize: `${fontSize}px`,
+          fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
+          wordWrap: 'break-word'
+        }}>
+          {localLabel}
+        </div>
+        {/* Description - smaller text below main label */}
+        {description && (
+          <div style={{ 
+            fontSize: `${Math.max(fontSize - 2, 8)}px`,
+            fontWeight: MermaidDesignTokens.typography.fontWeight.normal,
+            color: `${textColor}99`, // Add transparency
+            marginTop: '2px',
+            wordWrap: 'break-word',
+            lineHeight: '1.1'
+          }}>
+            {description}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Determine if handles should be visible
   const showHandles = selected || isHovered;
 
@@ -110,13 +168,22 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
     fillColor = '#f8fafc',
     strokeColor = '#2563eb',
     strokeWidth = 2,
-    textColor = '#1e293b'
+    textColor = '#1e293b',
+    description = ''
   } = data;
 
   const getNodeStyle = () => {
+    // Use custom dimensions if available, otherwise calculate optimal size
+    const customWidth = data.width;
+    const customHeight = data.height;
+    const optimalSize = getOptimalSize(localLabel, shape, description);
+    
+    const width = customWidth || optimalSize;
+    const height = customHeight || optimalSize;
+    
     const baseStyle = {
-      width: '80px',
-      height: '80px',
+      width: `${width}px`,
+      height: `${height}px`,
       position: 'relative' as const,
       cursor: 'pointer',
       transition: 'all 0.2s ease'
@@ -136,11 +203,13 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
   const renderShape = () => {
     switch (shape) {
       case 'circle':
+        const circleSize = data.width || data.height || getOptimalSize(localLabel, shape, description);
+        const circleFontSize = getOptimalFontSize(localLabel, shape);
         return (
           <div
             style={{
-              width: '80px',
-              height: '80px',
+              width: `${circleSize}px`,
+              height: `${circleSize}px`,
               borderRadius: '50%',
               border: `${strokeWidth}px solid ${strokeColor}`,
               background: fillColor,
@@ -148,61 +217,36 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
               alignItems: 'center',
               justifyContent: 'center',
               color: textColor,
-              fontSize: MermaidDesignTokens.typography.fontSize.sm,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-              textAlign: 'center' as const,
-              padding: '6px', // Reduced padding for more text space
-              lineHeight: '1.1' // Tighter line height
+              padding: `${Math.max(circleSize * 0.1, 6)}px`
             }}
             onDoubleClick={handleDoubleClick}
           >
-            {isEditing ? (
-              <input
-                type="text"
-                value={localLabel}
-                onChange={(e) => handleLabelChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: textColor,
-                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
-                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-                  textAlign: 'center',
-                  width: '100%'
-                }}
-                autoFocus
-              />
-            ) : (
-              <span style={{ 
-                lineHeight: '1.1',
-                wordWrap: 'break-word'
-              }}>{localLabel}</span>
-            )}
+            {renderTextContent(circleFontSize)}
           </div>
         );
 
       case 'diamond':
+        const diamondSize = data.width || data.height || getOptimalSize(localLabel, shape, description);
+        const diamondFontSize = getOptimalFontSize(localLabel, shape);
+        const textAreaSize = diamondSize * 0.7; // Text area is 70% of diamond size
         return (
           <div
             style={{
-              width: '80px',
-              height: '80px',
+              width: `${diamondSize}px`,
+              height: `${diamondSize}px`,
               position: 'relative',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}
             onDoubleClick={handleDoubleClick}
-            title={localLabel} // Show full text on hover
+            title={localLabel}
           >
             {/* SVG-based diamond shape for better export compatibility */}
             <svg
-              width="80"
-              height="80"
-              viewBox="0 0 80 80"
+              width={diamondSize}
+              height={diamondSize}
+              viewBox={`0 0 ${diamondSize} ${diamondSize}`}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -210,7 +254,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
               }}
             >
               <polygon
-                points="40,10 70,40 40,70 10,40"
+                points={`${diamondSize/2},${diamondSize*0.1} ${diamondSize*0.9},${diamondSize/2} ${diamondSize/2},${diamondSize*0.9} ${diamondSize*0.1},${diamondSize/2}`}
                 fill={fillColor}
                 stroke={strokeColor}
                 strokeWidth={strokeWidth}
@@ -227,12 +271,12 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 color: textColor,
-                fontSize: getDiamondFontSize(localLabel), // Dynamic font size based on text length
-                fontWeight: MermaidDesignTokens.typography.fontWeight.semibold, // Slightly bolder for better readability
+                fontSize: `${diamondFontSize}px`,
+                fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                 textAlign: 'center' as const,
-                maxWidth: '54px', // Slightly larger for better text fit
-                maxHeight: '54px', // Larger height constraint
-                lineHeight: '1.1', // Optimal line height for diamond text
+                maxWidth: `${textAreaSize}px`,
+                maxHeight: `${textAreaSize}px`,
+                lineHeight: '1.2',
                 wordBreak: 'break-word',
                 overflowWrap: 'break-word',
                 overflow: 'hidden',
@@ -240,53 +284,24 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '2px', // Less padding to give more space for text
-                whiteSpace: 'pre-line' // Preserve line breaks from \n
+                padding: `${Math.max(diamondSize * 0.05, 4)}px`,
+                whiteSpace: 'normal'
               }}
             >
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={localLabel}
-                  onChange={(e) => handleLabelChange(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  onBlur={handleBlur}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    color: textColor,
-                    fontSize: getDiamondFontSize(localLabel), // Match display size for diamond
-                    fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
-                    textAlign: 'center',
-                    width: '100%',
-                    maxWidth: '40px', // Constrain input width for diamond
-                    lineHeight: '1.0'
-                  }}
-                  autoFocus
-                />
-              ) : (
-                <span style={{ 
-                  display: 'block',
-                  wordWrap: 'break-word',
-                  lineHeight: '1.0', // Match container line height
-                  fontSize: 'inherit', // Inherit from parent
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'pre-line' // Allow line breaks
-                }}>{formatConstrainedText(localLabel, 'diamond')}</span>
-              )}
+              {renderTextContent(diamondFontSize)}
             </div>
           </div>
         );
 
       case 'star':
+        const starSize = data.width || data.height || getOptimalSize(localLabel, shape, description);
+        const starFontSize = getOptimalFontSize(localLabel, shape);
+        const starTextAreaSize = starSize * 0.6; // Star has irregular shape, smaller text area
         return (
           <div
             style={{
-              width: '80px',
-              height: '80px',
+              width: `${starSize}px`,
+              height: `${starSize}px`,
               position: 'relative',
               display: 'flex',
               alignItems: 'center',
@@ -296,9 +311,9 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           >
             {/* SVG-based star shape for better export compatibility */}
             <svg
-              width="80"
-              height="80"
-              viewBox="0 0 80 80"
+              width={starSize}
+              height={starSize}
+              viewBox={`0 0 ${starSize} ${starSize}`}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -306,7 +321,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
               }}
             >
               <polygon
-                points="40,8 48,28 70,28 52,42 60,62 40,48 20,62 28,42 10,28 32,28"
+                points={`${starSize/2},${starSize*0.1} ${starSize*0.6},${starSize*0.35} ${starSize*0.875},${starSize*0.35} ${starSize*0.65},${starSize*0.525} ${starSize*0.75},${starSize*0.775} ${starSize/2},${starSize*0.6} ${starSize*0.25},${starSize*0.775} ${starSize*0.35},${starSize*0.525} ${starSize*0.125},${starSize*0.35} ${starSize*0.4},${starSize*0.35}`}
                 fill={fillColor}
                 stroke={strokeColor}
                 strokeWidth={strokeWidth}
@@ -323,19 +338,19 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 color: textColor,
-                fontSize: MermaidDesignTokens.typography.fontSize.xs, // Smaller for better fit in star
+                fontSize: `${starFontSize}px`,
                 fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                 textAlign: 'center' as const,
-                maxWidth: '48px', // Optimized for star shape
-                maxHeight: '48px', // Add height constraint for star
-                lineHeight: '1.0', // Tighter line height
+                maxWidth: `${starTextAreaSize}px`,
+                maxHeight: `${starTextAreaSize}px`,
+                lineHeight: '1.1',
                 wordWrap: 'break-word',
                 overflow: 'hidden',
                 zIndex: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '2px' // Small padding to prevent edge touching
+                padding: `${Math.max(starSize * 0.03, 2)}px`
               }}
             >
               {isEditing ? (
@@ -350,12 +365,12 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                     border: 'none',
                     outline: 'none',
                     color: textColor,
-                    fontSize: MermaidDesignTokens.typography.fontSize.xs, // Match display size for star
+                    fontSize: `${starFontSize}px`,
                     fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
                     textAlign: 'center',
                     width: '100%',
-                    maxWidth: '44px', // Constrain input width for star
-                    lineHeight: '1.0'
+                    maxWidth: `${starTextAreaSize * 0.9}px`,
+                    lineHeight: '1.1'
                   }}
                   autoFocus
                 />
@@ -363,11 +378,10 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
                 <span style={{ 
                   display: 'block',
                   wordWrap: 'break-word',
-                  lineHeight: '1.0', // Match container line height
-                  fontSize: 'inherit', // Inherit from parent
+                  lineHeight: '1.1',
+                  fontSize: 'inherit',
                   maxWidth: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  overflow: 'hidden'
                 }}>{localLabel}</span>
               )}
             </div>
@@ -375,11 +389,13 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
         );
 
       default: // rectangle
+        const rectSize = data.width || data.height || getOptimalSize(localLabel, shape, description);
+        const rectFontSize = getOptimalFontSize(localLabel, shape);
         return (
           <div
             style={{
-              width: '80px',
-              height: '80px',
+              width: `${rectSize}px`,
+              height: `${rectSize}px`,
               border: `${strokeWidth}px solid ${strokeColor}`,
               borderRadius: '8px',
               background: fillColor,
@@ -387,39 +403,11 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
               alignItems: 'center',
               justifyContent: 'center',
               color: textColor,
-              fontSize: MermaidDesignTokens.typography.fontSize.sm,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-              textAlign: 'center' as const,
-              padding: '6px', // Reduced padding for more text space
-              lineHeight: '1.1' // Tighter line height
+              padding: `${Math.max(rectSize * 0.08, 6)}px`
             }}
             onDoubleClick={handleDoubleClick}
           >
-            {isEditing ? (
-              <input
-                type="text"
-                value={localLabel}
-                onChange={(e) => handleLabelChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: textColor,
-                  fontSize: MermaidDesignTokens.typography.fontSize.sm,
-                  fontWeight: MermaidDesignTokens.typography.fontWeight.medium,
-                  textAlign: 'center',
-                  width: '100%'
-                }}
-                autoFocus
-              />
-            ) : (
-              <span style={{ 
-                lineHeight: '1.1',
-                wordWrap: 'break-word'
-              }}>{localLabel}</span>
-            )}
+            {renderTextContent(rectFontSize)}
           </div>
         );
     }
@@ -431,7 +419,26 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Properly defined handles - both source and target types */}
+      {/* Resize handles - only visible when selected */}
+      <NodeResizer 
+        color={strokeColor}
+        isVisible={selected}
+        minWidth={60}
+        minHeight={60}
+        maxWidth={300}
+        maxHeight={300}
+        keepAspectRatio={shape === 'circle' || shape === 'star' || shape === 'diamond'}
+        onResize={(_, resizeData) => {
+          // Update node size in data for dynamic sizing
+          if (data.onUpdate && id) {
+            data.onUpdate(id, {
+              width: Math.round(resizeData.width),
+              height: Math.round(resizeData.height)
+            });
+          }
+        }}
+      />
+      {/* Working handle structure from successful version */}
       {/* Top Handle */}
       <Handle
         type="source"
@@ -446,7 +453,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       <Handle
         type="target"
@@ -461,7 +468,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       
       {/* Bottom Handle */}
@@ -478,7 +485,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       <Handle
         type="target"
@@ -493,7 +500,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       
       {/* Left Handle */}
@@ -510,7 +517,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       <Handle
         type="target"
@@ -525,7 +532,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       
       {/* Right Handle */}
@@ -542,7 +549,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       <Handle
         type="target"
@@ -557,7 +564,7 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
           transition: 'opacity 0.2s ease',
           zIndex: 10
         }}
-        isConnectable={showHandles}
+        isConnectable={true}
       />
       
       {renderShape()}
@@ -568,94 +575,81 @@ const CustomNode = React.memo<CustomNodeProps>(({ data, selected, id }) => {
 // Set display name for debugging
 CustomNode.displayName = 'CustomNode';
 
-// Enhanced helper function for diamond text with auto-sizing
-const formatConstrainedText = (text: string, shape: string): string => {
-  if (shape !== 'diamond') return text;
+// Dynamic sizing functions based on text content
+const getOptimalSize = (text: string, shape: string, description?: string) => {
+  const textLength = text.length;
+  const descriptionLength = description ? description.length : 0;
+  const totalTextLength = textLength + (descriptionLength * 0.7); // Description has less weight
   
-  // Best practices for diamond text with improved formatting
-  const lowerText = text.toLowerCase();
+  const baseSize = 80;
+  const minSize = 80;
+  const maxSize = 200; // Increased max size for resize capability
   
-  // Common decision patterns - keep these short and readable
-  if (lowerText.includes('decision') || lowerText.includes('choice')) return 'Decision';
-  if (lowerText.includes('valid') || lowerText.includes('check')) return 'Valid?';
-  if (lowerText.includes('approve') || lowerText.includes('approval')) return 'Approve?';
-  if (lowerText.includes('continue')) return 'Continue?';
-  if (lowerText.includes('findings') && lowerText.includes('analysis')) return 'Findings\nAnalysis';
+  // Calculate size based on total text length
+  let calculatedSize = baseSize;
   
-  // Smart text formatting for diamonds
-  const words = text.split(' ');
-  
-  if (words.length === 1) {
-    // Single word - check length and wrap if needed
-    if (text.length <= 8) return text;
-    if (text.length <= 12) return text; // Allow slightly longer single words
-    return text.substring(0, 10) + '...';
-  } 
-  
-  if (words.length === 2) {
-    // Two words - put on separate lines for better readability
-    const word1 = words[0];
-    const word2 = words[1];
-    
-    // If both words are short, keep on separate lines
-    if (word1.length <= 8 && word2.length <= 8) {
-      return word1 + '\n' + word2;
-    }
-    
-    // If words are long, abbreviate
-    if (word1.length > 8) {
-      const abbrev1 = word1.substring(0, 6) + '.';
-      return abbrev1 + '\n' + (word2.length > 8 ? word2.substring(0, 6) + '.' : word2);
-    }
-    
-    return word1 + '\n' + (word2.length > 8 ? word2.substring(0, 6) + '.' : word2);
+  if (totalTextLength > 15) {
+    calculatedSize = baseSize + Math.min((totalTextLength - 15) * 2, maxSize - baseSize);
   }
   
-  if (words.length >= 3) {
-    // Multiple words - create more intelligent abbreviations
-    const importantWords = words.filter(w => 
-      w.length > 3 && 
-      !['the', 'and', 'or', 'but', 'for', 'nor', 'yet', 'so', 'a', 'an'].includes(w.toLowerCase())
-    );
-    
-    if (importantWords.length >= 2) {
-      // Use first two important words
-      const word1 = importantWords[0];
-      const word2 = importantWords[1];
-      
-      return (word1.length > 8 ? word1.substring(0, 7) + '.' : word1) + 
-             '\n' + 
-             (word2.length > 8 ? word2.substring(0, 7) + '.' : word2);
-    }
-    
-    if (importantWords.length === 1) {
-      // One important word + context
-      return importantWords[0].length > 10 
-        ? importantWords[0].substring(0, 10) + '...'
-        : importantWords[0];
-    }
-    
-    // Fallback to first two words
-    return words[0] + '\n' + words[1];
+  // Add extra space if there's description
+  if (description) {
+    calculatedSize += 20; // Extra space for description line
   }
   
-  return text;
+  // Shape-specific adjustments
+  switch (shape) {
+    case 'diamond':
+      // Diamonds need more space due to rotated shape - increased for better text fit
+      calculatedSize = Math.max(calculatedSize * 1.5, 120);
+      break;
+    case 'circle':
+      // Circles need a bit more space for readability
+      calculatedSize = Math.max(calculatedSize * 1.1, baseSize);
+      break;
+    case 'star':
+      // Stars have irregular shape, need more space
+      calculatedSize = Math.max(calculatedSize * 1.15, baseSize);
+      break;
+    default:
+      // Rectangles are most efficient
+      calculatedSize = Math.max(calculatedSize, minSize);
+  }
+  
+  return Math.min(calculatedSize, maxSize);
 };
 
-// Calculate optimal font size for diamond shape based on text length
-const getDiamondFontSize = (text: string): string => {
-  const textLength = text.replace('\n', '').length;
+const getOptimalFontSize = (text: string, shape: string = 'rectangle') => {
+  const textLength = text.length;
+  const baseFontSize = 14;
   
-  if (textLength <= 6) return '11px';      // Very short text - can be larger
-  if (textLength <= 10) return '10px';     // Short text
-  if (textLength <= 16) return '9px';      // Medium text
-  if (textLength <= 24) return '8px';      // Longer text
-  return '7px';                            // Very long text - smallest readable size
+  // Diamonds need smaller text earlier due to rotated shape
+  if (shape === 'diamond') {
+    if (textLength <= 8) return baseFontSize;
+    if (textLength <= 15) return Math.max(baseFontSize - 1, 11);
+    if (textLength <= 25) return Math.max(baseFontSize - 2, 10);
+    if (textLength <= 35) return Math.max(baseFontSize - 3, 9);
+    return Math.max(baseFontSize - 4, 8);
+  }
+  
+  // Other shapes
+  if (textLength <= 10) return baseFontSize;
+  if (textLength <= 20) return Math.max(baseFontSize - 1, 12);
+  if (textLength <= 30) return Math.max(baseFontSize - 2, 11);
+  if (textLength <= 40) return Math.max(baseFontSize - 3, 10);
+  
+  return Math.max(baseFontSize - 4, 9);
 };
+
 
 // Node types - defined outside component with stable reference
 const nodeTypes: NodeTypes = {
   custom: CustomNode
+};
+
+// Edge types - ensure React Flow can render all edge types
+const edgeTypes = {
+  // Use default edge types from React Flow
 };
 
 // Initial nodes with proper default colors
@@ -671,7 +665,8 @@ const initialNodes: Node[] = [
       strokeColor: '#2563eb',
       strokeWidth: 2,
       textColor: '#1e293b',
-      onLabelChange: () => {}
+      onLabelChange: () => {},
+      onUpdate: () => {}
     }
   },
   {
@@ -685,7 +680,8 @@ const initialNodes: Node[] = [
       strokeColor: '#f59e0b',
       strokeWidth: 2,
       textColor: '#1e293b',
-      onLabelChange: () => {}
+      onLabelChange: () => {},
+      onUpdate: () => {}
     }
   },
   {
@@ -699,7 +695,8 @@ const initialNodes: Node[] = [
       strokeColor: '#2563eb',
       strokeWidth: 2,
       textColor: '#1e293b',
-      onLabelChange: () => {}
+      onLabelChange: () => {},
+      onUpdate: () => {}
     }
   },
   {
@@ -713,10 +710,12 @@ const initialNodes: Node[] = [
       strokeColor: '#2563eb',
       strokeWidth: 2,
       textColor: '#1e293b',
-      onLabelChange: () => {}
+      onLabelChange: () => {},
+      onUpdate: () => {}
     }
   }
 ];
+
 
 const initialEdges: Edge[] = [
   { 
@@ -767,6 +766,7 @@ interface InteractiveMermaidEditorProps {
   onCanvasBackgroundChange?: (color: string) => void;
   onNodesChange?: (nodes: any[]) => void;
   onEdgesChange?: (edges: any[]) => void;
+  onSetNodesAndEdges?: (setNodes: any, setEdges: any) => void;
 }
 
 export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> = ({
@@ -775,10 +775,19 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
   canvasBackground = '#f8fafc',
   onCanvasBackgroundChange,
   onNodesChange: onNodesChangeCallback,
-  onEdgesChange: onEdgesChangeCallback
+  onEdgesChange: onEdgesChangeCallback,
+  onSetNodesAndEdges
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, originalOnEdgesChange] = useEdgesState(initialEdges);
+  
+  // Debug edge changes
+  React.useEffect(() => {
+    console.log('Edges state changed:', edges.length, 'edges');
+    edges.forEach((edge, index) => {
+      console.log(`Edge ${index + 1}:`, edge.id, `${edge.source} -> ${edge.target}`);
+    });
+  }, [edges]);
 
   // Enhanced edge change handler to prevent unwanted modifications
   const onEdgesChange = useCallback((changes: any) => {
@@ -948,6 +957,26 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         return;
       }
 
+      // Let user control connection direction based on drag direction
+      // If they dragged from a target handle, swap source and target to maintain direction
+      if (params.sourceHandle && params.sourceHandle.includes('-target')) {
+        // Swap source/target to maintain user's intended direction
+        const originalSource = params.source;
+        const originalSourceHandle = params.sourceHandle;
+        params.source = params.target;
+        params.sourceHandle = params.targetHandle?.replace('-target', '-source') || 'right-source';
+        params.target = originalSource;
+        params.targetHandle = originalSourceHandle;
+      }
+
+      // Ensure handles are valid types
+      if (params.sourceHandle && params.sourceHandle.includes('-target')) {
+        params.sourceHandle = params.sourceHandle.replace('-target', '-source');
+      }
+      if (params.targetHandle && params.targetHandle.includes('-source')) {
+        params.targetHandle = params.targetHandle.replace('-source', '-target');
+      }
+
       // Check for existing connections between the same handles
       const existingConnection = edges.find(edge => 
         edge.source === params.source && 
@@ -983,7 +1012,6 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
       };
       
       setEdges((eds) => addEdge(newEdge, eds));
-      // Save undo state after connection
       setTimeout(() => saveUndoState(), 100);
     },
     [setEdges, saveUndoState, autoAdjustEnabled, canvasBackground, edges]
@@ -995,6 +1023,19 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
       nds.map((node) =>
         node.id === nodeId
           ? { ...node, data: { ...node.data, label: newLabel } }
+          : node
+      )
+    );
+    // Trigger undo state save after a short delay
+    setTimeout(() => saveUndoState(), 100);
+  }, [setNodes, saveUndoState]);
+
+  // Update node properties
+  const handleNodeUpdate = useCallback((nodeId: string, updates: any) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, ...updates } }
           : node
       )
     );
@@ -1065,13 +1106,14 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         strokeColor: colors.stroke,
         strokeWidth: colors.width || 2,
         textColor: colors.text,
-        onLabelChange: handleNodeLabelChange
+        onLabelChange: handleNodeLabelChange,
+        onUpdate: handleNodeUpdate
       }
     };
 
     setNodes((nds) => [...nds, newNode]);
     setNodeIdCounter(prev => prev + 1);
-  }, [nodeIdCounter, setNodes, handleNodeLabelChange, autoAdjustEnabled, canvasBackground]);
+  }, [nodeIdCounter, setNodes, handleNodeLabelChange, handleNodeUpdate, autoAdjustEnabled, canvasBackground]);
 
   // Handle node selection
   const handleNodeClick = useCallback((_: any, node: Node) => {
@@ -1099,19 +1141,6 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
       setShowEdgePropertiesPanel(false);
     }
   }, []);
-
-  // Update node properties
-  const handleNodeUpdate = useCallback((nodeId: string, updates: any) => {
-    setNodes((nds) =>
-      nds.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, ...updates } }
-          : node
-      )
-    );
-    // Trigger undo state save after a short delay
-    setTimeout(() => saveUndoState(), 100);
-  }, [setNodes, saveUndoState]);
 
   // Delete node
   const handleNodeDelete = useCallback((nodeId: string) => {
@@ -1178,6 +1207,12 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
     setIsGenerating(true);
     try {
       const aiService = EnhancedMermaidAI.getInstance();
+      
+      // Set current diagram context if we have existing content
+      if (nodes.length > 0) {
+        aiService.setCurrentDiagramFromNodes(nodes, edges);
+      }
+      
       let generatedDiagram;
       try {
         generatedDiagram = await aiService.generateProcessFlow(aiPrompt.trim());
@@ -1191,12 +1226,12 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
           throw error;
         }
       }
-      // Clear existing nodes and edges for fresh diagram
-      setNodes([]);
-      setEdges([]);
       // Convert AI-generated steps to React Flow nodes and edges
       const generatedNodes: Node[] = [];
       const generatedEdges: Edge[] = [];
+      
+      // Check if this is an additive operation
+      const isAdditive = nodes.length > 0 && generatedDiagram.isAdditive;
       generatedDiagram.steps.forEach((step) => {
         const nodeId = `ai-${step.id}`;
         let shape: 'rectangle' | 'circle' | 'diamond' | 'star' = 'rectangle';
@@ -1241,7 +1276,8 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
             strokeColor,
             strokeWidth: 2,
             textColor: '#1e293b',
-            onLabelChange: handleNodeLabelChange
+            onLabelChange: handleNodeLabelChange,
+            onUpdate: handleNodeUpdate
           }
         });
       });
@@ -1249,12 +1285,36 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         step.connections.forEach((targetId) => {
           const sourceId = `ai-${step.id}`;
           const targetNodeId = `ai-${targetId}`;
+          
+          // Smart handle selection based on node positions
+          const sourceNode = generatedDiagram.steps.find(s => s.id === step.id);
+          const targetNode = generatedDiagram.steps.find(s => s.id === targetId);
+          
+          let sourceHandle = 'bottom-source';
+          let targetHandle = 'top-target';
+          
+          if (sourceNode && targetNode) {
+            // If target is to the left, use left/right handles
+            if (targetNode.position.x < sourceNode.position.x) {
+              sourceHandle = 'left-source';
+              targetHandle = 'right-target';
+            }
+            // If target is to the right, use right/left handles  
+            else if (targetNode.position.x > sourceNode.position.x) {
+              sourceHandle = 'right-source';
+              targetHandle = 'left-target';
+            }
+            // Otherwise use default bottom/top for vertical flows
+          }
+          
           generatedEdges.push({
             id: `ai-edge-${sourceId}-${targetNodeId}`,
             source: sourceId,
             target: targetNodeId,
+            sourceHandle,
+            targetHandle,
             type: 'smoothstep',
-            animated: true,
+            animated: false,
             style: {
               stroke: '#1976d2',
               strokeWidth: 2
@@ -1266,8 +1326,26 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
           });
         });
       });
-      setNodes(generatedNodes);
-      setEdges(generatedEdges);
+      
+      // Debug logging for generated edges
+      console.log('Generated edges:', generatedEdges.length, generatedEdges);
+      console.log('Current edges before update:', edges.length, edges);
+      
+      // Only replace if not additive, otherwise add to existing
+      if (isAdditive) {
+        console.log('Adding to existing nodes and edges (additive mode)');
+        setNodes((prevNodes) => [...prevNodes, ...generatedNodes]);
+        setEdges((prevEdges) => {
+          const newEdges = [...prevEdges, ...generatedEdges];
+          console.log('New edges array after additive update:', newEdges.length, newEdges);
+          return newEdges;
+        });
+      } else {
+        console.log('Replacing all nodes and edges (non-additive mode)');
+        setNodes(generatedNodes);
+        setEdges(generatedEdges);
+      }
+      
       onMermaidCodeChange?.(generatedDiagram.mermaidCode);
       setAiPrompt('');
     } catch (error) {
@@ -1276,17 +1354,22 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
     } finally {
       setIsGenerating(false);
     }
-  }, [aiPrompt, onMermaidCodeChange, setNodes, setEdges, handleNodeLabelChange]);
+  }, [aiPrompt, onMermaidCodeChange, setNodes, setEdges, handleNodeLabelChange, handleNodeUpdate]);
 
-  // Update existing nodes with label change handler
+
+  // Update existing nodes with label change handler and update handler (like working version)
   React.useEffect(() => {
     setNodes((nds) =>
       nds.map((node) => ({
         ...node,
-        data: { ...node.data, onLabelChange: handleNodeLabelChange }
+        data: { 
+          ...node.data, 
+          onLabelChange: handleNodeLabelChange,
+          onUpdate: handleNodeUpdate
+        }
       }))
     );
-  }, [handleNodeLabelChange, setNodes]);
+  }, [handleNodeLabelChange, handleNodeUpdate, setNodes]);
 
   // Notify parent when nodes change
   React.useEffect(() => {
@@ -1297,6 +1380,14 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
   React.useEffect(() => {
     onEdgesChangeCallback?.(edges);
   }, [edges, onEdgesChangeCallback]);
+
+  // Expose setNodes and setEdges functions to parent (only once)
+  React.useEffect(() => {
+    if (onSetNodesAndEdges) {
+      onSetNodesAndEdges(setNodes, setEdges);
+    }
+  }, [onSetNodesAndEdges]); // Only depend on the callback, not the setters
+
 
   return (
     <>
@@ -1332,6 +1423,7 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.4, maxZoom: 1.2 }}
         proOptions={{ hideAttribution: true }}
@@ -1342,9 +1434,10 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         }}
         snapToGrid={false}
         snapGrid={[1, 1]}
-        connectionRadius={20}
+        connectionRadius={30}
         connectOnClick={true}
         connectionMode={ConnectionMode.Loose}
+        connectionLineType={ConnectionLineType.SmoothStep}
         edgesUpdatable={false}
         edgesFocusable={true}
         elevateEdgesOnSelect={true}
@@ -1359,20 +1452,13 @@ export const InteractiveMermaidEditor: React.FC<InteractiveMermaidEditorProps> =
         translateExtent={[[-5000, -5000], [10000, 8000]]} // Massive bounds for panning
         nodeExtent={[[-4000, -4000], [8000, 6000]]} // Allow nodes to be placed in a much larger area
         isValidConnection={(connection) => {
-          // Prevent self-connections
-          if (connection.source === connection.target) return false;
+          // Simplified validation - only prevent self-connections
+          if (connection.source === connection.target) {
+            console.log('🚫 Edge rejected: Self-connection');
+            return false;
+          }
           
-          // Prevent duplicate connections between the same nodes with same handles
-          const existingConnection = edges.find(edge => 
-            edge.source === connection.source && 
-            edge.target === connection.target &&
-            edge.sourceHandle === connection.sourceHandle &&
-            edge.targetHandle === connection.targetHandle
-          );
-          
-          if (existingConnection) return false;
-          
-          // Allow more flexible connections - don't require specific handle types
+          console.log('✅ Edge accepted:', `${connection.source} -> ${connection.target}`);
           return true;
         }}
         defaultEdgeOptions={(() => {
