@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import About from "./pages/About";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
 import CreateLearningPath from "./pages/LMS/CreateLearningPath";
@@ -50,6 +52,8 @@ const App = () => (
                 {/* Pages with main app layout */}
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/app/*" element={<Index />} />
 
                 {/* Standalone editor routes */}
