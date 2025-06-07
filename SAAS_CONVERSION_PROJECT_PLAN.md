@@ -85,10 +85,10 @@ Converting the Audit Readiness Hub from a single-tenant application to a multi-t
 - ✅ **Security**: Rate limiting, input validation, error handling
 - ✅ **UX**: Seamless demo flow, loading states, toast notifications
 
-**Pending (Medium Priority)**:
-- [ ] Enhance login page with functional "Remember me" option
-- [ ] Create onboarding flow for new tenants (post-signup)
-- [ ] Add social login options (Google, Microsoft OAuth)
+**Additional Features Completed**:
+- [x] Enhance login page with functional "Remember me" option (localStorage persistence)
+- [x] Create onboarding flow for new tenants (post-signup) (`/onboarding`)
+- [x] Add social login options (Google, Microsoft OAuth) with infrastructure ready
 
 #### 3. Dashboard (`/app`)
 **Priority**: High
