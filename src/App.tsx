@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import PricingAssessment from "./pages/PricingAssessment";
 import Onboarding from "./pages/Onboarding";
 import About from "./pages/About";
 import LMS from "./pages/LMS";
@@ -53,6 +54,7 @@ const App = () => (
                 {/* Pages with main app layout */}
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/pricing" element={<PricingAssessment />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/about" element={<About />} />
