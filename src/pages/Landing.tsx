@@ -166,30 +166,23 @@ export default function Landing() {
 
       {/* Ultra Cool Logo Section - AI Robot Version */}
       {/* BACKUP: Original version without robot available in git history */}
-      <section className="py-32 px-4 relative overflow-hidden">
-        <div className={`absolute inset-0 ${theme === 'light' 
-          ? 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50' 
-          : 'bg-gradient-to-br from-slate-900 via-blue-900/20 to-indigo-900/30'}`}></div>
-        <div className={`absolute inset-0 ${theme === 'light' ? 'bg-[url(\'/grid.svg\')] opacity-5' : 'bg-gradient-to-r from-transparent via-blue-500/5 to-transparent'}`}></div>
-        
-        
+      <section className="py-24 px-4 relative">{/* Removed overflow-hidden for better blend */}
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
             className="max-w-7xl mx-auto"
           >
-            <Card className={`relative overflow-hidden ${theme === 'light' 
-              ? 'bg-white/70 backdrop-blur-xl border-white/20 shadow-lg' 
-              : 'bg-slate-800/70 backdrop-blur-xl border-white/10 shadow-lg'}`}>
-              <div className={`absolute inset-0 ${theme === 'light' 
-                ? 'bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5' 
-                : 'bg-gradient-to-br from-blue-600/10 via-indigo-600/10 to-purple-600/10'}`}></div>
+            <div className="relative">
+              {/* Very subtle background effect */}
+              <div className={`absolute -inset-x-20 -inset-y-16 ${theme === 'light' 
+                ? 'bg-gradient-to-r from-blue-50/30 via-transparent to-purple-50/30' 
+                : 'bg-gradient-to-r from-blue-950/10 via-transparent to-purple-950/10'} blur-3xl`}></div>
               
-              <CardContent className="p-24 relative z-10">
-                <div className="grid lg:grid-cols-2 gap-24 items-center">
+              <div className="relative z-10">
+                <div className="grid lg:grid-cols-2 gap-20 items-center">
                   {/* Logo Side */}
                   <div className="text-center lg:text-left lg:pl-16">
                     <motion.div
@@ -273,7 +266,7 @@ export default function Landing() {
                   </div>
 
                   {/* Content Side */}
-                  <div className="space-y-12 lg:pr-8">
+                  <div className="space-y-10">
                     <motion.div
                       initial={{ opacity: 0, x: 50 }}
                       whileInView={{ opacity: 1, x: 0 }}
@@ -330,11 +323,18 @@ export default function Landing() {
                     </motion.div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
+
+      {/* Subtle divider for better flow */}
+      <div className="relative">
+        <div className={`absolute inset-0 flex items-center justify-center ${theme === 'light' ? 'opacity-30' : 'opacity-20'}`}>
+          <div className={`h-px w-1/3 ${theme === 'light' ? 'bg-gradient-to-r from-transparent via-slate-300 to-transparent' : 'bg-gradient-to-r from-transparent via-slate-600 to-transparent'}`}></div>
+        </div>
+      </div>
 
       {/* Dashboard Preview Section */}
       <section className="py-20 px-4">
