@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { redirectToCheckout, PRICING_PLANS } from "@/lib/stripe";
+import { toast } from "@/utils/toast";
 import { 
   Shield, 
   Zap, 
@@ -29,7 +31,42 @@ export default function Landing() {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { theme } = useTheme();
+
+  const handlePricingClick = async (tier: 'free' | 'team' | 'business' | 'enterprise') => {
+    if (tier === 'free') {
+      // Free tier goes to signup
+      navigate('/signup');
+      return;
+    }
+
+    // Check if Stripe is configured
+    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!publishableKey || publishableKey === 'your-stripe-publishable-key') {
+      // If Stripe not configured, go to pricing flow
+      navigate('/pricing');
+      return;
+    }
+
+    // Get the price ID for the selected tier
+    const plan = PRICING_PLANS[tier];
+    if (!plan.stripePriceId) {
+      toast.error('This plan is not yet configured. Please contact support.');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      // Redirect to Stripe Checkout
+      await redirectToCheckout(plan.stripePriceId);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Unable to process payment. Please try again.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
 
   const stats = [
     { number: "85%", label: "Time Saved on Assessments" },
@@ -585,7 +622,8 @@ export default function Landing() {
                   <Button 
                     className="w-full mt-auto"
                     variant="outline"
-                    onClick={() => navigate("/pricing")}
+                    onClick={() => handlePricingClick('free')}
+                    disabled={isProcessingPayment}
                   >
                     Start Free
                   </Button>
@@ -635,7 +673,8 @@ export default function Landing() {
                   </ul>
                   <Button 
                     className="w-full bg-blue-500 hover:bg-blue-600 text-white mt-auto"
-                    onClick={() => navigate("/pricing")}
+                    onClick={() => handlePricingClick('team')}
+                    disabled={isProcessingPayment}
                   >
                     Get Started
                   </Button>
@@ -681,7 +720,8 @@ export default function Landing() {
                   <Button 
                     className="w-full mt-auto"
                     variant="outline"
-                    onClick={() => navigate("/pricing")}
+                    onClick={() => handlePricingClick('business')}
+                    disabled={isProcessingPayment}
                   >
                     Get Started
                   </Button>
@@ -727,7 +767,8 @@ export default function Landing() {
                   <Button 
                     className="w-full mt-auto"
                     variant="outline"
-                    onClick={() => navigate("/pricing")}
+                    onClick={() => handlePricingClick('enterprise')}
+                    disabled={isProcessingPayment}
                   >
                     Contact Sales
                   </Button>

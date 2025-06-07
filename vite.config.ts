@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
     plugins: [
       react(),
     ],
@@ -30,7 +30,7 @@ export default defineConfig({
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    base: '/audit-readiness-hub/',
+    base: mode === 'github' ? '/audit-readiness-hub/' : '/',
     build: {
       outDir: 'dist',
       emptyOutDir: true,
@@ -51,4 +51,4 @@ export default defineConfig({
     },
     publicDir: 'public',
     assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.ico']
-});
+}));

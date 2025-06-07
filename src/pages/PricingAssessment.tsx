@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Shield, Building2, Users, Check, ChevronRight, ChevronLeft, 
-  Star, Zap, Crown, Calculator, TrendingUp 
+  Star, Zap, Crown, Calculator, TrendingUp, Home 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -602,6 +602,15 @@ const PricingAssessment = () => {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className={`flex items-center gap-2 ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Button>
             <ZoomToggle />
             <ThemeToggle />
           </div>
