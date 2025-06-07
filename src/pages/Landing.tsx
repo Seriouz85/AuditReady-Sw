@@ -142,7 +142,7 @@ export default function Landing() {
                 : 'border-blue-800 text-blue-300 hover:bg-blue-900/40 hover:text-blue-200'} px-8 h-12 text-lg`}
               onClick={() => navigate("/login")}
             >
-              Watch Demo
+              Try Demo
             </Button>
           </motion.div>
 
@@ -164,38 +164,44 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Ultra Cool Logo Section */}
+      {/* Ultra Cool Logo Section - AI Robot Version */}
+      {/* BACKUP: Original version without robot available in git history */}
       <section className="py-32 px-4 relative overflow-hidden">
         <div className={`absolute inset-0 ${theme === 'light' 
           ? 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50' 
           : 'bg-gradient-to-br from-slate-900 via-blue-900/20 to-indigo-900/30'}`}></div>
         <div className={`absolute inset-0 ${theme === 'light' ? 'bg-[url(\'/grid.svg\')] opacity-5' : 'bg-gradient-to-r from-transparent via-blue-500/5 to-transparent'}`}></div>
         
-        <div className="container mx-auto relative z-10">
+        
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="max-w-6xl mx-auto"
+            className="max-w-7xl mx-auto"
           >
             <Card className={`relative overflow-hidden ${theme === 'light' 
-              ? 'bg-white/80 backdrop-blur-lg border-blue-200/50 shadow-2xl' 
-              : 'bg-slate-800/90 backdrop-blur-lg border-blue-500/30 shadow-2xl'}`}>
+              ? 'bg-white/70 backdrop-blur-xl border-white/20 shadow-lg' 
+              : 'bg-slate-800/70 backdrop-blur-xl border-white/10 shadow-lg'}`}>
               <div className={`absolute inset-0 ${theme === 'light' 
                 ? 'bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5' 
                 : 'bg-gradient-to-br from-blue-600/10 via-indigo-600/10 to-purple-600/10'}`}></div>
               
-              <CardContent className="p-16 relative z-10">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <CardContent className="p-24 relative z-10">
+                <div className="grid lg:grid-cols-2 gap-24 items-center">
                   {/* Logo Side */}
-                  <div className="text-center lg:text-right lg:pr-8">
+                  <div className="text-center lg:text-left lg:pl-16">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 1, delay: 0.2 }}
                       viewport={{ once: true }}
                       className="relative inline-block"
+                      style={{
+                        transform: 'translateX(-80px) translateY(-20px)',
+                        animation: 'float 4s ease-in-out infinite'
+                      }}
                     >
                       {/* Futuristic AuditReady Shield Logo */}
                       <div className="relative">
@@ -267,13 +273,13 @@ export default function Landing() {
                   </div>
 
                   {/* Content Side */}
-                  <div className="space-y-8 lg:pl-8">
+                  <div className="space-y-12 lg:pr-8">
                     <motion.div
                       initial={{ opacity: 0, x: 50 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8, delay: 0.4 }}
                       viewport={{ once: true }}
-                      className="space-y-6"
+                      className="space-y-8"
                     >
                       <h2 className={`text-5xl lg:text-6xl font-bold leading-tight ${theme === 'light' 
                         ? 'bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent' 
@@ -290,14 +296,14 @@ export default function Landing() {
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8, delay: 0.6 }}
                       viewport={{ once: true }}
-                      className="space-y-6"
+                      className="space-y-8"
                     >
                       <blockquote className={`text-2xl lg:text-3xl leading-relaxed font-light italic ${theme === 'light' ? 'text-slate-700' : 'text-slate-200'}`}>
                         "Transforming compliance from a burden into a <span className={`font-semibold not-italic ${theme === 'light' ? 'text-blue-700' : 'text-blue-400'}`}>competitive advantage</span>. 
                         Where security meets innovation, and audit readiness becomes second nature."
                       </blockquote>
                       
-                      <div className="flex items-center gap-6 pt-4">
+                      <div className="flex items-center gap-6 pt-6">
                         <div className={`w-16 h-1 ${theme === 'light' ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : 'bg-gradient-to-r from-blue-400 to-indigo-400'} rounded-full`}></div>
                         <span className={`text-lg font-medium ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                           Empowering Organizations Worldwide
@@ -311,7 +317,7 @@ export default function Landing() {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: 0.8 }}
                       viewport={{ once: true }}
-                      className="flex flex-wrap gap-6 pt-8"
+                      className="flex flex-wrap gap-6 pt-10"
                     >
                       <div className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full ${theme === 'light' ? 'bg-blue-500' : 'bg-blue-400'}`}></div>

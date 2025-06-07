@@ -204,6 +204,9 @@ const PricingAssessment = () => {
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    } else {
+      // Navigate to landing page when on step 1
+      navigate('/');
     }
   };
 
@@ -658,7 +661,6 @@ const PricingAssessment = () => {
           <Button
             variant="outline"
             onClick={handlePrevious}
-            disabled={currentStep === 1}
             className={`flex items-center gap-2 ${theme === 'light' ? 'border-slate-200' : 'border-slate-600'}`}
           >
             <ChevronLeft className="h-4 w-4" />

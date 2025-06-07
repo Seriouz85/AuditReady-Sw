@@ -36,6 +36,15 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateX(-80px) translateY(-20px);
+  }
+  50% {
+    transform: translateX(-80px) translateY(-30px);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;

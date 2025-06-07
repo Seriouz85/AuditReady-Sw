@@ -292,7 +292,7 @@ const Login = () => {
   };
 
   return (
-    <div className={`min-h-screen flex ${theme === 'light' ? 'bg-slate-100' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
+    <div className={`min-h-screen flex ${theme === 'light' ? 'bg-gradient-to-b from-slate-100 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Left side - Login Form */}
       <div className={`flex-1 flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
         {/* Card Container for Login */}
@@ -311,7 +311,7 @@ const Login = () => {
           {/* Divider */}
           <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-8`} />
           {/* Card for Login Form */}
-          <div className={`w-full space-y-6 p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-700/70 border-slate-600'}`}> 
+          <div className={`w-full space-y-6 p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800/90 backdrop-blur-lg border-slate-600'}`}> 
             <div className="text-center space-y-2">
               <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Welcome Back</h1>
               <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure access to your compliance dashboard</p>
@@ -473,7 +473,7 @@ const Login = () => {
             <div className="text-center">
               <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                 Don't have an account?{' '}
-                <Link to="/signup" className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-400'} hover:underline font-medium`}>
+                <Link to="/pricing" className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-400'} hover:underline font-medium`}>
                   Sign up
                 </Link>
               </p>
@@ -483,9 +483,12 @@ const Login = () => {
       </div>
 
       {/* Right side - Features */}
-      <div className={`hidden lg:flex flex-1 flex-col justify-center px-4 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-800/50'}`}>
+      <div className={`hidden lg:flex flex-1 flex-col justify-center px-4 relative ${theme === 'light' ? 'bg-slate-50' : ''}`}>
+        {theme === 'dark' && (
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 via-transparent to-slate-700/10"></div>
+        )}
         {/* Added max-width container to bring content closer to center */}
-        <div className="max-w-lg mr-auto ml-8">
+        <div className="max-w-lg mr-auto ml-8 relative z-10">
           <h2 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Why Choose AuditReady?</h2>
           <p className={`mb-6 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
             Join thousands of organizations that trust AuditReady for their compliance needs

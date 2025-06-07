@@ -28,8 +28,30 @@ const SignUp = () => {
   const [signupError, setSignupError] = useState("");
   const [isSupabaseConfigured, setIsSupabaseConfigured] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
+  const [assessmentData, setAssessmentData] = useState<any>(null);
 
   useEffect(() => {
+    // Load assessment data if coming from pricing assessment
+    const savedAssessment = localStorage.getItem('auditready_assessment_data');
+    const savedTier = localStorage.getItem('auditready_selected_tier');
+    
+    if (savedAssessment) {
+      const assessment = JSON.parse(savedAssessment);
+      setAssessmentData(assessment);
+      // Pre-fill organization name if available
+      if (assessment.organizationName) {
+        setFormData(prev => ({
+          ...prev,
+          organizationName: assessment.organizationName
+        }));
+      }
+    }
+    
+    if (savedTier) {
+      setSelectedTier(savedTier);
+    }
+
     // Check if Supabase is properly configured
     const checkSupabase = async () => {
       try {
@@ -208,6 +230,32 @@ const SignUp = () => {
           </div>
           {/* Divider */}
           <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-8`} />
+          
+          {/* Selected Plan Summary */}
+          {selectedTier && (
+            <div className={`w-full p-4 mb-6 rounded-lg border ${theme === 'light' ? 'bg-blue-50 border-blue-200' : 'bg-blue-900/20 border-blue-700'}`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className={`font-medium ${theme === 'light' ? 'text-blue-900' : 'text-blue-100'}`}>
+                    Selected Plan: {selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1)}
+                  </h3>
+                  {assessmentData?.organizationName && (
+                    <p className={`text-sm ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
+                      for {assessmentData.organizationName}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/pricing')}
+                  className={`text-xs ${theme === 'light' ? 'border-blue-300 text-blue-700' : 'border-blue-600 text-blue-300'}`}
+                >
+                  Change Plan
+                </Button>
+              </div>
+            </div>
+          )}
           
           {/* Sign Up Form */}
           <div className={`w-full space-y-6 p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-700/70 border-slate-600'}`}> 
