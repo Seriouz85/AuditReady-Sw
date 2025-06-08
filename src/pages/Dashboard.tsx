@@ -2,6 +2,7 @@ import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, 
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
+import { CybersecurityNews } from "@/components/dashboard/CybersecurityNews";
 import { dashboardStats, assessments, requirements } from "@/data/mockData";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -194,9 +195,10 @@ const Dashboard = () => {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-1 lg:grid-cols-5 gap-5 w-full"
+        className="grid grid-cols-1 lg:grid-cols-6 gap-5 w-full"
         variants={itemVariants}
       >
+        {/* Left Column - Compliance Chart and Tasks */}
         <div className="flex flex-col gap-5 lg:col-span-2">
           <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden">
             <ComplianceChart data={dynamicRequirementCounts} />
@@ -237,7 +239,13 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-3 border border-border/70" data-card="true">
+        {/* Middle Column - Cybersecurity News */}
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <CybersecurityNews />
+        </motion.div>
+
+        {/* Right Column - Recent Assessments */}
+        <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-2 border border-border/70" data-card="true">
           <AssessmentProgress
             assessments={assessments}
             onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}

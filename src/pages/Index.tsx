@@ -8,6 +8,7 @@ import Applications from "@/pages/Applications";
 import Suppliers from "@/pages/Suppliers";
 import Reports from "@/pages/Reports";
 import Settings from "@/pages/Settings";
+import Activities from "@/pages/Activities";
 import NotFound from "@/pages/NotFound";
 import Organizations from "@/pages/Organizations";
 import Documents from "@/pages/Documents";
@@ -33,6 +34,7 @@ const Index = () => {
         <Route path="/applications" element={<Applications />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/activities" element={<Activities />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/organizations" element={<Organizations />} />
         <Route path="/organizations/chart" element={<OrgChart />} />

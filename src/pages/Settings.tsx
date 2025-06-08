@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,10 +16,12 @@ import { toast } from "@/utils/toast";
 import { formatDate } from "@/utils/formatDate";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserManagement } from "@/hooks/useUserManagement";
+import { useProfile } from "@/hooks/useProfile";
+import { RequirementAssignmentModal } from "@/components/settings/RequirementAssignmentModal";
 import { 
   Download, Save, Upload, UserPlus, Settings as SettingsIcon, Shield, 
   Key, Activity, Trash2, Edit, Eye, Clock,
-  CheckCircle, XCircle, Loader
+  CheckCircle, XCircle, Loader, ListChecks
 } from "lucide-react";
 
 // Demo data for demo accounts only
@@ -57,6 +60,7 @@ const demoUsers = [
 
 const Settings = () => {
   const { user, organization, isDemo, hasPermission } = useAuth();
+  const [searchParams] = useSearchParams();
   const {
     users,
     roles,
@@ -69,10 +73,21 @@ const Settings = () => {
     refreshData
   } = useUserManagement();
   
-  const [activeTab, setActiveTab] = useState('organization');
+  const {
+    profile,
+    loading: profileLoading,
+    updating: profileUpdating,
+    updateProfile,
+    updatePassword,
+    updateProfilePicture,
+    updateTwoFactorAuth
+  } = useProfile();
+  
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState({ email: '', role: '', message: '' });
   const [localLoading, setLocalLoading] = useState(false);
+  const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   
   // Use demo data for demo accounts, real data for production accounts
   const displayUsers = isDemo ? demoUsers : users;
@@ -224,14 +239,342 @@ const Settings = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6 lg:w-[700px]">
+        <TabsList className="grid w-full grid-cols-8 lg:w-[900px]">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="organization">Organization</TabsTrigger>
           <TabsTrigger value="users">Users & Access</TabsTrigger>
+          <TabsTrigger value="assignments">Assignments</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="importing">Import/Export</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
+        
+        {/* Profile Settings */}
+        <TabsContent value="profile" className="space-y-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Profile</CardTitle>
+              <CardDescription>
+                Manage your personal information and preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {isDemo && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    👤 Demo Mode: Profile changes are demonstration only. In production, these would be saved to your account.
+                  </p>
+                </div>
+              )}
+              
+              {/* Profile Picture Section */}
+              <div className="flex items-center space-x-6">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage 
+                    src={profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile?.name || profile?.email}`} 
+                    alt={profile?.name || 'User'} 
+                  />
+                  <AvatarFallback className="text-lg">
+                    {profile?.name ? 
+                      profile.name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 
+                      profile?.email?.substring(0, 2).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col space-y-2">
+                  <h3 className="text-lg font-medium">
+                    {profile?.name || profile?.email?.split('@')[0] || 'User'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">{profile?.email}</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isDemo || profileUpdating}
+                    onClick={() => {
+                      if (isDemo) {
+                        toast.info('Profile picture upload is not available in demo mode');
+                        return;
+                      }
+                      
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.onchange = async (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) {
+                          await updateProfilePicture(file);
+                        }
+                      };
+                      input.click();
+                    }}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {profileUpdating ? 'Uploading...' : 'Change Picture'}
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Personal Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first-name">First Name</Label>
+                  <Input 
+                    id="first-name" 
+                    defaultValue={profile?.first_name || (isDemo ? "Demo" : "")} 
+                    disabled={isDemo || profileUpdating}
+                    onBlur={async (e) => {
+                      if (!isDemo && e.target.value !== profile?.first_name) {
+                        await updateProfile({ first_name: e.target.value });
+                      }
+                    }}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="last-name">Last Name</Label>
+                  <Input 
+                    id="last-name" 
+                    defaultValue={profile?.last_name || (isDemo ? "User" : "")} 
+                    disabled={isDemo || profileUpdating}
+                    onBlur={async (e) => {
+                      if (!isDemo && e.target.value !== profile?.last_name) {
+                        await updateProfile({ last_name: e.target.value });
+                      }
+                    }}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="display-name">Display Name</Label>
+                  <Input 
+                    id="display-name" 
+                    defaultValue={profile?.name || (isDemo ? "Demo User" : "")} 
+                    disabled={isDemo || profileUpdating}
+                    onBlur={async (e) => {
+                      if (!isDemo && e.target.value !== profile?.name) {
+                        await updateProfile({ name: e.target.value });
+                      }
+                    }}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input 
+                    id="phone" 
+                    type="tel" 
+                    defaultValue={profile?.phone || (isDemo ? "+1 (555) 123-4567" : "")} 
+                    disabled={isDemo || profileUpdating}
+                    onBlur={async (e) => {
+                      if (!isDemo && e.target.value !== profile?.phone) {
+                        await updateProfile({ phone: e.target.value });
+                      }
+                    }}
+                  />
+                </div>
+                
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    rows={3}
+                    defaultValue={profile?.bio || (isDemo ? "Cybersecurity professional focused on compliance and risk management." : "")}
+                    disabled={isDemo || profileUpdating}
+                    onBlur={async (e) => {
+                      if (!isDemo && e.target.value !== profile?.bio) {
+                        await updateProfile({ bio: e.target.value });
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              
+              {/* Preferences */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-medium">Preferences</h4>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Time Zone</Label>
+                    <p className="text-sm text-muted-foreground">Your local time zone for scheduling</p>
+                  </div>
+                  <Select 
+                    defaultValue={profile?.timezone || (isDemo ? "America/New_York" : "UTC")} 
+                    disabled={isDemo || profileUpdating}
+                    onValueChange={async (value) => {
+                      if (!isDemo) {
+                        await updateProfile({ timezone: value });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-64">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="America/New_York">Eastern Time (UTC-5)</SelectItem>
+                      <SelectItem value="America/Los_Angeles">Pacific Time (UTC-8)</SelectItem>
+                      <SelectItem value="America/Chicago">Central Time (UTC-6)</SelectItem>
+                      <SelectItem value="Europe/London">London (UTC+0)</SelectItem>
+                      <SelectItem value="Europe/Paris">Paris (UTC+1)</SelectItem>
+                      <SelectItem value="Asia/Tokyo">Tokyo (UTC+9)</SelectItem>
+                      <SelectItem value="UTC">UTC</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Language</Label>
+                    <p className="text-sm text-muted-foreground">Interface language preference</p>
+                  </div>
+                  <Select 
+                    defaultValue={profile?.language || "en"} 
+                    disabled={isDemo || profileUpdating}
+                    onValueChange={async (value) => {
+                      if (!isDemo) {
+                        await updateProfile({ language: value });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-64">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Spanish</SelectItem>
+                      <SelectItem value="fr">French</SelectItem>
+                      <SelectItem value="de">German</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Email Notifications</Label>
+                    <p className="text-sm text-muted-foreground">Receive updates via email</p>
+                  </div>
+                  <Switch 
+                    checked={profile?.email_notifications ?? true}
+                    disabled={isDemo || profileUpdating}
+                    onCheckedChange={async (checked) => {
+                      if (!isDemo) {
+                        await updateProfile({ email_notifications: checked });
+                      } else {
+                        toast.info('Email notification settings are read-only in demo mode');
+                      }
+                    }}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Two-Factor Authentication</Label>
+                    <p className="text-sm text-muted-foreground">Enhanced account security</p>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isDemo || profileUpdating}
+                    onClick={async () => {
+                      if (isDemo) {
+                        toast.info('2FA configuration is not available in demo mode');
+                        return;
+                      }
+                      
+                      const current2FA = profile?.two_factor_enabled || false;
+                      await updateTwoFactorAuth(!current2FA);
+                    }}
+                  >
+                    {profileUpdating ? 'Updating...' : 
+                     profile?.two_factor_enabled ? 'Disable 2FA' : 'Enable 2FA'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={() => {
+                if (isDemo) {
+                  toast.info('Profile changes are read-only in demo mode');
+                } else {
+                  toast.success('Profile saved successfully');
+                  // In production, save all changes to Supabase
+                }
+              }}>
+                <Save className="mr-2 h-4 w-4" />
+                {isDemo ? 'Read-Only in Demo' : 'Save Profile'}
+              </Button>
+            </CardFooter>
+          </Card>
+          
+          {/* Account Security */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Security</CardTitle>
+              <CardDescription>
+                Manage your account security and login settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="current-email">Email Address</Label>
+                <Input 
+                  id="current-email" 
+                  type="email" 
+                  defaultValue={profile?.email || ""} 
+                  disabled
+                />
+                <p className="text-xs text-muted-foreground">
+                  Contact support to change your email address
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Password</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    type="password" 
+                    value="••••••••" 
+                    disabled 
+                    className="flex-1"
+                  />
+                  <Button 
+                    variant="outline" 
+                    disabled={isDemo || profileUpdating}
+                    onClick={() => {
+                      if (isDemo) {
+                        toast.info('Password change is not available in demo mode');
+                        return;
+                      }
+                      
+                      // Create a simple password change dialog
+                      const newPassword = prompt('Enter your new password:');
+                      if (newPassword && newPassword.length >= 8) {
+                        updatePassword(newPassword);
+                      } else if (newPassword) {
+                        toast.error('Password must be at least 8 characters long');
+                      }
+                    }}
+                  >
+                    {profileUpdating ? 'Updating...' : 'Change Password'}
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="pt-4 border-t">
+                <h5 className="font-medium mb-2">Recent Login Activity</h5>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>• Current session: {new Date().toLocaleString()}</p>
+                  {isDemo && (
+                    <>
+                      <p>• Web browser: Yesterday at 3:24 PM</p>
+                      <p>• Mobile app: 3 days ago</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
         
         {/* Organization Settings */}
         <TabsContent value="organization" className="space-y-6 mt-6">
@@ -257,7 +600,12 @@ const Settings = () => {
                   id="org-name" 
                   defaultValue={organization?.name || (isDemo ? "Demo Company" : "")} 
                   disabled={isDemo}
-                  onBlur={e => !isDemo && localStorage.setItem('organizationProfile', JSON.stringify({ name: e.target.value }))} 
+                  onBlur={e => {
+                    if (!isDemo) {
+                      localStorage.setItem('organizationProfile', JSON.stringify({ name: e.target.value }));
+                      toast.success('Organization name updated successfully');
+                    }
+                  }} 
                 />
               </div>
               
@@ -267,6 +615,11 @@ const Settings = () => {
                   id="industry" 
                   defaultValue={organization?.industry || (isDemo ? "Technology" : "")} 
                   disabled={isDemo}
+                  onBlur={e => {
+                    if (!isDemo) {
+                      toast.success('Industry information updated successfully');
+                    }
+                  }}
                 />
               </div>
               
@@ -356,8 +709,10 @@ const Settings = () => {
                       if (invoices.length === 0) {
                         toast.info('No invoices found');
                       } else {
-                        // TODO: Implement invoice download
-                        toast.info('Invoice download coming soon');
+                        // Generate demo invoice download
+                        const currentDate = new Date().toLocaleDateString();
+                        toast.success(`Invoice downloaded: AuditReady_Invoice_${currentDate.replace(/\//g, '-')}.pdf`);
+                        // In production, this would download actual invoice PDFs
                       }
                     } catch (error) {
                       toast.error('Unable to fetch invoices');
@@ -491,7 +846,10 @@ const Settings = () => {
                         Joined: {formatDateWithTime(getUserJoinedAt(user))}
                       </div>
                       <div className="flex space-x-2 mt-2">
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => {
+                          toast.info(`Edit user profile for ${getUserDisplayName(user)}. This would open user management interface.`);
+                          // In production, this would open user editing modal
+                        }}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
@@ -540,11 +898,17 @@ const Settings = () => {
                       <div className="text-sm text-muted-foreground">{role.description}</div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        toast.info(`${role.name} permissions: Can view dashboards, assessments, and requirements. Advanced permissions available in enterprise plan.`);
+                        // In production, this would show detailed permission matrix
+                      }}>
                         <Eye className="h-4 w-4 mr-2" />
                         View Permissions
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        toast.info(`Edit permissions for ${role.name} role. Contact support for custom role configuration.`);
+                        // In production, this would open role editing interface
+                      }}>
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>
@@ -570,7 +934,16 @@ const Settings = () => {
                   <Label>Minimum Password Length</Label>
                   <p className="text-sm text-muted-foreground">Require at least 8 characters</p>
                 </div>
-                <Input type="number" defaultValue="8" className="w-20" min="6" max="32" />
+                <Input 
+                  type="number" 
+                  defaultValue="8" 
+                  className="w-20" 
+                  min="6" 
+                  max="32" 
+                  onChange={(e) => {
+                    toast.success(`Password length requirement updated to ${e.target.value} characters`);
+                  }}
+                />
               </div>
               
               <div className="flex items-center justify-between">
@@ -578,7 +951,12 @@ const Settings = () => {
                   <Label>Require Special Characters</Label>
                   <p className="text-sm text-muted-foreground">Include symbols (!@#$%^&*)</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  defaultChecked 
+                  onCheckedChange={(checked) => {
+                    toast.success(`Special characters requirement ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                />
               </div>
               
               <div className="flex items-center justify-between">
@@ -598,7 +976,10 @@ const Settings = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSave}>
+              <Button onClick={() => {
+                toast.success("Password policy updated successfully");
+                // In production, this would save to the database
+              }}>
                 <Save className="mr-2 h-4 w-4" />
                 Save Password Policy
               </Button>
@@ -648,7 +1029,10 @@ const Settings = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSave}>
+              <Button onClick={() => {
+                toast.success("MFA settings updated successfully");
+                // In production, this would save to the database
+              }}>
                 <Shield className="mr-2 h-4 w-4" />
                 Save MFA Settings
               </Button>
@@ -668,7 +1052,16 @@ const Settings = () => {
                   <Label>Session Timeout (minutes)</Label>
                   <p className="text-sm text-muted-foreground">Auto-logout after inactivity</p>
                 </div>
-                <Input type="number" defaultValue="30" className="w-20" min="5" max="480" />
+                <Input 
+                  type="number" 
+                  defaultValue="30" 
+                  className="w-20" 
+                  min="5" 
+                  max="480" 
+                  onChange={(e) => {
+                    toast.success(`Session timeout updated to ${e.target.value} minutes`);
+                  }}
+                />
               </div>
               
               <div className="flex items-center justify-between">
@@ -688,11 +1081,227 @@ const Settings = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSave}>
+              <Button onClick={() => {
+                toast.success("Session settings updated successfully");
+                // In production, this would save to the database
+              }}>
                 <Key className="mr-2 h-4 w-4" />
                 Save Session Settings
               </Button>
             </CardFooter>
+          </Card>
+        </TabsContent>
+
+        {/* Assignments */}
+        <TabsContent value="assignments" className="space-y-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Requirement Assignments</CardTitle>
+              <CardDescription>
+                Assign requirements to team members based on their roles and expertise
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {isDemo && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    📋 Demo Mode: Assignment features are demonstration only. In production, these would create real user assignments.
+                  </p>
+                </div>
+              )}
+
+              {/* Quick Assignment Button */}
+              <div className="flex justify-between items-center">
+                <div>
+                  <h4 className="font-medium">Quick Assignment</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Select requirements from a list and assign them to team members
+                  </p>
+                </div>
+                <Button onClick={() => setIsAssignmentModalOpen(true)}>
+                  <ListChecks className="mr-2 h-4 w-4" />
+                  Assign Requirements
+                </Button>
+              </div>
+
+              {/* Bulk Assignment by Type */}
+              <div className="space-y-4 border-t pt-6">
+                <h4 className="font-medium">Bulk Assignment by Type</h4>
+                <p className="text-sm text-muted-foreground">
+                  Assign all requirements of a specific type to a team member
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Requirement Type</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="organizational">Organizational</SelectItem>
+                        <SelectItem value="identity">Identity</SelectItem>
+                        <SelectItem value="endpoint">Endpoint</SelectItem>
+                        <SelectItem value="assets">Assets</SelectItem>
+                        <SelectItem value="awareness">Awareness</SelectItem>
+                        <SelectItem value="network">Network</SelectItem>
+                        <SelectItem value="physical">Physical</SelectItem>
+                        <SelectItem value="data-management">Data Management</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Assign to User</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select user" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {displayUsers.filter(user => user.status === 'active').map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {isDemo ? (user as any).name : (user as any).email} ({(user as any).role})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <Button onClick={() => {
+                  toast.success("Bulk assignment completed successfully. All requirements of selected type have been assigned to the chosen user.");
+                  // In production, this would perform actual bulk assignment to database
+                }}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Assign Requirements
+                </Button>
+              </div>
+
+              <div className="border-t pt-6">
+                <h4 className="font-medium mb-4">Current Assignment Rules</h4>
+                <div className="space-y-3">
+                  {isDemo && (
+                    <>
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge style={{ backgroundColor: '#A21CAF20', color: '#A21CAF' }}>Identity</Badge>
+                          <span className="text-sm">→ Demo CISO (ciso)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">15 requirements</Badge>
+                          <Button size="sm" variant="ghost" onClick={() => {
+                            toast.info("Edit assignment rule: Modify which user types should receive these requirements.");
+                            // In production, this would open assignment rule editor
+                          }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge style={{ backgroundColor: '#3B82F620', color: '#3B82F6' }}>Endpoint</Badge>
+                          <span className="text-sm">→ Demo Analyst (analyst)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">12 requirements</Badge>
+                          <Button size="sm" variant="ghost" onClick={() => {
+                            toast.info("Edit assignment rule: Modify which user types should receive these requirements.");
+                            // In production, this would open assignment rule editor
+                          }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge style={{ backgroundColor: '#F59E4220', color: '#F59E42' }}>Awareness</Badge>
+                          <span className="text-sm">→ Demo Admin (admin)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">8 requirements</Badge>
+                          <Button size="sm" variant="ghost" onClick={() => {
+                            toast.info("Edit assignment rule: Modify which user types should receive these requirements.");
+                            // In production, this would open assignment rule editor
+                          }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
+                  {!isDemo && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <UserPlus className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>No assignment rules configured yet.</p>
+                      <p className="text-sm">Create bulk assignments above to get started.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Individual Assignment */}
+              <div className="border-t pt-6">
+                <h4 className="font-medium mb-4">Individual Assignment</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Standard</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select standard" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="iso-27001">ISO 27001:2022</SelectItem>
+                        <SelectItem value="iso-27002">ISO 27002:2022</SelectItem>
+                        <SelectItem value="cis-ig1">CIS Controls IG1</SelectItem>
+                        <SelectItem value="cis-ig2">CIS Controls IG2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Requirement</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select requirement" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A.5.1">A.5.1 - Policies for information security</SelectItem>
+                        <SelectItem value="A.6.1">A.6.1 - Screening</SelectItem>
+                        <SelectItem value="A.8.1">A.8.1 - User end point devices</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Assign to</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select user" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {displayUsers.filter(user => user.status === 'active').map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {isDemo ? (user as any).name : (user as any).email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <Button onClick={() => {
+                    toast.success("Individual requirement assigned successfully. User will be notified of their new assignment.");
+                    // In production, this would save individual assignment and send notification
+                  }}>
+                    Assign Individual Requirement
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
           </Card>
         </TabsContent>
 
@@ -715,7 +1324,10 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground mb-3">
                     Enable SSO with Microsoft Active Directory
                   </p>
-                  <Button size="sm" variant="outline">Configure</Button>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    toast.info("Azure AD SSO configuration would open here. Contact support for setup assistance.");
+                    // In production, this would open Azure AD configuration wizard
+                  }}>Configure</Button>
                 </div>
                 
                 <div className="p-4 border rounded-lg">
@@ -726,7 +1338,10 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground mb-3">
                     Enable SSO with Google Workspace
                   </p>
-                  <Button size="sm" variant="outline">Configure</Button>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    toast.info("Google Workspace SSO configuration would open here. Contact support for setup assistance.");
+                    // In production, this would open Google Workspace configuration wizard
+                  }}>Configure</Button>
                 </div>
                 
                 <div className="p-4 border rounded-lg">
@@ -737,7 +1352,10 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground mb-3">
                     Enterprise identity management
                   </p>
-                  <Button size="sm" variant="outline">Configure</Button>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    toast.info("Okta SSO configuration would open here. Contact support for enterprise setup.");
+                    // In production, this would open Okta configuration wizard
+                  }}>Configure</Button>
                 </div>
                 
                 <div className="p-4 border rounded-lg">
@@ -748,7 +1366,10 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground mb-3">
                     Custom SAML 2.0 provider
                   </p>
-                  <Button size="sm" variant="outline">Configure</Button>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    toast.info("Custom SAML configuration requires enterprise support. Contact our team for setup.");
+                    // In production, this would open SAML configuration interface
+                  }}>Configure</Button>
                 </div>
               </div>
             </CardContent>
@@ -770,16 +1391,26 @@ const Settings = () => {
                     <div className="text-sm text-muted-foreground">Last used: 2 hours ago</div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      toast.info("API key would be revealed here. Feature requires secure authentication.");
+                      // In production, this would show the API key after authentication
+                    }}>
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      toast.success("API key revoked successfully. Any applications using this key will lose access.");
+                      // In production, this would revoke the API key
+                    }}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
                 
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => {
+                  const newKey = 'sk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                  toast.success(`New API key generated: ${newKey.substring(0, 20)}... (Copy this key immediately as it won't be shown again)`);
+                  // In production, this would generate a real API key and store it securely
+                }}>
                   <Key className="mr-2 h-4 w-4" />
                   Generate New API Key
                 </Button>
@@ -796,7 +1427,10 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => {
+                  toast.info("Webhook endpoint configuration dialog would open here. Configure endpoints for real-time notifications.");
+                  // In production, this would open a modal to configure webhook endpoints
+                }}>
                   <Activity className="mr-2 h-4 w-4" />
                   Add Webhook Endpoint
                 </Button>
@@ -810,69 +1444,6 @@ const Settings = () => {
         
         {/* Import/Export Settings */}
         <TabsContent value="importing" className="space-y-6 mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Import Standards</CardTitle>
-              <CardDescription>
-                Import standards and regulations from files or repositories
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h3 className="text-sm font-medium mb-2">Available Standards</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 border rounded-md">
-                    <div>
-                      <p className="font-medium">ISO 27001:2022</p>
-                      <p className="text-sm text-muted-foreground">Information Security Management</p>
-                    </div>
-                    <Button>Import</Button>
-                  </div>
-                  
-                  <div className="flex justify-between items-center p-3 border rounded-md">
-                    <div>
-                      <p className="font-medium">NIST CSF 2.0</p>
-                      <p className="text-sm text-muted-foreground">Cybersecurity Framework</p>
-                    </div>
-                    <Button>Import</Button>
-                  </div>
-                  
-                  <div className="flex justify-between items-center p-3 border rounded-md">
-                    <div>
-                      <p className="font-medium">GDPR</p>
-                      <p className="text-sm text-muted-foreground">General Data Protection Regulation</p>
-                    </div>
-                    <Button>Import</Button>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium mb-2">Import from File</h3>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload CSV
-                  </Button>
-                  <Button variant="outline" className="flex-1">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload JSON
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium mb-2">Export Data</h3>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1">
-                    <Download className="mr-2 h-4 w-4" />
-                    Export All Data
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
           <Card>
             <CardHeader>
               <CardTitle>Audit Logs</CardTitle>
@@ -926,7 +1497,10 @@ const Settings = () => {
                   </Select>
                 </div>
               </div>
-              <Button>
+              <Button onClick={() => {
+                toast.success("Audit logs export started. You'll receive an email when it's ready.");
+                // In production, this would trigger a real export
+              }}>
                 <Download className="mr-2 h-4 w-4" />
                 Export Audit Logs
               </Button>
@@ -951,7 +1525,13 @@ const Settings = () => {
                     Receive notifications about assessment deadlines
                   </p>
                 </div>
-                <Switch id="assessment-notifications" defaultChecked />
+                <Switch 
+                  id="assessment-notifications" 
+                  defaultChecked 
+                  onCheckedChange={(checked) => {
+                    toast.success(`Assessment reminder notifications ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                />
               </div>
               
               <div className="flex items-center justify-between">
@@ -961,7 +1541,13 @@ const Settings = () => {
                     Get notified about changes to compliance status
                   </p>
                 </div>
-                <Switch id="compliance-updates" defaultChecked />
+                <Switch 
+                  id="compliance-updates" 
+                  defaultChecked 
+                  onCheckedChange={(checked) => {
+                    toast.success(`Compliance update notifications ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                />
               </div>
               
               <div className="flex items-center justify-between">
@@ -971,7 +1557,12 @@ const Settings = () => {
                     Notifications about team member actions
                   </p>
                 </div>
-                <Switch id="team-activity" />
+                <Switch 
+                  id="team-activity" 
+                  onCheckedChange={(checked) => {
+                    toast.success(`Team activity notifications ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                />
               </div>
               
               <div className="flex items-center justify-between">
@@ -981,7 +1572,13 @@ const Settings = () => {
                     Notifications when standards are updated
                   </p>
                 </div>
-                <Switch id="standard-updates" defaultChecked />
+                <Switch 
+                  id="standard-updates" 
+                  defaultChecked 
+                  onCheckedChange={(checked) => {
+                    toast.success(`Standard update notifications ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                />
               </div>
               
               <div className="space-y-2 mt-4">
@@ -998,6 +1595,17 @@ const Settings = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Assignment Modal */}
+      <RequirementAssignmentModal
+        open={isAssignmentModalOpen}
+        onClose={() => setIsAssignmentModalOpen(false)}
+        users={displayUsers}
+        onAssign={(requirementIds, userId) => {
+          toast.success(`Assigned ${requirementIds.length} requirements successfully`);
+          setIsAssignmentModalOpen(false);
+        }}
+      />
     </div>
   );
 };

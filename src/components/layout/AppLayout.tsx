@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   ListTree,
   Network,
-  GraduationCap
+  GraduationCap,
+  Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -184,6 +185,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     { to: '/app/standards', icon: <Shield size={20} />, label: t('nav.standards') },
     { to: '/app/requirements', icon: <BookOpen size={20} />, label: t('nav.requirements') },
     { to: '/app/assessments', icon: <CheckSquare size={20} />, label: t('nav.assessments') },
+    { to: '/app/activities', icon: <Activity size={20} />, label: t('nav.activities', 'Activities') },
     { to: '/app/applications', icon: <Laptop size={20} />, label: t('nav.applications') },
     { to: '/lms', icon: <GraduationCap size={20} />, label: 'Learning' },
     { 

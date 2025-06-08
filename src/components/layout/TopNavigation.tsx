@@ -38,12 +38,12 @@ export const TopNavigation: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-full px-6">
-        <div className="flex h-14 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Left side - Logo & Breadcrumbs */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <Shield className="h-6 w-6 text-blue-600" />
-              <span className="font-bold text-lg">AuditReady</span>
+              <Shield className="h-8 w-8 text-blue-600" />
+              <span className="font-bold text-xl">AuditReady</span>
               {isDemo && (
                 <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
                   Demo Mode

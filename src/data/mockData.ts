@@ -2,141 +2,64 @@ import { Standard, Requirement, Assessment, ComplianceStats, Tag, InternalUser, 
 
 // Mock Tags
 export const tags: Tag[] = [
-  // Type category tags
+  // Type category tags - Industry Standard Categories
   {
-    id: 'tag-security',
-    name: 'Security',
-    color: '#EF4444', // Red
-    description: 'Related to security controls and measures',
-    category: 'type'
-  },
-  {
-    id: 'tag-documentation',
-    name: 'Documentation',
-    color: '#3B82F6', // Blue
-    description: 'Related to documentation and record-keeping',
-    category: 'type'
-  },
-  {
-    id: 'tag-governance',
-    name: 'Governance',
+    id: 'tag-organizational',
+    name: 'Organizational',
     color: '#10B981', // Green
-    description: 'Related to management, leadership and oversight',
-    category: 'type'
-  },
-  {
-    id: 'tag-compliance',
-    name: 'Compliance',
-    color: '#F59E0B', // Amber
-    description: 'Related to regulatory and legal compliance',
-    category: 'type'
-  },
-  {
-    id: 'tag-risk',
-    name: 'Risk Management',
-    color: '#8B5CF6', // Purple
-    description: 'Related to risk assessment and management',
-    category: 'type'
-  },
-  {
-    id: 'tag-access-control',
-    name: 'Access Control',
-    color: '#EC4899', // Pink
-    description: 'Related to user access and privileges',
-    category: 'type'
-  },
-  {
-    id: 'tag-data-protection',
-    name: 'Data Protection',
-    color: '#06B6D4', // Cyan
-    description: 'Related to protecting data and information',
-    category: 'type'
-  },
-  {
-    id: 'tag-incident',
-    name: 'Incident Management',
-    color: '#6366F1', // Indigo
-    description: 'Related to security incidents and response',
-    category: 'type'
-  },
-  {
-    id: 'tag-high-priority',
-    name: 'High Priority',
-    color: '#DC2626', // Dark red
-    description: 'Requirements that need immediate attention',
-    category: 'type'
-  },
-  {
-    id: 'tag-technical',
-    name: 'Technical',
-    color: '#4B5563', // Gray
-    description: 'Technical implementation requirements',
-    category: 'type'
-  },
-  {
-    id: 'tag-physical',
-    name: 'Physical',
-    color: '#059669', // Emerald
-    description: 'Related to physical security',
-    category: 'type'
-  },
-  {
-    id: 'tag-operational',
-    name: 'Operational',
-    color: '#7C3AED', // Violet
-    description: 'Operational procedures and controls',
-    category: 'type'
-  },
-  {
-    id: 'tag-policy',
-    name: 'Policy',
-    color: '#2563EB', // Blue
-    description: 'Policy-related requirements',
+    description: 'Policies, governance, management controls and organizational oversight',
     category: 'type'
   },
   {
     id: 'tag-identity',
     name: 'Identity',
     color: '#A21CAF', // Purple
-    description: 'Related to identity and account management',
-    category: 'type'
-  },
-  {
-    id: 'tag-people',
-    name: 'People',
-    color: '#F59E42', // Orange (eller valfri färg)
-    description: 'Related to people, training, and awareness',
-    category: 'type'
-  },
-  {
-    id: 'tag-supplier',
-    name: 'Supplier',
-    color: '#8B5CF6', // Lila (eller valfri färg)
-    description: 'Related to supplier and service provider management',
-    category: 'type'
-  },
-  {
-    id: 'tag-logging',
-    name: 'Logging',
-    color: '#FBBF24', // Yellow
-    description: 'Related to audit log management and monitoring',
+    description: 'Identity and access management, authentication, authorization',
     category: 'type'
   },
   {
     id: 'tag-endpoint',
     name: 'Endpoint',
     color: '#3B82F6', // Blue
-    description: 'Related to endpoint protection and controls',
+    description: 'Endpoint protection, device security, and endpoint controls',
     category: 'type'
   },
   {
-    id: 'tag-backup',
-    name: 'Backup',
-    color: '#10B981', // Green
-    description: 'Related to backup and data recovery',
+    id: 'tag-assets',
+    name: 'Assets',
+    color: '#F59E0B', // Amber
+    description: 'Asset management, inventory, and configuration management',
     category: 'type'
   },
-  // Applies-to category tags
+  {
+    id: 'tag-awareness',
+    name: 'Awareness',
+    color: '#F59E42', // Orange
+    description: 'Training, awareness, security culture, and human factors',
+    category: 'type'
+  },
+  {
+    id: 'tag-network',
+    name: 'Network',
+    color: '#8B5CF6', // Purple
+    description: 'Network security, infrastructure protection, and communications',
+    category: 'type'
+  },
+  {
+    id: 'tag-physical',
+    name: 'Physical',
+    color: '#059669', // Emerald
+    description: 'Physical security controls, facilities, and environmental protection',
+    category: 'type'
+  },
+  {
+    id: 'tag-data-management',
+    name: 'Data Management',
+    color: '#06B6D4', // Cyan
+    description: 'Data protection, classification, handling, backup, and recovery',
+    category: 'type'
+  },
+  // Applies-to category tags - Target Systems and Entities
   {
     id: 'tag-application',
     name: 'Application',
@@ -176,8 +99,8 @@ export const tags: Tag[] = [
     parentId: 'tag-device'
   },
   {
-    id: 'tag-network',
-    name: 'Network',
+    id: 'tag-network-device',
+    name: 'Network Device',
     color: '#8B5CF6', // Purple (lighter)
     description: 'Network infrastructure devices (routers, switches, firewalls)',
     category: 'applies-to',

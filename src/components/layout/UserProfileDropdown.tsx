@@ -138,12 +138,12 @@ export const UserProfileDropdown: React.FC = () => {
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={() => navigate('/app/settings')}>
+        <DropdownMenuItem onClick={() => navigate('/app/settings?tab=profile')}>
           <User className="mr-2 h-4 w-4" />
           <span>Profile Settings</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={() => navigate('/app/settings')}>
+        <DropdownMenuItem onClick={() => navigate('/app/settings?tab=organization')}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Account Settings</span>
         </DropdownMenuItem>
