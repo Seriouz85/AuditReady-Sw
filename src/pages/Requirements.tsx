@@ -153,15 +153,35 @@ const Requirements = () => {
     // Apply sorting
     if (sortConfig) {
       result.sort((a, b) => {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
 
+        // Handle null/undefined values
         if (aValue === bValue) return 0;
-        if (aValue === null) return 1;
-        if (bValue === null) return -1;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
 
-        const comparison = aValue < bValue ? -1 : 1;
-        return sortConfig.direction === 'asc' ? comparison : -comparison;
+        // Handle different data types with proper comparison
+        if (sortConfig.key === 'lastAssessmentDate') {
+          // Date comparison
+          const aDate = aValue ? new Date(aValue) : new Date(0);
+          const bDate = bValue ? new Date(bValue) : new Date(0);
+          const comparison = aDate.getTime() - bDate.getTime();
+          return sortConfig.direction === 'asc' ? comparison : -comparison;
+        } else if (sortConfig.key === 'priority') {
+          // Priority comparison with proper ordering
+          const priorityOrder = { 'default': 0, 'low': 1, 'medium': 2, 'high': 3 };
+          const aPriority = priorityOrder[aValue as string] ?? 0;
+          const bPriority = priorityOrder[bValue as string] ?? 0;
+          const comparison = aPriority - bPriority;
+          return sortConfig.direction === 'asc' ? comparison : -comparison;
+        } else {
+          // String comparison (case insensitive)
+          const aStr = String(aValue).toLowerCase();
+          const bStr = String(bValue).toLowerCase();
+          const comparison = aStr.localeCompare(bStr);
+          return sortConfig.direction === 'asc' ? comparison : -comparison;
+        }
       });
     }
 

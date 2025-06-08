@@ -34,12 +34,48 @@ export const CybersecurityNews = () => {
     refreshNews();
   };
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      loadMoreNews();
+  useEffect(() => {
+    console.log('Setting up scroll listener...');
+    const scrollAreaElement = scrollAreaRef.current;
+    
+    if (scrollAreaElement) {
+      // Try multiple selectors to find the scrollable element
+      const viewport = scrollAreaElement.querySelector('[data-radix-scroll-area-viewport]') ||
+                      scrollAreaElement.querySelector('.scroll-area-viewport') ||
+                      scrollAreaElement.querySelector('[data-viewport]');
+      
+      console.log('Found scroll element:', viewport);
+      
+      if (viewport) {
+        const handleScrollEvent = (event: Event) => {
+          const target = event.target as HTMLDivElement;
+          const { scrollTop, scrollHeight, clientHeight } = target;
+          
+          console.log('Scroll event:', { scrollTop, scrollHeight, clientHeight, hasMore, loading });
+          
+          // More reliable scroll detection - trigger when user is near bottom
+          const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+          
+          if (isNearBottom && hasMore && !loading) {
+            console.log('🚀 Loading more news...');
+            loadMoreNews();
+          }
+        };
+        
+        viewport.addEventListener('scroll', handleScrollEvent, { passive: true });
+        console.log('Scroll listener attached successfully');
+        
+        return () => {
+          console.log('Removing scroll listener');
+          viewport.removeEventListener('scroll', handleScrollEvent);
+        };
+      } else {
+        console.error('Could not find scroll viewport element');
+      }
+    } else {
+      console.error('scrollAreaRef.current is null');
     }
-  };
+  }, [hasMore, loading, loadMoreNews, news]);
 
   const handleVisitSource = () => {
     window.open('https://thehackernews.com/', '_blank', 'noopener,noreferrer');
@@ -82,62 +118,52 @@ export const CybersecurityNews = () => {
   }
 
   return (
-    <Card className="h-full border border-border/70 shadow-md">
-      <CardHeader className="pb-3">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-red-100 dark:bg-red-900/50 p-1.5 rounded-lg">
-                <Shield className="h-4 w-4 text-red-600 dark:text-red-400" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Cybersecurity News</CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  Latest security updates & threats
-                </p>
-              </div>
+    <Card className="shadow-md hover:shadow-lg transition-all h-[650px] border border-border/70" data-card="true">
+      <CardContent className="p-4 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="bg-red-100 dark:bg-red-900/50 p-1.5 rounded-lg">
+              <Shield className="h-4 w-4 text-red-600 dark:text-red-400" />
             </div>
-            
-            {/* The Hacker News Button */}
+            <h3 className="text-lg font-semibold">Cybersecurity News</h3>
+          </div>
+          <div className="flex items-center gap-2">
+            {news && !loading && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+                <span>Updated:</span>
+                <span>{getExactDateTime(news.lastUpdated)}</span>
+                <span className="text-muted-foreground/60">•</span>
+                <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              </div>
+            )}
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleVisitSource}
-              className="h-8 px-3 text-xs font-medium flex items-center gap-1"
+              className="h-8 px-3 text-xs font-medium flex items-center gap-1 mr-2"
             >
               <span>The Hacker News</span>
               <ExternalLink className="h-3 w-3" />
             </Button>
-            
-            <div className="flex items-center gap-2">
-              {news && !loading && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
-                  <span>Updated:</span>
-                  <span>{getExactDateTime(news.lastUpdated)}</span>
-                  <span className="text-muted-foreground/60">•</span>
-                  <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh}
+              disabled={loading}
+              className="h-8 w-8 p-0 flex-shrink-0"
+            >
+              {loading ? (
+                <Loader className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
               )}
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefresh}
-                disabled={loading}
-                className="h-8 w-8 p-0 flex-shrink-0"
-              >
-                {loading ? (
-                  <Loader className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+            </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-0">
+        
+        <div className="flex-1 min-h-0">
         {loading && !news ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="flex items-center justify-center h-full">
             <div className="flex items-center gap-2">
               <Loader className="h-4 w-4 animate-spin" />
               <span className="text-sm text-muted-foreground">Loading news...</span>
@@ -145,11 +171,25 @@ export const CybersecurityNews = () => {
           </div>
         ) : (
           <ScrollArea 
-            className="h-[400px]" 
-            onScrollCapture={handleScroll} 
+            className="h-full" 
             ref={scrollAreaRef}
+            onWheel={(e) => {
+              // Fallback scroll detection
+              const target = e.currentTarget.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement;
+              if (target) {
+                setTimeout(() => {
+                  const { scrollTop, scrollHeight, clientHeight } = target;
+                  const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+                  
+                  if (isNearBottom && hasMore && !loading) {
+                    console.log('🔄 Fallback loading more news via wheel...');
+                    loadMoreNews();
+                  }
+                }, 100);
+              }
+            }}
           >
-            <div className="space-y-1 p-4 pt-0">
+            <div className="space-y-1 px-4 pb-2 pt-0">
               {news?.items.map((item, index) => (
                 <motion.div
                   key={item.id}
@@ -256,9 +296,20 @@ export const CybersecurityNews = () => {
                   <span className="text-xs text-muted-foreground">Scroll for more news...</span>
                 </div>
               )}
+              
+              {/* Loading indicator when fetching more */}
+              {loading && news && (
+                <div className="flex justify-center py-2">
+                  <div className="flex items-center gap-2">
+                    <Loader className="h-3 w-3 animate-spin" />
+                    <span className="text-xs text-muted-foreground">Loading more...</span>
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
         )}
+        </div>
       </CardContent>
     </Card>
   );

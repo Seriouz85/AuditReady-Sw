@@ -36,7 +36,12 @@ export const useNews = () => {
   };
 
   const loadMoreNews = () => {
-    if (!allNews || loading || !hasMore) return;
+    if (!allNews || loading || !hasMore) {
+      console.log('loadMoreNews blocked:', { hasAllNews: !!allNews, loading, hasMore });
+      return;
+    }
+    
+    console.log('Loading more news. Current count:', displayedCount, 'Total available:', allNews.items.length);
     
     const newCount = Math.min(displayedCount + 8, allNews.items.length);
     setNews({
@@ -45,6 +50,8 @@ export const useNews = () => {
     });
     setDisplayedCount(newCount);
     setHasMore(newCount < allNews.items.length);
+    
+    console.log('New count:', newCount, 'Has more:', newCount < allNews.items.length);
   };
 
   const refreshNews = () => {

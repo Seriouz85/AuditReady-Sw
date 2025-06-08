@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit } from "lucide-react";
+import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit, Activity, User, FileText, AlertCircle, CheckCircle2, Clock3 } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
@@ -205,37 +205,7 @@ const Dashboard = () => {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <Card className="shadow-md hover:shadow-lg transition-all h-full border border-border/70" data-card="true">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Upcoming Tasks</h3>
-                  <Button variant="outline" size="sm" className="px-2 py-1 h-auto text-xs">View All</Button>
-                </div>
-                <div className="space-y-2">
-                  {[1, 2, 3].map((item) => (
-                    <div key={item} className="p-2 border border-border/50 rounded-lg flex justify-between items-center hover:bg-muted/20 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
-                          <Shield size={14} className="text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">Complete ISO 27001 Assessment</p>
-                          <p className="text-xs text-muted-foreground">Due in 3 days</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="px-2 py-1 h-auto text-xs"
-                        onClick={() => navigate("/app/assessments/1")}
-                      >
-                        Start
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <CurrentActivities />
           </motion.div>
         </div>
 
@@ -260,6 +230,182 @@ const Dashboard = () => {
         <QuickActions />
       </motion.div>
     </motion.div>
+  );
+};
+
+// Current Activities component that matches RSS feed height
+const CurrentActivities = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const activities = [
+    {
+      id: 1,
+      type: 'assessment',
+      title: 'ISO 27001 Assessment in Progress',
+      description: '12 of 24 requirements completed',
+      time: '2 hours ago',
+      status: 'in-progress',
+      icon: <Shield size={16} />,
+      color: 'blue'
+    },
+    {
+      id: 2,
+      type: 'requirement',
+      title: 'Updated Access Control Policy',
+      description: 'Requirement A.9.1.1 marked as fulfilled',
+      time: '4 hours ago',
+      status: 'completed',
+      icon: <CheckCircle2 size={16} />,
+      color: 'green'
+    },
+    {
+      id: 3,
+      type: 'assignment',
+      title: 'New Requirements Assigned',
+      description: '5 network security requirements assigned to you',
+      time: '6 hours ago',
+      status: 'pending',
+      icon: <AlertCircle size={16} />,
+      color: 'amber'
+    },
+    {
+      id: 4,
+      type: 'document',
+      title: 'Generated SOA Document',
+      description: 'Statement of Applicability for ISO 27001',
+      time: '1 day ago',
+      status: 'completed',
+      icon: <FileText size={16} />,
+      color: 'purple'
+    },
+    {
+      id: 5,
+      type: 'review',
+      title: 'Evidence Review Pending',
+      description: 'Risk assessment documentation needs review',
+      time: '1 day ago',
+      status: 'pending',
+      icon: <Clock3 size={16} />,
+      color: 'orange'
+    },
+    {
+      id: 6,
+      type: 'assessment',
+      title: 'CIS Controls Gap Analysis',
+      description: 'Baseline assessment completed',
+      time: '2 days ago',
+      status: 'completed',
+      icon: <BarChart3 size={16} />,
+      color: 'teal'
+    },
+    {
+      id: 7,
+      type: 'training',
+      title: 'Security Awareness Training',
+      description: 'Completed mandatory cybersecurity module',
+      time: '3 days ago',
+      status: 'completed',
+      icon: <BookOpen size={16} />,
+      color: 'indigo'
+    },
+    {
+      id: 8,
+      type: 'collaboration',
+      title: 'Team Collaboration Session',
+      description: 'Discussed GDPR compliance strategy',
+      time: '4 days ago',
+      status: 'completed',
+      icon: <User size={16} />,
+      color: 'pink'
+    }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'text-green-600 dark:text-green-400';
+      case 'in-progress': return 'text-blue-600 dark:text-blue-400';
+      case 'pending': return 'text-amber-600 dark:text-amber-400';
+      default: return 'text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const getIconBg = (color: string) => {
+    const colors = {
+      blue: 'bg-blue-100 dark:bg-blue-900/50',
+      green: 'bg-green-100 dark:bg-green-900/50',
+      amber: 'bg-amber-100 dark:bg-amber-900/50',
+      purple: 'bg-purple-100 dark:bg-purple-900/50',
+      orange: 'bg-orange-100 dark:bg-orange-900/50',
+      teal: 'bg-teal-100 dark:bg-teal-900/50',
+      indigo: 'bg-indigo-100 dark:bg-indigo-900/50',
+      pink: 'bg-pink-100 dark:bg-pink-900/50'
+    };
+    return colors[color as keyof typeof colors] || colors.blue;
+  };
+
+  return (
+    <Card className="shadow-md hover:shadow-lg transition-all h-96 border border-border/70" data-card="true">
+      <CardContent className="p-4 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
+              <Activity size={16} className="text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold">Current Activities</h3>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="px-2 py-1 h-auto text-xs"
+            onClick={() => navigate('/app/activities')}
+          >
+            View All
+          </Button>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+          {activities.map((activity) => (
+            <div 
+              key={activity.id} 
+              className="p-3 border border-border/50 rounded-lg hover:bg-muted/20 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+              onClick={() => {
+                if (activity.type === 'assessment') navigate('/app/assessments');
+                else if (activity.type === 'requirement') navigate('/app/requirements');
+                else if (activity.type === 'document') navigate('/app/documents');
+                else navigate('/app/activities');
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`${getIconBg(activity.color)} p-2 rounded-lg flex-shrink-0`}>
+                  <div className={getStatusColor(activity.status)}>
+                    {activity.icon}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium line-clamp-1">{activity.title}</h4>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{activity.description}</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      activity.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' :
+                      activity.status === 'in-progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' :
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                    }`}>
+                      {activity.status.replace('-', ' ')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
