@@ -239,18 +239,18 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        {/* Middle Column - Cybersecurity News */}
-        <motion.div variants={itemVariants} className="lg:col-span-2">
+        {/* Right Column - Cybersecurity News (stretched to the right) */}
+        <motion.div variants={itemVariants} className="lg:col-span-4">
           <CybersecurityNews />
         </motion.div>
+      </motion.div>
 
-        {/* Right Column - Recent Assessments */}
-        <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden lg:col-span-2 border border-border/70" data-card="true">
-          <AssessmentProgress
-            assessments={assessments}
-            onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}
-          />
-        </motion.div>
+      {/* Recent Assessments - Now below the news */}
+      <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden border border-border/70" data-card="true">
+        <AssessmentProgress
+          assessments={assessments}
+          onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}
+        />
       </motion.div>
 
       <motion.div variants={itemVariants}>

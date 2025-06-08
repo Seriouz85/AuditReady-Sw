@@ -95,7 +95,7 @@ export const TopNavigation: React.FC = () => {
             )}
             
             {/* Controls */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4">
               <ZoomToggle />
               <ThemeToggle />
               <NotificationsMenu />
