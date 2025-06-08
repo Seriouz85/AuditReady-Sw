@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserProfileDropdown } from './UserProfileDropdown';
 import { NotificationsMenu } from '@/components/NotificationsMenu';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { ZoomToggle } from '@/components/ui/zoom-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -96,6 +97,7 @@ export const TopNavigation: React.FC = () => {
             
             {/* Controls */}
             <div className="flex items-center space-x-4">
+              <LanguageSelector />
               <ZoomToggle />
               <ThemeToggle />
               <NotificationsMenu />
