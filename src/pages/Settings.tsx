@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,18 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "@/utils/toast";
+import { formatDate } from "@/utils/formatDate";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUserManagement } from "@/hooks/useUserManagement";
 import { 
   Download, Save, Upload, UserPlus, Settings as SettingsIcon, Shield, 
   Key, Activity, Trash2, Edit, Eye, Clock,
   CheckCircle, XCircle, Loader
 } from "lucide-react";
 
-// Mock data - replace with actual Supabase queries
-const mockUsers = [
+// Demo data for demo accounts only
+const demoUsers = [
   {
-    id: '1',
-    email: 'admin@company.com',
-    name: 'John Admin',
+    id: 'demo-user-1',
+    email: 'admin@democorp.com',
+    name: 'Demo Admin',
     role: 'admin',
     status: 'active',
     lastLogin: '2025-01-06T10:30:00Z',
@@ -31,42 +34,63 @@ const mockUsers = [
     joinedAt: '2024-12-01T09:00:00Z'
   },
   {
-    id: '2', 
-    email: 'ciso@company.com',
-    name: 'Sarah CISO',
+    id: 'demo-user-2', 
+    email: 'ciso@democorp.com',
+    name: 'Demo CISO',
     role: 'ciso',
     status: 'active',
     lastLogin: '2025-01-05T16:45:00Z',
-    invitedBy: '1',
+    invitedBy: 'demo-user-1',
     joinedAt: '2024-12-15T14:20:00Z'
   },
   {
-    id: '3',
-    email: 'analyst@company.com', 
-    name: 'Mike Analyst',
+    id: 'demo-user-3',
+    email: 'analyst@democorp.com', 
+    name: 'Demo Analyst',
     role: 'analyst',
     status: 'invited',
     lastLogin: null,
-    invitedBy: '2',
+    invitedBy: 'demo-user-2',
     joinedAt: null
   }
 ];
 
-const mockRoles = [
-  { id: 'admin', name: 'Administrator', description: 'Full system access' },
-  { id: 'ciso', name: 'CISO/Security Officer', description: 'Security oversight' },
-  { id: 'manager', name: 'Manager', description: 'Team management' },
-  { id: 'analyst', name: 'Security Analyst', description: 'Analysis and assessments' },
-  { id: 'auditor', name: 'Auditor', description: 'Read-only audit access' },
-  { id: 'viewer', name: 'Viewer', description: 'Read-only access' }
-];
-
 const Settings = () => {
+  const { user, organization, isDemo, hasPermission } = useAuth();
+  const {
+    users,
+    roles,
+    invitations,
+    isLoading,
+    error,
+    inviteUser,
+    revokeUserAccess,
+    updateUserRole,
+    refreshData
+  } = useUserManagement();
+  
   const [activeTab, setActiveTab] = useState('organization');
-  const [users, setUsers] = useState(mockUsers);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState({ email: '', role: '', message: '' });
-  const [isLoading, setIsLoading] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
+  
+  // Use demo data for demo accounts, real data for production accounts
+  const displayUsers = isDemo ? demoUsers : users;
+  const displayRoles = isDemo ? [
+    { id: 'admin', name: 'Administrator', description: 'Full system access' },
+    { id: 'ciso', name: 'CISO/Security Officer', description: 'Security oversight' },
+    { id: 'manager', name: 'Manager', description: 'Team management' },
+    { id: 'analyst', name: 'Security Analyst', description: 'Analysis and assessments' },
+    { id: 'auditor', name: 'Auditor', description: 'Read-only audit access' },
+    { id: 'viewer', name: 'Viewer', description: 'Read-only access' }
+  ] : roles;
+  
+  // Load data on component mount for real accounts
+  useEffect(() => {
+    if (!isDemo && organization) {
+      refreshData();
+    }
+  }, [organization, isDemo, refreshData]);
   
   const handleSave = () => {
     toast.success("Settings saved successfully");
@@ -78,36 +102,53 @@ const Settings = () => {
       return;
     }
     
-    setIsLoading(true);
+    if (isDemo) {
+      toast.info("User invitations are not available in demo mode");
+      return;
+    }
+    
+    if (!hasPermission('user_management')) {
+      toast.error("You don't have permission to invite users");
+      return;
+    }
+    
+    setLocalLoading(true);
     try {
-      // TODO: Implement actual Supabase invitation logic
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      const newUser = {
-        id: Date.now().toString(),
+      await inviteUser({
         email: inviteForm.email,
-        name: '',
-        role: inviteForm.role,
-        status: 'invited' as const,
-        lastLogin: null as string | null,
-        invitedBy: '1', // Current user ID
-        joinedAt: null as string | null
-      };
+        roleId: inviteForm.role,
+        message: inviteForm.message
+      });
       
-      setUsers([...users, newUser]);
       setInviteForm({ email: '', role: '', message: '' });
       setIsInviteDialogOpen(false);
       toast.success(`Invitation sent to ${inviteForm.email}`);
     } catch (error) {
+      console.error('Failed to invite user:', error);
       toast.error("Failed to send invitation");
     } finally {
-      setIsLoading(false);
+      setLocalLoading(false);
     }
   };
   
-  const handleRevokeUser = (userId: string) => {
-    setUsers(users.filter(user => user.id !== userId));
-    toast.success("User access revoked");
+  const handleRevokeUser = async (userId: string) => {
+    if (isDemo) {
+      toast.info("User access management is not available in demo mode");
+      return;
+    }
+    
+    if (!hasPermission('user_management')) {
+      toast.error("You don't have permission to revoke user access");
+      return;
+    }
+    
+    try {
+      await revokeUserAccess(userId);
+      toast.success("User access revoked");
+    } catch (error) {
+      console.error('Failed to revoke user access:', error);
+      toast.error("Failed to revoke user access");
+    }
   };
   
   const getStatusBadge = (status: string) => {
@@ -123,15 +164,53 @@ const Settings = () => {
     }
   };
   
-  const getRoleDisplayName = (roleId: string) => {
-    return mockRoles.find(role => role.id === roleId)?.name || roleId;
+  const getRoleDisplayName = (roleId: string | any) => {
+    if (typeof roleId === 'object' && roleId?.name) {
+      return roleId.name;
+    }
+    return displayRoles.find(role => role.id === roleId)?.name || roleId;
+  };
+
+  const getUserDisplayName = (user: any) => {
+    if (isDemo) {
+      return user.name || user.email;
+    }
+    // For real OrganizationUser type
+    return user.user?.raw_user_meta_data?.full_name || 
+           user.user?.raw_user_meta_data?.first_name || 
+           user.user?.email?.split('@')[0] || 
+           'Unknown User';
+  };
+
+  const getUserEmail = (user: any) => {
+    if (isDemo) {
+      return user.email;
+    }
+    // For real OrganizationUser type
+    return user.user?.email || '';
+  };
+
+  const getUserLastLogin = (user: any) => {
+    if (isDemo) {
+      return user.lastLogin;
+    }
+    // For real OrganizationUser type
+    return user.last_login_at;
+  };
+
+  const getUserJoinedAt = (user: any) => {
+    if (isDemo) {
+      return user.joinedAt;
+    }
+    // For real OrganizationUser type
+    return user.joined_at;
   };
   
-  const formatDate = (dateString: string | null) => {
+  const formatDateWithTime = (dateString: string | null) => {
     if (!dateString) return 'Never';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'short', 
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -164,39 +243,66 @@ const Settings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {isDemo && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    📊 Demo Mode: Organization settings are read-only in the demo version.
+                  </p>
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="org-name">Organization Name</Label>
-                <Input id="org-name" defaultValue="AuditReady" onBlur={e => localStorage.setItem('organizationProfile', JSON.stringify({ name: e.target.value }))} />
+                <Input 
+                  id="org-name" 
+                  defaultValue={organization?.name || (isDemo ? "Demo Company" : "")} 
+                  disabled={isDemo}
+                  onBlur={e => !isDemo && localStorage.setItem('organizationProfile', JSON.stringify({ name: e.target.value }))} 
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="industry">Industry</Label>
-                <Input id="industry" defaultValue="Technology" />
+                <Input 
+                  id="industry" 
+                  defaultValue={organization?.industry || (isDemo ? "Technology" : "")} 
+                  disabled={isDemo}
+                />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="compliance-contact">Primary Compliance Contact</Label>
-                <Input id="compliance-contact" defaultValue="John Smith" />
+                <Label htmlFor="company-size">Company Size</Label>
+                <Input 
+                  id="company-size" 
+                  defaultValue={organization?.company_size || (isDemo ? "51-200 employees" : "")} 
+                  disabled={isDemo}
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="contact-email">Contact Email</Label>
-                <Input id="contact-email" type="email" defaultValue="compliance@acme.com" />
+                <Input 
+                  id="contact-email" 
+                  type="email" 
+                  defaultValue={user?.email || (isDemo ? "contact@democorp.com" : "")} 
+                  disabled={isDemo}
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="description">Organization Description</Label>
                 <Textarea
                   id="description"
-                  defaultValue="Acme Corporation is a technology company that provides innovative solutions to businesses worldwide."
+                  defaultValue={isDemo ? "Demo Company showcasing AuditReady's comprehensive compliance management platform." : ""}
                   rows={4}
+                  disabled={isDemo}
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSave}>
+              <Button onClick={handleSave} disabled={isDemo}>
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                {isDemo ? 'Read-Only in Demo' : 'Save Changes'}
               </Button>
             </CardFooter>
           </Card>
@@ -211,21 +317,65 @@ const Settings = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
                 <div>
-                  <h4 className="font-semibold text-blue-900 dark:text-blue-100">Business Plan</h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">€699/month • Up to 1000 employees</p>
+                  <h4 className="font-semibold text-blue-900 dark:text-blue-100">
+                    {isDemo ? 'Demo Plan' : 
+                     organization?.subscription_tier === 'team' ? 'Team Plan' :
+                     organization?.subscription_tier === 'business' ? 'Business Plan' :
+                     organization?.subscription_tier === 'enterprise' ? 'Enterprise Plan' : 'Free Plan'}
+                  </h4>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    {isDemo ? 'Full feature demo • No billing' :
+                     organization?.subscription_tier === 'team' ? '€99/month • Up to 50 employees' :
+                     organization?.subscription_tier === 'business' ? '€699/month • Up to 1000 employees' :
+                     organization?.subscription_tier === 'enterprise' ? 'Custom pricing • Unlimited employees' : 'Free • Up to 5 users'}
+                  </p>
                 </div>
-                <Badge className="bg-blue-500 text-white">Current Plan</Badge>
+                <Badge className={isDemo ? "bg-purple-500 text-white" : "bg-blue-500 text-white"}>
+                  {isDemo ? 'Demo' : 'Current Plan'}
+                </Badge>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline">
-                  <SettingsIcon className="mr-2 h-4 w-4" />
-                  Manage Billing
-                </Button>
-                <Button variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Invoices
-                </Button>
-              </div>
+              
+              {!isDemo && (
+                <div className="grid grid-cols-2 gap-4">
+                  <Button variant="outline" onClick={async () => {
+                    try {
+                      const { getCustomerPortalUrl } = await import('@/api/stripe');
+                      const portalUrl = await getCustomerPortalUrl();
+                      window.open(portalUrl, '_blank');
+                    } catch (error) {
+                      toast.error('Unable to open billing portal');
+                    }
+                  }}>
+                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    Manage Billing
+                  </Button>
+                  <Button variant="outline" onClick={async () => {
+                    try {
+                      const { getInvoices } = await import('@/api/stripe');
+                      const invoices = await getInvoices();
+                      if (invoices.length === 0) {
+                        toast.info('No invoices found');
+                      } else {
+                        // TODO: Implement invoice download
+                        toast.info('Invoice download coming soon');
+                      }
+                    } catch (error) {
+                      toast.error('Unable to fetch invoices');
+                    }
+                  }}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Invoices
+                  </Button>
+                </div>
+              )}
+              
+              {isDemo && (
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
+                  <p className="text-sm text-purple-700 dark:text-purple-300">
+                    🚀 This is a demo account showcasing all premium features. To access billing and subscription management, please sign up for a paid plan.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -269,7 +419,7 @@ const Settings = () => {
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                         <SelectContent>
-                          {mockRoles.map((role) => (
+                          {displayRoles.map((role) => (
                             <SelectItem key={role.id} value={role.id}>
                               <div>
                                 <div className="font-medium">{role.name}</div>
@@ -295,9 +445,9 @@ const Settings = () => {
                     <Button variant="outline" onClick={() => setIsInviteDialogOpen(false)}>
                       Cancel
                     </Button>
-                    <Button onClick={handleInviteUser} disabled={isLoading}>
-                      {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                      Send Invitation
+                    <Button onClick={handleInviteUser} disabled={localLoading || isDemo}>
+                      {localLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                      {isDemo ? 'Not Available in Demo' : 'Send Invitation'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -305,18 +455,28 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {users.map((user) => (
+                {isLoading && !isDemo ? (
+                  <div className="flex items-center justify-center p-8">
+                    <Loader className="h-6 w-6 animate-spin" />
+                    <span className="ml-2">Loading users...</span>
+                  </div>
+                ) : displayUsers.length === 0 ? (
+                  <div className="text-center p-8 text-muted-foreground">
+                    No team members found. Invite your first team member to get started.
+                  </div>
+                ) : (
+                  displayUsers.map((user) => (
                   <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <Avatar>
-                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name || user.email}`} />
+                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${getUserDisplayName(user)}`} />
                         <AvatarFallback>
-                          {(user.name || user.email).split(' ').map(n => n[0]).join('').toUpperCase()}
+                          {getUserDisplayName(user).split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{user.name || user.email}</div>
-                        <div className="text-sm text-muted-foreground">{user.email}</div>
+                        <div className="font-medium">{getUserDisplayName(user)}</div>
+                        <div className="text-sm text-muted-foreground">{getUserEmail(user)}</div>
                         <div className="flex items-center space-x-2 mt-1">
                           {getStatusBadge(user.status)}
                           <Badge variant="outline">{getRoleDisplayName(user.role)}</Badge>
@@ -325,10 +485,10 @@ const Settings = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground">
-                        Last login: {formatDate(user.lastLogin)}
+                        Last login: {formatDateWithTime(getUserLastLogin(user))}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Joined: {formatDate(user.joinedAt)}
+                        Joined: {formatDateWithTime(getUserJoinedAt(user))}
                       </div>
                       <div className="flex space-x-2 mt-2">
                         <Button size="sm" variant="outline">
@@ -344,7 +504,7 @@ const Settings = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Revoke Access</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to revoke access for {user.email}? This action cannot be undone.
+                                Are you sure you want to revoke access for {getUserEmail(user)}? This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -358,7 +518,8 @@ const Settings = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -372,7 +533,7 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockRoles.map((role) => (
+                {displayRoles.map((role) => (
                   <div key={role.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <div className="font-medium">{role.name}</div>

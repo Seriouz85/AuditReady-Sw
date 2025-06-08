@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { EmailService } from './emailService';
 
 export interface UserRole {
   id: string;
@@ -214,8 +215,38 @@ class UserManagementService {
         return { success: false, error: 'Failed to create invitation' };
       }
 
-      // TODO: Send invitation email
-      // await this.sendInvitationEmail(params.email, token, params.message);
+      // Send invitation email
+      try {
+        // Get role name for email
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('display_name')
+          .eq('id', params.roleId)
+          .single();
+        
+        // Get organization name
+        const { data: orgData } = await supabase
+          .from('organizations')
+          .select('name')
+          .eq('id', params.organizationId)
+          .single();
+        
+        // Get inviter name
+        const inviterName = user.user_metadata?.name || user.email?.split('@')[0] || 'Team Administrator';
+        
+        await EmailService.sendInvitationEmail({
+          to: params.email,
+          organizationName: orgData?.name || 'Your Organization',
+          roleName: roleData?.display_name || 'Team Member',
+          inviterName,
+          invitationToken: token,
+          message: params.message,
+          expiresIn: '7 days'
+        });
+      } catch (emailError) {
+        console.error('Failed to send invitation email:', emailError);
+        // Don't fail the invitation creation if email fails
+      }
 
       // Log activity
       await this.logActivity({

@@ -4,9 +4,10 @@ import { Shield, Building, User, Mail, Lock, Check, AlertCircle } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { supabaseAuth } from "@/lib/supabase";
+import { supabaseAuth, supabase } from "@/lib/supabase";
 import { toast } from "@/utils/toast";
 import { mockSignInAnonymously } from "@/lib/mockAuth";
+import { EmailService } from "@/services/emailService";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ZoomToggle } from "@/components/ui/zoom-toggle";
@@ -133,9 +134,64 @@ const SignUp = () => {
           setShowSuccess(true);
           toast.success("Account created! Please check your email for verification.");
           
-          // TODO: Create organization/tenant record in database
-          // TODO: Send welcome email
-          // TODO: Set up default organization structure
+          // Create organization/tenant record in database
+          try {
+            // Create organization slug from name
+            const slug = formData.organizationName
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, '-')
+              .replace(/-+/g, '-')
+              .replace(/^-|-$/g, '');
+            
+            const { data: orgData, error: orgError } = await supabase
+              .from('organizations')
+              .insert({
+                name: formData.organizationName,
+                slug: slug + '-' + Date.now(), // Ensure uniqueness
+                subscription_tier: 'free'
+              })
+              .select()
+              .single();
+            
+            if (orgError) {
+              console.error('Failed to create organization:', orgError);
+            } else {
+              // Add user to organization as admin
+              const { data: roleData } = await supabase
+                .from('user_roles')
+                .select('id')
+                .eq('name', 'admin')
+                .single();
+              
+              if (roleData) {
+                await supabase
+                  .from('organization_users')
+                  .insert({
+                    organization_id: orgData.id,
+                    user_id: data.user.id,
+                    role_id: roleData.id,
+                    status: 'active',
+                    joined_at: new Date().toISOString()
+                  });
+              }
+              
+              // Send welcome email
+              try {
+                await EmailService.sendWelcomeEmail({
+                  to: formData.email,
+                  userName: `${formData.firstName} ${formData.lastName}`.trim(),
+                  organizationName: formData.organizationName,
+                  role: 'Administrator'
+                });
+              } catch (emailError) {
+                console.error('Failed to send welcome email:', emailError);
+                // Don't fail signup if email fails
+              }
+            }
+          } catch (setupError) {
+            console.error('Post-signup setup failed:', setupError);
+            // Don't fail signup if setup fails
+          }
         }
       } else {
         // Demo mode - simulate successful signup

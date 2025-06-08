@@ -164,6 +164,8 @@ export function useUserManagement() {
     }
   };
 
+  const revokeUserAccess = removeUser; // Alias for backwards compatibility
+
   const refreshData = () => {
     loadData();
   };
@@ -181,6 +183,7 @@ export function useUserManagement() {
     inviteUser,
     updateUserRole,
     removeUser,
+    revokeUserAccess,
     revokeInvitation,
     refreshData,
 

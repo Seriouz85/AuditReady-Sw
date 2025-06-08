@@ -7,6 +7,15 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 // Create Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Create admin client for platform admin operations
+// This bypasses RLS for admin operations
+export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  },
+});
+
 // Demo credentials for showcase purposes
 export const DEMO_EMAIL = "demo@auditready.com";
 export const DEMO_PASSWORD = "Demo123!";

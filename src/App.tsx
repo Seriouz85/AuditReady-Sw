@@ -23,10 +23,19 @@ import CourseDetail from "./pages/LMS/CourseDetail";
 import LMSAdmin from "./pages/LMS/Admin";
 import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
 import GraphicalEditor from "./pages/documents/GraphicalEditor";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { AnalyticsDashboard } from "./pages/admin/analytics/AnalyticsDashboard";
+import { BillingManagement } from "./pages/admin/billing/BillingManagement";
+import { StandardDetail } from "./pages/admin/standards/StandardDetail";
+import { OrganizationDetail } from "./pages/admin/organizations/OrganizationDetail";
+import { UserManagement } from "./pages/admin/users/UserManagement";
+import { SystemSettings } from "./pages/admin/system/SystemSettings";
 
 import { LanguageProvider } from "./providers/LanguageProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -46,40 +55,240 @@ const App = () => (
     <ThemeProvider>
       <ZoomProvider>
         <LanguageProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter basename={basename}>
-              <Routes>
-                {/* Pages with main app layout */}
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/pricing" element={<PricingAssessment />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/app/*" element={<Index />} />
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter basename={basename}>
+                <Routes>
+                  {/* Public pages */}
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/pricing" element={<PricingAssessment />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/about" element={<About />} />
+                  
+                  {/* Protected pages requiring authentication */}
+                  <Route 
+                    path="/onboarding" 
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <Onboarding />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/app/*" 
+                    element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/app" 
+                    element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    } 
+                  />
 
-                {/* Standalone editor routes */}
-                <Route path="/editor" element={<GraphicalEditor />} />
+                  {/* Protected standalone editor routes */}
+                  <Route 
+                    path="/editor" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_documents">
+                        <GraphicalEditor />
+                      </ProtectedRoute>
+                    } 
+                  />
 
-                {/* LMS routes */}
-                <Route path="/lms-old" element={<LMS />} />
-                <Route path="/lms" element={<TrenningLMS />} />
-                <Route path="/lms/admin" element={<LMSAdmin />} />
-                <Route path="/lms/create/learning-path" element={<CreateLearningPath />} />
-                <Route path="/lms/create/content" element={<ContentCreator />} />
-                <Route path="/lms/create/course-builder" element={<CourseBuilder />} />
-                <Route path="/lms/courses/edit" element={<EditCourse />} />
-                <Route path="/lms/quizzes/create" element={<QuizEditor />} />
-                <Route path="/lms/quizzes/edit/:id" element={<QuizEditor />} />
-                <Route path="/lms/reports" element={<Reports />} />
-                <Route path="/lms/course/:courseId" element={<CourseDetail />} />
-                <Route path="/lms/phishing-simulation-manager" element={<PhishingSimulationManager />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+                  {/* Protected LMS routes */}
+                  <Route 
+                    path="/lms-old" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <LMS />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <TrenningLMS />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/admin" 
+                    element={
+                      <ProtectedRoute requiredPermission="admin_lms">
+                        <LMSAdmin />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/learning-path" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <CreateLearningPath />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/content" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <ContentCreator />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/course-builder" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <CourseBuilder />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/courses/edit" 
+                    element={
+                      <ProtectedRoute requiredPermission="edit_lms_content">
+                        <EditCourse />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/quizzes/create" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <QuizEditor />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/quizzes/edit/:id" 
+                    element={
+                      <ProtectedRoute requiredPermission="edit_lms_content">
+                        <QuizEditor />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/reports" 
+                    element={
+                      <ProtectedRoute requiredPermission="view_lms_reports">
+                        <Reports />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/course/:courseId" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <CourseDetail />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/phishing-simulation-manager" 
+                    element={
+                      <ProtectedRoute requiredPermission="admin_lms">
+                        <PhishingSimulationManager />
+                      </ProtectedRoute>
+                    } 
+                  />
+
+                  {/* Platform Admin Console Routes */}
+                  <Route 
+                    path="/admin" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/standards/:id" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <StandardDetail />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/organizations/:id" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <OrganizationDetail />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/users" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <UserManagement />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/users/*" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <UserManagement />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/settings/*" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <SystemSettings />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/system/*" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <SystemSettings />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/analytics" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <AnalyticsDashboard />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/billing" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <BillingManagement />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/*" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AuthProvider>
         </LanguageProvider>
       </ZoomProvider>
     </ThemeProvider>

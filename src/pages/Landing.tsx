@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { redirectToCheckout, PRICING_PLANS } from "@/lib/stripe";
+import { PRICING_PLANS } from "@/lib/stripe";
+import { createCheckoutSession, redirectToCheckout } from "@/api/stripe";
 import { toast } from "@/utils/toast";
+import { supabase } from "@/lib/supabase";
 import { 
   Shield, 
   Zap, 
@@ -41,6 +43,12 @@ export default function Landing() {
       return;
     }
 
+    if (tier === 'enterprise') {
+      // Enterprise goes to contact sales
+      navigate('/contact');
+      return;
+    }
+
     // Check if Stripe is configured
     const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
     if (!publishableKey || publishableKey === 'your-stripe-publishable-key') {
@@ -58,8 +66,32 @@ export default function Landing() {
 
     setIsProcessingPayment(true);
     try {
-      // Redirect to Stripe Checkout
-      await redirectToCheckout(plan.stripePriceId);
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // Store the intended plan and redirect to signup
+        sessionStorage.setItem('intendedPlan', tier);
+        sessionStorage.setItem('intendedPriceId', plan.stripePriceId);
+        navigate('/signup');
+        return;
+      }
+
+      // Create checkout session with user context
+      const result = await createCheckoutSession({
+        priceId: plan.stripePriceId,
+        customerEmail: user.email,
+        tier: tier
+      });
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      if (result.sessionId) {
+        // Redirect to Stripe Checkout
+        await redirectToCheckout(result.sessionId);
+      }
     } catch (error) {
       console.error('Checkout error:', error);
       toast.error('Unable to process payment. Please try again.');

@@ -88,10 +88,10 @@ export function ZoomToggle() {
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DropdownMenu>
+    <DropdownMenu>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -104,32 +104,32 @@ export function ZoomToggle() {
                 }
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem 
-                onClick={() => setZoom(ZOOM_LEVELS.default)}
-                className={currentZoom === ZOOM_LEVELS.default ? "bg-accent text-accent-foreground" : ""}
-              >
-                Default
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => setZoom(ZOOM_LEVELS.medium)}
-                className={currentZoom === ZOOM_LEVELS.medium ? "bg-accent text-accent-foreground" : ""}
-              >
-                +10%
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => setZoom(ZOOM_LEVELS.large)}
-                className={currentZoom === ZOOM_LEVELS.large ? "bg-accent text-accent-foreground" : ""}
-              >
-                +20%
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Adjust zoom: {currentZoomLabel}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Adjust zoom: {currentZoomLabel}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem 
+          onClick={() => setZoom(ZOOM_LEVELS.default)}
+          className={currentZoom === ZOOM_LEVELS.default ? "bg-accent text-accent-foreground" : ""}
+        >
+          Default
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => setZoom(ZOOM_LEVELS.medium)}
+          className={currentZoom === ZOOM_LEVELS.medium ? "bg-accent text-accent-foreground" : ""}
+        >
+          +10%
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => setZoom(ZOOM_LEVELS.large)}
+          className={currentZoom === ZOOM_LEVELS.large ? "bg-accent text-accent-foreground" : ""}
+        >
+          +20%
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 } 

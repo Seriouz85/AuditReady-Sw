@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { NotificationsMenu } from '@/components/NotificationsMenu';
+import { TopNavigation } from '@/components/layout/TopNavigation';
 import { useTranslation } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ZoomToggle } from '@/components/ui/zoom-toggle';
@@ -212,7 +213,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   ];
 
   const renderNav = () => (
-    <nav className="flex-1 p-4">
+    <nav className="flex-1 p-6">
       {navItems.map((item) => (
         <NavItem
           key={item.to}
@@ -241,8 +242,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </Button>
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20" style={{ borderLeft: 'none' }}>
-        <div className="flex items-center justify-between border-b border-border h-[65px] px-4">
+      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20" style={{ borderLeft: 'none', marginLeft: '0' }}>
+        <div className="flex items-center justify-between border-b border-border h-[65px] px-6">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -251,7 +252,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         
         {renderNav()}
         
-        <div className="p-4 border-t border-border">
+        <div className="p-6 border-t border-border">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>
@@ -267,7 +268,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         )}
         style={{ borderLeft: 'none' }}
       >
-        <div className="flex items-center justify-between border-b border-border h-[65px] px-4">
+        <div className="flex items-center justify-between border-b border-border h-[65px] px-6">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -276,7 +277,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         
         {renderNav()}
         
-        <div className="p-4 border-t border-border">
+        <div className="p-6 border-t border-border">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>
@@ -286,16 +287,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Updated Header Structure with same height as sidebar header */}
-        <div className="flex justify-end items-center border-b border-border bg-background sticky top-0 z-10 main-header h-[65px] px-4">
-          <div className="flex items-center gap-2">
-            <ZoomToggle />
-            <ThemeToggle />
-            <NotificationsMenu />
-            <LanguageSelector />
-          </div>
-        </div>
-        <div className="flex-1 px-6 pt-6 pb-5 overflow-y-auto content-area">
+        <TopNavigation />
+        <div className="flex-1 px-8 pt-6 pb-5 overflow-y-auto content-area">
           {children}
         </div>
       </main>

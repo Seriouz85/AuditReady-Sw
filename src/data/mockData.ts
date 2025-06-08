@@ -277,61 +277,93 @@ export const standards: Standard[] = [
   },
   {
     id: 'cis-ig1',
-    name: 'CIS Controls IG1',
-    version: '8.1',
+    name: 'CIS Controls Implementation Group 1 (IG1)',
+    version: '8.1.2',
     type: 'framework',
-    description: 'CIS Implementation Group 1 (IG1) is the essential cyber hygiene standard, representing basic cyber defense readiness for all enterprises.',
+    description: 'Essential cyber hygiene safeguards that every enterprise should implement. IG1 contains 56 foundational safeguards for basic cyber defense readiness.',
     category: 'Cybersecurity',
     requirements: [
-      // Fylls på med alla requirement-IDs för IG1 (dvs. där IG1 är markerad med x i tabellen)
-      'cis-ig1-1.1', 'cis-ig1-1.2',
-      'cis-ig1-2.1', 'cis-ig1-2.2', 'cis-ig1-2.3',
-      'cis-ig1-3.1', 'cis-ig1-3.2', 'cis-ig1-3.3', 'cis-ig1-3.4', 'cis-ig1-3.5', 'cis-ig1-3.6',
-      'cis-ig1-4.1', 'cis-ig1-4.2', 'cis-ig1-4.3', 'cis-ig1-4.4', 'cis-ig1-4.5', 'cis-ig1-4.6', 'cis-ig1-4.7',
-      'cis-ig1-5.1', 'cis-ig1-5.2', 'cis-ig1-5.3', 'cis-ig1-5.4',
-      'cis-ig1-6.1', 'cis-ig1-6.2', 'cis-ig1-6.3', 'cis-ig1-6.4', 'cis-ig1-6.5',
-      'cis-ig1-7.1', 'cis-ig1-7.2', 'cis-ig1-7.3', 'cis-ig1-7.4',
-      'cis-ig1-8.1', 'cis-ig1-8.2', 'cis-ig1-8.3',
-      'cis-ig1-9.1', 'cis-ig1-9.2',
-      'cis-ig1-10.1', 'cis-ig1-10.2', 'cis-ig1-10.3',
-      'cis-ig1-11.1', 'cis-ig1-11.2', 'cis-ig1-11.3', 'cis-ig1-11.4',
-      'cis-ig1-12.1',
-      'cis-ig1-13.1',
-      'cis-ig1-14.1', 'cis-ig1-14.2', 'cis-ig1-14.3', 'cis-ig1-14.4', 'cis-ig1-14.5', 'cis-ig1-14.6', 'cis-ig1-14.7', 'cis-ig1-14.8',
-      'cis-ig1-15.1',
-      'cis-ig1-16.1',
-      'cis-ig1-17.1', 'cis-ig1-17.2', 'cis-ig1-17.3',
-      'cis-ig1-18.1',
+      // IG1 Safeguards (56 total) - Essential baseline controls
+      'cis-1.1', 'cis-1.2',
+      'cis-2.1', 'cis-2.2', 'cis-2.3',
+      'cis-3.1', 'cis-3.2', 'cis-3.3', 'cis-3.4', 'cis-3.5', 'cis-3.6',
+      'cis-4.1', 'cis-4.2', 'cis-4.3', 'cis-4.4', 'cis-4.5', 'cis-4.6', 'cis-4.7',
+      'cis-5.1', 'cis-5.2', 'cis-5.3', 'cis-5.4',
+      'cis-6.1', 'cis-6.2', 'cis-6.3', 'cis-6.4', 'cis-6.5',
+      'cis-7.1', 'cis-7.2', 'cis-7.3', 'cis-7.4',
+      'cis-8.1', 'cis-8.2', 'cis-8.3',
+      'cis-9.1', 'cis-9.2',
+      'cis-10.1', 'cis-10.2', 'cis-10.3',
+      'cis-11.1', 'cis-11.2', 'cis-11.3', 'cis-11.4',
+      'cis-12.1',
+      'cis-13.1',
+      'cis-14.1', 'cis-14.2', 'cis-14.3', 'cis-14.4', 'cis-14.5', 'cis-14.6', 'cis-14.7', 'cis-14.8',
+      'cis-15.1',
+      'cis-16.1',
+      'cis-17.1', 'cis-17.2', 'cis-17.3',
+      'cis-18.1'
     ],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
     id: 'cis-ig2',
-    name: 'CIS Controls IG2',
-    version: '8.1',
+    name: 'CIS Controls Implementation Group 2 (IG2)',
+    version: '8.1.2',
     type: 'framework',
-    description: 'CIS Implementation Group 2 (IG2) includes all IG1 safeguards plus additional safeguards for organizations with moderate cybersecurity maturity and resources.',
+    description: 'All IG1 safeguards plus additional safeguards for organizations with moderate cybersecurity maturity and resources. IG2 contains 130 total safeguards.',
     category: 'Cybersecurity',
     requirements: [
-      'cis-ig2-1.1', 'cis-ig2-1.2', 'cis-ig2-1.3', 'cis-ig2-1.4',
-      'cis-ig2-2.1', 'cis-ig2-2.2', 'cis-ig2-2.3', 'cis-ig2-2.4', 'cis-ig2-2.5', 'cis-ig2-2.6',
-      'cis-ig2-3.1', 'cis-ig2-3.2', 'cis-ig2-3.3', 'cis-ig2-3.4', 'cis-ig2-3.5', 'cis-ig2-3.6', 'cis-ig2-3.7', 'cis-ig2-3.8', 'cis-ig2-3.9', 'cis-ig2-3.10', 'cis-ig2-3.11', 'cis-ig2-3.12',
-      'cis-ig2-4.1', 'cis-ig2-4.2', 'cis-ig2-4.3', 'cis-ig2-4.4', 'cis-ig2-4.5', 'cis-ig2-4.6', 'cis-ig2-4.7', 'cis-ig2-4.8', 'cis-ig2-4.9', 'cis-ig2-4.10', 'cis-ig2-4.11',
-      'cis-ig2-5.1', 'cis-ig2-5.2', 'cis-ig2-5.3', 'cis-ig2-5.4', 'cis-ig2-5.5', 'cis-ig2-5.6',
-      'cis-ig2-6.1', 'cis-ig2-6.2', 'cis-ig2-6.3', 'cis-ig2-6.4', 'cis-ig2-6.5', 'cis-ig2-6.6', 'cis-ig2-6.7',
-      'cis-ig2-7.1', 'cis-ig2-7.2', 'cis-ig2-7.3', 'cis-ig2-7.4', 'cis-ig2-7.5', 'cis-ig2-7.6', 'cis-ig2-7.7',
-      'cis-ig2-8.1', 'cis-ig2-8.2', 'cis-ig2-8.3', 'cis-ig2-8.4', 'cis-ig2-8.5', 'cis-ig2-8.6', 'cis-ig2-8.7', 'cis-ig2-8.8', 'cis-ig2-8.9', 'cis-ig2-8.10', 'cis-ig2-8.11',
-      'cis-ig2-9.1', 'cis-ig2-9.2', 'cis-ig2-9.3', 'cis-ig2-9.4', 'cis-ig2-9.5', 'cis-ig2-9.6',
-      'cis-ig2-10.1', 'cis-ig2-10.2', 'cis-ig2-10.3', 'cis-ig2-10.4', 'cis-ig2-10.5', 'cis-ig2-10.6', 'cis-ig2-10.7',
-      'cis-ig2-11.1', 'cis-ig2-11.2', 'cis-ig2-11.3', 'cis-ig2-11.4', 'cis-ig2-11.5',
-      'cis-ig2-12.1', 'cis-ig2-12.2', 'cis-ig2-12.3', 'cis-ig2-12.4', 'cis-ig2-12.5', 'cis-ig2-12.6', 'cis-ig2-12.7',
-      'cis-ig2-13.1', 'cis-ig2-13.2', 'cis-ig2-13.3', 'cis-ig2-13.4', 'cis-ig2-13.5', 'cis-ig2-13.6',
-      'cis-ig2-14.1', 'cis-ig2-14.2', 'cis-ig2-14.3', 'cis-ig2-14.4', 'cis-ig2-14.5', 'cis-ig2-14.6', 'cis-ig2-14.7', 'cis-ig2-14.8', 'cis-ig2-14.9',
-      'cis-ig2-15.1', 'cis-ig2-15.2', 'cis-ig2-15.3', 'cis-ig2-15.4',
-      'cis-ig2-16.1', 'cis-ig2-16.2', 'cis-ig2-16.3', 'cis-ig2-16.4', 'cis-ig2-16.5', 'cis-ig2-16.6', 'cis-ig2-16.7', 'cis-ig2-16.8', 'cis-ig2-16.9', 'cis-ig2-16.10', 'cis-ig2-16.11',
-      'cis-ig2-17.1', 'cis-ig2-17.2', 'cis-ig2-17.3', 'cis-ig2-17.4', 'cis-ig2-17.5', 'cis-ig2-17.6', 'cis-ig2-17.7',
-      'cis-ig2-18.1', 'cis-ig2-18.2', 'cis-ig2-18.3',
+      // All IG1 controls plus IG2-specific additions (130 total)
+      'cis-1.1', 'cis-1.2', 'cis-1.3', 'cis-1.4',
+      'cis-2.1', 'cis-2.2', 'cis-2.3', 'cis-2.4', 'cis-2.5', 'cis-2.6',
+      'cis-3.1', 'cis-3.2', 'cis-3.3', 'cis-3.4', 'cis-3.5', 'cis-3.6', 'cis-3.7', 'cis-3.8', 'cis-3.9', 'cis-3.10', 'cis-3.11', 'cis-3.12',
+      'cis-4.1', 'cis-4.2', 'cis-4.3', 'cis-4.4', 'cis-4.5', 'cis-4.6', 'cis-4.7', 'cis-4.8', 'cis-4.9', 'cis-4.10', 'cis-4.11',
+      'cis-5.1', 'cis-5.2', 'cis-5.3', 'cis-5.4', 'cis-5.5', 'cis-5.6',
+      'cis-6.1', 'cis-6.2', 'cis-6.3', 'cis-6.4', 'cis-6.5', 'cis-6.6', 'cis-6.7',
+      'cis-7.1', 'cis-7.2', 'cis-7.3', 'cis-7.4', 'cis-7.5', 'cis-7.6', 'cis-7.7',
+      'cis-8.1', 'cis-8.2', 'cis-8.3', 'cis-8.4', 'cis-8.5', 'cis-8.6', 'cis-8.7', 'cis-8.8', 'cis-8.9', 'cis-8.10', 'cis-8.11',
+      'cis-9.1', 'cis-9.2', 'cis-9.3', 'cis-9.4', 'cis-9.5', 'cis-9.6',
+      'cis-10.1', 'cis-10.2', 'cis-10.3', 'cis-10.4', 'cis-10.5', 'cis-10.6', 'cis-10.7',
+      'cis-11.1', 'cis-11.2', 'cis-11.3', 'cis-11.4', 'cis-11.5',
+      'cis-12.1', 'cis-12.2', 'cis-12.3', 'cis-12.4', 'cis-12.5', 'cis-12.6', 'cis-12.7',
+      'cis-13.1', 'cis-13.2', 'cis-13.3', 'cis-13.4', 'cis-13.5', 'cis-13.6',
+      'cis-14.1', 'cis-14.2', 'cis-14.3', 'cis-14.4', 'cis-14.5', 'cis-14.6', 'cis-14.7', 'cis-14.8', 'cis-14.9',
+      'cis-15.1', 'cis-15.2', 'cis-15.3', 'cis-15.4',
+      'cis-16.1', 'cis-16.2', 'cis-16.3', 'cis-16.4', 'cis-16.5', 'cis-16.6', 'cis-16.7', 'cis-16.8', 'cis-16.9', 'cis-16.10', 'cis-16.11',
+      'cis-17.1', 'cis-17.2', 'cis-17.3', 'cis-17.4', 'cis-17.5', 'cis-17.6', 'cis-17.7',
+      'cis-18.1', 'cis-18.2', 'cis-18.3'
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cis-ig3',
+    name: 'CIS Controls Implementation Group 3 (IG3)',
+    version: '8.1.2',
+    type: 'framework',
+    description: 'All IG1 and IG2 safeguards plus additional safeguards for organizations with high cybersecurity maturity and significant resources. IG3 contains all 153 safeguards.',
+    category: 'Cybersecurity',
+    requirements: [
+      // All 153 CIS Controls safeguards (IG1 + IG2 + IG3 additions)
+      'cis-1.1', 'cis-1.2', 'cis-1.3', 'cis-1.4', 'cis-1.5',
+      'cis-2.1', 'cis-2.2', 'cis-2.3', 'cis-2.4', 'cis-2.5', 'cis-2.6', 'cis-2.7',
+      'cis-3.1', 'cis-3.2', 'cis-3.3', 'cis-3.4', 'cis-3.5', 'cis-3.6', 'cis-3.7', 'cis-3.8', 'cis-3.9', 'cis-3.10', 'cis-3.11', 'cis-3.12', 'cis-3.13', 'cis-3.14',
+      'cis-4.1', 'cis-4.2', 'cis-4.3', 'cis-4.4', 'cis-4.5', 'cis-4.6', 'cis-4.7', 'cis-4.8', 'cis-4.9', 'cis-4.10', 'cis-4.11', 'cis-4.12',
+      'cis-5.1', 'cis-5.2', 'cis-5.3', 'cis-5.4', 'cis-5.5', 'cis-5.6', 'cis-5.7',
+      'cis-6.1', 'cis-6.2', 'cis-6.3', 'cis-6.4', 'cis-6.5', 'cis-6.6', 'cis-6.7', 'cis-6.8',
+      'cis-7.1', 'cis-7.2', 'cis-7.3', 'cis-7.4', 'cis-7.5', 'cis-7.6', 'cis-7.7',
+      'cis-8.1', 'cis-8.2', 'cis-8.3', 'cis-8.4', 'cis-8.5', 'cis-8.6', 'cis-8.7', 'cis-8.8', 'cis-8.9', 'cis-8.10', 'cis-8.11', 'cis-8.12',
+      'cis-9.1', 'cis-9.2', 'cis-9.3', 'cis-9.4', 'cis-9.5', 'cis-9.6', 'cis-9.7',
+      'cis-10.1', 'cis-10.2', 'cis-10.3', 'cis-10.4', 'cis-10.5', 'cis-10.6', 'cis-10.7',
+      'cis-11.1', 'cis-11.2', 'cis-11.3', 'cis-11.4', 'cis-11.5',
+      'cis-12.1', 'cis-12.2', 'cis-12.3', 'cis-12.4', 'cis-12.5', 'cis-12.6', 'cis-12.7', 'cis-12.8',
+      'cis-13.1', 'cis-13.2', 'cis-13.3', 'cis-13.4', 'cis-13.5', 'cis-13.6', 'cis-13.7', 'cis-13.8', 'cis-13.9', 'cis-13.10', 'cis-13.11',
+      'cis-14.1', 'cis-14.2', 'cis-14.3', 'cis-14.4', 'cis-14.5', 'cis-14.6', 'cis-14.7', 'cis-14.8', 'cis-14.9',
+      'cis-15.1', 'cis-15.2', 'cis-15.3', 'cis-15.4', 'cis-15.5', 'cis-15.6', 'cis-15.7',
+      'cis-16.1', 'cis-16.2', 'cis-16.3', 'cis-16.4', 'cis-16.5', 'cis-16.6', 'cis-16.7', 'cis-16.8', 'cis-16.9', 'cis-16.10', 'cis-16.11', 'cis-16.12', 'cis-16.13', 'cis-16.14',
+      'cis-17.1', 'cis-17.2', 'cis-17.3', 'cis-17.4', 'cis-17.5', 'cis-17.6', 'cis-17.7', 'cis-17.8', 'cis-17.9',
+      'cis-18.1', 'cis-18.2', 'cis-18.3', 'cis-18.4', 'cis-18.5'
     ],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -380,7 +412,7 @@ export const requirements: Requirement[] = [
     section: '4',
     code: '4.3',
     name: 'Determining the scope of the information security management system',
-    description: 'The organization shall determine the boundaries and applicability of the information security management system to establish its scope. When determining this scope, the organization shall consider: a) the external and internal issues referred to in 4.1; b) the requirements referred to in 4.2; c) interfaces and dependencies between activities performed by the organization, and those that are performed by other organizations.',
+    description: 'The organization shall determine the boundaries and applicability of the information security management system to establish its scope. When determining this scope, the organization shall consider: a) the external and internal issues referred to in 4.1; b) the requirements referred to in 4.2; c) interfaces and dependencies between activities performed by the organization, and those that are performed by other organizations. The scope shall be available as documented information.',
     guidance: 'Define which parts of the organization are covered by the ISMS.',
     status: 'not-fulfilled',
     evidence: '',
@@ -1007,8 +1039,8 @@ export const requirements: Requirement[] = [
     standardId: 'iso-27002-2022',
     section: 'A5',
     code: 'A5.1',
-    name: 'Information security policies',
-    description: 'A set of policies for information security should be defined, approved by management, published and communicated to employees and relevant external parties.',
+    name: 'Policies for information security',
+    description: 'Information security policy and topic-specific policies shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and relevant interested parties, and reviewed at planned intervals and if significant changes occur.',
     guidance: 'Develop and maintain comprehensive information security policies.',
     auditReadyGuidance: `**Implementation**
 
@@ -11918,29 +11950,40 @@ export const applications: Application[] = [
 export const notifications = [
   {
     id: 'notif-1',
-    title: 'Assessment due',
-    description: 'Annual ISO 27001 Assessment needs to be completed',
+    title: 'Critical: Assessment Overdue',
+    description: 'Annual ISO 27001 Assessment deadline passed - immediate action required',
     type: 'assessment',
     status: 'unread',
     priority: 'high',
     entityId: 'assessment-1',
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString(), // 5 days from now
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString() // 2 days ago
+    dueDate: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(), // 2 days ago (overdue)
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString() // 3 days ago
   },
   {
     id: 'notif-2',
-    title: 'Requirement needs review',
-    description: 'Physical security controls for Server Room need review',
+    title: 'Urgent: Security Incident Response',
+    description: 'Suspicious login attempts detected - review access logs immediately',
     type: 'requirement',
     status: 'unread',
-    priority: 'medium',
+    priority: 'high',
     entityId: 'iso-27002-8.3',
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(), // 7 days from now
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() // 1 day ago
+    dueDate: new Date(new Date().setHours(new Date().getHours() + 2)).toISOString(), // 2 hours from now
+    createdAt: new Date(new Date().setMinutes(new Date().getMinutes() - 30)).toISOString() // 30 minutes ago
   },
   {
     id: 'notif-3',
-    title: 'Application security update',
+    title: 'GDPR Compliance Check',
+    description: 'Quarterly data processing review required for EU operations',
+    type: 'requirement',
+    status: 'unread',
+    priority: 'medium',
+    entityId: 'gdpr-art-30',
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString(), // 5 days from now
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() // 1 day ago
+  },
+  {
+    id: 'notif-4',
+    title: 'Application Security Update',
     description: 'CRM application requires security review after latest update',
     type: 'application',
     status: 'unread',
@@ -11950,26 +11993,48 @@ export const notifications = [
     createdAt: new Date(new Date().setHours(new Date().getHours() - 12)).toISOString() // 12 hours ago
   },
   {
-    id: 'notif-4',
-    title: 'Device compliance check',
-    description: 'Corporate laptops need encryption verification',
+    id: 'notif-5',
+    title: 'Device Encryption Audit',
+    description: 'All mobile devices require encryption compliance verification',
     type: 'device',
-    status: 'read',
-    priority: 'low',
-    entityId: 'device-group-1',
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 14)).toISOString(), // 14 days from now
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString() // 3 days ago
+    status: 'unread',
+    priority: 'medium',
+    entityId: 'device-group-mobile',
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(), // 7 days from now
+    createdAt: new Date(new Date().setHours(new Date().getHours() - 6)).toISOString() // 6 hours ago
   },
   {
-    id: 'notif-5',
-    title: 'Organization policy update',
-    description: 'Review updated information security policy',
+    id: 'notif-6',
+    title: 'Password Policy Enforcement',
+    description: '15 users have passwords expiring within 7 days',
     type: 'organization',
     status: 'read',
     priority: 'low',
-    entityId: 'policy-1',
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 21)).toISOString(), // 21 days from now
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString() // 5 days ago
+    entityId: 'policy-password',
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(), // 7 days from now
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString() // 2 days ago
+  },
+  {
+    id: 'notif-7',
+    title: 'Network Security Review',
+    description: 'Firewall rules review completed - no issues found',
+    type: 'requirement',
+    status: 'read',
+    priority: 'low',
+    entityId: 'network-security',
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(), // 30 days from now
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() // 1 day ago
+  },
+  {
+    id: 'notif-8',
+    title: 'Backup System Status',
+    description: 'Weekly backup verification completed successfully',
+    type: 'device',
+    status: 'read',
+    priority: 'low',
+    entityId: 'backup-systems',
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(), // 7 days from now
+    createdAt: new Date(new Date().setHours(new Date().getHours() - 18)).toISOString() // 18 hours ago
   }
 ];
 

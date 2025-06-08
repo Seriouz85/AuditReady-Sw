@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Shield, Key, Fingerprint, AlertCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { supabaseAuth, DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/supabase";
+import { DEMO_EMAIL, DEMO_PASSWORD, supabase } from "@/lib/supabase";
 import { toast } from "@/utils/toast";
-import { mockSignIn, mockSignInAnonymously } from "@/lib/mockAuth";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ZoomToggle } from "@/components/ui/zoom-toggle";
@@ -16,7 +16,9 @@ import { ZoomToggle } from "@/components/ui/zoom-toggle";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme } = useTheme();
+  const { signIn, user, loading } = useAuth();
   const [email, setEmail] = useState(DEMO_EMAIL);
   const [password, setPassword] = useState(DEMO_PASSWORD);
   const [rememberMe, setRememberMe] = useState(false);
@@ -29,6 +31,14 @@ const Login = () => {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [rateLimitTimeLeft, setRateLimitTimeLeft] = useState(0);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      const from = location.state?.from?.pathname || "/app";
+      navigate(from, { replace: true });
+    }
+  }, [user, loading, navigate, location]);
 
   useEffect(() => {
     // Check if Supabase is properly configured
@@ -113,8 +123,8 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check rate limiting
-    if (isRateLimited) {
+    // Check rate limiting (bypass for platform admin)
+    if (isRateLimited && email.toLowerCase() !== 'payam.razifar@gmail.com') {
       setLoginError(`Too many failed attempts. Please try again in ${rateLimitTimeLeft} seconds.`);
       return;
     }
@@ -122,105 +132,45 @@ const Login = () => {
     setIsLoading(true);
     setLoginError("");
 
-    console.log("Attempting login with", email);
-
     try {
-      // Check for demo credentials first to avoid unnecessary Supabase calls
-      if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-        console.log("Demo credentials detected, using mock authentication");
-        try {
-          const mockUser = await mockSignIn(email, password);
-          console.log("Mock login successful for demo:", mockUser);
-          toast.success("Successfully logged in with demo credentials");
-          // Handle remember me and reset attempts on successful login
-          handleRememberMe();
-          setLoginAttempts(0);
-          setIsRateLimited(false);
-          redirectToMainApp();
-          return;
-        } catch (mockError) {
-          console.error("Mock login failed for demo:", mockError);
-          // Fall back to anonymous auth for demo
-          await mockSignInAnonymously();
-          toast.info("Logged in with demo credentials");
-          handleRememberMe();
-          setLoginAttempts(0);
-          setIsRateLimited(false);
-          redirectToMainApp();
-          return;
-        }
-      }
-
-      if (isSupabaseConfigured) {
-        // Try Supabase authentication for real credentials
-        try {
-          console.log("Attempting Supabase login");
-          const { data, error } = await supabaseAuth.signIn(email, password);
-          
-          if (error) {
-            console.error("Supabase login failed:", error);
-            setLoginError(`Login failed: ${error.message}`);
-            
-            // Handle failed login attempt for rate limiting
-            const newAttempts = loginAttempts + 1;
-            setLoginAttempts(newAttempts);
-            
-            // Rate limit after 5 failed attempts
-            if (newAttempts >= 5) {
-              setIsRateLimited(true);
-              setRateLimitTimeLeft(300); // 5 minutes lockout
-              toast.error("Too many failed attempts. Account temporarily locked for 5 minutes.");
-            }
-          } else if (data?.user) {
-            console.log("Supabase login successful:", data.user);
-            toast.success("Successfully logged in");
-            // Handle remember me and reset attempts on successful login
-            handleRememberMe();
-            setLoginAttempts(0);
-            setIsRateLimited(false);
-            redirectToMainApp();
-            return;
-          }
-        } catch (error) {
-          console.error("Supabase error:", error);
-          setLoginError("Authentication service error");
-        }
-      } else {
-        // If Supabase is not configured, use mock authentication
-        try {
-          console.log("Using mock authentication (Supabase not configured)");
-          const mockUser = await mockSignIn(email, password);
-          console.log("Mock login successful:", mockUser);
-          toast.success("Successfully logged in (demo mode)");
-          // Handle remember me and reset attempts on successful login
-          handleRememberMe();
-          setLoginAttempts(0);
-          setIsRateLimited(false);
-          redirectToMainApp();
-          return;
-        } catch (mockError) {
-          const error = mockError as Error;
-          console.error("Mock login failed:", error);
-          setLoginError(`Login failed: ${error.message}`);
-          
-          // Handle failed login attempt for rate limiting
+      const result = await signIn(email, password);
+      
+      if (result.error) {
+        setLoginError(result.error);
+        
+        // Handle failed login attempt for rate limiting (skip for platform admin)
+        if (email.toLowerCase() !== 'payam.razifar@gmail.com') {
           const newAttempts = loginAttempts + 1;
           setLoginAttempts(newAttempts);
           
           // Rate limit after 5 failed attempts
           if (newAttempts >= 5) {
             setIsRateLimited(true);
-            setRateLimitTimeLeft(300); // 5 minutes lockout
-            toast.error("Too many failed attempts. Account temporarily locked for 5 minutes.");
-            return;
+            setRateLimitTimeLeft(300); // 5 minutes
           }
-          
         }
+        return;
       }
+      
+      // Success - handle remember me and reset attempts
+      handleRememberMe();
+      setLoginAttempts(0);
+      setIsRateLimited(false);
+      
+      // Show success message
+      if (email === DEMO_EMAIL) {
+        toast.success("Successfully logged in with demo credentials");
+      } else {
+        toast.success("Successfully logged in");
+      }
+      
+      // Redirect to intended page or main app
+      const from = location.state?.from?.pathname || "/app";
+      navigate(from, { replace: true });
+      
     } catch (error) {
-      const err = error as Error;
-      console.error("Login process error:", err);
-      toast.error("Authentication failed");
+      console.error("Login error:", error);
+      setLoginError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -242,11 +192,15 @@ const Login = () => {
         console.log(`Social login with ${provider} (not yet configured)`);
         toast.info(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login not configured yet`);
       } else {
-        // Demo mode - simulate social login success
-        await mockSignInAnonymously();
-        toast.success(`Successfully logged in with ${provider.charAt(0).toUpperCase() + provider.slice(1)} (demo mode)`);
-        handleRememberMe();
-        redirectToMainApp();
+        // Demo mode - simulate social login success  
+        const result = await signIn(DEMO_EMAIL, DEMO_PASSWORD);
+        if (!result.error) {
+          toast.success(`Successfully logged in with ${provider.charAt(0).toUpperCase() + provider.slice(1)} (demo mode)`);
+          handleRememberMe();
+          redirectToMainApp();
+        } else {
+          throw new Error(result.error);
+        }
       }
     } catch (error) {
       console.error(`${provider} login failed:`, error);
@@ -267,7 +221,7 @@ const Login = () => {
     setIsForgotPasswordLoading(true);
     try {
       if (isSupabaseConfigured) {
-        const { error } = await supabaseAuth.resetPassword(forgotPasswordEmail);
+        const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail);
         if (error) {
           console.error("Password reset failed:", error);
           toast.error(`Password reset failed: ${error.message}`);

@@ -7,10 +7,21 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   console.log("Dashboard component loaded");
   const navigate = useNavigate();
+  const { isPlatformAdmin } = useAuth();
+
+  // Platform admins should see the Platform Admin Console, not customer dashboard
+  useEffect(() => {
+    if (isPlatformAdmin) {
+      console.log("Platform admin detected, redirecting to admin console");
+      navigate("/admin", { replace: true });
+    }
+  }, [isPlatformAdmin, navigate]);
 
   const containerVariants = {
     hidden: { opacity: 0 },

@@ -11,6 +11,9 @@ import { ArrowLeft, Filter, Plus, Search, Flag, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/lib/i18n";
+import { useRequirementsService, RequirementWithStatus } from "@/services/requirements/RequirementsService";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/utils/toast";
 
 const Requirements = () => {
   const [searchParams] = useSearchParams();
@@ -18,6 +21,8 @@ const Requirements = () => {
   const statusFromUrl = searchParams.get("status") as RequirementStatus | null;
   const priorityFromUrl = searchParams.get("priority") as RequirementPriority | null;
   const { t } = useTranslation();
+  const { isDemo } = useAuth();
+  const requirementsService = useRequirementsService();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<RequirementStatus | "all">(
@@ -33,10 +38,17 @@ const Requirements = () => {
   const [standardFilter, setStandardFilter] = useState<string>(standardIdFromUrl || "all");
   const [typeTagFilter, setTypeTagFilter] = useState<string>("all");
   const [appliesToTagFilter, setAppliesToTagFilter] = useState<string>("all");
-  const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null);
-  const [localRequirements, setLocalRequirements] = useState<Requirement[]>(requirements);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Requirement; direction: 'asc' | 'desc' } | null>(null);
+  const [selectedRequirement, setSelectedRequirement] = useState<RequirementWithStatus | null>(null);
+  const [localRequirements, setLocalRequirements] = useState<RequirementWithStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof RequirementWithStatus; direction: 'asc' | 'desc' } | null>(null);
 
+  // Load requirements data
+  useEffect(() => {
+    loadRequirements();
+  }, [standardFilter]);
+
+  // Handle URL params
   useEffect(() => {
     if (standardIdFromUrl) {
       setStandardFilter(standardIdFromUrl);
@@ -53,12 +65,69 @@ const Requirements = () => {
     }
   }, [searchParams, standardIdFromUrl]);
 
-  const handleSort = (key: keyof Requirement) => {
+  const loadRequirements = async () => {
+    try {
+      setLoading(true);
+      const requirementsData = await requirementsService.getRequirements(
+        standardFilter !== "all" ? standardFilter : undefined
+      );
+      setLocalRequirements(requirementsData);
+    } catch (error) {
+      console.error('Error loading requirements:', error);
+      toast.error('Failed to load requirements');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSort = (key: keyof RequirementWithStatus) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+  };
+
+  const handleUpdateRequirement = async (
+    requirementId: string,
+    updates: {
+      status?: string;
+      fulfillmentPercentage?: number;
+      evidence?: string;
+      notes?: string;
+      responsibleParty?: string;
+      tags?: string[];
+      riskLevel?: string;
+    }
+  ) => {
+    try {
+      const result = await requirementsService.updateRequirement(requirementId, updates);
+      if (result.success) {
+        // Update local state
+        setLocalRequirements(prev => prev.map(req => 
+          req.id === requirementId 
+            ? { 
+                ...req, 
+                status: (updates.status as any) || req.status,
+                organizationStatus: updates.status || req.organizationStatus,
+                fulfillmentPercentage: updates.fulfillmentPercentage ?? req.fulfillmentPercentage,
+                evidence: updates.evidence ?? req.evidence,
+                notes: updates.notes ?? req.notes,
+                responsibleParty: updates.responsibleParty ?? req.responsibleParty,
+                organizationTags: updates.tags ?? req.organizationTags,
+                riskLevel: updates.riskLevel ?? req.riskLevel,
+                lastUpdated: new Date().toISOString()
+              }
+            : req
+        ));
+        toast.success('Requirement updated successfully');
+      } else {
+        toast.error(result.error || 'Failed to update requirement');
+      }
+    } catch (error) {
+      console.error('Error updating requirement:', error);
+      toast.error('Failed to update requirement');
+    }
   };
 
   const sortedAndFilteredRequirements = useMemo(() => {
@@ -103,17 +172,17 @@ const Requirements = () => {
     setSelectedRequirement(requirement);
   };
 
-  const handleStatusChange = (id: string, status: RequirementStatus) => {
-    setLocalRequirements(
-      localRequirements.map((req) => (req.id === id ? { ...req, status } : req))
-    );
+  const handleStatusChange = async (id: string, status: RequirementStatus) => {
+    await handleUpdateRequirement(id, { status });
     
     if (selectedRequirement && selectedRequirement.id === id) {
-      setSelectedRequirement({ ...selectedRequirement, status });
+      setSelectedRequirement({ ...selectedRequirement, status, organizationStatus: status });
     }
   };
   
-  const handlePriorityChange = (id: string, priority: RequirementPriority) => {
+  const handlePriorityChange = async (id: string, priority: RequirementPriority) => {
+    // Note: Priority is typically a master template property, not organization-specific
+    // For now, we'll update local state only for UI consistency
     setLocalRequirements(
       localRequirements.map((req) => (req.id === id ? { ...req, priority } : req))
     );
@@ -155,33 +224,28 @@ const Requirements = () => {
     }
   };
 
-  const handleNotesChange = (id: string, notes: string) => {
-    setLocalRequirements(
-      localRequirements.map((req) => (req.id === id ? { ...req, notes } : req))
-    );
+  const handleNotesChange = async (id: string, notes: string) => {
+    await handleUpdateRequirement(id, { notes });
     
     if (selectedRequirement && selectedRequirement.id === id) {
       setSelectedRequirement({ ...selectedRequirement, notes });
     }
   };
 
-  const handleTagsChange = (id: string, newTags: string[]) => {
-    setLocalRequirements(
-      localRequirements.map((req) => (req.id === id ? { ...req, tags: newTags } : req))
-    );
+  const handleTagsChange = async (id: string, newTags: string[]) => {
+    await handleUpdateRequirement(id, { tags: newTags });
     
     if (selectedRequirement && selectedRequirement.id === id) {
-      setSelectedRequirement({ ...selectedRequirement, tags: newTags });
+      setSelectedRequirement({ ...selectedRequirement, tags: newTags, organizationTags: newTags });
     }
   };
   
-  const handleGuidanceChange = (id: string, guidance: string) => {
-    setLocalRequirements(
-      localRequirements.map((req) => (req.id === id ? { ...req, guidance } : req))
-    );
+  const handleGuidanceChange = async (id: string, guidance: string) => {
+    // Guidance might be stored as evidence or notes depending on the implementation
+    await handleUpdateRequirement(id, { evidence: guidance });
     
     if (selectedRequirement && selectedRequirement.id === id) {
-      setSelectedRequirement({ ...selectedRequirement, guidance });
+      setSelectedRequirement({ ...selectedRequirement, evidence: guidance });
     }
   };
 
@@ -218,6 +282,14 @@ const Requirements = () => {
       setLocalRequirements(prioritizedRequirements);
     }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

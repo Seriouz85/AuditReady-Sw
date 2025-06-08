@@ -5,6 +5,7 @@ import { Bell } from 'lucide-react';
 import { formatDate } from '@/utils/formatDate';
 import { Notification } from '@/types';
 import { notifications as mockNotifications } from '@/data/mockData';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +23,12 @@ import {
 
 export const NotificationsMenu = () => {
   const { t } = useTranslation();
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications as Notification[]);
+  const { isDemo } = useAuth();
+  
+  // Use mock notifications for demo mode, empty array for production
+  const [notifications, setNotifications] = useState<Notification[]>(
+    isDemo ? (mockNotifications as Notification[]) : []
+  );
   
   const unreadCount = notifications.filter(n => n.status === 'unread').length;
   

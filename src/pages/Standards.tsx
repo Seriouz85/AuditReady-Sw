@@ -10,6 +10,8 @@ import { toast } from "@/utils/toast";
 import { CreateStandardForm } from "@/components/standards/CreateStandardForm";
 import { useRequirements } from "@/hooks/useRequirements";
 import SoAPreview from '@/components/soa/SoAPreview';
+import { useStandardsService, StandardWithRequirements } from "@/services/standards/StandardsService";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
   DialogContent,
@@ -19,8 +21,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// Define the complete library of available standards
-const standardsLibrary: Standard[] = [
+// Define the complete library of available standards (used for demo mode)
+export const standardsLibrary: Standard[] = [
   {
     id: 'iso-27001',
     name: 'ISO/IEC 27001',
@@ -231,75 +233,108 @@ const standardsLibrary: Standard[] = [
 
 const Standards = () => {
   const { requirements: requirementsData, loading: requirementsLoading } = useRequirements();
+  const { isDemo } = useAuth();
+  const standardsService = useStandardsService();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [activeTab] = useState("all");
-  const [localStandards, setLocalStandards] = useState<Standard[]>(() => {
-    const savedStandards = localStorage.getItem('standards');
-    if (savedStandards) {
-      return JSON.parse(savedStandards);
-    }
-    // If no saved standards, initialize with all standards except NIST CSF and ISO 27005
-    const initialStandards = standardsLibrary.filter(std => 
-      std.id !== 'nist-csf-2.0' && 
-      std.id !== 'iso-27005-2022'
-    );
-    localStorage.setItem('standards', JSON.stringify(initialStandards));
-    return initialStandards;
-  });
-  const [applicableStandards, setApplicableStandards] = useState<Record<string, boolean>>(() => {
-    const savedApplicability = localStorage.getItem('applicableStandards');
-    if (savedApplicability) {
-      return JSON.parse(savedApplicability);
-    }
-    // If no saved applicability, initialize with all pre-added standards marked as applicable
-    const initialApplicability: Record<string, boolean> = {};
-    localStandards.forEach(standard => {
-      initialApplicability[standard.id] = true;
-    });
-    localStorage.setItem('applicableStandards', JSON.stringify(initialApplicability));
-    return initialApplicability;
-  });
+  const [localStandards, setLocalStandards] = useState<StandardWithRequirements[]>([]);
+  const [availableStandards, setAvailableStandards] = useState<Standard[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isSOADialogOpen, setIsSOADialogOpen] = useState(false);
   const [isLibraryDialogOpen, setIsLibraryDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedLibraryStandards, setSelectedLibraryStandards] = useState<Record<string, boolean>>({});
   const soaRef = useRef(null);
 
-  // Update localStorage when standards change
+  // Load standards data on component mount
   useEffect(() => {
-    localStorage.setItem('standards', JSON.stringify(localStandards));
-  }, [localStandards]);
+    loadStandardsData();
+  }, []);
 
-  // Update localStorage when applicability changes
-  useEffect(() => {
-    localStorage.setItem('applicableStandards', JSON.stringify(applicableStandards));
-  }, [applicableStandards]);
+  const loadStandardsData = async () => {
+    try {
+      setLoading(true);
+      
+      if (isDemo) {
+        // Initialize demo data if not exists
+        const savedStandards = localStorage.getItem('standards');
+        if (!savedStandards) {
+          const initialStandards = standardsLibrary.filter(std => 
+            std.id !== 'nist-csf-2.0' && 
+            std.id !== 'iso-27005-2022'
+          );
+          localStorage.setItem('standards', JSON.stringify(initialStandards));
+          
+          const initialApplicability: Record<string, boolean> = {};
+          initialStandards.forEach(standard => {
+            initialApplicability[standard.id] = true;
+          });
+          localStorage.setItem('applicableStandards', JSON.stringify(initialApplicability));
+        }
+        
+        // Load demo standards
+        const demoStandards = await standardsService.getStandards();
+        setLocalStandards(demoStandards);
+        setAvailableStandards(standardsLibrary);
+      } else {
+        // Load production standards
+        const [orgStandards, availableStds] = await Promise.all([
+          standardsService.getStandards(),
+          standardsService.getAvailableStandards()
+        ]);
+        
+        setLocalStandards(orgStandards);
+        setAvailableStandards(availableStds);
+      }
+    } catch (error) {
+      console.error('Error loading standards:', error);
+      toast.error('Failed to load standards');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getRequirementCount = (standardId: string) => {
     const standard = localStandards.find(std => std.id === standardId);
-    return standard ? standard.requirements.length : 0;
+    return standard?.requirementCount || 0;
   };
 
-  const handleApplicabilityChange = (standardId: string, isApplicable: boolean) => {
-    setApplicableStandards(prev => ({
-      ...prev,
-      [standardId]: isApplicable
-    }));
+  const handleApplicabilityChange = async (standardId: string, isApplicable: boolean) => {
+    try {
+      const result = await standardsService.updateApplicability(standardId, isApplicable);
+      if (result.success) {
+        // Update local state
+        setLocalStandards(prev => prev.map(std => 
+          std.id === standardId 
+            ? { ...std, isApplicable }
+            : std
+        ));
+        toast.success(`Standard marked as ${isApplicable ? 'applicable' : 'not applicable'}`);
+      } else {
+        toast.error(result.error || 'Failed to update standard applicability');
+      }
+    } catch (error) {
+      console.error('Error updating applicability:', error);
+      toast.error('Failed to update standard applicability');
+    }
   };
 
-  const handleRemoveStandard = (standardId: string) => {
-    // Remove from local standards
-    setLocalStandards(prev => prev.filter(std => std.id !== standardId));
-    
-    // Remove from applicable standards
-    setApplicableStandards(prev => {
-      const newState = { ...prev };
-      delete newState[standardId];
-      return newState;
-    });
-
-    toast.success("Standard removed successfully");
+  const handleRemoveStandard = async (standardId: string) => {
+    try {
+      const result = await standardsService.removeStandard(standardId);
+      if (result.success) {
+        // Update local state
+        setLocalStandards(prev => prev.filter(std => std.id !== standardId));
+        toast.success("Standard removed successfully");
+      } else {
+        toast.error(result.error || 'Failed to remove standard');
+      }
+    } catch (error) {
+      console.error('Error removing standard:', error);
+      toast.error('Failed to remove standard');
+    }
   };
 
   const filteredStandards = localStandards.filter(standard => {
@@ -307,8 +342,8 @@ const Standards = () => {
       standard.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || standard.type === filterType;
     const matchesTab = activeTab === "all" || 
-      (activeTab === "applicable" && applicableStandards[standard.id]) ||
-      (activeTab === "not-applicable" && !applicableStandards[standard.id]);
+      (activeTab === "applicable" && standard.isApplicable) ||
+      (activeTab === "not-applicable" && !standard.isApplicable);
     return matchesSearch && matchesType && matchesTab;
   });
 
@@ -316,38 +351,45 @@ const Standards = () => {
     toast.success(`Standard ${id} exported successfully`);
   };
 
-  const handleAddStandards = (newStandards: Standard[]) => {
-    // Filter out standards that are already in the list
-    const uniqueNewStandards = newStandards.filter(
-      newStd => !localStandards.some(existingStd => existingStd.id === newStd.id)
-    );
+  const handleAddStandards = async (newStandards: Standard[]) => {
+    try {
+      // Filter out standards that are already in the list
+      const uniqueNewStandards = newStandards.filter(
+        newStd => !localStandards.some(existingStd => existingStd.id === newStd.id)
+      );
 
-    if (uniqueNewStandards.length === 0) {
-      toast.error("No new standards to add");
-      return;
+      if (uniqueNewStandards.length === 0) {
+        toast.error("No new standards to add");
+        return;
+      }
+
+      const standardIds = uniqueNewStandards.map(std => std.id);
+      const result = await standardsService.addStandards(standardIds);
+      
+      if (result.success) {
+        // Reload standards data to get the updated list
+        await loadStandardsData();
+        setIsLibraryDialogOpen(false);
+        setSelectedLibraryStandards({});
+        toast.success(`Added ${uniqueNewStandards.length} new standard(s)`);
+      } else {
+        toast.error(result.error || 'Failed to add standards');
+      }
+    } catch (error) {
+      console.error('Error adding standards:', error);
+      toast.error('Failed to add standards');
     }
-
-    // Add new standards to the list
-    const updatedStandards = [...localStandards, ...uniqueNewStandards];
-    setLocalStandards(updatedStandards);
-    
-    // Update applicable standards state for new standards
-    const updatedApplicability = { ...applicableStandards };
-    uniqueNewStandards.forEach(standard => {
-      updatedApplicability[standard.id] = true; // Mark new standards as applicable by default
-    });
-
-    setApplicableStandards(updatedApplicability);
-    setIsLibraryDialogOpen(false);
-    setSelectedLibraryStandards({});
-    toast.success(`Added ${uniqueNewStandards.length} new standard(s)`);
   };
 
    const handleCreateStandard = (_: Standard) => {    // Implementation needed
   };
 
-  if (requirementsLoading) {
-    return <div>Loading...</div>;
+  if (requirementsLoading || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
@@ -372,7 +414,7 @@ const Standards = () => {
               <div className="flex-1 overflow-y-auto pr-4">
                 <SoAPreview 
                   ref={soaRef}
-                  standards={localStandards.filter(std => applicableStandards[std.id])}
+                  standards={localStandards.filter(std => std.isApplicable)}
                   requirements={requirementsData}
                 />
               </div>
@@ -397,7 +439,7 @@ const Standards = () => {
                 </DialogDescription>
               </DialogHeader>
               <StandardsLibrary
-                availableStandards={standardsLibrary.filter(
+                availableStandards={availableStandards.filter(
                   std => !localStandards.some(vs => vs.id === std.id)
                 )}
                 selectedStandards={selectedLibraryStandards}
@@ -408,7 +450,7 @@ const Standards = () => {
                   }));
                 }}
                 onAddStandards={() => {
-                  const selectedStandards = standardsLibrary.filter(
+                  const selectedStandards = availableStandards.filter(
                     std => selectedLibraryStandards[std.id]
                   );
                   handleAddStandards(selectedStandards);
@@ -484,7 +526,7 @@ const Standards = () => {
                   standard={standard}
                   requirementCount={getRequirementCount(standard.id)}
                   onExport={() => exportStandard(standard.id)}
-                  isApplicable={applicableStandards[standard.id] || false}
+                  isApplicable={standard.isApplicable}
                   onApplicabilityChange={(isApplicable) => handleApplicabilityChange(standard.id, isApplicable)}
                   onRemove={() => handleRemoveStandard(standard.id)}
                 />
