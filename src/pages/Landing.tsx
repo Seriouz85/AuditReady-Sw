@@ -5,6 +5,7 @@ import { PRICING_PLANS } from "@/lib/stripe";
 import { createCheckoutSession, redirectToCheckout } from "@/api/stripe";
 import { toast } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
+import { useDynamicPricing } from "@/hooks/useDynamicPricing";
 import { 
   Shield, 
   Zap, 
@@ -35,6 +36,7 @@ export default function Landing() {
   const [activeTab, setActiveTab] = useState(0);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { theme } = useTheme();
+  const { plans: dynamicPlans, loading: pricingLoading, error: pricingError } = useDynamicPricing();
 
   const handlePricingClick = async (tier: 'free' | 'team' | 'business' | 'enterprise') => {
     if (tier === 'free') {
@@ -57,9 +59,12 @@ export default function Landing() {
       return;
     }
 
-    // Get the price ID for the selected tier
-    const plan = PRICING_PLANS[tier];
-    if (!plan.stripePriceId) {
+    // Get the price ID from dynamic plans or fallback to static config
+    const dynamicPlan = dynamicPlans.find(p => p.id === tier);
+    const staticPlan = PRICING_PLANS[tier];
+    const plan = dynamicPlan || staticPlan;
+    
+    if (!plan || !plan.stripePriceId) {
       toast.error('This plan is not yet configured. Please contact support.');
       return;
     }
@@ -681,9 +686,18 @@ export default function Landing() {
                   <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-blue-500`}>
                     <Users className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Team</h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>€499</div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>per month</p>
+                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                    {dynamicPlans.find(p => p.id === 'team')?.name || 'Team'}
+                  </h3>
+                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                    {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'team')?.discountedPrice || dynamicPlans.find(p => p.id === 'team')?.price || 499}`}
+                    {dynamicPlans.find(p => p.id === 'team')?.discountedPrice && (
+                      <span className="text-lg line-through text-gray-400 ml-2">€{dynamicPlans.find(p => p.id === 'team')?.price}</span>
+                    )}
+                  </div>
+                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+                    per {dynamicPlans.find(p => p.id === 'team')?.interval || 'month'}
+                  </p>
                   <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Excl. VAT • 1-50 employees</p>
                   <ul className="space-y-2 mb-6 text-left flex-1">
                     <li className="flex items-center gap-2">
@@ -727,9 +741,18 @@ export default function Landing() {
                   <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 ${theme === 'light' ? 'bg-purple-100' : 'bg-purple-900/30'}`}>
                     <Building2 className={`h-8 w-8 ${theme === 'light' ? 'text-purple-600' : 'text-purple-400'}`} />
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Business</h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>€699</div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>per month</p>
+                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                    {dynamicPlans.find(p => p.id === 'business')?.name || 'Business'}
+                  </h3>
+                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                    {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'business')?.discountedPrice || dynamicPlans.find(p => p.id === 'business')?.price || 699}`}
+                    {dynamicPlans.find(p => p.id === 'business')?.discountedPrice && (
+                      <span className="text-lg line-through text-gray-400 ml-2">€{dynamicPlans.find(p => p.id === 'business')?.price}</span>
+                    )}
+                  </div>
+                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+                    per {dynamicPlans.find(p => p.id === 'business')?.interval || 'month'}
+                  </p>
                   <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Excl. VAT • 50-1000 employees</p>
                   <ul className="space-y-2 mb-6 text-left flex-1">
                     <li className="flex items-center gap-2">
@@ -774,9 +797,18 @@ export default function Landing() {
                   <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 ${theme === 'light' ? 'bg-amber-100' : 'bg-amber-900/30'}`}>
                     <Crown className={`h-8 w-8 ${theme === 'light' ? 'text-amber-600' : 'text-amber-400'}`} />
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Enterprise</h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>€999</div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>per month</p>
+                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                    {dynamicPlans.find(p => p.id === 'enterprise')?.name || 'Enterprise'}
+                  </h3>
+                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                    {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'enterprise')?.discountedPrice || dynamicPlans.find(p => p.id === 'enterprise')?.price || 999}`}
+                    {dynamicPlans.find(p => p.id === 'enterprise')?.discountedPrice && (
+                      <span className="text-lg line-through text-gray-400 ml-2">€{dynamicPlans.find(p => p.id === 'enterprise')?.price}</span>
+                    )}
+                  </div>
+                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+                    per {dynamicPlans.find(p => p.id === 'enterprise')?.interval || 'month'}
+                  </p>
                   <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Excl. VAT • 1000+ employees</p>
                   <ul className="space-y-2 mb-6 text-left flex-1">
                     <li className="flex items-center gap-2">

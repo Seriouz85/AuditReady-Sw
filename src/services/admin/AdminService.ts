@@ -459,10 +459,58 @@ export class AdminService {
   // ============================================================================
 
   async getAllUsers() {
-    // Note: auth.users is not directly accessible via Supabase client
-    // For now, return empty array - will need to use Admin API for this
-    console.log('getAllUsers: Direct auth.users access not available via client SDK');
-    return [];
+    try {
+      // Use Auth Admin API via Edge Function
+      const { data, error } = await supabase.functions.invoke('admin-users', {
+        method: 'GET',
+      });
+
+      if (error) {
+        console.error('Error fetching users via Admin API:', error);
+        // Fallback to organization users if Admin API fails
+        return this.getAllOrganizationUsers();
+      }
+
+      return data.users || [];
+    } catch (error) {
+      console.error('Error in getAllUsers:', error);
+      // Fallback to organization users
+      return this.getAllOrganizationUsers();
+    }
+  }
+
+  // Fallback method using organization users
+  async getAllOrganizationUsers() {
+    try {
+      const { data: orgUsers, error } = await supabase
+        .from('organization_users')
+        .select(`
+          *,
+          organization:organizations(name, slug)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching organization users:', error);
+        return [];
+      }
+
+      // Transform to match expected format
+      return (orgUsers || []).map(user => ({
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+        last_sign_in_at: user.last_login,
+        email_confirmed_at: user.created_at, // Assume confirmed if they're in org
+        raw_user_meta_data: {
+          name: user.name,
+          organization: user.organization?.name
+        }
+      }));
+    } catch (error) {
+      console.error('Error in getAllOrganizationUsers:', error);
+      return [];
+    }
   }
 
   async getOrganizationUsers(organizationId: string) {
@@ -509,16 +557,146 @@ export class AdminService {
   }
 
   private async sendInvitationEmail(invitation: any) {
-    // TODO: Implement email sending
-    console.log('Sending invitation email to:', invitation.email);
-    console.log('Invitation URL: /invite/' + invitation.invitation_token);
+    // Import email service dynamically to avoid circular dependencies
+    const { emailService } = await import('../email/EmailService');
+    
+    // Get inviter details
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Get organization details
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', invitation.organization_id)
+      .single();
+    
+    // Get role details
+    const { data: role } = await supabase
+      .from('user_roles')
+      .select('display_name')
+      .eq('id', invitation.role_id)
+      .single();
+    
+    // Send invitation email
+    const result = await emailService.sendInvitationEmail({
+      email: invitation.email,
+      organization_name: org?.name || 'Unknown Organization',
+      inviter_name: user?.email || 'Platform Administrator',
+      invitation_token: invitation.invitation_token,
+      role_name: role?.display_name || 'User',
+    });
+    
+    if (!result.success) {
+      console.error('Failed to send invitation email:', result.error);
+      throw new Error('Failed to send invitation email');
+    }
+    
+    console.log('Invitation email sent successfully to:', invitation.email);
   }
 
   async suspendUser(userId: string, reason: string) {
-    // TODO: Implement user suspension
-    await this.auditLogger.log('user_suspended', 'auth.users', userId, {
-      new_values: { reason }
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-users', {
+        method: 'PUT',
+        body: {
+          suspended: true,
+          suspensionReason: reason,
+        },
+      });
+
+      if (error) throw error;
+
+      await this.auditLogger.log('user_suspended', 'auth.users', userId, {
+        new_values: { reason, suspended: true }
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error suspending user:', error);
+      throw error;
+    }
+  }
+
+  async createUser(userData: {
+    email: string;
+    password?: string;
+    name?: string;
+    organizationId?: string;
+    role?: string;
+  }) {
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-users', {
+        method: 'POST',
+        body: {
+          email: userData.email,
+          password: userData.password || this.generateRandomPassword(),
+          userData: {
+            name: userData.name || userData.email.split('@')[0],
+          },
+          organizationId: userData.organizationId,
+          role: userData.role || 'user',
+        },
+      });
+
+      if (error) throw error;
+
+      await this.auditLogger.log('user_created_by_admin', 'auth.users', data.user.id, {
+        new_values: userData
+      });
+
+      return data.user;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }
+
+  async deleteUser(userId: string) {
+    try {
+      const { error } = await supabase.functions.invoke('admin-users', {
+        method: 'DELETE',
+      });
+
+      if (error) throw error;
+
+      await this.auditLogger.log('user_deleted', 'auth.users', userId, {
+        old_values: { id: userId }
+      });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
+  }
+
+  async updateUserMetadata(userId: string, metadata: Record<string, any>) {
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-users', {
+        method: 'PUT',
+        body: {
+          userData: metadata,
+        },
+      });
+
+      if (error) throw error;
+
+      await this.auditLogger.log('user_metadata_updated', 'auth.users', userId, {
+        new_values: metadata
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error updating user metadata:', error);
+      throw error;
+    }
+  }
+
+  private generateRandomPassword(length = 12): string {
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return password;
   }
 
   // ============================================================================
@@ -584,21 +762,34 @@ export class AdminService {
       const [
         { count: totalOrganizations },
         { count: totalStandards },
-        { count: totalRequirements }
+        { count: totalRequirements },
+        { count: totalUsers },
+        { count: activeAssessments }
       ] = await Promise.all([
         supabase.from('organizations').select('id', { count: 'exact', head: true }),
-        supabase.from('standards_library').select('id', { count: 'exact', head: true }),
-        supabase.from('requirements_library').select('id', { count: 'exact', head: true })
+        supabase.from('standards_library').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('requirements_library').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('organization_users').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('assessments').select('id', { count: 'exact', head: true }).in('status', ['in-progress', 'draft'])
       ]);
+
+      // Get recent updates from audit logs
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      
+      const { count: recentUpdates } = await supabase
+        .from('audit_logs')
+        .select('id', { count: 'exact', head: true })
+        .gte('created_at', oneWeekAgo.toISOString());
 
       return {
         totalOrganizations: totalOrganizations || 0,
-        totalUsers: 0, // Will implement with proper user counting
+        totalUsers: totalUsers || 0,
         totalStandards: totalStandards || 0,
         totalRequirements: totalRequirements || 0,
-        pendingInvitations: 0,
-        activeAssessments: 0,
-        recentUpdates: 3
+        pendingInvitations: 0, // TODO: Implement when invitation system is ready
+        activeAssessments: activeAssessments || 0,
+        recentUpdates: recentUpdates || 0
       };
     } catch (error) {
       console.error('Error fetching platform statistics:', error);

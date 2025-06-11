@@ -3,18 +3,31 @@ import { createClient } from '@supabase/supabase-js';
 // Supabase configuration
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || '';
 
-// Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create main Supabase client (singleton pattern to avoid multiple instances)
+let supabaseInstance: ReturnType<typeof createClient> | null = null;
+export const supabase = (() => {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return supabaseInstance;
+})();
 
-// Create admin client for platform admin operations
+// Create admin client for platform admin operations (only if service role key is available)
 // This bypasses RLS for admin operations
-export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-});
+let supabaseAdminInstance: ReturnType<typeof createClient> | null = null;
+export const supabaseAdmin = (() => {
+  if (!supabaseAdminInstance && supabaseServiceRoleKey) {
+    supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+  }
+  return supabaseAdminInstance || supabase; // Fallback to regular client if no service role key
+})();
 
 // Demo credentials for showcase purposes
 export const DEMO_EMAIL = "demo@auditready.com";

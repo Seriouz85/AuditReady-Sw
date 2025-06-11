@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import PricingAssessment from "./pages/PricingAssessment";
 import Onboarding from "./pages/Onboarding";
+import EnhancedOnboarding from "./pages/EnhancedOnboarding";
 import About from "./pages/About";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
@@ -71,6 +72,14 @@ const App = () => (
                   {/* Protected pages requiring authentication */}
                   <Route 
                     path="/onboarding" 
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <EnhancedOnboarding />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/onboarding/legacy" 
                     element={
                       <ProtectedRoute requireOrganization={false}>
                         <Onboarding />

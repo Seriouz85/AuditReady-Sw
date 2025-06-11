@@ -20,19 +20,28 @@ export class AuditLogger {
       // Get current user context
       const { data: { user } } = await supabase.auth.getUser();
       
+      // Check if user is platform admin
+      const { data: adminData } = await supabase
+        .from('platform_administrators')
+        .select('id')
+        .eq('email', user?.email || '')
+        .single();
+      
       const logEntry = {
+        actor_id: adminData?.id || user?.id || null,
+        actor_type: adminData ? 'platform_admin' : 'organization_user',
+        actor_email: user?.email || null,
         action,
         resource_type: resourceType,
         resource_id: resourceId,
-        user_id: user?.id || null,
-        user_email: user?.email || null,
-        organization_id: data.organization_id || null,
-        old_values: data.old_values || null,
-        new_values: data.new_values || null,
+        details: {
+          old_values: data.old_values,
+          new_values: data.new_values,
+          organization_id: data.organization_id
+        },
         ip_address: data.ip_address || null,
         user_agent: data.user_agent || (typeof window !== 'undefined' ? window.navigator.userAgent : null),
-        session_id: data.session_id || null,
-        created_at: new Date().toISOString()
+        session_id: data.session_id || null
       };
 
       const { error } = await supabase

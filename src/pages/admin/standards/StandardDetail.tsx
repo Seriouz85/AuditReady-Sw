@@ -245,27 +245,61 @@ export const StandardDetail: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={() => navigate('/admin')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">{standard.name}</h1>
-            <p className="text-muted-foreground">
-              Version {standard.version} • {standard.type} • {requirements.length} requirements
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Enhanced Header */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 shadow-2xl">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-600/90"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+          
+          {/* Content */}
+          <div className="relative flex items-center justify-between text-white">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <Button variant="secondary" onClick={() => navigate('/admin')} className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Admin
+                </Button>
+                <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm">
+                  <Shield className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold tracking-tight">{standard.name}</h1>
+                  <p className="text-blue-100 text-lg">
+                    Version {standard.version} • {standard.type} • {requirements.length} requirements
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {/* Status Indicator */}
+              <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                    <span className="text-sm text-blue-100">Standard Active</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                    <span className="text-sm text-blue-100">Requirements Loaded</span>
+                  </div>
+                </div>
+              </div>
+              
+              <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-4 py-2">
+                <FileText className="w-4 h-4 mr-2" />
+                {standard.type.toUpperCase()}
+              </Badge>
+              
+              <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-4 py-2">
+                <Shield className="w-4 h-4 mr-2" />
+                Active Standard
+              </Badge>
+            </div>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline" className="bg-green-50 text-green-700">
-            Active
-          </Badge>
-        </div>
-      </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
@@ -681,6 +715,7 @@ export const StandardDetail: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 };

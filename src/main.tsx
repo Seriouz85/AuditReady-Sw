@@ -3,6 +3,44 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import './styles/react-flow-export.css';
 import App from './App';
+import { sentryService } from '@/services/monitoring/SentryService';
+
+// Initialize Sentry monitoring
+sentryService.initialize().then((initialized) => {
+  if (initialized) {
+    console.log('🔍 Monitoring enabled');
+  } else {
+    console.log('🔍 Monitoring disabled (development mode)');
+  }
+});
+
+// Runtime cache control for SPA navigation
+const configureCacheHeaders = () => {
+  // Add meta tag for proper cache control
+  const metaTag = document.createElement('meta');
+  metaTag.httpEquiv = 'Cache-Control';
+  metaTag.content = 'no-cache, no-store, must-revalidate';
+  document.head.appendChild(metaTag);
+
+  // Force asset revalidation on navigation
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('beforeunload', () => {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => registration.update());
+      });
+    });
+  }
+
+  // Handle client-side routing cache issues
+  window.addEventListener('popstate', () => {
+    // Force revalidation of cached resources
+    if (window.performance && window.performance.navigation) {
+      if (window.performance.navigation.type === 2) {
+        window.location.reload(true);
+      }
+    }
+  });
+};
 
 // This script handles GitHub Pages SPA routing issues
 // It's based on https://github.com/rafgraph/spa-github-pages
@@ -33,6 +71,7 @@ const redirectFromGitHubPages = () => {
 };
 
 // Run this before rendering the app
+configureCacheHeaders();
 redirectFromGitHubPages();
 
 // Find the root element

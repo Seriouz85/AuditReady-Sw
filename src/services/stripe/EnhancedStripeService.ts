@@ -182,6 +182,21 @@ export class EnhancedStripeService {
     return flattened;
   }
 
+  // Trigger real-time pricing update across browser tabs
+  private triggerPricingUpdate(): void {
+    try {
+      // Set a timestamp in localStorage to trigger storage events
+      localStorage.setItem('stripe_pricing_updated', Date.now().toString());
+      
+      // Remove it immediately to allow future updates
+      setTimeout(() => {
+        localStorage.removeItem('stripe_pricing_updated');
+      }, 100);
+    } catch (error) {
+      console.warn('Could not trigger pricing update event:', error);
+    }
+  }
+
   // ===== PRODUCT MANAGEMENT =====
 
   async listProducts(active?: boolean, limit = 100): Promise<{ data: StripeProduct[]; has_more: boolean }> {
@@ -198,11 +213,15 @@ export class EnhancedStripeService {
   }
 
   async createProduct(productData: CreateProductRequest): Promise<StripeProduct> {
-    return this.makeRequest('/products', 'POST', productData);
+    const result = await this.makeRequest('/products', 'POST', productData);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   async updateProduct(productId: string, updates: Partial<CreateProductRequest>): Promise<StripeProduct> {
-    return this.makeRequest(`/products/${productId}`, 'POST', updates);
+    const result = await this.makeRequest(`/products/${productId}`, 'POST', updates);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   async deleteProduct(productId: string): Promise<{ id: string; deleted: boolean }> {
@@ -224,11 +243,15 @@ export class EnhancedStripeService {
   }
 
   async createPrice(priceData: CreatePriceRequest): Promise<StripePrice> {
-    return this.makeRequest('/prices', 'POST', priceData);
+    const result = await this.makeRequest('/prices', 'POST', priceData);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   async updatePrice(priceId: string, updates: { active?: boolean; metadata?: Record<string, string> }): Promise<StripePrice> {
-    return this.makeRequest(`/prices/${priceId}`, 'POST', updates);
+    const result = await this.makeRequest(`/prices/${priceId}`, 'POST', updates);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   // ===== COUPON MANAGEMENT =====
@@ -243,15 +266,21 @@ export class EnhancedStripeService {
   }
 
   async createCoupon(couponData: CreateCouponRequest): Promise<StripeCoupon> {
-    return this.makeRequest('/coupons', 'POST', couponData);
+    const result = await this.makeRequest('/coupons', 'POST', couponData);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   async updateCoupon(couponId: string, updates: { name?: string; metadata?: Record<string, string> }): Promise<StripeCoupon> {
-    return this.makeRequest(`/coupons/${couponId}`, 'POST', updates);
+    const result = await this.makeRequest(`/coupons/${couponId}`, 'POST', updates);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   async deleteCoupon(couponId: string): Promise<{ id: string; deleted: boolean }> {
-    return this.makeRequest(`/coupons/${couponId}`, 'DELETE');
+    const result = await this.makeRequest(`/coupons/${couponId}`, 'DELETE');
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   // ===== PROMOTION CODE MANAGEMENT =====
@@ -269,11 +298,15 @@ export class EnhancedStripeService {
   }
 
   async createPromotionCode(promoData: CreatePromotionCodeRequest): Promise<StripePromotionCode> {
-    return this.makeRequest('/promotion_codes', 'POST', promoData);
+    const result = await this.makeRequest('/promotion_codes', 'POST', promoData);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   async updatePromotionCode(promoCodeId: string, updates: { active?: boolean; metadata?: Record<string, string> }): Promise<StripePromotionCode> {
-    return this.makeRequest(`/promotion_codes/${promoCodeId}`, 'POST', updates);
+    const result = await this.makeRequest(`/promotion_codes/${promoCodeId}`, 'POST', updates);
+    this.triggerPricingUpdate(); // Trigger real-time update
+    return result;
   }
 
   // ===== ADVANCED OPERATIONS =====

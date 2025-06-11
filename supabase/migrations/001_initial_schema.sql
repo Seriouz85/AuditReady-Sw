@@ -62,6 +62,20 @@ CREATE TABLE audit_logs (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- System settings for platform configuration
+CREATE TABLE system_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    key TEXT UNIQUE NOT NULL,
+    value JSONB NOT NULL,
+    category TEXT DEFAULT 'general',
+    description TEXT,
+    data_type TEXT DEFAULT 'string', -- 'string', 'number', 'boolean', 'json'
+    is_sensitive BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    updated_by UUID REFERENCES platform_administrators(id)
+);
+
 -- ============================================================================
 -- STANDARDS LIBRARY MANAGEMENT
 -- ============================================================================
@@ -312,6 +326,10 @@ ALTER TABLE assessment_requirements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE compliance_evidence ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
+-- Enable RLS on platform tables
+ALTER TABLE system_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
 -- Platform administrators can access everything (bypass RLS)
 CREATE POLICY "Platform admins bypass RLS" ON organizations
     FOR ALL TO authenticated
@@ -389,6 +407,33 @@ CREATE POLICY "Requirements library admin access" ON requirements_library
         )
     );
 
+-- System settings policies
+CREATE POLICY "System settings read access" ON system_settings
+    FOR SELECT TO authenticated
+    USING (NOT is_sensitive OR EXISTS (
+        SELECT 1 FROM platform_administrators 
+        WHERE email = auth.email() AND is_active = true
+    ));
+
+CREATE POLICY "System settings admin access" ON system_settings
+    FOR ALL TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM platform_administrators 
+            WHERE email = auth.email() AND is_active = true
+        )
+    );
+
+-- Audit logs policies (read-only for everyone, write for system)
+CREATE POLICY "Audit logs read access" ON audit_logs
+    FOR SELECT TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM platform_administrators 
+            WHERE email = auth.email() AND is_active = true
+        )
+    );
+
 -- ============================================================================
 -- TRIGGERS FOR UPDATED_AT TIMESTAMPS
 -- ============================================================================
@@ -424,6 +469,10 @@ CREATE TRIGGER update_assessments_updated_at
 
 CREATE TRIGGER update_assessment_requirements_updated_at 
     BEFORE UPDATE ON assessment_requirements 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_system_settings_updated_at 
+    BEFORE UPDATE ON system_settings 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================================

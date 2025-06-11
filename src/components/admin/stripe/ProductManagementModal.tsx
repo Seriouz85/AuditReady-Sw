@@ -8,6 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { enhancedStripeService, StripeProduct, StripePrice } from '@/services/stripe/EnhancedStripeService';
 import { toast } from '@/utils/toast';
 import { 
@@ -21,7 +23,10 @@ import {
   Loader,
   AlertTriangle,
   CheckCircle,
-  Tag
+  Tag,
+  Globe,
+  RefreshCw,
+  Settings
 } from 'lucide-react';
 
 interface ProductManagementModalProps {
@@ -47,8 +52,9 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
     url: '',
     metadata: {} as Record<string, string>,
   });
+  const [landingPageTier, setLandingPageTier] = useState<string>('');
   const [newPrice, setNewPrice] = useState({
-    currency: 'usd',
+    currency: 'eur', // Default to EUR for consistency with landing page
     unit_amount: 0,
     recurring: false,
     interval: 'month' as 'day' | 'week' | 'month' | 'year',
@@ -66,6 +72,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
         url: product.url || '',
         metadata: product.metadata,
       });
+      setLandingPageTier(product.metadata?.tier || '');
       loadProductPrices();
     } else {
       resetForm();
@@ -81,9 +88,10 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
       url: '',
       metadata: {},
     });
+    setLandingPageTier('');
     setPrices([]);
     setNewPrice({
-      currency: 'usd',
+      currency: 'eur', // Default to EUR for consistency with landing page
       unit_amount: 0,
       recurring: false,
       interval: 'month',
@@ -107,21 +115,27 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
   const handleSaveProduct = async () => {
     setLoading(true);
     try {
+      // Include landing page tier in metadata
+      const updatedMetadata = { 
+        ...productData.metadata,
+        ...(landingPageTier && { tier: landingPageTier })
+      };
+
       const productPayload = {
         name: productData.name,
         description: productData.description || undefined,
         active: productData.active,
         images: productData.images.filter(img => img.trim() !== ''),
         url: productData.url || undefined,
-        metadata: productData.metadata,
+        metadata: updatedMetadata,
       };
 
       if (product) {
         await enhancedStripeService.updateProduct(product.id, productPayload);
-        toast.success('Product updated successfully!');
+        toast.success('Product updated successfully! Landing page will update automatically.');
       } else {
         await enhancedStripeService.createProduct(productPayload);
-        toast.success('Product created successfully!');
+        toast.success('Product created successfully! Landing page will update automatically.');
       }
       
       onProductUpdated();
@@ -155,7 +169,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
       
       // Reset price form
       setNewPrice({
-        currency: 'usd',
+        currency: 'eur',
         unit_amount: 0,
         recurring: false,
         interval: 'month',
@@ -217,11 +231,12 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
         </DialogHeader>
 
         <Tabs defaultValue="product" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="product">Product Details</TabsTrigger>
             <TabsTrigger value="pricing" disabled={!product}>
               Pricing ({prices.length})
             </TabsTrigger>
+            <TabsTrigger value="sync">Landing Page Sync</TabsTrigger>
           </TabsList>
 
           <TabsContent value="product" className="space-y-4">
@@ -256,6 +271,27 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                 placeholder="Describe your product..."
                 rows={3}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="landing-page-tier">Landing Page Tier</Label>
+              <Select value={landingPageTier} onValueChange={setLandingPageTier}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a tier for landing page sync" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No landing page sync</SelectItem>
+                  <SelectItem value="team">Team Plan</SelectItem>
+                  <SelectItem value="business">Business Plan</SelectItem>
+                  <SelectItem value="enterprise">Enterprise Plan</SelectItem>
+                </SelectContent>
+              </Select>
+              {landingPageTier && (
+                <div className="flex items-center gap-2 text-sm text-green-600">
+                  <Globe className="h-4 w-4" />
+                  This product will sync to the {landingPageTier} tier on your landing page
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -398,7 +434,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                     <Label htmlFor="amount">Amount</Label>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
-                        $
+                        €
                       </span>
                       <Input
                         id="amount"
@@ -420,8 +456,8 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                       onChange={(e) => setNewPrice({ ...newPrice, currency: e.target.value })}
                       className="w-full p-2 border border-gray-300 rounded-md"
                     >
-                      <option value="usd">USD</option>
                       <option value="eur">EUR</option>
+                      <option value="usd">USD</option>
                       <option value="gbp">GBP</option>
                       <option value="cad">CAD</option>
                       <option value="aud">AUD</option>
@@ -494,6 +530,167 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="sync" className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold">Landing Page Integration</h3>
+                <p className="text-sm text-muted-foreground">
+                  Configure how this product appears on your landing page pricing section.
+                </p>
+              </div>
+
+              <Alert>
+                <Globe className="h-4 w-4" />
+                <AlertDescription>
+                  Products with tier metadata automatically sync to the landing page. 
+                  Changes to pricing are reflected immediately via real-time updates.
+                </AlertDescription>
+              </Alert>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Sync Configuration
+                  </CardTitle>
+                  <CardDescription>
+                    Configure which landing page tier this product represents
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>Landing Page Tier</Label>
+                    <Select value={landingPageTier} onValueChange={setLandingPageTier}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a tier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">No sync (manual pricing only)</SelectItem>
+                        <SelectItem value="team">Team Plan</SelectItem>
+                        <SelectItem value="business">Business Plan</SelectItem>
+                        <SelectItem value="enterprise">Enterprise Plan</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {landingPageTier && (
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-green-800 font-medium mb-2">
+                        <CheckCircle className="h-4 w-4" />
+                        Sync Enabled
+                      </div>
+                      <p className="text-sm text-green-700">
+                        This product will appear as the <strong>{landingPageTier}</strong> tier on your landing page.
+                        The active monthly price will be displayed automatically.
+                      </p>
+                    </div>
+                  )}
+
+                  {!landingPageTier && (
+                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-amber-800 font-medium mb-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        No Sync Configured
+                      </div>
+                      <p className="text-sm text-amber-700">
+                        This product won't appear on the landing page. Select a tier above to enable sync.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {product && prices.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Landing Page Preview</CardTitle>
+                    <CardDescription>
+                      How this product will appear on the landing page
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {landingPageTier ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 border rounded-lg">
+                          <div>
+                            <h4 className="font-semibold capitalize">{landingPageTier}</h4>
+                            <p className="text-sm text-muted-foreground">{productData.description}</p>
+                          </div>
+                          <div className="text-right">
+                            {(() => {
+                              const monthlyPrice = prices.find(p => p.recurring?.interval === 'month' && p.active);
+                              return monthlyPrice ? (
+                                <div>
+                                  <div className="text-2xl font-bold">
+                                    {formatPrice(monthlyPrice.unit_amount, monthlyPrice.currency)}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">per month</div>
+                                </div>
+                              ) : (
+                                <div className="text-sm text-amber-600">No monthly price configured</div>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                        
+                        {!prices.find(p => p.recurring?.interval === 'month' && p.active) && (
+                          <Alert>
+                            <AlertTriangle className="h-4 w-4" />
+                            <AlertDescription>
+                              <strong>Missing Monthly Price:</strong> Add an active monthly price in the Pricing tab 
+                              for this product to display correctly on the landing page.
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>Select a landing page tier to preview how this product will appear</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Real-time Sync Status</CardTitle>
+                  <CardDescription>
+                    How changes in this admin panel sync to your landing page
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm">Product Updates</span>
+                    <Badge variant="default">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Real-time
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm">Price Changes</span>
+                    <Badge variant="default">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Real-time
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm">Activation/Deactivation</span>
+                    <Badge variant="default">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Real-time
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-3">
+                    Changes are synced via localStorage events and the useDynamicPricing hook.
+                    No page refresh required.
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
 

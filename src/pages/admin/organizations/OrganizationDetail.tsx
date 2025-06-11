@@ -68,7 +68,7 @@ export const OrganizationDetail: React.FC = () => {
     slug: '',
     industry: '',
     company_size: '',
-    subscription_tier: 'starter'
+    subscription_tier: 'team'
   });
   
   const [inviteForm, setInviteForm] = useState({
@@ -110,12 +110,27 @@ export const OrganizationDetail: React.FC = () => {
       const orgUsers = await adminService.getOrganizationUsers(id);
       setUsers(orgUsers || []);
       
-      // Load available roles (mock for now)
-      setAvailableRoles([
-        { id: 'org-admin', name: 'organization_admin', display_name: 'Organization Administrator' },
-        { id: 'compliance-manager', name: 'compliance_manager', display_name: 'Compliance Manager' },
-        { id: 'user', name: 'user', display_name: 'User' }
-      ]);
+      // Load available roles from database
+      try {
+        const roles = await adminService.getOrganizationRoles();
+        if (roles && roles.length > 0) {
+          setAvailableRoles(roles);
+        } else {
+          // Fallback to default roles if none in database
+          setAvailableRoles([
+            { id: 'org-admin', name: 'organization_admin', display_name: 'Organization Administrator' },
+            { id: 'compliance-manager', name: 'compliance_manager', display_name: 'Compliance Manager' },
+            { id: 'user', name: 'user', display_name: 'User' }
+          ]);
+        }
+      } catch (roleError) {
+        console.warn('Could not load roles from database, using defaults:', roleError);
+        setAvailableRoles([
+          { id: 'org-admin', name: 'organization_admin', display_name: 'Organization Administrator' },
+          { id: 'compliance-manager', name: 'compliance_manager', display_name: 'Compliance Manager' },
+          { id: 'user', name: 'user', display_name: 'User' }
+        ]);
+      }
       
     } catch (err) {
       console.error('Error loading organization:', err);
@@ -160,8 +175,8 @@ export const OrganizationDetail: React.FC = () => {
   const getTierBadgeVariant = (tier: string) => {
     switch (tier) {
       case 'enterprise': return 'default';
-      case 'professional': return 'secondary';
-      case 'starter': return 'outline';
+      case 'business': return 'secondary';
+      case 'team': return 'outline';
       default: return 'outline';
     }
   };
@@ -199,28 +214,60 @@ export const OrganizationDetail: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={() => navigate('/admin')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">{organization.name}</h1>
-            <p className="text-muted-foreground">
-              {users.length} users • {organization.subscription_tier} plan
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Enhanced Header */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 shadow-2xl">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-600/90"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+          
+          {/* Content */}
+          <div className="relative flex items-center justify-between text-white">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <Button variant="secondary" onClick={() => navigate('/admin')} className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Admin
+                </Button>
+                <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm">
+                  <Building className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold tracking-tight">{organization.name}</h1>
+                  <p className="text-blue-100 text-lg">
+                    {users.length} users • {organization.subscription_tier} plan
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {/* Status Indicator */}
+              <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                    <span className="text-sm text-blue-100">Organization Active</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                    <span className="text-sm text-blue-100">Users Connected</span>
+                  </div>
+                </div>
+              </div>
+              
+              <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-4 py-2" variant={getTierBadgeVariant(organization.subscription_tier)}>
+                <CreditCard className="w-4 h-4 mr-2" />
+                {organization.subscription_tier.toUpperCase()}
+              </Badge>
+              
+              <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-4 py-2">
+                <Shield className="w-4 h-4 mr-2" />
+                Active Organization
+              </Badge>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant={getTierBadgeVariant(organization.subscription_tier)}>
-            {organization.subscription_tier}
-          </Badge>
-          <Badge variant="outline" className="bg-green-50 text-green-700">
-            Active
-          </Badge>
         </div>
       </div>
 
@@ -299,10 +346,9 @@ export const OrganizationDetail: React.FC = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="free">Free</SelectItem>
-                        <SelectItem value="starter">Starter</SelectItem>
-                        <SelectItem value="professional">Professional</SelectItem>
-                        <SelectItem value="enterprise">Enterprise</SelectItem>
+                        <SelectItem value="team">Team - €499/month</SelectItem>
+                        <SelectItem value="business">Business - €699/month</SelectItem>
+                        <SelectItem value="enterprise">Enterprise - €999/month</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

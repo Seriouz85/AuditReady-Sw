@@ -5,9 +5,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { adminService } from '@/services/admin/AdminService';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { sentryService } from '@/services/monitoring/SentryService';
-import { EnhancedAdminService } from '@/services/admin/EnhancedAdminService';
 import StripeDirectAPI from '@/services/stripe/StripeDirectAPI';
 import { enhancedStripeService as realTimeStripe, StripeProduct, StripePrice, StripeCoupon } from '@/services/stripe/EnhancedStripeService';
+import { dynamicPricingService } from '@/services/stripe/DynamicPricingService';
 import { ProductManagementModal } from '@/components/admin/stripe/ProductManagementModal';
 import { CouponManagementModal } from '@/components/admin/stripe/CouponManagementModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -144,64 +144,35 @@ interface StripePrice {
 // Load Stripe data function
 const loadStripeData = async () => {
   try {
-    // Test Stripe connection first
-    const connectionStatus = await StripeDirectAPI.testConnection();
+    console.log('Loading Stripe data using EnhancedStripeService...');
     
-    if (!connectionStatus) {
-      return {
-        stats: {
-          totalRevenue: 0,
-          monthlyRevenue: 0,
-          activeSubscriptions: 0,
-          customers: 0,
-          connectionStatus: false
-        },
-        customers: []
-      };
-    }
-
-    // Get Stripe data in parallel using both APIs
-    const [customers, subscriptions, products, prices, coupons] = await Promise.all([
-      StripeDirectAPI.Customer.list({ limit: 100 }),
-      StripeDirectAPI.Subscription.list({ limit: 100 }),
-      StripeDirectAPI.Product.list({ limit: 50 }),
-      StripeDirectAPI.Price.list({ limit: 100 }),
-      realTimeStripe.listCoupons(50).catch(() => ({ data: [] })) // Use real-time service for coupons
+    // Get Stripe data in parallel using enhancedStripeService
+    const [productsResult, pricesResult] = await Promise.all([
+      realTimeStripe.listProducts(true, 100),
+      realTimeStripe.listPrices(undefined, true, 100)
     ]);
+
+    const products = productsResult.data;
+    const prices = pricesResult.data;
     
-    // Calculate revenue from subscriptions
-    let totalRevenue = 0;
-    let monthlyRevenue = 0;
-    
-    if (subscriptions.data) {
-      subscriptions.data.forEach(sub => {
-        if (sub.status === 'active' && sub.items?.data?.[0]?.price) {
-          const price = sub.items.data[0].price;
-          const amount = (price.unit_amount || 0) / 100;
-          
-          if (price.recurring?.interval === 'month') {
-            monthlyRevenue += amount;
-          } else if (price.recurring?.interval === 'year') {
-            monthlyRevenue += amount / 12;
-          }
-        }
-      });
-    }
-    
-    totalRevenue = monthlyRevenue * 12; // Rough calculation
+    console.log('Loaded products:', products.length);
+    console.log('Loaded prices:', prices.length);
+
+    // Calculate stats from products and prices
+    const stats = {
+      totalRevenue: 0, // Would need actual subscription data
+      monthlyRevenue: 0, // Would need actual subscription data  
+      activeSubscriptions: 0, // Would need actual subscription data
+      customers: 0, // Would need actual customer data
+      connectionStatus: true
+    };
 
     return {
-      stats: {
-        totalRevenue,
-        monthlyRevenue,
-        activeSubscriptions: subscriptions.data?.filter(s => s.status === 'active').length || 0,
-        customers: customers.data?.length || 0,
-        connectionStatus: true
-      },
-      customers: customers.data || [],
-      products: products.data || [],
-      prices: prices.data || [],
-      coupons: coupons.data || []
+      stats,
+      customers: [], // Would need actual customer data
+      products,
+      prices,
+      coupons: [] // Would load separately if needed
     };
   } catch (error) {
     console.error('Failed to load Stripe data:', error);
@@ -1537,11 +1508,11 @@ export const AdminDashboard: React.FC = () => {
                   <Users className="w-6 h-6 mb-2" />
                   <span className="text-sm">Browse All Users</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" onClick={() => navigate('/admin/analytics')}>
+                <Button variant="outline" className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" onClick={() => navigate('/admin/users')}>
                   <Shield className="w-6 h-6 mb-2" />
                   <span className="text-sm">Role Management</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" onClick={() => navigate('/admin/users/platform-admins')}>
+                <Button variant="outline" className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" onClick={() => navigate('/admin/users')}>
                   <Activity className="w-6 h-6 mb-2" />
                   <span className="text-sm">Access Logs</span>
                 </Button>
@@ -1554,23 +1525,23 @@ export const AdminDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Billing Tab - Enhanced Stripe Billing Management */}
+        {/* Billing Tab - Link to Full Billing Management */}
         <TabsContent value="billing" className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Stripe Billing Management
+                Billing Overview
               </h2>
-              <p className="text-muted-foreground mt-2">Manage customer subscriptions, revenue, and billing operations</p>
+              <p className="text-muted-foreground mt-2">Quick overview and access to full billing management</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 bg-white/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-gray-200/50">
                 <div className={`w-3 h-3 rounded-full ${stripeStats?.connectionStatus ? 'bg-green-500' : 'bg-red-500'}`} />
                 <span className="text-sm font-medium">Stripe {stripeStats?.connectionStatus ? 'Connected' : 'Disconnected'}</span>
               </div>
-              <Button variant="outline" onClick={loadDashboardData} className="border-purple-200 text-purple-700 hover:bg-purple-50">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh Data
+              <Button onClick={() => navigate('/admin/billing')} className="bg-gradient-to-r from-purple-600 to-blue-600">
+                <Settings className="w-4 h-4 mr-2" />
+                Full Billing Management
               </Button>
             </div>
           </div>
@@ -1579,94 +1550,106 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-6">
               {/* Revenue Overview */}
               <div className="grid gap-4 md:grid-cols-3">
-                <Card>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/admin/billing')}>
                   <CardHeader>
-                    <CardTitle>Monthly Revenue</CardTitle>
+                    <CardTitle className="flex items-center">
+                      <DollarSign className="w-5 h-5 mr-2 text-green-600" />
+                      Monthly Revenue
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">${stripeStats.monthlyRevenue.toLocaleString()}</div>
+                    <div className="text-3xl font-bold text-green-600">${stripeStats.monthlyRevenue.toLocaleString()}</div>
                     <p className="text-sm text-muted-foreground">
                       Annual: ${stripeStats.totalRevenue.toLocaleString()}
                     </p>
+                    <div className="flex items-center mt-2 text-sm text-green-600">
+                      <ArrowUpRight className="w-4 h-4 mr-1" />
+                      Click to view details
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/admin/billing')}>
                   <CardHeader>
-                    <CardTitle>Active Subscriptions</CardTitle>
+                    <CardTitle className="flex items-center">
+                      <CreditCard className="w-5 h-5 mr-2 text-blue-600" />
+                      Active Subscriptions
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{stripeStats.activeSubscriptions}</div>
+                    <div className="text-3xl font-bold text-blue-600">{stripeStats.activeSubscriptions}</div>
                     <p className="text-sm text-muted-foreground">
                       Paying customers
                     </p>
+                    <div className="flex items-center mt-2 text-sm text-blue-600">
+                      <ArrowUpRight className="w-4 h-4 mr-1" />
+                      Manage subscriptions
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/admin/billing')}>
                   <CardHeader>
-                    <CardTitle>Total Customers</CardTitle>
+                    <CardTitle className="flex items-center">
+                      <Users className="w-5 h-5 mr-2 text-purple-600" />
+                      Total Customers
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{stripeStats.customers}</div>
+                    <div className="text-3xl font-bold text-purple-600">{stripeStats.customers}</div>
                     <p className="text-sm text-muted-foreground">
                       In Stripe
                     </p>
+                    <div className="flex items-center mt-2 text-sm text-purple-600">
+                      <ArrowUpRight className="w-4 h-4 mr-1" />
+                      View customer details
+                    </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Customer List */}
-              {stripeCustomers.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Stripe Customers</CardTitle>
-                    <CardDescription>Customers from your Stripe account</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {stripeCustomers.slice(0, 10).map((customer) => (
-                        <div key={customer.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div>
-                            <div className="font-medium">{customer.name || customer.email}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {customer.email} • ID: {customer.id.slice(0, 18)}...
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="outline">
-                              Created {new Date(customer.created * 1000).toLocaleDateString()}
-                            </Badge>
-                            <Button variant="outline" size="sm">
-                              <Eye className="w-3 h-3 mr-1" />
-                              View
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Quick Actions */}
-              <Card>
+              {/* Quick Access Actions */}
+              <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle className="flex items-center text-purple-800">
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Billing Management Actions
+                  </CardTitle>
+                  <CardDescription>Quick access to common billing operations</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <Button variant="outline" className="h-20 flex-col">
-                      <CreditCard className="w-6 h-6 mb-2" />
-                      View All Subscriptions
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <Button 
+                      variant="outline" 
+                      className="h-16 flex-col border-purple-200 text-purple-700 hover:bg-purple-50"
+                      onClick={() => navigate('/admin/billing')}
+                    >
+                      <CreditCard className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Subscription Management</span>
                     </Button>
-                    <Button variant="outline" className="h-20 flex-col">
-                      <DollarSign className="w-6 h-6 mb-2" />
-                      Revenue Reports
+                    <Button 
+                      variant="outline" 
+                      className="h-16 flex-col border-blue-200 text-blue-700 hover:bg-blue-50"
+                      onClick={() => navigate('/admin/billing')}
+                    >
+                      <FileText className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Invoice Management</span>
                     </Button>
-                    <Button variant="outline" className="h-20 flex-col">
-                      <Users className="w-6 h-6 mb-2" />
-                      Customer Portal
+                    <Button 
+                      variant="outline" 
+                      className="h-16 flex-col border-green-200 text-green-700 hover:bg-green-50"
+                      onClick={() => navigate('/admin/billing')}
+                    >
+                      <BarChart3 className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Revenue Analytics</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-16 flex-col border-orange-200 text-orange-700 hover:bg-orange-50"
+                      onClick={() => navigate('/admin/billing')}
+                    >
+                      <Settings className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Billing Settings</span>
                     </Button>
                   </div>
                 </CardContent>
@@ -1680,7 +1663,8 @@ export const AdminDashboard: React.FC = () => {
                 <p className="text-muted-foreground mb-4">
                   Configure your Stripe API keys to enable billing management.
                 </p>
-                <Button variant="outline">
+                <Button onClick={() => navigate('/admin/system/settings')}>
+                  <Settings className="w-4 h-4 mr-2" />
                   Configure Stripe
                 </Button>
               </CardContent>
@@ -1816,11 +1800,11 @@ export const AdminDashboard: React.FC = () => {
                   <FileText className="w-4 h-4 mr-3" />
                   View Audit Logs
                 </Button>
-                <Button variant="outline" className="w-full justify-start border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => navigate('/admin/system/settings')}>
+                <Button variant="outline" className="w-full justify-start border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => navigate('/admin/system/settings#backup')}>
                   <Database className="w-4 h-4 mr-3" />
                   Backup Management
                 </Button>
-                <Button variant="outline" className="w-full justify-start border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" className="w-full justify-start border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => navigate('/admin/analytics')}>
                   <TrendingUp className="w-4 h-4 mr-3" />
                   Performance Metrics
                 </Button>
@@ -1839,19 +1823,19 @@ export const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => navigate('/admin/system/settings#backup')}>
                   <Database className="w-6 h-6 mb-2" />
-                  <span className="text-sm">Database Backup</span>
+                  <span className="text-sm">Backup Settings</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => { dynamicPricingService.clearCache(); toast.success('Cache cleared successfully'); }}>
                   <RefreshCw className="w-6 h-6 mb-2" />
                   <span className="text-sm">Clear Cache</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => navigate('/admin/analytics')}>
                   <Download className="w-6 h-6 mb-2" />
                   <span className="text-sm">Export Data</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" className="h-20 flex-col border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => window.open('https://dashboard.stripe.com', '_blank')}>
                   <ExternalLink className="w-6 h-6 mb-2" />
                   <span className="text-sm">External Tools</span>
                 </Button>
