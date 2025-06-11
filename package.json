@@ -1,7 +1,7 @@
 {
   "name": "audit-readiness-hub",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "homepage": "https://seriouz85.github.io/audit-readiness-hub",
   "scripts": {

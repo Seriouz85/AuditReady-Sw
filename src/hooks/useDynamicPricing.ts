@@ -24,12 +24,10 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
 
   const fetchPricing = async () => {
     try {
-      console.log('🔄 useDynamicPricing: Starting to fetch pricing...');
       setLoading(true);
       setError(null);
       
       const fetchedPlans = await dynamicPricingService.fetchLivePricing();
-      console.log('✅ useDynamicPricing: Successfully fetched plans:', fetchedPlans.length);
       setPlans(fetchedPlans);
       
       // Check if there's a discount code in URL params
@@ -88,7 +86,6 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
       ];
       setPlans(defaultPlans);
     } finally {
-      console.log('🏁 useDynamicPricing: Fetch complete, setting loading to false');
       setLoading(false);
     }
   };
@@ -117,7 +114,6 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
     // Set up a timeout to prevent infinite loading state
     const loadingTimeout = setTimeout(() => {
       if (loading) {
-        console.warn('⚠️ useDynamicPricing: Loading timeout reached, forcing completion with fallback data');
         setLoading(false);
         if (plans.length === 0) {
           // Set fallback plans if we don't have any
