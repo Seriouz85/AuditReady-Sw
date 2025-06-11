@@ -1,0 +1,5 @@
+# Disable auto-deployment from main branch
+# Use GitHub Pages as primary deployment
+# Vercel can be used manually for previews if needed
+
+*
