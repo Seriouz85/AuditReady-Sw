@@ -1,9 +1,11 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "gh-pages": false
+      "main": true
     }
+  },
+  "github": {
+    "silent": true
   },
   "routes": [
     { "handle": "filesystem" },
