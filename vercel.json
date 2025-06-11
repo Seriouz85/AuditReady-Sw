@@ -3,9 +3,6 @@
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
-  "buildCommand": "npm run build:vercel",
-  "outputDirectory": "dist",
-  "installCommand": "npm ci",
   "headers": [
     {
       "source": "/assets/(.*)",
