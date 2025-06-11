@@ -6,10 +6,13 @@ import { adminService } from '@/services/admin/AdminService';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { sentryService } from '@/services/monitoring/SentryService';
 import StripeDirectAPI from '@/services/stripe/StripeDirectAPI';
-import { enhancedStripeService as realTimeStripe, StripeProduct, StripePrice, StripeCoupon } from '@/services/stripe/EnhancedStripeService';
+import { enhancedStripeService as realTimeStripe } from '@/services/stripe/EnhancedStripeService';
 import { dynamicPricingService } from '@/services/stripe/DynamicPricingService';
+import { stripeAdminService, StripeProduct, StripePrice, StripeCoupon } from '@/services/stripe/StripeAdminService';
 import { ProductManagementModal } from '@/components/admin/stripe/ProductManagementModal';
 import { CouponManagementModal } from '@/components/admin/stripe/CouponManagementModal';
+import { DatabaseStatus } from '@/components/admin/DatabaseStatus';
+import { CreateStandardModal } from '@/components/admin/standards/CreateStandardModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { testSupabaseConnection } from '@/utils/testSupabase';
 import { uploadRequirements } from '@/scripts/uploadRequirements';
@@ -74,7 +77,8 @@ import {
   UserX,
   UserPlus,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
 
 interface PlatformStats {
@@ -144,35 +148,27 @@ interface StripePrice {
 // Load Stripe data function
 const loadStripeData = async () => {
   try {
-    console.log('Loading Stripe data using EnhancedStripeService...');
+    console.log('Loading Stripe data using secure StripeAdminService...');
     
-    // Get Stripe data in parallel using enhancedStripeService
-    const [productsResult, pricesResult] = await Promise.all([
-      realTimeStripe.listProducts(true, 100),
-      realTimeStripe.listPrices(undefined, true, 100)
+    // Get Stripe data in parallel using secure stripeAdminService
+    const [products, prices, coupons, analytics] = await Promise.all([
+      stripeAdminService.listProducts(),
+      stripeAdminService.listPrices(),
+      stripeAdminService.listCoupons(),
+      stripeAdminService.getAnalytics()
     ]);
-
-    const products = productsResult.data;
-    const prices = pricesResult.data;
     
     console.log('Loaded products:', products.length);
     console.log('Loaded prices:', prices.length);
-
-    // Calculate stats from products and prices
-    const stats = {
-      totalRevenue: 0, // Would need actual subscription data
-      monthlyRevenue: 0, // Would need actual subscription data  
-      activeSubscriptions: 0, // Would need actual subscription data
-      customers: 0, // Would need actual customer data
-      connectionStatus: true
-    };
+    console.log('Loaded coupons:', coupons.length);
+    console.log('Analytics:', analytics);
 
     return {
-      stats,
-      customers: [], // Would need actual customer data
+      stats: analytics,
+      customers: [], // Load customers separately if needed
       products,
       prices,
-      coupons: [] // Would load separately if needed
+      coupons
     };
   } catch (error) {
     console.error('Failed to load Stripe data:', error);
@@ -194,7 +190,7 @@ const loadStripeData = async () => {
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { isPlatformAdmin, user: authUser } = useAuth();
+  const { isPlatformAdmin, user: authUser, signOut } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [standards, setStandards] = useState<StandardSummary[]>([]);
@@ -212,6 +208,7 @@ export const AdminDashboard: React.FC = () => {
   // Modal states for real-time management
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [couponModalOpen, setCouponModalOpen] = useState(false);
+  const [createStandardModalOpen, setCreateStandardModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<StripeProduct | null>(null);
   const [selectedCoupon, setSelectedCoupon] = useState<StripeCoupon | null>(null);
 
@@ -266,32 +263,35 @@ export const AdminDashboard: React.FC = () => {
     const startTime = Date.now();
     
     try {
-      console.log('Loading production dashboard data...');
-      setLoading(true);
       
-      // Add breadcrumb for monitoring
-      await sentryService.addBreadcrumb(
-        'Loading admin dashboard data',
-        'admin',
-        'info',
-        { action: 'load_dashboard_data' }
-      );
+      // Load data individually with detailed error logging
+      let stats, standardsData, orgsData, stripeData;
       
-      // Check Supabase configuration
-      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-      console.log('Has Anon Key:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+      try {
+        stats = await adminService.getPlatformStatistics();
+      } catch (error) {
+        stats = { totalOrganizations: 0, totalUsers: 0, totalStandards: 0, totalRequirements: 0, activeAssessments: 0, recentUpdates: 0 };
+      }
       
-      // Use the admin service for all data loading + load Stripe data
-      const [stats, standardsData, orgsData, stripeData] = await Promise.all([
-        adminService.getPlatformStatistics(),
-        adminService.getStandards(true),
-        adminService.getOrganizations(),
-        loadStripeData()
-      ]);
+      
+      try {
+        standardsData = await adminService.getStandards(true);
+      } catch (error) {
+        standardsData = [];
+      }
+      
+      try {
+        orgsData = await adminService.getOrganizations();
+      } catch (error) {
+        orgsData = [];
+      }
+      
+      try {
+        stripeData = await loadStripeData();
+      } catch (error) {
+        stripeData = null;
+      }
 
-      console.log('Standards data from Supabase:', standardsData);
-      console.log('Stats:', stats);
-      console.log('Organizations:', orgsData);
 
       // Set statistics
       setStats(stats);
@@ -307,10 +307,8 @@ export const AdminDashboard: React.FC = () => {
           organizationCount: 0, // Will implement organization standards relationship later
           lastUpdated: s.updated_at || s.created_at
         }));
-        console.log('Processed standards:', processedStandards);
         setStandards(processedStandards);
       } else {
-        console.log('No standards data received');
         setStandards([]);
       }
 
@@ -336,14 +334,9 @@ export const AdminDashboard: React.FC = () => {
         setStripeProducts(stripeData.products || []);
         setStripePrices(stripeData.prices || []);
         setStripeCoupons(stripeData.coupons || []);
+        
       }
 
-      console.log('Production data loaded successfully:', {
-        standards: standardsData?.length || 0,
-        organizations: orgsData?.length || 0,
-        totalUsers: stats.totalUsers,
-        stripeRevenue: stripeData?.stats?.totalRevenue || 0
-      });
 
       // Track successful load
       const duration = Date.now() - startTime;
@@ -423,34 +416,14 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Function to create a new standard
-  const handleCreateStandard = async () => {
-    const name = prompt('Enter standard name (e.g., "SOC 2"):');
-    if (!name) return;
-    
-    const version = prompt('Enter standard version (e.g., "2017"):');
-    if (!version) return;
+  // Function to open create standard modal
+  const handleCreateStandard = () => {
+    setCreateStandardModalOpen(true);
+  };
 
-    const type = prompt('Enter standard type (framework/regulation/policy/guideline):');
-    if (!type || !['framework', 'regulation', 'policy', 'guideline'].includes(type)) {
-      alert('Invalid type. Must be: framework, regulation, policy, or guideline');
-      return;
-    }
-
-    try {
-      await adminService.createStandard({
-        name,
-        version,
-        type: type as any,
-        description: `${name} compliance standard`
-      });
-
-      console.log('Standard created successfully');
-      await loadDashboardData(); // Refresh data
-    } catch (error) {
-      console.error('Error creating standard:', error);
-      setError('Failed to create standard');
-    }
+  // Function to handle standard creation success
+  const handleStandardCreated = async () => {
+    await loadDashboardData(); // Refresh data
   };
 
   // Function to navigate to standard detail
@@ -561,6 +534,7 @@ export const AdminDashboard: React.FC = () => {
 
   const refreshStripeData = async () => {
     try {
+      setLoading(true);
       const stripeData = await loadStripeData();
       if (stripeData) {
         setStripeStats(stripeData.stats);
@@ -569,10 +543,35 @@ export const AdminDashboard: React.FC = () => {
         setStripePrices(stripeData.prices || []);
         setStripeCoupons(stripeData.coupons || []);
       }
-      toast.success('Stripe data refreshed');
+      
+      // Trigger landing page sync after refreshing data
+      try {
+        localStorage.setItem('stripe_pricing_updated', Date.now().toString());
+        window.dispatchEvent(new CustomEvent('stripe_pricing_updated'));
+        setTimeout(() => {
+          localStorage.removeItem('stripe_pricing_updated');
+        }, 100);
+      } catch (error) {
+        console.warn('Could not trigger pricing update event:', error);
+      }
+      
+      toast.success('Stripe data refreshed successfully - landing page will update automatically');
     } catch (error) {
       console.error('Failed to refresh Stripe data:', error);
-      toast.error('Failed to refresh Stripe data');
+      toast.error('Failed to refresh Stripe data. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error('Failed to logout');
     }
   };
 
@@ -671,6 +670,15 @@ export const AdminDashboard: React.FC = () => {
                 <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Refresh All
               </Button>
+              
+              <Button 
+                variant="secondary" 
+                onClick={handleLogout}
+                className="bg-red-500/20 text-white border-red-300/30 hover:bg-red-500/30 backdrop-blur-sm"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
             </div>
           </div>
         </div>
@@ -750,23 +758,6 @@ export const AdminDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-indigo-700">Active Assessments</CardTitle>
-                <div className="rounded-full bg-indigo-600 p-2">
-                  <Activity className="h-4 w-4 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-indigo-900">{stats.activeAssessments}</div>
-                <p className="text-xs text-indigo-600 mt-1">In progress</p>
-                <div className="mt-2">
-                  <div className="h-1 bg-indigo-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-600 rounded-full w-2/3"></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             <Card className="bg-gradient-to-br from-rose-50 to-rose-100 border-rose-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -871,16 +862,7 @@ export const AdminDashboard: React.FC = () => {
               <p className="text-muted-foreground">Manage compliance standards and frameworks</p>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" onClick={loadDashboardData}>
-                Refresh
-              </Button>
-              <Button variant="outline" onClick={() => testSupabaseConnection()}>
-                Test DB
-              </Button>
-              <Button variant="outline" onClick={() => uploadRequirements()}>
-                Upload All Requirements
-              </Button>
-              <Button onClick={handleCreateStandard}>
+              <Button onClick={handleCreateStandard} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                 <Shield className="w-4 h-4 mr-2" />
                 Add Standard
               </Button>
@@ -895,7 +877,7 @@ export const AdminDashboard: React.FC = () => {
                 <p className="text-muted-foreground mb-4">
                   Add your first compliance standard to get started.
                 </p>
-                <Button onClick={handleCreateStandard}>
+                <Button onClick={handleCreateStandard} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                   <Shield className="w-4 h-4 mr-2" />
                   Add Your First Standard
                 </Button>
@@ -1045,8 +1027,8 @@ export const AdminDashboard: React.FC = () => {
                                 {org.userCount} users
                               </div>
                               <div className="flex items-center text-sm text-gray-600">
-                                <Activity className="w-4 h-4 mr-1" />
-                                {org.assessmentCount} assessments
+                                <Users className="w-4 h-4 mr-1" />
+                                Active since {formatDate(org.lastActivity)}
                               </div>
                               <div className="flex items-center text-sm text-gray-500">
                                 <Calendar className="w-4 h-4 mr-1" />
@@ -1663,7 +1645,7 @@ export const AdminDashboard: React.FC = () => {
                 <p className="text-muted-foreground mb-4">
                   Configure your Stripe API keys to enable billing management.
                 </p>
-                <Button onClick={() => navigate('/admin/system/settings')}>
+                <Button onClick={() => navigate('/admin/billing')}>
                   <Settings className="w-4 h-4 mr-2" />
                   Configure Stripe
                 </Button>
@@ -1746,6 +1728,11 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Database Status Component */}
+          <div className="mb-6">
+            <DatabaseStatus />
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -1866,6 +1853,12 @@ export const AdminDashboard: React.FC = () => {
         }}
         coupon={selectedCoupon}
         onCouponUpdated={refreshStripeData}
+      />
+
+      <CreateStandardModal
+        open={createStandardModalOpen}
+        onClose={() => setCreateStandardModalOpen(false)}
+        onStandardCreated={handleStandardCreated}
       />
     </div>
   );

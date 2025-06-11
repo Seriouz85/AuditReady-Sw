@@ -3,8 +3,7 @@
  * Based on Supabase documentation and best practices
  */
 
-import { supabase } from '@/lib/supabase';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 
 // Enhanced Supabase Configuration
 interface SupabaseConfig {
@@ -13,32 +12,14 @@ interface SupabaseConfig {
   serviceRoleKey: string;
 }
 
-// Get admin client with service role key (singleton to avoid multiple instances)
-let adminClientInstance: SupabaseClient | null = null;
-const getAdminClient = (): SupabaseClient => {
-  if (!adminClientInstance) {
-    const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    
-    if (!serviceRoleKey || !url) {
-      console.warn('Service role key not available, using regular client');
-      return supabase;
-    }
-    
-    adminClientInstance = createClient(url, serviceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
-  }
-  
-  return adminClientInstance;
-};
+// Use the existing singleton admin client from supabase.ts
+const getAdminClient = () => supabaseAdmin;
 
 // User Management with Admin API
 export class SupabaseAuthAdminAPI {
-  private static adminClient = getAdminClient();
+  private static getAdminClient() {
+    return getAdminClient();
+  }
 
   // Create user with email verification
   static async createUser(data: {
@@ -50,7 +31,7 @@ export class SupabaseAuthAdminAPI {
     email_confirm?: boolean;
     phone_confirm?: boolean;
   }) {
-    const { data: user, error } = await this.adminClient.auth.admin.createUser({
+    const { data: user, error } = await this.getAdminClient().auth.admin.createUser({
       email: data.email,
       password: data.password,
       phone: data.phone,
@@ -69,7 +50,7 @@ export class SupabaseAuthAdminAPI {
     data?: Record<string, any>;
     redirectTo?: string;
   }) {
-    const { data, error } = await this.adminClient.auth.admin.inviteUserByEmail(email, {
+    const { data, error } = await this.getAdminClient().auth.admin.inviteUserByEmail(email, {
       data: options?.data,
       redirectTo: options?.redirectTo,
     });
@@ -83,7 +64,7 @@ export class SupabaseAuthAdminAPI {
     page?: number;
     perPage?: number;
   }) {
-    const { data, error } = await this.adminClient.auth.admin.listUsers({
+    const { data, error } = await this.getAdminClient().auth.admin.listUsers({
       page: params?.page || 1,
       perPage: params?.perPage || 50,
     });
@@ -94,7 +75,7 @@ export class SupabaseAuthAdminAPI {
 
   // Get user by ID
   static async getUserById(userId: string) {
-    const { data, error } = await this.adminClient.auth.admin.getUserById(userId);
+    const { data, error } = await this.getAdminClient().auth.admin.getUserById(userId);
     if (error) throw error;
     return data;
   }
@@ -110,7 +91,7 @@ export class SupabaseAuthAdminAPI {
     phone_confirm?: boolean;
     ban_duration?: string;
   }) {
-    const { data, error } = await this.adminClient.auth.admin.updateUserById(userId, {
+    const { data, error } = await this.getAdminClient().auth.admin.updateUserById(userId, {
       email: updates.email,
       phone: updates.phone,
       password: updates.password,
@@ -127,14 +108,14 @@ export class SupabaseAuthAdminAPI {
 
   // Delete user
   static async deleteUser(userId: string) {
-    const { data, error } = await this.adminClient.auth.admin.deleteUser(userId);
+    const { data, error } = await this.getAdminClient().auth.admin.deleteUser(userId);
     if (error) throw error;
     return data;
   }
 
   // Generate access token for user
   static async generateAccessToken(userId: string) {
-    const { data, error } = await this.adminClient.auth.admin.generateLink({
+    const { data, error } = await this.getAdminClient().auth.admin.generateLink({
       type: 'magiclink',
       email: '', // Will be filled by user ID lookup
       options: {
@@ -148,7 +129,7 @@ export class SupabaseAuthAdminAPI {
 
   // Send password reset email
   static async sendPasswordResetEmail(email: string, redirectTo?: string) {
-    const { data, error } = await this.adminClient.auth.admin.generateLink({
+    const { data, error } = await this.getAdminClient().auth.admin.generateLink({
       type: 'recovery',
       email,
       options: {
@@ -173,17 +154,19 @@ export class SupabaseAuthAdminAPI {
 // Database Operations with RLS
 export class SupabaseDatabaseAPI {
   private static client = supabase;
-  private static adminClient = getAdminClient();
+  private static getAdminClient() {
+    return getAdminClient();
+  }
 
   // Generic query builder with RLS bypass option
   static query<T = any>(table: string, bypassRLS = false): any {
-    const client = bypassRLS ? this.adminClient : this.client;
+    const client = bypassRLS ? this.getAdminClient() : this.client;
     return client.from(table);
   }
 
   // Execute raw SQL with optional RLS bypass
   static async executeSQL(query: string, params?: any[], bypassRLS = false) {
-    const client = bypassRLS ? this.adminClient : this.client;
+    const client = bypassRLS ? this.getAdminClient() : this.client;
     const { data, error } = await client.rpc('execute_sql', {
       sql_query: query,
       parameters: params || [],
@@ -235,7 +218,7 @@ export class SupabaseDatabaseAPI {
 
   // Get table info
   static async getTableInfo(table: string) {
-    const { data, error } = await this.adminClient
+    const { data, error } = await this.getAdminClient()
       .from('information_schema.columns')
       .select('*')
       .eq('table_name', table)
@@ -247,7 +230,7 @@ export class SupabaseDatabaseAPI {
 
   // Get RLS policies for table
   static async getRLSPolicies(table: string) {
-    const { data, error } = await this.adminClient
+    const { data, error } = await this.getAdminClient()
       .from('pg_policies')
       .select('*')
       .eq('tablename', table);
@@ -262,7 +245,7 @@ export class SupabaseDatabaseAPI {
     ignoreDuplicates?: boolean;
     bypassRLS?: boolean;
   }) {
-    const client = options?.bypassRLS ? this.adminClient : this.client;
+    const client = options?.bypassRLS ? this.getAdminClient() : this.client;
     let query = client.from(table).insert(data);
 
     if (options?.onConflict) {
@@ -282,7 +265,7 @@ export class SupabaseDatabaseAPI {
   static async bulkUpdate(table: string, updates: any[], matchColumn: string, options?: {
     bypassRLS?: boolean;
   }) {
-    const client = options?.bypassRLS ? this.adminClient : this.client;
+    const client = options?.bypassRLS ? this.getAdminClient() : this.client;
     const results = [];
 
     for (const update of updates) {
@@ -305,7 +288,7 @@ export class SupabaseDatabaseAPI {
 
   // Get table statistics
   static async getTableStats(table: string) {
-    const { data, error } = await this.adminClient.rpc('get_table_stats', {
+    const { data, error } = await this.getAdminClient().rpc('get_table_stats', {
       table_name: table,
     });
 
@@ -316,7 +299,9 @@ export class SupabaseDatabaseAPI {
 
 // Edge Functions Management
 export class SupabaseEdgeFunctionsAPI {
-  private static adminClient = getAdminClient();
+  private static getAdminClient() {
+    return getAdminClient();
+  }
 
   // Invoke edge function
   static async invoke(functionName: string, options?: {
@@ -324,7 +309,7 @@ export class SupabaseEdgeFunctionsAPI {
     headers?: Record<string, string>;
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   }) {
-    const { data, error } = await this.adminClient.functions.invoke(functionName, {
+    const { data, error } = await this.getAdminClient().functions.invoke(functionName, {
       body: options?.body,
       headers: options?.headers,
       method: options?.method,
@@ -371,7 +356,9 @@ export class SupabaseEdgeFunctionsAPI {
 // Storage Operations
 export class SupabaseStorageAPI {
   private static client = supabase;
-  private static adminClient = getAdminClient();
+  private static getAdminClient() {
+    return getAdminClient();
+  }
 
   // Upload file
   static async uploadFile(bucket: string, path: string, file: File | Blob, options?: {
@@ -380,7 +367,7 @@ export class SupabaseStorageAPI {
     upsert?: boolean;
     bypassRLS?: boolean;
   }) {
-    const client = options?.bypassRLS ? this.adminClient : this.client;
+    const client = options?.bypassRLS ? this.getAdminClient() : this.client;
     
     const { data, error } = await client.storage
       .from(bucket)
@@ -396,7 +383,7 @@ export class SupabaseStorageAPI {
 
   // Download file
   static async downloadFile(bucket: string, path: string, bypassRLS = false) {
-    const client = bypassRLS ? this.adminClient : this.client;
+    const client = bypassRLS ? this.getAdminClient() : this.client;
     
     const { data, error } = await client.storage
       .from(bucket)
@@ -417,7 +404,7 @@ export class SupabaseStorageAPI {
 
   // Create signed URL
   static async createSignedUrl(bucket: string, path: string, expiresIn: number, bypassRLS = false) {
-    const client = bypassRLS ? this.adminClient : this.client;
+    const client = bypassRLS ? this.getAdminClient() : this.client;
     
     const { data, error } = await client.storage
       .from(bucket)
@@ -434,7 +421,7 @@ export class SupabaseStorageAPI {
     sortBy?: { column: string; order: 'asc' | 'desc' };
     bypassRLS?: boolean;
   }) {
-    const client = options?.bypassRLS ? this.adminClient : this.client;
+    const client = options?.bypassRLS ? this.getAdminClient() : this.client;
     
     const { data, error } = await client.storage
       .from(bucket)
@@ -450,7 +437,7 @@ export class SupabaseStorageAPI {
 
   // Delete file
   static async deleteFile(bucket: string, paths: string | string[], bypassRLS = false) {
-    const client = bypassRLS ? this.adminClient : this.client;
+    const client = bypassRLS ? this.getAdminClient() : this.client;
     const pathsArray = Array.isArray(paths) ? paths : [paths];
     
     const { data, error } = await client.storage
@@ -467,7 +454,7 @@ export class SupabaseStorageAPI {
     fileSizeLimit?: number;
     allowedMimeTypes?: string[];
   }) {
-    const { data, error } = await this.adminClient.storage.createBucket(bucketId, {
+    const { data, error } = await this.getAdminClient().storage.createBucket(bucketId, {
       public: options?.public ?? false,
       fileSizeLimit: options?.fileSizeLimit,
       allowedMimeTypes: options?.allowedMimeTypes,
@@ -479,21 +466,21 @@ export class SupabaseStorageAPI {
 
   // Delete bucket
   static async deleteBucket(bucketId: string) {
-    const { data, error } = await this.adminClient.storage.deleteBucket(bucketId);
+    const { data, error } = await this.getAdminClient().storage.deleteBucket(bucketId);
     if (error) throw error;
     return data;
   }
 
   // Get bucket details
   static async getBucket(bucketId: string) {
-    const { data, error } = await this.adminClient.storage.getBucket(bucketId);
+    const { data, error } = await this.getAdminClient().storage.getBucket(bucketId);
     if (error) throw error;
     return data;
   }
 
   // List buckets
   static async listBuckets() {
-    const { data, error } = await this.adminClient.storage.listBuckets();
+    const { data, error } = await this.getAdminClient().storage.listBuckets();
     if (error) throw error;
     return data;
   }
@@ -579,11 +566,13 @@ export class SupabaseRealtimeAPI {
 
 // Analytics and Monitoring
 export class SupabaseAnalyticsAPI {
-  private static adminClient = getAdminClient();
+  private static getAdminClient() {
+    return getAdminClient();
+  }
 
   // Get database usage stats
   static async getDatabaseUsage() {
-    const { data, error } = await this.adminClient.rpc('get_database_usage');
+    const { data, error } = await this.getAdminClient().rpc('get_database_usage');
     if (error) throw error;
     return data;
   }
@@ -597,14 +586,14 @@ export class SupabaseAnalyticsAPI {
 
   // Get active connections
   static async getActiveConnections() {
-    const { data, error } = await this.adminClient.rpc('get_active_connections');
+    const { data, error } = await this.getAdminClient().rpc('get_active_connections');
     if (error) throw error;
     return data;
   }
 
   // Get slow queries
   static async getSlowQueries(limit = 10) {
-    const { data, error } = await this.adminClient.rpc('get_slow_queries', {
+    const { data, error } = await this.getAdminClient().rpc('get_slow_queries', {
       query_limit: limit,
     });
     if (error) throw error;
@@ -739,6 +728,9 @@ export class SupabaseDirectAPI {
   static Realtime = SupabaseRealtimeAPI;
   static Analytics = SupabaseAnalyticsAPI;
   static Organization = SupabaseOrganizationAPI;
+
+  // Admin client with service role key
+  static getAdminClient = getAdminClient;
 
   // Utility methods
   static async testConnection(): Promise<boolean> {

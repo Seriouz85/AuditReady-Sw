@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RequirementTable } from "@/components/requirements/RequirementTable";
 import { RequirementDetail } from "@/components/requirements/RequirementDetail";
-import { requirements, standards, tags } from "@/data/mockData";
+// Removed mock data import - using real data from service
 import { Requirement, RequirementStatus, TagCategory, RequirementPriority } from "@/types";
 import { ArrowLeft, Filter, Plus, Search, Flag, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/lib/i18n";
 import { useRequirementsService, RequirementWithStatus } from "@/services/requirements/RequirementsService";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 import { toast } from "@/utils/toast";
 
 const Requirements = () => {
@@ -42,11 +43,18 @@ const Requirements = () => {
   const [localRequirements, setLocalRequirements] = useState<RequirementWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: keyof RequirementWithStatus; direction: 'asc' | 'desc' } | null>(null);
+  const [standards, setStandards] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
 
   // Load requirements data
   useEffect(() => {
     loadRequirements();
   }, [standardFilter]);
+
+  // Load standards and tags
+  useEffect(() => {
+    loadStandardsAndTags();
+  }, []);
 
   // Handle URL params
   useEffect(() => {
@@ -77,6 +85,32 @@ const Requirements = () => {
       toast.error('Failed to load requirements');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadStandardsAndTags = async () => {
+    try {
+      if (isDemo) {
+        // Load demo standards and tags
+        const { standards: demoStandards, tags: demoTags } = await import('@/data/mockData');
+        setStandards(demoStandards);
+        setTags(demoTags);
+      } else {
+        // Load from Supabase
+        const [standardsResponse, tagsResponse] = await Promise.all([
+          supabase.from('standards').select('*').eq('is_active', true).order('name'),
+          supabase.from('tags').select('*').eq('is_active', true).order('name')
+        ]);
+
+        if (standardsResponse.data) {
+          setStandards(standardsResponse.data);
+        }
+        if (tagsResponse.data) {
+          setTags(tagsResponse.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading standards and tags:', error);
     }
   };
 

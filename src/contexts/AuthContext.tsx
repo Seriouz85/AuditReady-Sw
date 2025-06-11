@@ -110,15 +110,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const loadUserData = async (userId: string) => {
     try {
-      // Skip database calls for mock platform admin
-      if (user?.email === 'Payam.Razifar@gmail.com' || userId === 'platform-admin-temp-id') {
-        setIsPlatformAdmin(true);
-        return;
-      }
       
       // First check if user is platform admin
       if (user?.email) {
-        const { data: adminData } = await supabase
+        const { data: adminData, error: adminError } = await supabase
           .from('platform_administrators')
           .select('*')
           .eq('email', user.email)
@@ -128,6 +123,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (adminData) {
           setIsPlatformAdmin(true);
           return; // Platform admins don't need organization data
+        }
+        
+        if (adminError && adminError.code !== 'PGRST116') {
+          console.warn('Platform admin check failed:', adminError);
         }
       }
       
@@ -155,7 +154,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('User has no organization - needs onboarding');
           return;
         }
-        throw orgUserError;
+        console.warn('Organization data fetch failed:', {
+          code: orgUserError.code,
+          message: orgUserError.message,
+          details: orgUserError.details
+        });
+        return; // Don't throw error, just return gracefully
       }
 
       if (orgUserData) {
@@ -163,15 +167,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setOrganization(orgUserData.organization);
         setUserRole(orgUserData.role);
 
-        // Update last login
-        await supabase
-          .from('organization_users')
-          .update({ last_login_at: new Date().toISOString() })
-          .eq('id', orgUserData.id);
+        // Update last login (silently fail if it doesn't work)
+        try {
+          await supabase
+            .from('organization_users')
+            .update({ last_login_at: new Date().toISOString() })
+            .eq('id', orgUserData.id);
+        } catch (updateError) {
+          console.warn('Failed to update last login:', updateError);
+        }
       }
     } catch (error) {
-      console.error('Error loading user data:', error);
-      toast.error('Failed to load user data');
+      console.warn('Error loading user data:', error);
+      // Don't show toast error for non-critical data loading failures
+      // Only log for debugging purposes
     }
   };
 
@@ -256,33 +265,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           
           setUser(demoUser);
           await loadDemoData();
+          // Ensure loading is false so ProtectedRoute doesn't redirect
+          setLoading(false);
           return {};
         }
       }
 
-      // Temporary: Handle platform admin with special mock auth until user is created in Dashboard
+      // Handle platform admin with real Supabase authentication
       if (email.toLowerCase() === 'payam.razifar@gmail.com' && password === 'knejs2015') {
-        console.log('Platform admin login detected - using mock auth');
+        console.log('Platform admin login detected - attempting real Supabase auth');
         try {
-          // Create platform admin user (temporary mock until real user exists)
-          const adminUser: User = {
-            id: 'platform-admin-temp-id',
-            email: 'Payam.Razifar@gmail.com',
-            aud: 'authenticated',
-            created_at: new Date().toISOString(),
-            user_metadata: { name: 'Payam Razifar' },
-            app_metadata: {},
-            role: 'authenticated'
-          };
-          
-          setUser(adminUser);
-          setIsPlatformAdmin(true);
-          setLoading(false);
-          console.log('Platform admin user set successfully');
-          // Platform admins don't need organization data - skip loadUserData completely
-          return { success: true };
+          // Use real Supabase authentication
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email.toLowerCase(),
+            password
+          });
+
+          if (data.user && !error) {
+            console.log('Platform admin successfully authenticated with Supabase');
+            setUser(data.user);
+            setIsPlatformAdmin(true);
+            // Ensure loading is false so ProtectedRoute doesn't redirect
+            setLoading(false);
+            return {};
+          } else {
+            console.log('Platform admin Supabase auth failed, error:', error?.message);
+            return { error: error?.message || 'Platform admin authentication failed' };
+          }
         } catch (error) {
-          console.error('Error in platform admin mock auth:', error);
+          console.error('Error in platform admin auth:', error);
           return { error: 'Platform admin authentication failed' };
         }
       }
@@ -299,9 +310,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (data.user) {
         setUser(data.user);
-        // Only load user data for real Supabase users, not mock users
-        if (data.user.id !== 'platform-admin-temp-id') {
+        try {
           await loadUserData(data.user.id);
+        } catch (userDataError) {
+          console.warn('Failed to load user data during sign in:', userDataError);
+          // Don't block sign in if user data fails to load
         }
       }
 
@@ -325,8 +338,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserRole(null);
       setOrganizationUser(null);
       setIsPlatformAdmin(false);
-      // Clear mock platform admin flag
-      localStorage.removeItem('mockPlatformAdmin');
     } catch (error) {
       console.error('Sign out error:', error);
     }
@@ -334,35 +345,63 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth state
   useEffect(() => {
+    let subscription: any = null;
+    
     const initializeAuth = async () => {
       try {
-        if (!isDemo) {
-          // Get initial session
-          const { data: { session } } = await supabase.auth.getSession();
+        // Get initial session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          setUser(session.user);
+          // Only load user data if we're not on public pages
+          const isPublicPage = window.location.pathname === '/' || 
+                              window.location.pathname === '/login' || 
+                              window.location.pathname === '/signup' || 
+                              window.location.pathname === '/pricing' || 
+                              window.location.pathname === '/about';
           
-          if (session?.user) {
-            setUser(session.user);
-            await loadUserData(session.user.id);
-          }
-
-          // Listen to auth changes
-          const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-              if (event === 'SIGNED_IN' && session?.user) {
-                setUser(session.user);
-                await loadUserData(session.user.id);
-              } else if (event === 'SIGNED_OUT') {
-                setUser(null);
-                setOrganization(null);
-                setUserRole(null);
-                setOrganizationUser(null);
-                setIsPlatformAdmin(false);
-              }
+          if (!isPublicPage) {
+            try {
+              await loadUserData(session.user.id);
+            } catch (userDataError) {
+              console.warn('Failed to load user data during initialization:', userDataError);
+              // Don't block initialization if user data fails to load
             }
-          );
-
-          return () => subscription.unsubscribe();
+          }
         }
+
+        // Listen to auth changes
+        const { data } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === 'SIGNED_IN' && session?.user) {
+              setUser(session.user);
+              // Only load user data after sign in if we're not on public pages
+              const isPublicPage = window.location.pathname === '/' || 
+                                  window.location.pathname === '/login' || 
+                                  window.location.pathname === '/signup' || 
+                                  window.location.pathname === '/pricing' || 
+                                  window.location.pathname === '/about';
+              
+              if (!isPublicPage) {
+                try {
+                  await loadUserData(session.user.id);
+                } catch (userDataError) {
+                  console.warn('Failed to load user data after sign in:', userDataError);
+                  // Don't block sign in if user data fails to load
+                }
+              }
+            } else if (event === 'SIGNED_OUT') {
+              setUser(null);
+              setOrganization(null);
+              setUserRole(null);
+              setOrganizationUser(null);
+              setIsPlatformAdmin(false);
+            }
+          }
+        );
+        
+        subscription = data.subscription;
       } catch (error) {
         console.error('Auth initialization error:', error);
       } finally {
@@ -371,6 +410,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
+    
+    // Cleanup subscription on unmount
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   const value: AuthContextType = {

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { AuditLogger } from './AuditLogger';
 
 export interface StandardCreateData {
@@ -38,9 +38,48 @@ export interface UserInvitationData {
 
 export class AdminService {
   private auditLogger: AuditLogger;
+  private tableAccessMap: Record<string, boolean> | null = null;
 
   constructor() {
     this.auditLogger = new AuditLogger();
+  }
+  
+  // Test database connection and table existence
+  private async testTableExists(tableName: string): Promise<boolean> {
+    try {
+      const { error } = await supabaseAdmin
+        .from(tableName)
+        .select('count')
+        .limit(1);
+      
+      return !error;
+    } catch (error) {
+      return false;
+    }
+  }
+  
+  private async getTableAccessMap(): Promise<Record<string, boolean>> {
+    if (this.tableAccessMap) {
+      return this.tableAccessMap;
+    }
+    
+    const tables = [
+      'organizations',
+      'organization_users', 
+      'standards_library',
+      'requirements_library',
+      'assessments',
+      'audit_logs',
+      'platform_administrators'
+    ];
+    
+    this.tableAccessMap = {};
+    
+    for (const table of tables) {
+      this.tableAccessMap[table] = await this.testTableExists(table);
+    }
+    
+    return this.tableAccessMap;
   }
 
   // ============================================================================
@@ -48,35 +87,56 @@ export class AdminService {
   // ============================================================================
 
   async getStandards(includeRequirementCount = true) {
-    const { data: standards, error } = await supabase
-      .from('standards_library')
-      .select('*')
-      .eq('is_active', true)
-      .order('name');
+    try {
+      const accessMap = await this.getTableAccessMap();
+      
+      if (!accessMap['standards_library']) {
+        return [];
+      }
+      
+      const { data: standards, error } = await supabaseAdmin
+        .from('standards_library')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
 
-    if (error) {
-      console.error('Error fetching standards:', error);
-      throw error;
+      if (error) {
+        console.error('Error fetching standards:', error);
+        return [];
+      }
+
+      console.log('Standards fetched successfully:', standards?.length || 0, 'records');
+      
+      if (includeRequirementCount && standards) {
+        const standardsWithCounts = await Promise.all(
+          standards.map(async (standard) => {
+            try {
+              const { count } = await supabase
+                .from('requirements_library')
+                .select('id', { count: 'exact', head: true })
+                .eq('standard_id', standard.id);
+
+              return {
+                ...standard,
+                requirementCount: count || 0
+              };
+            } catch (err) {
+              console.warn(`Failed to get requirement count for standard ${standard.id}:`, err);
+              return {
+                ...standard,
+                requirementCount: 0
+              };
+            }
+          })
+        );
+        return standardsWithCounts;
+      }
+
+      return standards || [];
+    } catch (err) {
+      console.error('Unexpected error fetching standards:', err);
+      return [];
     }
-
-    if (includeRequirementCount && standards) {
-      const standardsWithCounts = await Promise.all(
-        standards.map(async (standard) => {
-          const { count } = await supabase
-            .from('requirements_library')
-            .select('id', { count: 'exact', head: true })
-            .eq('standard_id', standard.id);
-
-          return {
-            ...standard,
-            requirementCount: count || 0
-          };
-        })
-      );
-      return standardsWithCounts;
-    }
-
-    return standards;
   }
 
   async createStandard(data: StandardCreateData) {
@@ -150,15 +210,43 @@ export class AdminService {
       .select('*')
       .eq('standard_id', standardId)
       .eq('is_active', true)
-      .order('order_index');
+      .order('control_id');
 
     if (error) {
       console.error('Error fetching requirements:', error);
       throw error;
     }
     
-    console.log('Requirements fetched:', data);
-    return data;
+    // Sort requirements by control_id using natural sort for proper numeric ordering
+    const sortedData = data?.sort((a, b) => {
+      const aId = a.control_id;
+      const bId = b.control_id;
+      
+      // Natural sort function for version-like strings (1.1, 1.2, 1.10, 2.1, etc.)
+      const naturalSort = (a: string, b: string) => {
+        const aParts = a.split('.').map(part => parseInt(part) || part);
+        const bParts = b.split('.').map(part => parseInt(part) || part);
+        
+        for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+          const aPart = aParts[i] || 0;
+          const bPart = bParts[i] || 0;
+          
+          if (typeof aPart === 'number' && typeof bPart === 'number') {
+            if (aPart !== bPart) return aPart - bPart;
+          } else {
+            const aStr = String(aPart);
+            const bStr = String(bPart);
+            if (aStr !== bStr) return aStr.localeCompare(bStr);
+          }
+        }
+        return 0;
+      };
+      
+      return naturalSort(aId, bId);
+    });
+    
+    console.log('Requirements fetched and sorted:', sortedData);
+    return sortedData;
   }
 
   async createRequirement(data: RequirementCreateData) {
@@ -336,17 +424,45 @@ export class AdminService {
   // ============================================================================
 
   async getOrganizations() {
-    const { data, error } = await supabase
-      .from('organizations')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const accessMap = await this.getTableAccessMap();
+      
+      if (!accessMap['organizations']) {
+        return [];
+      }
+      
+      // Use admin client for platform admin access
+      const { data, error } = await supabaseAdmin
+        .from('organizations')
+        .select(`
+          *,
+          organization_users(count)
+        `)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching organizations:', error);
-      throw error;
+      if (error) {
+        
+        // Try simpler query without join as fallback
+        try {
+          const { data: fallbackData, error: fallbackError } = await supabaseAdmin
+            .from('organizations')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+          if (fallbackError) {
+            return [];
+          }
+          
+          return fallbackData || [];
+        } catch (fallbackErr) {
+          return [];
+        }
+      }
+      
+      return data || [];
+    } catch (err) {
+      return [];
     }
-    
-    return data || [];
   }
 
   async createOrganization(data: OrganizationCreateData) {
@@ -759,32 +875,104 @@ export class AdminService {
 
   async getPlatformStatistics() {
     try {
-      const [
-        { count: totalOrganizations },
-        { count: totalStandards },
-        { count: totalRequirements },
-        { count: totalUsers },
-        { count: activeAssessments }
-      ] = await Promise.all([
-        supabase.from('organizations').select('id', { count: 'exact', head: true }),
-        supabase.from('standards_library').select('id', { count: 'exact', head: true }).eq('is_active', true),
-        supabase.from('requirements_library').select('id', { count: 'exact', head: true }).eq('is_active', true),
-        supabase.from('organization_users').select('id', { count: 'exact', head: true }).eq('is_active', true),
-        supabase.from('assessments').select('id', { count: 'exact', head: true }).in('status', ['in-progress', 'draft'])
-      ]);
-
-      // Get recent updates from audit logs
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const accessMap = await this.getTableAccessMap();
       
-      const { count: recentUpdates } = await supabase
-        .from('audit_logs')
-        .select('id', { count: 'exact', head: true })
-        .gte('created_at', oneWeekAgo.toISOString());
+      // Initialize with default values
+      let totalOrganizations = 0;
+      let totalStandards = 0;
+      let totalRequirements = 0;
+      let totalUsers = 0;
+      let activeAssessments = 0;
+      let recentUpdates = 0;
+      
+      // Only query tables that exist and are accessible
+      const queries = [];
+      
+      if (accessMap['organizations']) {
+        queries.push(
+          supabaseAdmin.from('organizations').select('id', { count: 'exact', head: true })
+            .then(({ count }) => ({ type: 'organizations', count: count || 0 }))
+            .catch(() => ({ type: 'organizations', count: 0 }))
+        );
+      }
+      
+      if (accessMap['standards_library']) {
+        queries.push(
+          supabaseAdmin.from('standards_library').select('id', { count: 'exact', head: true }).eq('is_active', true)
+            .then(({ count }) => ({ type: 'standards', count: count || 0 }))
+            .catch(() => ({ type: 'standards', count: 0 }))
+        );
+      }
+      
+      if (accessMap['requirements_library']) {
+        queries.push(
+          supabaseAdmin.from('requirements_library').select('id', { count: 'exact', head: true }).eq('is_active', true)
+            .then(({ count }) => ({ type: 'requirements', count: count || 0 }))
+            .catch(() => ({ type: 'requirements', count: 0 }))
+        );
+      }
+      
+      if (accessMap['organization_users']) {
+        queries.push(
+          supabaseAdmin.from('organization_users').select('id', { count: 'exact', head: true }).eq('status', 'active')
+            .then(({ count }) => ({ type: 'users', count: count || 0 }))
+            .catch(() => ({ type: 'users', count: 0 }))
+        );
+      }
+      
+      if (accessMap['assessments']) {
+        queries.push(
+          supabaseAdmin.from('assessments').select('id', { count: 'exact', head: true }).in('status', ['in-progress', 'draft'])
+            .then(({ count }) => ({ type: 'assessments', count: count || 0 }))
+            .catch(() => ({ type: 'assessments', count: 0 }))
+        );
+      }
+      
+      // Execute all available queries
+      const results = await Promise.all(queries);
+      
+      // Process results
+      results.forEach(result => {
+        switch (result.type) {
+          case 'organizations':
+            totalOrganizations = result.count;
+            break;
+          case 'standards':
+            totalStandards = result.count;
+            break;
+          case 'requirements':
+            totalRequirements = result.count;
+            break;
+          case 'users':
+            totalUsers = result.count;
+            break;
+          case 'assessments':
+            activeAssessments = result.count;
+            break;
+        }
+      });
+      
+      // Get recent updates from audit logs if available
+      if (accessMap['audit_logs']) {
+        try {
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          
+          const { count } = await supabaseAdmin
+            .from('audit_logs')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', oneWeekAgo.toISOString());
+            
+          recentUpdates = count || 0;
+        } catch (error) {
+          console.warn('Failed to get recent updates:', error);
+          recentUpdates = 0;
+        }
+      }
 
       return {
-        totalOrganizations: totalOrganizations || 0,
-        totalUsers: totalUsers || 0,
+        totalOrganizations,
+        totalUsers,
         totalStandards: totalStandards || 0,
         totalRequirements: totalRequirements || 0,
         pendingInvitations: 0, // TODO: Implement when invitation system is ready

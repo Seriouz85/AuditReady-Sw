@@ -24,10 +24,12 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
 
   const fetchPricing = async () => {
     try {
+      console.log('🔄 useDynamicPricing: Starting to fetch pricing...');
       setLoading(true);
       setError(null);
       
       const fetchedPlans = await dynamicPricingService.fetchLivePricing();
+      console.log('✅ useDynamicPricing: Successfully fetched plans:', fetchedPlans.length);
       setPlans(fetchedPlans);
       
       // Check if there's a discount code in URL params
@@ -41,10 +43,52 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
       console.error('Failed to fetch pricing:', err);
       setError('Failed to load pricing. Using default pricing.');
       
-      // Use fallback pricing
-      const defaultPlans = await dynamicPricingService.fetchLivePricing();
+      // Use static fallback pricing when Stripe fails
+      const defaultPlans = [
+        {
+          id: 'free',
+          name: 'Free',
+          price: 0,
+          interval: 'month' as const,
+          stripePriceId: '',
+          stripeProductId: '',
+          features: ['Full feature access (demo mode)', 'Mock data and workflows', 'Community support'],
+          active: true
+        },
+        {
+          id: 'team',
+          name: 'Team',
+          price: 499,
+          interval: 'month' as const,
+          stripePriceId: '',
+          stripeProductId: '',
+          features: ['All core features', 'Multi-framework support', 'Team collaboration', 'Email support'],
+          active: true
+        },
+        {
+          id: 'business',
+          name: 'Business',
+          price: 699,
+          interval: 'month' as const,
+          stripePriceId: '',
+          stripeProductId: '',
+          features: ['Everything in Team', 'Custom templates', 'API integrations', 'Priority support'],
+          active: true
+        },
+        {
+          id: 'enterprise',
+          name: 'Enterprise',
+          price: 999,
+          interval: 'month' as const,
+          stripePriceId: '',
+          stripeProductId: '',
+          features: ['Everything in Business', 'White-label solution', 'Dedicated support', '24/7 phone support'],
+          active: true
+        }
+      ];
       setPlans(defaultPlans);
     } finally {
+      console.log('🏁 useDynamicPricing: Fetch complete, setting loading to false');
       setLoading(false);
     }
   };
@@ -70,6 +114,23 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
   useEffect(() => {
     fetchPricing();
 
+    // Set up a timeout to prevent infinite loading state
+    const loadingTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn('⚠️ useDynamicPricing: Loading timeout reached, forcing completion with fallback data');
+        setLoading(false);
+        if (plans.length === 0) {
+          // Set fallback plans if we don't have any
+          setPlans([
+            { id: 'free', name: 'Free', price: 0, interval: 'month', stripePriceId: '', stripeProductId: '', features: ['Basic features'], active: true },
+            { id: 'team', name: 'Team', price: 499, interval: 'month', stripePriceId: '', stripeProductId: '', features: ['All core features'], active: true },
+            { id: 'business', name: 'Business', price: 699, interval: 'month', stripePriceId: '', stripeProductId: '', features: ['Everything in Team'], active: true },
+            { id: 'enterprise', name: 'Enterprise', price: 999, interval: 'month', stripePriceId: '', stripeProductId: '', features: ['Everything in Business'], active: true }
+          ]);
+        }
+      }
+    }, 10000); // 10 second timeout
+
     // Set up auto-refresh every 5 minutes
     const interval = setInterval(() => {
       fetchPricing();
@@ -83,11 +144,20 @@ export function useDynamicPricing(): UseDynamicPricingReturn {
       }
     };
 
+    // Also listen for custom events (same-window updates)
+    const handlePricingUpdate = () => {
+      dynamicPricingService.clearCache();
+      fetchPricing();
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('stripe_pricing_updated', handlePricingUpdate);
 
     return () => {
+      clearTimeout(loadingTimeout);
       clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('stripe_pricing_updated', handlePricingUpdate);
     };
   }, []);
 

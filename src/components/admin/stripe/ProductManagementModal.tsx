@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { enhancedStripeService, StripeProduct, StripePrice } from '@/services/stripe/EnhancedStripeService';
+import { stripeAdminService, StripeProduct, StripePrice } from '@/services/stripe/StripeAdminService';
 import { toast } from '@/utils/toast';
 import { 
   Package, 
@@ -52,7 +52,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
     url: '',
     metadata: {} as Record<string, string>,
   });
-  const [landingPageTier, setLandingPageTier] = useState<string>('');
+  const [landingPageTier, setLandingPageTier] = useState<string>('none');
   const [newPrice, setNewPrice] = useState({
     currency: 'eur', // Default to EUR for consistency with landing page
     unit_amount: 0,
@@ -72,7 +72,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
         url: product.url || '',
         metadata: product.metadata,
       });
-      setLandingPageTier(product.metadata?.tier || '');
+      setLandingPageTier(product.metadata?.tier || 'none');
       loadProductPrices();
     } else {
       resetForm();
@@ -88,7 +88,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
       url: '',
       metadata: {},
     });
-    setLandingPageTier('');
+    setLandingPageTier('none');
     setPrices([]);
     setNewPrice({
       currency: 'eur', // Default to EUR for consistency with landing page
@@ -104,11 +104,12 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
     if (!product) return;
     
     try {
-      const response = await enhancedStripeService.listPrices(product.id);
-      setPrices(response.data);
+      const response = await stripeAdminService.listPrices(product.id);
+      setPrices(response || []);
     } catch (error) {
       console.error('Failed to load prices:', error);
       toast.error('Failed to load product prices');
+      setPrices([]);
     }
   };
 
@@ -118,7 +119,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
       // Include landing page tier in metadata
       const updatedMetadata = { 
         ...productData.metadata,
-        ...(landingPageTier && { tier: landingPageTier })
+        ...(landingPageTier && landingPageTier !== 'none' && { tier: landingPageTier })
       };
 
       const productPayload = {
@@ -131,13 +132,25 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
       };
 
       if (product) {
-        await enhancedStripeService.updateProduct(product.id, productPayload);
+        await stripeAdminService.updateProduct(product.id, productPayload);
         toast.success('Product updated successfully! Landing page will update automatically.');
       } else {
-        await enhancedStripeService.createProduct(productPayload);
+        await stripeAdminService.createProduct(productPayload);
         toast.success('Product created successfully! Landing page will update automatically.');
       }
       
+      // Trigger real-time pricing update for landing page
+      try {
+        localStorage.setItem('stripe_pricing_updated', Date.now().toString());
+        // Also dispatch custom event for same-window updates
+        window.dispatchEvent(new CustomEvent('stripe_pricing_updated'));
+        setTimeout(() => {
+          localStorage.removeItem('stripe_pricing_updated');
+        }, 100);
+      } catch (error) {
+        console.warn('Could not trigger pricing update event:', error);
+      }
+
       onProductUpdated();
       onClose();
     } catch (error: any) {
@@ -164,8 +177,20 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
         metadata: { created_via: 'admin_console' },
       };
 
-      await enhancedStripeService.createPrice(pricePayload);
+      await stripeAdminService.createPrice(pricePayload);
       toast.success('Price created successfully!');
+      
+      // Trigger real-time pricing update for landing page
+      try {
+        localStorage.setItem('stripe_pricing_updated', Date.now().toString());
+        // Also dispatch custom event for same-window updates
+        window.dispatchEvent(new CustomEvent('stripe_pricing_updated'));
+        setTimeout(() => {
+          localStorage.removeItem('stripe_pricing_updated');
+        }, 100);
+      } catch (error) {
+        console.warn('Could not trigger pricing update event:', error);
+      }
       
       // Reset price form
       setNewPrice({
@@ -187,8 +212,21 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
 
   const handleTogglePriceActive = async (priceId: string, currentActive: boolean) => {
     try {
-      await enhancedStripeService.updatePrice(priceId, { active: !currentActive });
+      await stripeAdminService.updatePrice(priceId, { active: !currentActive });
       toast.success(`Price ${!currentActive ? 'activated' : 'deactivated'} successfully!`);
+      
+      // Trigger real-time pricing update for landing page
+      try {
+        localStorage.setItem('stripe_pricing_updated', Date.now().toString());
+        // Also dispatch custom event for same-window updates
+        window.dispatchEvent(new CustomEvent('stripe_pricing_updated'));
+        setTimeout(() => {
+          localStorage.removeItem('stripe_pricing_updated');
+        }, 100);
+      } catch (error) {
+        console.warn('Could not trigger pricing update event:', error);
+      }
+      
       loadProductPrices();
     } catch (error: any) {
       toast.error(error.message || 'Failed to update price');
@@ -198,8 +236,42 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
   const handleDuplicatePrice = async (priceId: string) => {
     setLoading(true);
     try {
-      await enhancedStripeService.duplicatePrice(priceId);
+      // Get the original price first
+      const pricesData = await stripeAdminService.listPrices();
+      const originalPrice = pricesData?.find(p => p.id === priceId);
+      
+      if (!originalPrice) {
+        throw new Error('Original price not found');
+      }
+
+      // Create a duplicate with same properties
+      const duplicateData = {
+        product: originalPrice.product,
+        currency: originalPrice.currency,
+        unit_amount: originalPrice.unit_amount,
+        recurring: originalPrice.recurring,
+        metadata: { 
+          ...originalPrice.metadata, 
+          duplicated_from: priceId,
+          created_via: 'admin_console_duplicate'
+        }
+      };
+
+      await stripeAdminService.createPrice(duplicateData);
       toast.success('Price duplicated successfully!');
+      
+      // Trigger real-time pricing update for landing page
+      try {
+        localStorage.setItem('stripe_pricing_updated', Date.now().toString());
+        // Also dispatch custom event for same-window updates
+        window.dispatchEvent(new CustomEvent('stripe_pricing_updated'));
+        setTimeout(() => {
+          localStorage.removeItem('stripe_pricing_updated');
+        }, 100);
+      } catch (error) {
+        console.warn('Could not trigger pricing update event:', error);
+      }
+      
       loadProductPrices();
     } catch (error: any) {
       toast.error(error.message || 'Failed to duplicate price');
@@ -234,7 +306,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="product">Product Details</TabsTrigger>
             <TabsTrigger value="pricing" disabled={!product}>
-              Pricing ({prices.length})
+              Pricing ({prices?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="sync">Landing Page Sync</TabsTrigger>
           </TabsList>
@@ -280,13 +352,13 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                   <SelectValue placeholder="Select a tier for landing page sync" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No landing page sync</SelectItem>
+                  <SelectItem value="none">No landing page sync</SelectItem>
                   <SelectItem value="team">Team Plan</SelectItem>
                   <SelectItem value="business">Business Plan</SelectItem>
                   <SelectItem value="enterprise">Enterprise Plan</SelectItem>
                 </SelectContent>
               </Select>
-              {landingPageTier && (
+              {landingPageTier && landingPageTier !== 'none' && (
                 <div className="flex items-center gap-2 text-sm text-green-600">
                   <Globe className="h-4 w-4" />
                   This product will sync to the {landingPageTier} tier on your landing page
@@ -339,10 +411,10 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Existing Prices</h3>
-                <Badge variant="outline">{prices.length} prices</Badge>
+                <Badge variant="outline">{prices?.length || 0} prices</Badge>
               </div>
               
-              {prices.length > 0 ? (
+              {prices && prices.length > 0 ? (
                 <div className="grid gap-4">
                   {prices.map((price) => (
                     <Card key={price.id} className="hover:shadow-md transition-shadow">
@@ -567,7 +639,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                         <SelectValue placeholder="Select a tier" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No sync (manual pricing only)</SelectItem>
+                        <SelectItem value="none">No sync (manual pricing only)</SelectItem>
                         <SelectItem value="team">Team Plan</SelectItem>
                         <SelectItem value="business">Business Plan</SelectItem>
                         <SelectItem value="enterprise">Enterprise Plan</SelectItem>
@@ -575,7 +647,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                     </Select>
                   </div>
 
-                  {landingPageTier && (
+                  {landingPageTier && landingPageTier !== 'none' && (
                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                       <div className="flex items-center gap-2 text-green-800 font-medium mb-2">
                         <CheckCircle className="h-4 w-4" />
@@ -588,7 +660,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                     </div>
                   )}
 
-                  {!landingPageTier && (
+                  {(!landingPageTier || landingPageTier === 'none') && (
                     <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
                       <div className="flex items-center gap-2 text-amber-800 font-medium mb-2">
                         <AlertTriangle className="h-4 w-4" />
@@ -602,7 +674,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                 </CardContent>
               </Card>
 
-              {product && prices.length > 0 && (
+              {product && prices && prices.length > 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Landing Page Preview</CardTitle>
@@ -611,7 +683,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {landingPageTier ? (
+                    {landingPageTier && landingPageTier !== 'none' ? (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 border rounded-lg">
                           <div>
@@ -620,7 +692,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                           </div>
                           <div className="text-right">
                             {(() => {
-                              const monthlyPrice = prices.find(p => p.recurring?.interval === 'month' && p.active);
+                              const monthlyPrice = prices?.find(p => p.recurring?.interval === 'month' && p.active);
                               return monthlyPrice ? (
                                 <div>
                                   <div className="text-2xl font-bold">
@@ -635,7 +707,7 @@ export const ProductManagementModal: React.FC<ProductManagementModalProps> = ({
                           </div>
                         </div>
                         
-                        {!prices.find(p => p.recurring?.interval === 'month' && p.active) && (
+                        {!prices?.find(p => p.recurring?.interval === 'month' && p.active) && (
                           <Alert>
                             <AlertTriangle className="h-4 w-4" />
                             <AlertDescription>

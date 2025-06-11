@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Requirement } from '@/types/requirements';
-import { requirements as mockRequirements } from '@/data/mockData';
+// Removed mock data import to fix duplicate key warnings
 
 export interface OrganizationRequirement {
   id: string;
@@ -188,7 +188,10 @@ export const useRequirementsService = () => {
 
   const getRequirements = async (standardId?: string): Promise<RequirementWithStatus[]> => {
     if (isDemo) {
-      // Return demo data from mockData, filtered by standard if specified
+      // Load demo data dynamically to avoid import issues
+      const { requirements: mockRequirements } = await import('@/data/mockData');
+      
+      // Return demo data filtered by standard if specified
       let filteredRequirements = mockRequirements;
       
       if (standardId) {
@@ -255,7 +258,8 @@ export const useRequirementsService = () => {
 
   const getStandardRequirements = async (standardId: string): Promise<Requirement[]> => {
     if (isDemo) {
-      // Return demo data filtered by standard
+      // Load demo data dynamically to avoid import issues
+      const { requirements: mockRequirements } = await import('@/data/mockData');
       return mockRequirements.filter(req => req.standardId === standardId);
     }
 

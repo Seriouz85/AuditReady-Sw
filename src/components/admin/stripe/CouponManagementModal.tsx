@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { enhancedStripeService, StripeCoupon, StripePromotionCode } from '@/services/stripe/EnhancedStripeService';
+import { stripeAdminService, StripeCoupon, StripePromotionCode } from '@/services/stripe/StripeAdminService';
 import { toast } from '@/utils/toast';
 import { 
   Percent, 
@@ -110,8 +110,8 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
     if (!coupon) return;
     
     try {
-      const response = await enhancedStripeService.listPromotionCodes(coupon.id);
-      setPromotionCodes(response.data);
+      const promoCodes = await stripeAdminService.listPromotionCodes(coupon.id);
+      setPromotionCodes(promoCodes);
     } catch (error) {
       console.error('Failed to load promotion codes:', error);
       toast.error('Failed to load promotion codes');
@@ -140,13 +140,13 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
 
       if (coupon) {
         // Can only update name and metadata for existing coupons
-        await enhancedStripeService.updateCoupon(coupon.id, {
+        await stripeAdminService.updateCoupon(coupon.id, {
           name: couponData.name || undefined,
           metadata: { updated_via: 'admin_console' },
         });
         toast.success('Coupon updated successfully!');
       } else {
-        await enhancedStripeService.createCoupon(couponPayload);
+        await stripeAdminService.createCoupon(couponPayload);
         toast.success('Coupon created successfully!');
       }
       
@@ -176,7 +176,7 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
         metadata: { created_via: 'admin_console' },
       };
 
-      await enhancedStripeService.createPromotionCode(promoPayload);
+      await stripeAdminService.createPromotionCode(promoPayload);
       toast.success('Promotion code created successfully!');
       
       // Reset promo code form
@@ -198,7 +198,7 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
 
   const handleTogglePromotionCode = async (promoCodeId: string, currentActive: boolean) => {
     try {
-      await enhancedStripeService.updatePromotionCode(promoCodeId, { active: !currentActive });
+      await stripeAdminService.updatePromotionCode(promoCodeId, { active: !currentActive });
       toast.success(`Promotion code ${!currentActive ? 'activated' : 'deactivated'} successfully!`);
       loadPromotionCodes();
     } catch (error: any) {
@@ -211,7 +211,7 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
     
     setLoading(true);
     try {
-      await enhancedStripeService.deleteCoupon(coupon.id);
+      await stripeAdminService.deleteCoupon(coupon.id);
       toast.success('Coupon deleted successfully!');
       onCouponUpdated();
       onClose();

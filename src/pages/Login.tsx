@@ -32,11 +32,14 @@ const Login = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [rateLimitTimeLeft, setRateLimitTimeLeft] = useState(0);
 
-  // Redirect if already logged in
+  // Redirect if already logged in (but only for users with proper organizations or special roles)
   useEffect(() => {
     if (user && !loading) {
-      const from = location.state?.from?.pathname || "/app";
-      navigate(from, { replace: true });
+      // Only auto-redirect if we came from a protected route or if user has proper setup
+      if (location.state?.from?.pathname) {
+        navigate(location.state.from.pathname, { replace: true });
+      }
+      // Otherwise let the user manually navigate via the login form
     }
   }, [user, loading, navigate, location]);
 
@@ -164,9 +167,23 @@ const Login = () => {
         toast.success("Successfully logged in");
       }
       
-      // Redirect to intended page or main app
-      const from = location.state?.from?.pathname || "/app";
-      navigate(from, { replace: true });
+      // Small delay to ensure auth state propagates before redirect
+      setTimeout(() => {
+        // Check if this is a platform admin
+        const isPlatformAdmin = email.toLowerCase() === 'payam.razifar@gmail.com';
+        
+        // Redirect based on user type and context
+        if (isPlatformAdmin) {
+          // Platform admins always go to admin console
+          navigate("/admin", { replace: true });
+        } else if (location.state?.from?.pathname) {
+          // User was trying to access a protected route, redirect there
+          navigate(location.state.from.pathname, { replace: true });
+        } else {
+          // Direct login, redirect to main app
+          navigate("/app", { replace: true });
+        }
+      }, 100);
       
     } catch (error) {
       console.error("Login error:", error);

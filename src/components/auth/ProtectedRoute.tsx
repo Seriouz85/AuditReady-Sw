@@ -17,6 +17,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { user, organization, loading, hasPermission, isDemo, isPlatformAdmin } = useAuth();
   const location = useLocation();
 
+  console.log('ProtectedRoute check:', { 
+    user: !!user, 
+    organization: !!organization, 
+    loading, 
+    isDemo, 
+    isPlatformAdmin, 
+    requireOrganization,
+    path: location.pathname 
+  });
+
   // Show loading spinner while auth is being determined
   if (loading) {
     return (
@@ -54,8 +64,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <>{children}</>;
   }
 
-  // Redirect to onboarding if user has no organization
-  if (requireOrganization && !organization) {
+  // Redirect to onboarding if user has no organization (but NOT for demo users or platform admins)
+  if (requireOrganization && !organization && !isDemo && !isPlatformAdmin) {
     return <Navigate to="/onboarding" replace />;
   }
 

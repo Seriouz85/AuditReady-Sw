@@ -37,6 +37,16 @@ export default function Landing() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { theme } = useTheme();
   const { plans: dynamicPlans, loading: pricingLoading, error: pricingError } = useDynamicPricing();
+  
+  // Debug logging
+  console.log('🏷️ Landing Page Pricing Debug:', {
+    pricingLoading,
+    pricingError,
+    dynamicPlansCount: dynamicPlans.length,
+    teamPlan: dynamicPlans.find(p => p.id === 'team'),
+    businessPlan: dynamicPlans.find(p => p.id === 'business'),
+    enterprisePlan: dynamicPlans.find(p => p.id === 'enterprise')
+  });
 
   const handlePricingClick = async (tier: 'free' | 'team' | 'business' | 'enterprise') => {
     if (tier === 'free') {

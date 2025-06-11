@@ -9,7 +9,20 @@ const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
 let supabaseInstance: ReturnType<typeof createClient> | null = null;
 export const supabase = (() => {
   if (!supabaseInstance) {
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storageKey: 'auditready_auth', // Unique storage key to avoid conflicts
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: { 'x-client-info': 'auditready-app' },
+      },
+    });
   }
   return supabaseInstance;
 })();
@@ -17,16 +30,35 @@ export const supabase = (() => {
 // Create admin client for platform admin operations (only if service role key is available)
 // This bypasses RLS for admin operations
 let supabaseAdminInstance: ReturnType<typeof createClient> | null = null;
-export const supabaseAdmin = (() => {
-  if (!supabaseAdminInstance && supabaseServiceRoleKey) {
-    supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+
+const createAdminClient = () => {
+  if (supabaseServiceRoleKey) {
+    // Create proper admin client with service role key
+    return createClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
+        storageKey: 'auditready_service_role', // Unique key for service role
         persistSession: false,
         autoRefreshToken: false,
       },
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: { 'x-client-info': 'auditready-service-role' },
+      },
     });
+  } else {
+    // For demo purposes, return the same client to avoid multiple instances
+    // In production, this should throw an error or redirect to setup
+    return supabaseInstance;
   }
-  return supabaseAdminInstance || supabase; // Fallback to regular client if no service role key
+};
+
+export const supabaseAdmin = (() => {
+  if (!supabaseAdminInstance) {
+    supabaseAdminInstance = createAdminClient();
+  }
+  return supabaseAdminInstance;
 })();
 
 // Demo credentials for showcase purposes

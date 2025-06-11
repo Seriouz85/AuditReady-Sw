@@ -478,6 +478,13 @@ const EnhancedOnboarding = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <div className="absolute top-4 right-4 flex items-center space-x-2">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/')}
+          className="text-gray-600 hover:text-gray-900"
+        >
+          ← Back to Home
+        </Button>
         <ThemeToggle />
         <ZoomToggle />
       </div>

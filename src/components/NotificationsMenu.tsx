@@ -67,10 +67,10 @@ export const NotificationsMenu = () => {
   };
   
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DropdownMenu>
+    <DropdownMenu>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative h-10 w-10">
                 <Bell className="h-5 w-5" />
@@ -83,64 +83,64 @@ export const NotificationsMenu = () => {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
-              <div className="px-4 py-2 font-medium text-sm flex justify-between items-center">
-                <span>{t('notifications.title')}</span>
-                {unreadCount > 0 && (
-                  <Button variant="ghost" size="sm" className="text-xs h-6" onClick={() => {
-                    setNotifications(notifications.map(n => ({ ...n, status: 'read' })));
-                  }}>
-                    {t('notifications.mark_all_read')}
-                  </Button>
-                )}
-              </div>
-              <DropdownMenuSeparator />
-              
-              {notifications.length === 0 ? (
-                <div className="px-4 py-2 text-sm text-center text-muted-foreground">
-                  {t('notifications.empty')}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Notifications {unreadCount > 0 ? `(${unreadCount} unread)` : ''}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+        <div className="px-4 py-2 font-medium text-sm flex justify-between items-center">
+          <span>{t('notifications.title')}</span>
+          {unreadCount > 0 && (
+            <Button variant="ghost" size="sm" className="text-xs h-6" onClick={() => {
+              setNotifications(notifications.map(n => ({ ...n, status: 'read' })));
+            }}>
+              {t('notifications.mark_all_read')}
+            </Button>
+          )}
+        </div>
+        <DropdownMenuSeparator />
+        
+        {notifications.length === 0 ? (
+          <div className="px-4 py-2 text-sm text-center text-muted-foreground">
+            {t('notifications.empty')}
+          </div>
+        ) : (
+          <>
+            {notifications.map((notification) => (
+              <DropdownMenuItem
+                key={notification.id}
+                className={`px-4 py-3 cursor-default flex flex-col items-start gap-1 ${
+                  notification.status === 'unread' ? 'bg-muted/50' : ''
+                }`}
+                onClick={() => markAsRead(notification.id)}
+              >
+                <div className="flex items-center w-full gap-2">
+                  <span className={`text-sm font-medium ${getIconColor(notification.priority)}`}>
+                    {notification.title}
+                  </span>
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    {getRelativeTime(notification.createdAt)}
+                  </span>
                 </div>
-              ) : (
-                <>
-                  {notifications.map((notification) => (
-                    <DropdownMenuItem
-                      key={notification.id}
-                      className={`px-4 py-3 cursor-default flex flex-col items-start gap-1 ${
-                        notification.status === 'unread' ? 'bg-muted/50' : ''
-                      }`}
-                      onClick={() => markAsRead(notification.id)}
-                    >
-                      <div className="flex items-center w-full gap-2">
-                        <span className={`text-sm font-medium ${getIconColor(notification.priority)}`}>
-                          {notification.title}
-                        </span>
-                        <span className="ml-auto text-xs text-muted-foreground">
-                          {getRelativeTime(notification.createdAt)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {notification.description}
-                      </p>
-                      {notification.dueDate && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {t('notifications.due')}: {formatDate(notification.dueDate)}
-                        </p>
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="px-4 py-2 justify-center text-sm text-primary">
-                    {t('notifications.view_all')}
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Notifications {unreadCount > 0 ? `(${unreadCount} unread)` : ''}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+                <p className="text-xs text-muted-foreground">
+                  {notification.description}
+                </p>
+                {notification.dueDate && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t('notifications.due')}: {formatDate(notification.dueDate)}
+                  </p>
+                )}
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="px-4 py-2 justify-center text-sm text-primary">
+              {t('notifications.view_all')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }; 

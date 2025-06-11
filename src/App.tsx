@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
@@ -70,32 +70,17 @@ const App = () => (
                   <Route path="/about" element={<About />} />
                   
                   {/* Protected pages requiring authentication */}
+                  {/* Redirect old onboarding routes to pricing */}
                   <Route 
                     path="/onboarding" 
-                    element={
-                      <ProtectedRoute requireOrganization={false}>
-                        <EnhancedOnboarding />
-                      </ProtectedRoute>
-                    } 
+                    element={<Navigate to="/pricing" replace />} 
                   />
                   <Route 
-                    path="/onboarding/legacy" 
-                    element={
-                      <ProtectedRoute requireOrganization={false}>
-                        <Onboarding />
-                      </ProtectedRoute>
-                    } 
+                    path="/onboarding/*" 
+                    element={<Navigate to="/pricing" replace />} 
                   />
                   <Route 
                     path="/app/*" 
-                    element={
-                      <ProtectedRoute>
-                        <Index />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/app" 
                     element={
                       <ProtectedRoute>
                         <Index />

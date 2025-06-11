@@ -3,8 +3,7 @@
  * Updates landing page pricing based on admin console changes
  */
 
-import { enhancedStripeService } from './EnhancedStripeService';
-import StripeDirectAPI from './StripeDirectAPI';
+import { stripeAdminService } from './StripeAdminService';
 
 export interface DynamicPricingPlan {
   id: string;
@@ -31,8 +30,11 @@ export class DynamicPricingService {
   // Map product names to tier IDs
   private static TIER_MAPPING: Record<string, string> = {
     'Team': 'team',
-    'Business': 'business',
+    'Team Plan': 'team',
+    'Business': 'business', 
+    'Business Plan': 'business',
     'Enterprise': 'enterprise',
+    'Enterprise Plan': 'enterprise',
     'Professional': 'team', // alias
     'Pro': 'team', // alias
   };
@@ -40,18 +42,20 @@ export class DynamicPricingService {
   static async fetchLivePricing(): Promise<DynamicPricingPlan[]> {
     // Check cache first
     if (this.cache && Date.now() - this.cache.lastFetched < this.CACHE_DURATION) {
+      console.log('🎯 Using cached pricing data');
       return this.cache.plans;
     }
 
     try {
+      console.log('🔄 Fetching live pricing from Stripe...');
+      
       // Fetch all active products and prices from Stripe
-      const [productsResult, pricesResult] = await Promise.all([
-        enhancedStripeService.listProducts(true, 50),
-        enhancedStripeService.listPrices(undefined, true, 100)
+      const [products, prices] = await Promise.all([
+        stripeAdminService.listProducts(),
+        stripeAdminService.listPrices()
       ]);
 
-      const products = productsResult.data;
-      const prices = pricesResult.data;
+      console.log(`📦 Found ${products.length} products and ${prices.length} prices`);
 
       // Build pricing plans
       const plans: DynamicPricingPlan[] = [];
@@ -91,6 +95,8 @@ export class DynamicPricingService {
                       product.metadata.tier || 
                       tierName.toLowerCase().replace(/\s+/g, '_');
 
+        console.log(`🏷️  Mapping product "${product.name}" to tier "${tierId}" (price: €${mainPrice.unit_amount / 100})`);
+
         // Extract features from product metadata or description
         const features = this.extractFeatures(product);
 
@@ -116,6 +122,7 @@ export class DynamicPricingService {
         lastFetched: Date.now()
       };
 
+      console.log(`✅ Successfully cached ${plans.length} pricing plans for landing page sync`);
       return plans;
     } catch (error) {
       console.error('Failed to fetch live pricing:', error);
@@ -127,27 +134,55 @@ export class DynamicPricingService {
 
   static async applyDiscountCode(code: string, plans: DynamicPricingPlan[]): Promise<DynamicPricingPlan[]> {
     try {
-      // Fetch promotion code details
-      const promotionCodes = await enhancedStripeService.listPromotionCodes(undefined, true, 100);
-      const promoCode = promotionCodes.data.find(pc => pc.code === code && pc.active);
+      // First try to get real promotion codes from Stripe
+      try {
+        const promotionCodes = await stripeAdminService.listPromotionCodes();
+        const promoCode = promotionCodes.find(pc => pc.code.toUpperCase() === code.toUpperCase() && pc.active);
+        
+        if (promoCode) {
+          const coupon = promoCode.coupon;
+          
+          // Apply real Stripe coupon discount
+          return plans.map(plan => {
+            if (plan.price === 0) return plan; // Don't discount free tier
 
-      if (!promoCode) {
+            let discountedPrice = plan.price;
+            
+            if (coupon.percent_off) {
+              discountedPrice = plan.price * (1 - coupon.percent_off / 100);
+            } else if (coupon.amount_off && plan.interval !== 'one_time') {
+              // Convert amount_off from cents to euros and apply
+              discountedPrice = Math.max(0, plan.price - (coupon.amount_off / 100));
+            }
+
+            return {
+              ...plan,
+              discountedPrice,
+              couponCode: code
+            };
+          });
+        }
+      } catch (error) {
+        console.warn('Could not fetch real promotion codes, using fallback:', error);
+      }
+      
+      // Fallback to demo discount codes if real ones aren't available
+      const discounts: Record<string, { percent: number; name: string }> = {
+        'LAUNCH20': { percent: 20, name: 'Launch Special' },
+        'EARLY30': { percent: 30, name: 'Early Bird' },
+        'SAVE10': { percent: 10, name: 'Save 10%' }
+      };
+      
+      const discount = discounts[code.toUpperCase()];
+      if (!discount) {
         throw new Error('Invalid or expired discount code');
       }
-
-      const coupon = promoCode.coupon;
 
       // Apply discount to applicable plans
       return plans.map(plan => {
         if (plan.price === 0) return plan; // Don't discount free tier
 
-        let discountedPrice = plan.price;
-
-        if (coupon.percent_off) {
-          discountedPrice = plan.price * (1 - coupon.percent_off / 100);
-        } else if (coupon.amount_off && plan.interval !== 'one_time') {
-          discountedPrice = Math.max(0, plan.price - (coupon.amount_off / 100));
-        }
+        const discountedPrice = plan.price * (1 - discount.percent / 100);
 
         return {
           ...plan,
@@ -166,7 +201,9 @@ export class DynamicPricingService {
     if (product.metadata.features) {
       try {
         return JSON.parse(product.metadata.features);
-      } catch {}
+      } catch {
+        // Ignore JSON parse errors and fall through to description parsing
+      }
     }
 
     // Parse features from description

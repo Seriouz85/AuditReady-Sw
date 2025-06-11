@@ -35,46 +35,48 @@ export const CybersecurityNews = () => {
   };
 
   useEffect(() => {
-    console.log('Setting up scroll listener...');
-    const scrollAreaElement = scrollAreaRef.current;
-    
-    if (scrollAreaElement) {
+    // Add delay to ensure ScrollArea is fully rendered
+    const setupScrollListener = () => {
+      const scrollAreaElement = scrollAreaRef.current;
+      
+      if (!scrollAreaElement) {
+        return null;
+      }
+      
       // Try multiple selectors to find the scrollable element
       const viewport = scrollAreaElement.querySelector('[data-radix-scroll-area-viewport]') ||
                       scrollAreaElement.querySelector('.scroll-area-viewport') ||
                       scrollAreaElement.querySelector('[data-viewport]');
-      
-      console.log('Found scroll element:', viewport);
       
       if (viewport) {
         const handleScrollEvent = (event: Event) => {
           const target = event.target as HTMLDivElement;
           const { scrollTop, scrollHeight, clientHeight } = target;
           
-          console.log('Scroll event:', { scrollTop, scrollHeight, clientHeight, hasMore, loading });
-          
           // More reliable scroll detection - trigger when user is near bottom
           const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
           
           if (isNearBottom && hasMore && !loading) {
-            console.log('🚀 Loading more news...');
             loadMoreNews();
           }
         };
         
         viewport.addEventListener('scroll', handleScrollEvent, { passive: true });
-        console.log('Scroll listener attached successfully');
         
         return () => {
-          console.log('Removing scroll listener');
           viewport.removeEventListener('scroll', handleScrollEvent);
         };
-      } else {
-        console.error('Could not find scroll viewport element');
       }
-    } else {
-      console.error('scrollAreaRef.current is null');
-    }
+      
+      return null;
+    };
+
+    // Use timeout to ensure ScrollArea is rendered
+    const timeoutId = setTimeout(setupScrollListener, 100);
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [hasMore, loading, loadMoreNews, news]);
 
   const handleVisitSource = () => {
