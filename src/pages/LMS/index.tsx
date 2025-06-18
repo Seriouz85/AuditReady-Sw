@@ -357,9 +357,9 @@ const TrenningLMS: React.FC = () => {
       
       {/* Main Actions Navigation */}
       <div className="container max-w-full mx-auto -mt-8 z-10 relative px-4">
-        <div className="flex justify-center gap-3 mb-8">
-          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigateCreate()}>
-            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-8 justify-items-center">
+          <div className="block cursor-pointer w-full sm:w-[240px] max-w-[280px]" onClick={() => navigateCreate()}>
+            <Card className="p-0 h-32 w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
               <div className="flex h-full items-center">
                 <div className="pl-6 pr-4">
                   <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 p-3">
@@ -378,8 +378,8 @@ const TrenningLMS: React.FC = () => {
             </Card>
           </div>
           
-          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/courses/edit")}>
-            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+          <div className="block cursor-pointer w-full sm:w-[240px] max-w-[280px]" onClick={() => navigate("/lms/courses/edit")}>
+            <Card className="p-0 h-32 w-full bg-gradient-to-r from-pink-50 to-purple-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
               <div className="flex h-full items-center">
                 <div className="pl-6 pr-4">
                   <div className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 p-3">
@@ -398,8 +398,8 @@ const TrenningLMS: React.FC = () => {
             </Card>
           </div>
           
-          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/phishing-simulation-manager")}>
-            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+          <div className="block cursor-pointer w-full sm:w-[240px] max-w-[280px]" onClick={() => navigate("/lms/phishing-simulation-manager")}>
+            <Card className="p-0 h-32 w-full bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
               <div className="flex h-full items-center">
                 <div className="pl-6 pr-4">
                   <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 p-3">
@@ -418,8 +418,8 @@ const TrenningLMS: React.FC = () => {
             </Card>
           </div>
           
-          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/analytics")}>
-            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-emerald-50 to-teal-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+          <div className="block cursor-pointer w-full sm:w-[240px] max-w-[280px]" onClick={() => navigate("/lms/analytics")}>
+            <Card className="p-0 h-32 w-full bg-gradient-to-r from-emerald-50 to-teal-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
               <div className="flex h-full items-center">
                 <div className="pl-6 pr-4">
                   <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 p-3">
@@ -438,8 +438,8 @@ const TrenningLMS: React.FC = () => {
             </Card>
           </div>
           
-          <div className="block cursor-pointer w-[240px] min-w-[240px]" onClick={() => navigate("/lms/admin")}>
-            <Card className="p-0 h-32 w-[240px] min-w-[240px] bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
+          <div className="block cursor-pointer w-full sm:w-[240px] max-w-[280px]" onClick={() => navigate("/lms/admin")}>
+            <Card className="p-0 h-32 w-full bg-gradient-to-r from-slate-50 to-gray-50 border-0 shadow-lg hover:shadow-xl transition-all group overflow-hidden rounded-2xl hover:translate-y-[-3px]">
               <div className="flex h-full items-center">
                 <div className="pl-6 pr-4">
                   <div className="rounded-xl bg-gradient-to-r from-slate-500 to-gray-600 p-3">

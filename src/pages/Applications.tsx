@@ -627,9 +627,9 @@ const Applications = () => {
         </Card>
       </div>
       
-      <div className="flex justify-between items-center">
-        <div className="flex flex-col sm:flex-row gap-4 flex-1">
-          <div className="relative w-full">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search applications..."
@@ -638,7 +638,7 @@ const Applications = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Select 
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as Application['status'] | "all")}
@@ -674,10 +674,10 @@ const Applications = () => {
           </div>
         </div>
 
-        <div className="ml-4">
+        <div className="flex justify-end">
           <Dialog open={isAddApplicationOpen} onOpenChange={setIsAddApplicationOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Application
               </Button>
@@ -892,43 +892,89 @@ const Applications = () => {
       </div>
       
       {filteredApplications.length > 0 ? (
-        <div className="border rounded-md">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Criticality</TableHead>
-                <TableHead>Internal Responsible</TableHead>
-                <TableHead>Next Review</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredApplications.map((application) => (
-                <TableRow key={application.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewApplication(application)}>
-                  <TableCell className="font-medium">{application.name}</TableCell>
-                  <TableCell>{application.type || 'N/A'}</TableCell>
-                  <TableCell>{getCriticalityBadge(application.criticality)}</TableCell>
-                  <TableCell>{application.internalResponsible.name}</TableCell>
-                  <TableCell className={isReviewDueSoon(application.nextReviewDate) ? "text-red-500 font-medium" : ""}>
-                    {formatDate(application.nextReviewDate)}
-                  </TableCell>
-                  <TableCell>{getStatusBadge(application.status)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" onClick={(e) => {
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block border rounded-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Criticality</TableHead>
+                  <TableHead>Internal Responsible</TableHead>
+                  <TableHead>Next Review</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredApplications.map((application) => (
+                  <TableRow key={application.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewApplication(application)}>
+                    <TableCell className="font-medium">{application.name}</TableCell>
+                    <TableCell>{application.type || 'N/A'}</TableCell>
+                    <TableCell>{getCriticalityBadge(application.criticality)}</TableCell>
+                    <TableCell>{application.internalResponsible.name}</TableCell>
+                    <TableCell className={isReviewDueSoon(application.nextReviewDate) ? "text-red-500 font-medium" : ""}>
+                      {formatDate(application.nextReviewDate)}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(application.status)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewApplication(application);
+                      }}>
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredApplications.map((application) => (
+              <Card key={application.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewApplication(application)}>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-base mb-1">{application.name}</h3>
+                      <p className="text-sm text-muted-foreground">{application.type || 'N/A'}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      {getCriticalityBadge(application.criticality)}
+                      {getStatusBadge(application.status)}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Responsible:</span>
+                      <span className="font-medium">{application.internalResponsible.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Next Review:</span>
+                      <span className={isReviewDueSoon(application.nextReviewDate) ? "text-red-500 font-medium" : "font-medium"}>
+                        {formatDate(application.nextReviewDate)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 pt-3 border-t">
+                    <Button variant="outline" size="sm" className="w-full" onClick={(e) => {
                       e.stopPropagation();
                       handleViewApplication(application);
                     }}>
-                      View
+                      <Shield className="h-4 w-4 mr-2" />
+                      View Details
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       ) : (
         <div className="text-center py-12 border rounded-lg bg-background">
           <Laptop className="mx-auto h-12 w-12 text-gray-300 mb-3" />
