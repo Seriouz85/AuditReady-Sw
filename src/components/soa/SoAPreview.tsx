@@ -1,6 +1,6 @@
 import React, { useRef, forwardRef } from 'react';
 import { Standard } from '@/types';
-import { Requirement } from '@/types/requirements';
+import { Requirement } from '@/types';
 import { useReactToPrint } from 'react-to-print';
 import { generatePDF } from '@/utils/pdfUtils';
 

@@ -8,7 +8,6 @@ const corsHeaders = {
 interface EmailRecipient {
   email: string;
   name?: string;
-  substitutions?: Record<string, string>;
 }
 
 interface EmailRequest {
@@ -21,11 +20,6 @@ interface EmailRequest {
     name: string;
   };
   category?: string;
-  attachments?: Array<{
-    content: string;
-    filename: string;
-    type: string;
-  }>;
 }
 
 serve(async (req) => {
@@ -37,68 +31,68 @@ serve(async (req) => {
   try {
     const emailRequest: EmailRequest = await req.json()
     
-    // Get SendGrid API key from environment
-    const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY')
-    if (!SENDGRID_API_KEY) {
-      throw new Error('SendGrid API key not configured')
+    // Get Resend API key from environment
+    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+    if (!RESEND_API_KEY) {
+      // Fallback to demo mode if no API key
+      console.log('Demo mode: Email would be sent', {
+        to: emailRequest.to,
+        subject: emailRequest.subject,
+        from: emailRequest.from
+      })
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true,
+          demo: true,
+          message: 'Email logged in demo mode'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
     }
 
-    // Prepare SendGrid request
-    const sendgridRequest = {
-      personalizations: emailRequest.to.map(recipient => ({
-        to: [{ email: recipient.email, name: recipient.name }],
-        substitutions: recipient.substitutions || {},
-      })),
-      from: emailRequest.from || {
-        email: Deno.env.get('DEFAULT_FROM_EMAIL') || 'noreply@auditready.com',
-        name: Deno.env.get('DEFAULT_FROM_NAME') || 'AuditReady Platform',
-      },
+    // Prepare Resend request (much simpler than SendGrid!)
+    const resendRequest = {
+      from: emailRequest.from?.email 
+        ? `${emailRequest.from.name || 'AuditReady'} <${emailRequest.from.email}>`
+        : `${Deno.env.get('DEFAULT_FROM_NAME') || 'AuditReady Platform'} <${Deno.env.get('DEFAULT_FROM_EMAIL') || 'noreply@auditready.com'}>`,
+      to: emailRequest.to.map(recipient => 
+        recipient.name 
+          ? `${recipient.name} <${recipient.email}>`
+          : recipient.email
+      ),
       subject: emailRequest.subject,
-      content: [
-        ...(emailRequest.text ? [{ type: 'text/plain', value: emailRequest.text }] : []),
-        { type: 'text/html', value: emailRequest.html },
-      ],
-      categories: emailRequest.category ? [emailRequest.category] : [],
-      attachments: emailRequest.attachments,
-      mail_settings: {
-        sandbox_mode: {
-          enable: Deno.env.get('SENDGRID_SANDBOX_MODE') === 'true',
-        },
-      },
-      tracking_settings: {
-        click_tracking: {
-          enable: true,
-        },
-        open_tracking: {
-          enable: true,
-        },
-      },
+      html: emailRequest.html,
+      ...(emailRequest.text && { text: emailRequest.text }),
+      ...(emailRequest.category && { tags: [{ name: 'category', value: emailRequest.category }] })
     }
 
-    // Send email via SendGrid
-    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    // Send email via Resend
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${SENDGRID_API_KEY}`,
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(sendgridRequest),
+      body: JSON.stringify(resendRequest),
     })
 
+    const result = await response.json()
+
     if (!response.ok) {
-      const error = await response.text()
-      console.error('SendGrid error:', error)
-      throw new Error(`SendGrid API error: ${response.status}`)
+      console.error('Resend error:', result)
+      throw new Error(`Resend API error: ${response.status} - ${result.message || 'Unknown error'}`)
     }
 
-    // Get message ID from response headers
-    const messageId = response.headers.get('x-message-id')
+    console.log('Email sent successfully via Resend:', result.id)
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        messageId,
-        message: 'Email sent successfully',
+        messageId: result.id,
+        message: 'Email sent successfully via Resend',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

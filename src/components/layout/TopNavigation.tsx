@@ -38,15 +38,15 @@ export const TopNavigation: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="w-full px-6">
-        <div className="flex h-20 items-center justify-between">
+      <div className="w-full px-4 md:px-6">
+        <div className="flex h-16 md:h-20 items-center justify-between">
           {/* Left side - Logo & Breadcrumbs */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4 pl-12 md:pl-0">
             <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-blue-600" />
-              <span className="font-bold text-xl">AuditReady</span>
+              <Shield className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+              <span className="font-bold text-lg md:text-xl">AuditReady</span>
               {isDemo && (
-                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200 hidden sm:inline-flex">
                   Demo Mode
                 </Badge>
               )}
@@ -84,10 +84,10 @@ export const TopNavigation: React.FC = () => {
           </div>
 
           {/* Right side - Organization info & User controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1 md:space-x-3">
             {/* Organization info */}
             {organization && (
-              <div className="hidden md:flex flex-col items-end text-sm">
+              <div className="hidden lg:flex flex-col items-end text-sm">
                 <span className="font-medium text-foreground">{organization.name}</span>
                 <span className="text-xs text-muted-foreground capitalize">
                   {organization.subscription_tier} Plan
@@ -96,9 +96,11 @@ export const TopNavigation: React.FC = () => {
             )}
             
             {/* Controls */}
-            <div className="flex items-center space-x-4">
-              <LanguageSelector />
-              <ZoomToggle />
+            <div className="flex items-center space-x-1 md:space-x-3">
+              <div className="hidden md:flex items-center space-x-2">
+                <LanguageSelector />
+                <ZoomToggle />
+              </div>
               <ThemeToggle />
               <NotificationsMenu />
               {user && <UserProfileDropdown />}

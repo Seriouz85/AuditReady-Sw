@@ -88,20 +88,20 @@ const Dashboard = () => {
 
   return (
     <motion.div
-      className="pt-0 space-y-6 pb-8 w-full"
+      className="pt-0 space-y-4 sm:space-y-6 pb-6 sm:pb-8 w-full px-2 sm:px-0"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold tracking-tight">Compliance Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Compliance Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Track your organization's compliance status and assessments across all standards
           </p>
         </div>
-        <div className="mt-3 md:mt-0 py-1 px-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm">
-          <h2 className="text-xl font-bold tracking-tight text-blue-800 dark:text-blue-400">Welcome Security User</h2>
+        <div className="mt-1 md:mt-0 py-2 px-3 sm:py-1 sm:px-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-blue-800 dark:text-blue-400">Welcome Security User</h2>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ const Dashboard = () => {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
         variants={itemVariants}
       >
         <div onClick={() => navigate("/app/standards")} className="cursor-pointer">
@@ -414,7 +414,7 @@ const QuickActions = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
       <div
         onClick={() => navigate('/editor')}
         className="cursor-pointer"

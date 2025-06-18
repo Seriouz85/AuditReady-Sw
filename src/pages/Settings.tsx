@@ -21,8 +21,11 @@ import { RequirementAssignmentModal } from "@/components/settings/RequirementAss
 import { 
   Download, Save, Upload, UserPlus, Settings as SettingsIcon, Shield, 
   Key, Activity, Trash2, Edit, Eye, Clock,
-  CheckCircle, XCircle, Loader, ListChecks
+  CheckCircle, XCircle, Loader, ListChecks, Search, Filter, Tag
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRequirementsService } from "@/services/requirements/RequirementsService";
 
 // Demo data for demo accounts only
 const demoUsers = [
@@ -57,6 +60,375 @@ const demoUsers = [
     joinedAt: null
   }
 ];
+
+// Enhanced Requirement Assignment Interface Component
+const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDemo: boolean }) => {
+  const requirementsService = useRequirementsService();
+  const [requirements, setRequirements] = useState<any[]>([]);
+  const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [standardFilter, setStandardFilter] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRequirements();
+  }, []);
+
+  const loadRequirements = async () => {
+    try {
+      setLoading(true);
+      if (isDemo) {
+        // Use mock data for demo
+        const mockRequirements = [
+          {
+            id: 'req-1',
+            code: 'A.5.1',
+            name: 'Policies for information security',
+            standardId: 'iso-27002-2022',
+            standardName: 'ISO 27002:2022',
+            tags: ['tag-organizational', 'tag-organization'],
+            status: 'not-fulfilled'
+          },
+          {
+            id: 'req-2',
+            code: 'A.6.1',
+            name: 'Screening',
+            standardId: 'iso-27002-2022',
+            standardName: 'ISO 27002:2022',
+            tags: ['tag-awareness', 'tag-organization'],
+            status: 'not-fulfilled'
+          },
+          {
+            id: 'req-3',
+            code: 'A.8.1',
+            name: 'User end point devices',
+            standardId: 'iso-27002-2022',
+            standardName: 'ISO 27002:2022',
+            tags: ['tag-endpoint', 'tag-device'],
+            status: 'partially-fulfilled'
+          },
+          {
+            id: 'req-4',
+            code: '1.1',
+            name: 'Establish and Maintain Detailed Enterprise Asset Inventory',
+            standardId: 'cis-ig1',
+            standardName: 'CIS Controls IG1',
+            tags: ['tag-assets', 'tag-organization'],
+            status: 'not-fulfilled'
+          },
+          {
+            id: 'req-5',
+            code: '2.1',
+            name: 'Establish and Maintain a Software Inventory',
+            standardId: 'cis-ig1',
+            standardName: 'CIS Controls IG1',
+            tags: ['tag-assets', 'tag-device'],
+            status: 'fulfilled'
+          },
+          {
+            id: 'req-6',
+            code: 'A.7.1',
+            name: 'Physical security perimeters',
+            standardId: 'iso-27002-2022',
+            standardName: 'ISO 27002:2022',
+            tags: ['tag-physical', 'tag-organization'],
+            status: 'not-fulfilled'
+          }
+        ];
+        setRequirements(mockRequirements);
+      } else {
+        const data = await requirementsService.getOrganizationRequirements();
+        setRequirements(data);
+      }
+    } catch (error) {
+      console.error('Error loading requirements:', error);
+      toast.error("Failed to load requirements");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTypeTagName = (tags: string[]) => {
+    const typeTagMap: Record<string, string> = {
+      'tag-organizational': 'Organizational',
+      'tag-identity': 'Identity',
+      'tag-endpoint': 'Endpoint',
+      'tag-assets': 'Assets',
+      'tag-awareness': 'Awareness',
+      'tag-network': 'Network',
+      'tag-physical': 'Physical',
+      'tag-data-management': 'Data Management'
+    };
+    
+    const typeTag = tags?.find(tag => typeTagMap[tag]);
+    return typeTag ? typeTagMap[typeTag] : '';
+  };
+
+  const getTypeTagColor = (tags: string[]) => {
+    const colorMap: Record<string, string> = {
+      'tag-organizational': '#10B981',
+      'tag-identity': '#A21CAF',
+      'tag-endpoint': '#3B82F6',
+      'tag-assets': '#F59E0B',
+      'tag-awareness': '#F59E42',
+      'tag-network': '#8B5CF6',
+      'tag-physical': '#059669',
+      'tag-data-management': '#06B6D4'
+    };
+    
+    const typeTag = tags?.find(tag => colorMap[tag]);
+    return typeTag ? colorMap[typeTag] : '#6B7280';
+  };
+
+  const filteredRequirements = requirements.filter(req => {
+    const matchesSearch = 
+      req.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.code.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesType = typeFilter === "all" || (req.tags && req.tags.includes(typeFilter));
+    const matchesStandard = standardFilter === "all" || req.standardId === standardFilter;
+    
+    return matchesSearch && matchesType && matchesStandard;
+  });
+
+  const uniqueStandards = Array.from(new Set(requirements.map(req => req.standardId)))
+    .map(id => {
+      const req = requirements.find(r => r.standardId === id);
+      return { id, name: req?.standardName || id };
+    });
+
+  const handleSelectAll = () => {
+    if (selectedRequirements.length === filteredRequirements.length) {
+      setSelectedRequirements([]);
+    } else {
+      setSelectedRequirements(filteredRequirements.map(req => req.id));
+    }
+  };
+
+  const handleAssign = () => {
+    if (selectedRequirements.length === 0) {
+      toast.error("Please select at least one requirement");
+      return;
+    }
+    if (!selectedUser) {
+      toast.error("Please select a user to assign to");
+      return;
+    }
+    
+    const user = users.find(u => u.id === selectedUser);
+    toast.success(`Successfully assigned ${selectedRequirements.length} requirement${selectedRequirements.length !== 1 ? 's' : ''} to ${user?.name || user?.email}`);
+    
+    // Reset selections
+    setSelectedRequirements([]);
+    setSelectedUser("");
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h4 className="font-medium">Requirement Assignment</h4>
+        <p className="text-sm text-muted-foreground">
+          Select requirements and assign them to team members
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search requirements..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger>
+            <Tag className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="Filter by type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="tag-organizational">Organizational</SelectItem>
+            <SelectItem value="tag-identity">Identity</SelectItem>
+            <SelectItem value="tag-endpoint">Endpoint</SelectItem>
+            <SelectItem value="tag-assets">Assets</SelectItem>
+            <SelectItem value="tag-awareness">Awareness</SelectItem>
+            <SelectItem value="tag-network">Network</SelectItem>
+            <SelectItem value="tag-physical">Physical</SelectItem>
+            <SelectItem value="tag-data-management">Data Management</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <Select value={standardFilter} onValueChange={setStandardFilter}>
+          <SelectTrigger>
+            <Filter className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="Filter by standard" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Standards</SelectItem>
+            {uniqueStandards.map(standard => (
+              <SelectItem key={standard.id} value={standard.id}>
+                {standard.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Requirements List */}
+      <div className="border rounded-lg shadow-sm">
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-muted/30 to-muted/50">
+          <div className="flex items-center gap-3">
+            <Checkbox
+              checked={selectedRequirements.length === filteredRequirements.length && filteredRequirements.length > 0}
+              onCheckedChange={handleSelectAll}
+            />
+            <div>
+              <span className="text-sm font-medium">
+                {selectedRequirements.length} of {filteredRequirements.length} selected
+              </span>
+              {selectedRequirements.length > 0 && (
+                <span className="text-xs text-muted-foreground ml-2">
+                  • Ready for assignment
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {filteredRequirements.length > 0 && (
+              <Badge variant="outline" className="text-xs">
+                {filteredRequirements.length} requirement{filteredRequirements.length !== 1 ? 's' : ''}
+              </Badge>
+            )}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleSelectAll}
+            >
+              {selectedRequirements.length === filteredRequirements.length ? "Deselect All" : "Select All"}
+            </Button>
+          </div>
+        </div>
+        
+        <ScrollArea className="h-[400px]">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            </div>
+          ) : filteredRequirements.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No requirements found matching your filters
+            </div>
+          ) : (
+            <div className="divide-y">
+              {filteredRequirements.map(req => {
+                const typeTag = getTypeTagName(req.tags);
+                const typeColor = getTypeTagColor(req.tags);
+                
+                return (
+                  <div
+                    key={req.id}
+                    className={`flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer transition-all duration-200 ${
+                      selectedRequirements.includes(req.id) 
+                        ? 'bg-blue-50/50 dark:bg-blue-900/20 border-l-4 border-l-blue-500' 
+                        : 'border-l-4 border-l-transparent'
+                    }`}
+                    onClick={() => {
+                      setSelectedRequirements(prev =>
+                        prev.includes(req.id)
+                          ? prev.filter(id => id !== req.id)
+                          : [...prev, req.id]
+                      );
+                    }}
+                  >
+                    <Checkbox
+                      checked={selectedRequirements.includes(req.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedRequirements([...selectedRequirements, req.id]);
+                        } else {
+                          setSelectedRequirements(selectedRequirements.filter(id => id !== req.id));
+                        }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start gap-2">
+                        <span className="font-medium text-sm bg-muted/50 px-2 py-1 rounded text-foreground">
+                          {req.code}
+                        </span>
+                        <span className="text-sm flex-1">{req.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          {req.standardName}
+                        </Badge>
+                        {typeTag && (
+                          <Badge
+                            style={{
+                              backgroundColor: `${typeColor}20`,
+                              color: typeColor,
+                              borderColor: `${typeColor}40`
+                            }}
+                            className="text-xs border"
+                          >
+                            {typeTag}
+                          </Badge>
+                        )}
+                        <div className="ml-auto">
+                          <Badge 
+                            variant={req.status === 'fulfilled' ? 'default' : req.status === 'partially-fulfilled' ? 'secondary' : 'outline'}
+                            className="text-xs"
+                          >
+                            {req.status === 'fulfilled' ? 'Fulfilled' : 
+                             req.status === 'partially-fulfilled' ? 'Partial' : 
+                             req.status === 'not-applicable' ? 'N/A' : 'Not Fulfilled'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </ScrollArea>
+      </div>
+
+      {/* User Selection and Assignment */}
+      <div className="flex gap-4 items-end">
+        <div className="flex-1 space-y-2">
+          <Label>Assign to User</Label>
+          <Select value={selectedUser} onValueChange={setSelectedUser}>
+            <SelectTrigger>
+              <UserPlus className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Select a user" />
+            </SelectTrigger>
+            <SelectContent>
+              {users.filter(user => user.status === 'active').map(user => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.name || user.email} ({user.role})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button 
+          onClick={handleAssign} 
+          disabled={selectedRequirements.length === 0 || !selectedUser}
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Assign {selectedRequirements.length} Requirement{selectedRequirements.length !== 1 ? 's' : ''}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const Settings = () => {
   const { user, organization, isDemo, hasPermission } = useAuth();
@@ -233,22 +605,24 @@ const Settings = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h1>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-8 lg:w-[900px]">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="organization">Organization</TabsTrigger>
-          <TabsTrigger value="users">Users & Access</TabsTrigger>
-          <TabsTrigger value="assignments">Assignments</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
-          <TabsTrigger value="importing">Import/Export</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-2 -mx-2 px-2">
+          <TabsList className="grid w-max grid-cols-8 gap-1 p-1 h-auto bg-muted/50">
+            <TabsTrigger value="profile" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Profile</TabsTrigger>
+            <TabsTrigger value="organization" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Organization</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Users & Access</TabsTrigger>
+            <TabsTrigger value="assignments" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Assignments</TabsTrigger>
+            <TabsTrigger value="security" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Security</TabsTrigger>
+            <TabsTrigger value="integrations" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Integrations</TabsTrigger>
+            <TabsTrigger value="importing" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Import/Export</TabsTrigger>
+            <TabsTrigger value="notifications" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Notifications</TabsTrigger>
+          </TabsList>
+        </div>
         
         {/* Profile Settings */}
         <TabsContent value="profile" className="space-y-6 mt-6">
@@ -1110,72 +1484,11 @@ const Settings = () => {
                 </div>
               )}
 
-              {/* Quick Assignment Button */}
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-medium">Quick Assignment</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Select requirements from a list and assign them to team members
-                  </p>
-                </div>
-                <Button onClick={() => setIsAssignmentModalOpen(true)}>
-                  <ListChecks className="mr-2 h-4 w-4" />
-                  Assign Requirements
-                </Button>
-              </div>
-
-              {/* Bulk Assignment by Type */}
-              <div className="space-y-4 border-t pt-6">
-                <h4 className="font-medium">Bulk Assignment by Type</h4>
-                <p className="text-sm text-muted-foreground">
-                  Assign all requirements of a specific type to a team member
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Requirement Type</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="organizational">Organizational</SelectItem>
-                        <SelectItem value="identity">Identity</SelectItem>
-                        <SelectItem value="endpoint">Endpoint</SelectItem>
-                        <SelectItem value="assets">Assets</SelectItem>
-                        <SelectItem value="awareness">Awareness</SelectItem>
-                        <SelectItem value="network">Network</SelectItem>
-                        <SelectItem value="physical">Physical</SelectItem>
-                        <SelectItem value="data-management">Data Management</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Assign to User</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select user" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {displayUsers.filter(user => user.status === 'active').map((user) => (
-                          <SelectItem key={user.id} value={user.id}>
-                            {isDemo ? (user as any).name : (user as any).email} ({(user as any).role})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <Button onClick={() => {
-                  toast.success("Bulk assignment completed successfully. All requirements of selected type have been assigned to the chosen user.");
-                  // In production, this would perform actual bulk assignment to database
-                }}>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Assign Requirements
-                </Button>
-              </div>
+              {/* Enhanced Requirement Assignment Interface */}
+              <RequirementAssignmentInterface 
+                users={displayUsers}
+                isDemo={isDemo}
+              />
 
               <div className="border-t pt-6">
                 <h4 className="font-medium mb-4">Current Assignment Rules</h4>
@@ -1242,65 +1555,6 @@ const Settings = () => {
                 </div>
               </div>
 
-              {/* Individual Assignment */}
-              <div className="border-t pt-6">
-                <h4 className="font-medium mb-4">Individual Assignment</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Standard</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select standard" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="iso-27001">ISO 27001:2022</SelectItem>
-                        <SelectItem value="iso-27002">ISO 27002:2022</SelectItem>
-                        <SelectItem value="cis-ig1">CIS Controls IG1</SelectItem>
-                        <SelectItem value="cis-ig2">CIS Controls IG2</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Requirement</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select requirement" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="A.5.1">A.5.1 - Policies for information security</SelectItem>
-                        <SelectItem value="A.6.1">A.6.1 - Screening</SelectItem>
-                        <SelectItem value="A.8.1">A.8.1 - User end point devices</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Assign to</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select user" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {displayUsers.filter(user => user.status === 'active').map((user) => (
-                          <SelectItem key={user.id} value={user.id}>
-                            {isDemo ? (user as any).name : (user as any).email}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div className="mt-4">
-                  <Button onClick={() => {
-                    toast.success("Individual requirement assigned successfully. User will be notified of their new assignment.");
-                    // In production, this would save individual assignment and send notification
-                  }}>
-                    Assign Individual Requirement
-                  </Button>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>

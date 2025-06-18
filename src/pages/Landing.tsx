@@ -134,35 +134,39 @@ export default function Landing() {
   ];
 
   return (
-    <div className={`min-h-screen ${theme === 'light' ? 'bg-gradient-to-b from-slate-100 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
+    <div className={`min-h-screen overflow-x-hidden ${theme === 'light' ? 'bg-gradient-to-b from-slate-100 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 ${theme === 'light' ? 'bg-white/80 border-slate-200' : 'bg-slate-800/90 border-slate-700'} backdrop-blur-md border-b`}>
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
-            <span className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-800' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>
+        <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between max-w-7xl">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <Shield className={`h-6 w-6 sm:h-8 sm:w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+            <span className={`text-lg sm:text-2xl font-bold ${theme === 'light' ? 'text-slate-800' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>
               AuditReady
             </span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-4">
             <Button 
               variant="ghost" 
-              className={`${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+              className={`hidden md:inline-flex ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
               onClick={() => navigate("/about")}
             >
               About Dev
             </Button>
-            <ZoomToggle />
-            <ThemeToggle />
+            <div className="hidden sm:flex items-center space-x-2">
+              <ZoomToggle />
+              <ThemeToggle />
+            </div>
             <Button 
               variant="ghost" 
-              className={`${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+              size="sm"
+              className={`text-xs sm:text-sm px-2 sm:px-4 font-medium ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 border border-slate-200/50' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700/80 border border-slate-600/50'}`}
               onClick={() => navigate("/login")}
             >
               Log in
             </Button>
             <Button 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 text-xs sm:text-sm font-semibold shadow-md border-2 border-blue-500/20"
               onClick={() => navigate("/pricing")}
             >
               Get Started
@@ -172,23 +176,23 @@ export default function Landing() {
       </header>
 
       {/* Enhanced Hero Section */}
-      <section className="pt-32 pb-20 px-4 relative overflow-hidden">
+      <section className="pt-20 sm:pt-32 pb-16 sm:pb-20 px-3 sm:px-4 relative overflow-hidden">
         <div className={`absolute inset-0 ${theme === 'light' ? 'bg-[url(\'/grid.svg\')] opacity-10' : 'bg-gradient-to-br from-slate-900/20 via-transparent to-slate-700/10'}`}></div>
-        <div className="container mx-auto text-center relative z-10">
+        <div className="container mx-auto text-center relative z-10 max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
+            <Badge variant="outline" className={`mb-3 sm:mb-4 text-xs sm:text-sm ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
               Trusted by Leading Security Teams
             </Badge>
-            <h1 className={`text-5xl md:text-7xl font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'} leading-tight`}>
+            <h1 className={`text-3xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'} leading-tight px-2`}>
               Transform Your{" "}
               <span className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`}>Compliance</span>{" "}
               Journey
             </h1>
-            <p className={`text-xl ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} max-w-3xl mx-auto mb-8`}>
+            <p className={`text-base sm:text-xl ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} max-w-3xl mx-auto mb-6 sm:mb-8 px-4`}>
               Experience the future of compliance management. Automated assessments, 
               real-time monitoring, and AI-powered insights—all in one powerful platform.
             </p>
@@ -198,22 +202,22 @@ export default function Landing() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4"
           >
             <Button 
-              size="lg" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-12 text-lg"
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-lg w-full sm:w-auto"
               onClick={() => navigate("/pricing")}
             >
               Start Your Journey
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button 
-              size="lg" 
+              size="sm"
               variant="outline" 
               className={`${theme === 'light' 
                 ? 'border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 hover:border-blue-300' 
-                : 'border-blue-800 text-blue-300 hover:bg-blue-900/40 hover:text-blue-200'} px-8 h-12 text-lg`}
+                : 'border-blue-800 text-blue-300 hover:bg-blue-900/40 hover:text-blue-200'} px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-lg w-full sm:w-auto`}
               onClick={() => navigate("/login")}
             >
               Try Demo
@@ -221,7 +225,7 @@ export default function Landing() {
           </motion.div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mt-12 sm:mt-20 px-2">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -230,8 +234,8 @@ export default function Landing() {
                 transition={{ delay: 0.2 + index * 0.1 }}
                 className="text-center"
               >
-                <h3 className={`text-4xl font-bold ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'} mb-2`}>{stat.number}</h3>
-                <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>{stat.label}</p>
+                <h3 className={`text-2xl sm:text-4xl font-bold ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'} mb-1 sm:mb-2`}>{stat.number}</h3>
+                <p className={`text-xs sm:text-base ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -240,8 +244,8 @@ export default function Landing() {
 
       {/* Ultra Cool Logo Section - AI Robot Version */}
       {/* BACKUP: Original version without robot available in git history */}
-      <section className="py-24 px-4 relative">{/* Removed overflow-hidden for better blend */}
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-16 sm:py-24 px-3 sm:px-4 relative overflow-hidden">
+        <div className="container mx-auto px-3 sm:px-6 relative z-10 max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -256,9 +260,9 @@ export default function Landing() {
                 : 'bg-gradient-to-r from-blue-950/10 via-transparent to-purple-950/10'} blur-3xl`}></div>
               
               <div className="relative z-10">
-                <div className="grid lg:grid-cols-2 gap-20 items-center">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-20 items-center">
                   {/* Logo Side */}
-                  <div className="text-center lg:text-left lg:pl-16">
+                  <div className="text-center lg:text-left lg:pl-8">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       whileInView={{ opacity: 1, scale: 1 }}
@@ -266,14 +270,14 @@ export default function Landing() {
                       viewport={{ once: true }}
                       className="relative inline-block"
                       style={{
-                        transform: 'translateX(-80px) translateY(-20px)',
+                        transform: 'translateX(0px) translateY(-10px)',
                         animation: 'float 4s ease-in-out infinite'
                       }}
                     >
                       {/* Futuristic AuditReady Shield Logo */}
                       <div className="relative">
                         {/* Multi-layered Background Glow */}
-                        <div className="absolute inset-0 w-80 h-80 mx-auto">
+                        <div className="absolute inset-0 w-48 h-48 sm:w-80 sm:h-80 mx-auto">
                           <div className={`absolute inset-0 rounded-full ${theme === 'light' 
                             ? 'bg-gradient-to-r from-blue-400/30 via-cyan-300/20 to-indigo-500/30 blur-3xl' 
                             : 'bg-gradient-to-r from-blue-400/40 via-cyan-300/30 to-indigo-400/40 blur-3xl'}`}></div>
@@ -283,7 +287,7 @@ export default function Landing() {
                         </div>
                         
                         {/* Main Holographic Shield */}
-                        <div className="relative w-64 h-64 mx-auto">
+                        <div className="relative w-48 h-48 sm:w-64 sm:h-64 mx-auto">
                           {/* Shield Base with Holographic Effect */}
                           <div className={`relative w-full h-full rounded-[3rem] flex items-center justify-center ${theme === 'light'
                             ? 'bg-gradient-to-br from-slate-200/90 via-blue-100/80 to-indigo-200/90 backdrop-blur-sm border border-blue-300/50 shadow-2xl'
@@ -411,8 +415,8 @@ export default function Landing() {
       </div>
 
       {/* Dashboard Preview Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
+      <section className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
               Powerful Features
@@ -427,7 +431,7 @@ export default function Landing() {
           </div>
 
           {/* Dashboard Mockup */}
-          <div className="relative mx-auto max-w-6xl">
+          <div className="relative mx-auto max-w-4xl sm:max-w-6xl">
             <div className={`relative rounded-lg overflow-hidden shadow-2xl ${theme === 'light' ? 'border border-slate-200' : 'border border-slate-600'}`}>
               <div className={`${theme === 'light' ? 'bg-slate-100' : 'bg-slate-700'} p-2 flex items-center gap-2`}>
                 <div className="flex gap-2">
@@ -476,8 +480,8 @@ export default function Landing() {
       </section>
 
       {/* Assessment Preview Section */}
-      <section className={`py-20 px-4 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-800/50'}`}>
-        <div className="container mx-auto">
+      <section className={`py-16 sm:py-20 px-3 sm:px-4 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-800/50'}`}>
+        <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
               Streamlined Assessments
@@ -574,8 +578,8 @@ export default function Landing() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
+      <section className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
               Customer Stories
@@ -607,8 +611,8 @@ export default function Landing() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4">
-        <div className="container mx-auto">
+      <section id="pricing" className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -624,7 +628,7 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-4 gap-8 max-w-full mx-auto px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-full mx-auto px-2 sm:px-4">
             {/* Free Plan */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -856,8 +860,8 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
+      <section className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
           <motion.div
             className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 p-8 md:p-12"
             onHoverStart={() => setIsHovered(true)}
@@ -906,8 +910,8 @@ export default function Landing() {
       </section>
 
       {/* Enhanced Footer */}
-      <footer className={`py-12 px-4 border-t ${theme === 'light' ? 'border-slate-200' : 'border-slate-600'}`}>
-        <div className="container mx-auto">
+      <footer className={`py-12 px-3 sm:px-4 border-t ${theme === 'light' ? 'border-slate-200' : 'border-slate-600'}`}>
+        <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
               <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Product</h3>

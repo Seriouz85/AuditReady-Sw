@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { requirements as demoRequirements } from '@/data/mockData';
-import { Requirement } from '@/types/requirements';
+import { Requirement } from '@/types';
 
 export function useRequirements() {
   const [requirements, setRequirements] = useState<Requirement[]>(() => {

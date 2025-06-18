@@ -75,6 +75,81 @@ serve(async (req) => {
               subscription_starts_at: new Date().toISOString(),
             })
             .eq('id', organizationId)
+
+          // Send welcome email after successful payment
+          try {
+            // Get organization details and owner
+            const { data: org } = await supabaseAdmin
+              .from('organizations')
+              .select(`
+                name,
+                organization_users!inner(
+                  users!inner(email, user_metadata)
+                )
+              `)
+              .eq('id', organizationId)
+              .eq('organization_users.role', 'admin')
+              .single()
+
+            if (org && org.organization_users[0]?.users?.email) {
+              const user = org.organization_users[0].users
+              const userName = user.user_metadata?.first_name || user.email.split('@')[0]
+              
+              // Send welcome email via send-email function
+              const emailResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-email`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+                },
+                body: JSON.stringify({
+                  to: [{
+                    email: user.email,
+                    name: userName
+                  }],
+                  subject: `Welcome to AuditReady - Your ${subscription.metadata.tier || 'starter'} plan is ready!`,
+                  html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                      <h2 style="color: #2563eb;">Welcome to AuditReady!</h2>
+                      <p>Hi ${userName},</p>
+                      <p>Congratulations! Your payment has been processed successfully and your <strong>${subscription.metadata.tier || 'starter'}</strong> plan is now active.</p>
+                      
+                      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="margin-top: 0;">Your Account Details:</h3>
+                        <ul>
+                          <li><strong>Organization:</strong> ${org.name}</li>
+                          <li><strong>Plan:</strong> ${subscription.metadata.tier || 'starter'}</li>
+                          <li><strong>Login Email:</strong> ${user.email}</li>
+                        </ul>
+                      </div>
+                      
+                      <p><a href="${Deno.env.get('SITE_URL') || 'https://app.auditready.com'}/app" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Access Your Dashboard</a></p>
+                      
+                      <p>You can now:</p>
+                      <ul>
+                        <li>Add compliance standards to your organization</li>
+                        <li>Manage requirements and track progress</li>
+                        <li>Invite team members</li>
+                        <li>Generate compliance reports</li>
+                      </ul>
+                      
+                      <p>If you have any questions, please don't hesitate to reach out to our support team.</p>
+                      
+                      <p>Best regards,<br>The AuditReady Team</p>
+                    </div>
+                  `,
+                  category: 'welcome-payment'
+                })
+              })
+
+              if (!emailResponse.ok) {
+                console.error('Failed to send welcome email:', await emailResponse.text())
+              }
+            }
+          } catch (emailError) {
+            console.error('Error sending welcome email:', emailError)
+            // Don't fail the webhook if email fails
+          }
         }
         break
       }

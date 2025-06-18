@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Requirement } from '@/types/requirements';
+import { Requirement, RequirementStatus, RequirementPriority } from '@/types';
 // Removed mock data import to fix duplicate key warnings
 
 export interface OrganizationRequirement {
@@ -90,8 +90,8 @@ export class RequirementsService {
         name: orgReq.requirement.title,
         description: orgReq.requirement.description,
         standardId: orgReq.requirement.standard_id,
-        status: orgReq.status as any,
-        priority: (orgReq.requirement.priority || 'medium') as any,
+        status: orgReq.status as RequirementStatus,
+        priority: (orgReq.requirement.priority || 'medium') as RequirementPriority,
         section: orgReq.requirement.category || 'General',
         tags: orgReq.tags || [],
         organizationStatus: orgReq.status,
@@ -101,7 +101,9 @@ export class RequirementsService {
         responsibleParty: orgReq.responsible_party,
         organizationTags: orgReq.tags || [],
         riskLevel: orgReq.risk_level,
-        lastUpdated: orgReq.updated_at
+        lastUpdated: orgReq.updated_at,
+        createdAt: orgReq.created_at || new Date().toISOString(),
+        updatedAt: orgReq.updated_at || new Date().toISOString()
       }));
     } catch (error) {
       console.error('Error fetching organization requirements:', error);
@@ -114,7 +116,7 @@ export class RequirementsService {
     organizationId: string,
     requirementId: string,
     updates: {
-      status?: string;
+      status?: RequirementStatus;
       fulfillmentPercentage?: number;
       evidence?: string;
       notes?: string;

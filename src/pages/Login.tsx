@@ -265,14 +265,14 @@ const Login = () => {
   return (
     <div className={`min-h-screen flex ${theme === 'light' ? 'bg-gradient-to-b from-slate-100 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Left side - Login Form */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
+      <div className={`flex-1 flex flex-col items-center justify-center p-2 sm:p-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
         {/* Card Container for Login */}
-        <div className="w-full max-w-lg ml-auto mr-8">
+        <div className="w-full max-w-lg px-2 sm:ml-auto sm:mr-8">
           {/* Logo and Theme Toggle */}
-          <div className="w-full flex justify-between items-center mb-8">
+          <div className="w-full flex justify-between items-center mb-6 sm:mb-8">
             <div className="flex items-center gap-2">
-              <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
-              <span className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
+              <Shield className={`h-6 w-6 sm:h-8 sm:w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+              <span className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
             </div>
             <div className="flex items-center gap-2">
               <ZoomToggle />
@@ -280,13 +280,13 @@ const Login = () => {
             </div>
           </div>
           {/* Divider */}
-          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-8`} />
+          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-6 sm:mb-8`} />
           {/* Card for Login Form */}
-          <div className={`w-full space-y-6 p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800/90 backdrop-blur-lg border-slate-600'}`}> 
+          <div className={`w-full space-y-4 sm:space-y-6 p-4 sm:p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800/90 backdrop-blur-lg border-slate-600'}`}> 
             <div className="text-center space-y-2">
-              <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Welcome Back</h1>
-              <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure access to your compliance dashboard</p>
-              <p className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}</p>
+              <h1 className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Welcome Back</h1>
+              <p className={`text-sm sm:text-base ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure access to your compliance dashboard</p>
+              <p className={`text-xs sm:text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}</p>
               {!isSupabaseConfigured && (
                 <p className={`mt-2 text-xs ${theme === 'light' ? 'text-amber-600 bg-amber-50' : 'text-amber-400 bg-amber-900/20'} p-2 rounded`}>
                   Demo mode: Using local authentication
@@ -396,7 +396,7 @@ const Login = () => {
                   </DialogContent>
                 </Dialog>
               </div>
-              <Button type="submit" className="w-full h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-white font-semibold text-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed" disabled={isLoading || isRateLimited}>
+              <Button type="submit" className="w-full h-10 sm:h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-white font-semibold text-sm sm:text-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed" disabled={isLoading || isRateLimited}>
                 {isRateLimited 
                   ? `Try again in ${rateLimitTimeLeft}s` 
                   : isLoading 

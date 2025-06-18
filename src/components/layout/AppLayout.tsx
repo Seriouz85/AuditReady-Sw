@@ -44,9 +44,10 @@ type NavItemProps = {
   subItems?: SubNavItem[];
   isExpanded?: boolean;
   onToggle?: () => void;
+  onMobileClick?: () => void;
 };
 
-const NavItem = ({ to, icon, label, isActive, subItems, isExpanded, onToggle }: NavItemProps) => {
+const NavItem = ({ to, icon, label, isActive, subItems, isExpanded, onToggle, onMobileClick }: NavItemProps) => {
   const hasSubItems = subItems && subItems.length > 0;
   const location = useLocation();
   const [isHovered, setIsHovered] = React.useState(false);
@@ -80,7 +81,7 @@ const NavItem = ({ to, icon, label, isActive, subItems, isExpanded, onToggle }: 
           {buttonContent}
         </Button>
       ) : (
-        <Link to={to}>
+        <Link to={to} onClick={onMobileClick}>
           <Button 
             variant="ghost" 
             className={cn(
@@ -96,7 +97,7 @@ const NavItem = ({ to, icon, label, isActive, subItems, isExpanded, onToggle }: 
       {hasSubItems && isExpanded && (
         <div className="ml-6 space-y-1 border-l border-border pl-2">
           {subItems.map((subItem) => (
-            <Link key={subItem.to} to={subItem.to}>
+            <Link key={subItem.to} to={subItem.to} onClick={onMobileClick}>
               <Button
                 variant="ghost"
                 className={cn(
@@ -149,6 +150,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   const toggleExpanded = (itemTo: string) => {
@@ -226,6 +231,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           subItems={item.subItems}
           isExpanded={expandedItems.includes(item.to)}
           onToggle={() => item.subItems && toggleExpanded(item.to)}
+          onMobileClick={closeMobileMenu}
         />
       ))}
     </nav>
@@ -237,10 +243,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden"
+        className="fixed top-2 left-2 z-50 md:hidden h-12 w-12"
         onClick={toggleMobileMenu}
       >
-        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
       </Button>
 
       {/* Sidebar - Desktop */}
@@ -290,7 +296,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         <TopNavigation />
-        <div className="flex-1 px-8 pt-6 pb-5 overflow-y-auto content-area">
+        <div className="flex-1 px-2 sm:px-4 md:px-8 pt-4 sm:pt-6 pb-4 sm:pb-5 overflow-y-auto content-area">
           {children}
         </div>
       </main>

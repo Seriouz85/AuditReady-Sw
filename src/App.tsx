@@ -11,6 +11,7 @@ import SignUp from "./pages/SignUp";
 import PricingAssessment from "./pages/PricingAssessment";
 import Onboarding from "./pages/Onboarding";
 import EnhancedOnboarding from "./pages/EnhancedOnboarding";
+import AcceptInvitation from "./pages/AcceptInvitation";
 import About from "./pages/About";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
@@ -67,6 +68,7 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/pricing" element={<PricingAssessment />} />
                   <Route path="/signup" element={<SignUp />} />
+                  <Route path="/invite/:token" element={<AcceptInvitation />} />
                   <Route path="/about" element={<About />} />
                   
                   {/* Protected pages requiring authentication */}

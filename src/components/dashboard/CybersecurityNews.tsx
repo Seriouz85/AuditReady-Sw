@@ -129,9 +129,9 @@ export const CybersecurityNews = () => {
             </div>
             <h3 className="text-lg font-semibold">Cybersecurity News</h3>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {news && !loading && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+              <div className="hidden lg:flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
                 <span>Updated:</span>
                 <span>{getExactDateTime(news.lastUpdated)}</span>
                 <span className="text-muted-foreground/60">•</span>
@@ -142,9 +142,10 @@ export const CybersecurityNews = () => {
               variant="outline" 
               size="sm" 
               onClick={handleVisitSource}
-              className="h-8 px-3 text-xs font-medium flex items-center gap-1 mr-2"
+              className="h-7 sm:h-8 px-2 sm:px-3 text-xs font-medium flex items-center gap-1"
             >
-              <span>The Hacker News</span>
+              <span className="hidden sm:inline">The Hacker News</span>
+              <span className="sm:hidden">THN</span>
               <ExternalLink className="h-3 w-3" />
             </Button>
             <Button 
@@ -152,12 +153,12 @@ export const CybersecurityNews = () => {
               size="sm" 
               onClick={handleRefresh}
               disabled={loading}
-              className="h-8 w-8 p-0 flex-shrink-0"
+              className="h-7 sm:h-8 w-7 sm:w-8 p-0 flex-shrink-0"
             >
               {loading ? (
-                <Loader className="h-4 w-4 animate-spin" />
+                <Loader className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
               ) : (
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
               )}
             </Button>
           </div>
