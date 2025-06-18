@@ -1247,8 +1247,8 @@ const Organizations: React.FC = () => {
                   </TableCell>
                 </TableRow>
               )}
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
         </CardContent>
       </Card>
 

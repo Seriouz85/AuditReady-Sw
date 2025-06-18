@@ -1074,15 +1074,16 @@ const Suppliers = () => {
 
   // Main suppliers list view
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 sm:px-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">Suppliers</h1>
-        <div className="flex gap-2">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Suppliers</h1>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Dialog open={isAddSupplierOpen} onOpenChange={setIsAddSupplierOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Supplier
+                <span className="hidden sm:inline">Add Supplier</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
@@ -1304,39 +1305,74 @@ const Suppliers = () => {
       </div>
       
       {filteredSuppliers.length > 0 ? (
-        <div className="border rounded-md">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Internal Responsible</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+        <>
+          {/* Mobile Card View */}
+          <div className="block sm:hidden">
+            <div className="space-y-4">
               {filteredSuppliers.map((supplier) => (
-                <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewSupplier(supplier)}>
-                  <TableCell className="font-medium">{supplier.name}</TableCell>
-                  <TableCell>{supplier.category || 'N/A'}</TableCell>
-                  <TableCell>{supplier.contact.name}</TableCell>
-                  <TableCell>{supplier.internalResponsible.name}</TableCell>
-                  <TableCell>{getStatusBadge(supplier.status)}</TableCell>
-                  <TableCell className="text-right">
+                <div 
+                  key={supplier.id}
+                  className="p-4 border rounded-lg bg-card hover:bg-muted/50 cursor-pointer transition-colors"
+                  onClick={() => handleViewSupplier(supplier)}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-medium text-base">{supplier.name}</h3>
                     <Button variant="ghost" size="sm" onClick={(e) => {
                       e.stopPropagation();
                       handleViewSupplier(supplier);
                     }}>
                       View
                     </Button>
-                  </TableCell>
-                </TableRow>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="font-medium">Category:</span> {supplier.category || 'N/A'}</div>
+                    <div><span className="font-medium">Contact:</span> {supplier.contact.name}</div>
+                    <div><span className="font-medium">Responsible:</span> {supplier.internalResponsible.name}</div>
+                    <div className="flex items-center">
+                      <span className="font-medium mr-2">Status:</span>
+                      {getStatusBadge(supplier.status)}
+                    </div>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
-        </div>
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden sm:block border rounded-md overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px]">Name</TableHead>
+                  <TableHead className="min-w-[120px] hidden md:table-cell">Category</TableHead>
+                  <TableHead className="min-w-[150px]">Contact</TableHead>
+                  <TableHead className="min-w-[150px] hidden lg:table-cell">Internal Responsible</TableHead>
+                  <TableHead className="min-w-[100px]">Status</TableHead>
+                  <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSuppliers.map((supplier) => (
+                  <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewSupplier(supplier)}>
+                    <TableCell className="font-medium">{supplier.name}</TableCell>
+                    <TableCell className="hidden md:table-cell">{supplier.category || 'N/A'}</TableCell>
+                    <TableCell>{supplier.contact.name}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{supplier.internalResponsible.name}</TableCell>
+                    <TableCell>{getStatusBadge(supplier.status)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewSupplier(supplier);
+                      }}>
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       ) : (
         <div className="text-center py-12 border rounded-lg bg-background">
           <Building className="mx-auto h-12 w-12 text-gray-300 mb-3" />

@@ -227,48 +227,48 @@ const TrenningLMS: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Header Section - New Design */}
       <div className="bg-gradient-to-r from-indigo-700 to-purple-800 text-white">
-        <div className="container max-w-7xl mx-auto p-8">
+        <div className="container max-w-7xl mx-auto p-4 sm:p-8">
           {/* Back to Dashboard Button */}
           <Link to="/app" className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors">
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back to Dashboard
           </Link>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center">
             <div className="md:col-span-2">
-              <h1 className="text-4xl font-bold mb-2">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
                 {greeting}, {currentUser.name} <span className="text-yellow-400">✨</span>
               </h1>
-              <p className="text-white/80 text-lg mb-6">Welcome to your personalized learning journey</p>
+              <p className="text-white/80 text-base sm:text-lg mb-4 sm:mb-6">Welcome to your personalized learning journey</p>
               
-              <div className="flex flex-wrap gap-4 mb-8">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-3 sm:py-4 flex items-center">
                   <div className="rounded-full bg-white/20 p-2 mr-3">
-                    <Target className="text-yellow-300 h-6 w-6" />
+                    <Target className="text-yellow-300 h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-sm text-white/70">Learning Points</p>
-                    <p className="text-xl font-semibold">{currentUser.points}</p>
+                    <p className="text-xs sm:text-sm text-white/70">Learning Points</p>
+                    <p className="text-lg sm:text-xl font-semibold">{currentUser.points}</p>
                   </div>
                 </div>
                 
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-3 sm:py-4 flex items-center">
                   <div className="rounded-full bg-white/20 p-2 mr-3">
-                    <Trophy className="text-indigo-300 h-6 w-6" />
+                    <Trophy className="text-indigo-300 h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-sm text-white/70">Badges Earned</p>
-                    <p className="text-xl font-semibold">{currentUser.badges}</p>
+                    <p className="text-xs sm:text-sm text-white/70">Badges Earned</p>
+                    <p className="text-lg sm:text-xl font-semibold">{currentUser.badges}</p>
                   </div>
                 </div>
                 
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4 flex items-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-3 sm:py-4 flex items-center">
                   <div className="rounded-full bg-white/20 p-2 mr-3">
-                    <Star className="text-amber-300 h-6 w-6" />
+                    <Star className="text-amber-300 h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-sm text-white/70">Day Streak</p>
-                    <p className="text-xl font-semibold">{currentUser.streak.days}</p>
+                    <p className="text-xs sm:text-sm text-white/70">Day Streak</p>
+                    <p className="text-lg sm:text-xl font-semibold">{currentUser.streak.days}</p>
                   </div>
                 </div>
               </div>

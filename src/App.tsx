@@ -94,7 +94,7 @@ const App = () => (
                   <Route 
                     path="/editor" 
                     element={
-                      <ProtectedRoute requiredPermission="create_documents">
+                      <ProtectedRoute>
                         <GraphicalEditor />
                       </ProtectedRoute>
                     } 

@@ -1,13 +1,14 @@
 /**
  * Visual Editor Sidebar with Templates and AI Chat
- * Simplified sidebar specifically for MermaidVisualEditor
+ * Modern, professional design with AuditReady theme system
  */
 
 import React, { useState } from 'react';
-import { Grid3X3, Brain, PanelLeftClose } from 'lucide-react';
-import { GlassButton, GlassPanel, MermaidDesignTokens } from '../ui';
-import { MermaidTemplatePanel } from './MermaidTemplatePanel';
+import { Grid3X3, Brain, PanelLeftClose, X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { ModernTemplateGallery } from './ModernTemplateGallery';
 import ConversationalAI from './ConversationalAI';
+import { AuditReadyThemes } from '../ui/design-system/AuditReadyDesignSystem';
 
 interface VisualEditorSidebarProps {
   isVisible: boolean;
@@ -18,6 +19,7 @@ interface VisualEditorSidebarProps {
   onReactFlowAdd?: (nodes: any[], edges: any[]) => void; // New: additive mode
   currentNodes?: any[]; // Current nodes in the editor
   currentEdges?: any[]; // Current edges in the editor
+  currentTheme?: string;
 }
 
 type TabType = 'ai' | 'templates';
@@ -30,92 +32,81 @@ export const VisualEditorSidebar: React.FC<VisualEditorSidebarProps> = ({
   onReactFlowGenerate,
   onReactFlowAdd,
   currentNodes = [],
-  currentEdges = []
+  currentEdges = [],
+  currentTheme = 'Executive Clean'
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('ai'); // Start with AI tab active
+  const [activeTab, setActiveTab] = useState<TabType>('templates'); // Start with templates
+  
+  const themeData = AuditReadyThemes[currentTheme as keyof typeof AuditReadyThemes] || AuditReadyThemes['Executive Clean'];
 
   if (!isVisible) return null;
 
   return (
-    <div style={{
-      width: '320px',
-      height: '100%',
-      background: MermaidDesignTokens.colors.glass.secondary,
-      backdropFilter: MermaidDesignTokens.backdropBlur.xl,
-      borderLeft: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-      position: 'relative'
-    }}>
+    <div 
+      className="flex flex-col h-full overflow-hidden relative shadow-lg"
+      style={{
+        width: '380px',
+        background: themeData.colors.primary,
+        borderRight: `1px solid ${themeData.colors.border}`
+      }}
+    >
       {/* Hide Panel Button */}
       {onHide && (
-        <div style={{
-          position: 'absolute',
-          right: '-16px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 1001
-        }}>
-          <GlassButton
-            variant="ghost"
+        <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-50">
+          <Button
+            variant="outline"
             size="sm"
-            icon={<PanelLeftClose size={16} />}
             onClick={onHide}
-            title="Hide Sidebar Panel"
-            style={{
-              background: MermaidDesignTokens.colors.glass.secondary,
-              border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
-              borderRadius: '50%',
-              width: '36px',
-              height: '36px',
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: MermaidDesignTokens.shadows.glass.md
-            }}
-          />
+            className="w-8 h-8 p-0 rounded-full bg-white shadow-md border-gray-300 hover:bg-gray-50"
+          >
+            <X className="h-4 w-4 text-gray-600" />
+          </Button>
         </div>
       )}
 
-      {/* Tab Header */}
-      <GlassPanel variant="elevated" padding={3} style={{
-        borderRadius: 0,
-        borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
-        display: 'flex',
-        gap: MermaidDesignTokens.spacing[1]
-      }}>
-        <GlassButton
-          variant={activeTab === 'ai' ? 'primary' : 'ghost'}
+      {/* Modern Tab Header */}
+      <div 
+        className="flex p-2 border-b"
+        style={{ borderColor: themeData.colors.border }}
+      >
+        <Button
+          variant={activeTab === 'templates' ? 'default' : 'ghost'}
           size="sm"
-          icon={<Brain size={16} />}
-          onClick={() => setActiveTab('ai')}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm
-          }}
-        >
-          AI Assistant
-        </GlassButton>
-        <GlassButton
-          variant={activeTab === 'templates' ? 'primary' : 'ghost'}
-          size="sm"
-          icon={<Grid3X3 size={16} />}
           onClick={() => setActiveTab('templates')}
+          className="flex-1 justify-center text-sm"
           style={{
-            flex: 1,
-            justifyContent: 'center',
-            fontSize: MermaidDesignTokens.typography.fontSize.sm
+            backgroundColor: activeTab === 'templates' ? themeData.colors.accent : 'transparent',
+            color: activeTab === 'templates' ? 'white' : themeData.colors.text.secondary
           }}
         >
+          <Grid3X3 className="h-4 w-4 mr-2" />
           Templates
-        </GlassButton>
-      </GlassPanel>
+        </Button>
+        <Button
+          variant={activeTab === 'ai' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('ai')}
+          className="flex-1 justify-center text-sm ml-1"
+          style={{
+            backgroundColor: activeTab === 'ai' ? themeData.colors.accent : 'transparent',
+            color: activeTab === 'ai' ? 'white' : themeData.colors.text.secondary
+          }}
+        >
+          <Brain className="h-4 w-4 mr-2" />
+          AI Assistant
+        </Button>
+      </div>
 
-      {/* Tab Content - Full height panels that manage their own layout */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      {/* Tab Content */}
+      <div className="flex-1 overflow-hidden">
+        {/* Templates Panel */}
+        {activeTab === 'templates' && (
+          <ModernTemplateGallery
+            onTemplateSelect={onTemplateSelect || (() => {})}
+            currentTheme={currentTheme}
+          />
+        )}
+
         {/* AI Panel */}
         {activeTab === 'ai' && (
           <ConversationalAI
@@ -123,13 +114,8 @@ export const VisualEditorSidebar: React.FC<VisualEditorSidebarProps> = ({
             onDiagramGenerate={onDiagramGenerate}
             onReactFlowGenerate={(nodes, edges) => {
               console.log('VisualEditorSidebar - Received onReactFlowGenerate call with:', { nodes: nodes.length, edges: edges.length });
-              console.log('VisualEditorSidebar - Nodes:', nodes);
-              console.log('VisualEditorSidebar - Edges:', edges);
               if (onReactFlowGenerate) {
-                console.log('VisualEditorSidebar - Calling parent onReactFlowGenerate');
                 onReactFlowGenerate(nodes, edges);
-              } else {
-                console.error('VisualEditorSidebar - onReactFlowGenerate is not available!');
               }
             }}
             onReactFlowAdd={onReactFlowAdd}
@@ -137,28 +123,6 @@ export const VisualEditorSidebar: React.FC<VisualEditorSidebarProps> = ({
             currentEdges={currentEdges}
             showHeader={false}
           />
-        )}
-
-        {/* Templates Panel */}
-        {activeTab === 'templates' && (
-          <div style={{
-            height: '100%',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            {/* Hide the original panel borders and recreate just the content */}
-            <div style={{ 
-              flex: 1, 
-              overflow: 'hidden',
-              marginTop: '-1px' // Hide the top border from MermaidTemplatePanel
-            }}>
-              <MermaidTemplatePanel
-                isVisible={true}
-                onTemplateSelect={onTemplateSelect || (() => {})}
-              />
-            </div>
-          </div>
         )}
       </div>
     </div>

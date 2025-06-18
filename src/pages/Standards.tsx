@@ -393,15 +393,16 @@ const Standards = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 sm:px-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">Standards & Regulations</h1>
-        <div className="flex gap-2">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Standards & Regulations</h1>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Dialog open={isSOADialogOpen} onOpenChange={setIsSOADialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="w-full sm:w-auto">
                 <ClipboardCheck className="h-4 w-4 mr-2" />
-                Statement of Applicability
+                <span className="hidden sm:inline">Statement of Applicability</span>
+                <span className="sm:hidden">SoA</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col">
@@ -426,9 +427,10 @@ const Standards = () => {
           
           <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Library className="h-4 w-4 mr-2" />
-                Add from Library
+                <span className="hidden sm:inline">Add from Library</span>
+                <span className="sm:hidden">Library</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[800px] max-h-[80vh]">
@@ -462,9 +464,10 @@ const Standards = () => {
 
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
-                Create Standard
+                <span className="hidden sm:inline">Create Standard</span>
+                <span className="sm:hidden">Create</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
@@ -480,8 +483,8 @@ const Standards = () => {
         </div>
       </div>
       
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative w-full sm:w-auto sm:flex-1">
+      <div className="flex flex-col gap-4">
+        <div className="relative w-full">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search standards..."
@@ -495,7 +498,7 @@ const Standards = () => {
             value={filterType}
             onValueChange={(value) => setFilterType(value as string)}
           >
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>

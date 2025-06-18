@@ -31,7 +31,9 @@ import {
   Person as PersonIcon,
   SmartToy as BotIcon,
   Warning as WarningIcon,
-  Brush as BrushIcon
+  Brush as BrushIcon,
+  AutoAwesome as AIIcon,
+  Edit as EditIcon
 } from '@mui/icons-material';
 
 // Import docx and file-saver
@@ -133,9 +135,9 @@ const documentTypes: DocumentType[] = [
   },
   {
     id: 'create-custom',
-    name: 'Mermaid Graphical Editor',
-    description: 'Create stunning professional diagrams with our new Mermaid.js editor - featuring 14+ diagram types, glassmorphic design, audit-specific themes, and modern interface',
-    icon: <BrushIcon />,
+    name: 'AR Editor',
+    description: 'Create stunning professional diagrams with our new AuditReady Editor - featuring 14+ diagram types, modern design, audit-specific themes, and AI-powered workflow creation',
+    icon: <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><BrushIcon /><AIIcon sx={{ fontSize: '0.9em' }} /></Box>,
     initialQuestions: [
       'What type of diagram would you like to create? (Flowchart, Sequence, Gantt, etc.)',
       'Would you prefer to start with a template or write Mermaid syntax?',

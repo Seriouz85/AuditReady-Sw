@@ -1,7 +1,8 @@
 /**
- * Mermaid Visual Editor - Following Design Inspiration
- * Clean white & blue theme with left template panel
- * No visible code - pure visual interface
+ * AuditReady Editor - Professional Diagram Designer
+ * Modern, clean design with professional light themes
+ * Canvas-like editing experience for cybersecurity professionals
+ * AI-powered intelligent diagram creation
  */
 
 import React, { useState } from 'react';
@@ -14,22 +15,27 @@ import {
   AnimationProvider,
   MermaidDesignTokens
 } from '../ui';
-import { MarkerType } from 'reactflow';
+import { MarkerType, ReactFlowProvider } from 'reactflow';
 import { InteractiveMermaidEditor } from './InteractiveMermaidEditor';
 import { VisualEditorSidebar } from './VisualEditorSidebar';
 import { SaveExportModal } from './SaveExportModal';
+import { ModernEditorHeader } from './ModernEditorHeader';
+import { AuditReadyThemes, getThemeColors } from '../ui/design-system/AuditReadyDesignSystem';
 
 interface MermaidVisualEditorProps {
   showBackButton?: boolean;
   onBack?: () => void;
+  designId?: string;
 }
 
 export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
   showBackButton = true,
-  onBack
+  onBack,
+  designId
 }) => {
   // State Management
   const [showLeftPanel, setShowLeftPanel] = useState(true);
+  const [currentTheme, setCurrentTheme] = useState('Executive Clean');
   const [diagramText, setDiagramText] = useState(`flowchart TD
     A[Start Your Secure Design Journey] --> B[Select Template]
     B --> C[Customize Design]
@@ -40,9 +46,9 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
     style C fill:#60a5fa,stroke:#3b82f6,stroke-width:2px,color:#fff
     style D fill:#93c5fd,stroke:#60a5fa,stroke-width:2px,color:#fff`);
   const [showSaveExportModal, setShowSaveExportModal] = useState(false);
-  const [projectName, setProjectName] = useState('');
+  const [projectName, setProjectName] = useState('Untitled Diagram');
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
-  const [canvasBackground, setCanvasBackground] = useState('#f8fafc');
+  const [canvasBackground, setCanvasBackground] = useState('#fefefe');
   const [currentNodes, setCurrentNodes] = useState<any[]>([]);
   const [currentEdges, setCurrentEdges] = useState<any[]>([]);
   
@@ -181,8 +187,8 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
       setCurrentEdges([]);
       setDiagramText('');
       
-      // Reset canvas background to default
-      setCanvasBackground('#f8fafc');
+      // Reset canvas background to current theme default
+      setCanvasBackground(currentThemeData.canvas.background);
     }
   };
 
@@ -256,106 +262,47 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
     }
   };
 
+  // Theme management
+  const currentThemeData = AuditReadyThemes[currentTheme as keyof typeof AuditReadyThemes] || AuditReadyThemes['Executive Clean'];
+
+  const handleThemeChange = (newTheme: string) => {
+    setCurrentTheme(newTheme);
+    const themeData = AuditReadyThemes[newTheme as keyof typeof AuditReadyThemes];
+    if (themeData) {
+      setCanvasBackground(themeData.canvas.background);
+    }
+  };
+
+  const handleSave = () => {
+    setShowSaveExportModal(true);
+  };
+
+  const handleExport = () => {
+    setShowSaveExportModal(true);
+  };
+
   return (
-    <AnimationProvider>
-      <div style={{
-        height: '100vh',
-        width: '100vw',
-        background: MermaidDesignTokens.colors.primary.gradient,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden'
-      }}>
-        {/* Header */}
-        <GlassPanel variant="elevated" padding={4} style={{
-          borderRadius: 0,
-          borderBottom: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
+    <ReactFlowProvider>
+      <AnimationProvider>
+        <div style={{
+          height: '100vh',
+          width: '100vw',
+          background: currentThemeData.colors.primary,
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          minHeight: '64px'
+          flexDirection: 'column',
+          overflow: 'hidden'
         }}>
-          {/* Left side */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: MermaidDesignTokens.spacing[4] }}>
-            {/* Clear Button - Far left as requested */}
-            <GlassButton
-              variant="ghost"
-              size="sm"
-              icon={<Trash2 size={16} />}
-              onClick={handleClearCanvas}
-              title="Clear Canvas - Remove all content"
-              style={{ 
-                color: MermaidDesignTokens.colors.semantic.error[500],
-                marginRight: MermaidDesignTokens.spacing[2]
-              }}
-            >
-              Clear
-            </GlassButton>
-            
-            {showBackButton && (
-              <GlassButton
-                variant="ghost"
-                size="sm"
-                icon={<ArrowLeft size={16} />}
-                onClick={onBack}
-              >
-                Back
-              </GlassButton>
-            )}
-
-            <div>
-              <h1 style={{
-                fontSize: MermaidDesignTokens.typography.fontSize.xl,
-                fontWeight: MermaidDesignTokens.typography.fontWeight.bold,
-                color: MermaidDesignTokens.colors.text.primary,
-                margin: 0
-              }}>
-                AI Security Architect
-              </h1>
-              <p style={{
-                fontSize: MermaidDesignTokens.typography.fontSize.sm,
-                color: MermaidDesignTokens.colors.text.secondary,
-                margin: 0
-              }}>
-                Leverage AI to visualize your security posture
-              </p>
-            </div>
-          </div>
-
-          {/* Center - Title */}
-          <div style={{ textAlign: 'center' }}>
-            <h2 style={{
-              fontSize: MermaidDesignTokens.typography.fontSize.lg,
-              fontWeight: MermaidDesignTokens.typography.fontWeight.semibold,
-              color: MermaidDesignTokens.colors.text.primary,
-              margin: 0
-            }}>
-              Visual Process Designer
-            </h2>
-          </div>
-
-          {/* Right side */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: MermaidDesignTokens.spacing[2] }}>
-            <GlassButton
-              variant="ghost"
-              size="sm"
-              icon={<FolderOpen size={16} />}
-              onClick={() => setShowSaveExportModal(true)}
-              title="Open Project"
-            >
-              Open
-            </GlassButton>
-            <GlassButton
-              variant="primary"
-              size="sm"
-              icon={<Save size={16} />}
-              onClick={() => setShowSaveExportModal(true)}
-              title="Save & Export Project"
-            >
-              Save
-            </GlassButton>
-          </div>
-        </GlassPanel>
+        {/* Modern Professional Header */}
+        <ModernEditorHeader
+          projectName={projectName}
+          onBack={onBack}
+          onSave={handleSave}
+          onExport={handleExport}
+          onThemeChange={handleThemeChange}
+          currentTheme={currentTheme}
+          showBackButton={showBackButton}
+          canvasBackground={canvasBackground}
+        />
 
         {/* Main Content */}
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
@@ -375,8 +322,8 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
                 onClick={() => setShowLeftPanel(true)}
                 title="Show Sidebar Panel"
                 style={{
-                  background: MermaidDesignTokens.colors.glass.secondary,
-                  border: `1px solid ${MermaidDesignTokens.colors.glass.border}`,
+                  background: currentThemeData.colors.primary,
+                  border: `1px solid ${currentThemeData.colors.border}`,
                   borderRadius: '50%',
                   width: '36px',
                   height: '36px',
@@ -384,7 +331,8 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: MermaidDesignTokens.shadows.glass.md
+                  boxShadow: `0 4px 6px ${currentThemeData.colors.shadow}`,
+                  color: currentThemeData.colors.text.secondary
                 }}
               />
             </div>
@@ -394,6 +342,7 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
           <VisualEditorSidebar
             isVisible={showLeftPanel}
             onHide={() => setShowLeftPanel(false)}
+            currentTheme={currentTheme}
             onTemplateSelect={(template) => {
               setDiagramText(template.code);
               // Also create React Flow nodes based on template
@@ -459,15 +408,22 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
             currentEdges={currentEdges}
           />
 
-          {/* Main Canvas Area - Interactive Only */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* Main Canvas Area - Interactive Mermaid Editor */}
+          <div style={{ 
+            flex: 1, 
+            display: 'flex', 
+            flexDirection: 'column',
+            background: currentThemeData.canvas.background
+          }}>
             <InteractiveMermaidEditor
               onMermaidCodeChange={(code) => {
                 setDiagramText(code);
               }}
               onReactFlowInstanceChange={setReactFlowInstance}
               canvasBackground={canvasBackground}
-              onCanvasBackgroundChange={setCanvasBackground}
+              onCanvasBackgroundChange={(newBg) => {
+                setCanvasBackground(newBg);
+              }}
               onNodesChange={(nodes) => {
                 setCurrentNodes(nodes);
               }}
@@ -521,8 +477,9 @@ export const MermaidVisualEditor: React.FC<MermaidVisualEditorProps> = ({
           }}
           reactFlowInstance={reactFlowInstance}
         />
-      </div>
-    </AnimationProvider>
+        </div>
+      </AnimationProvider>
+    </ReactFlowProvider>
   );
 };
 

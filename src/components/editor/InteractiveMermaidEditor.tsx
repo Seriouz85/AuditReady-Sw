@@ -652,19 +652,19 @@ const edgeTypes = {
   // Use default edge types from React Flow
 };
 
-// Initial nodes with proper default colors
+// Initial nodes with proper default colors - matching expected flow
 const initialNodes: Node[] = [
   {
     id: '1',
     type: 'custom',
     position: { x: 200, y: 80 },
     data: {
-      label: 'Start Process',
+      label: 'Start Your Secure Design Journey',
       shape: 'rectangle',
-      fillColor: '#f8fafc',
-      strokeColor: '#2563eb',
+      fillColor: '#2563eb',
+      strokeColor: '#1d4ed8',
       strokeWidth: 2,
-      textColor: '#1e293b',
+      textColor: '#fff',
       onLabelChange: () => {},
       onUpdate: () => {}
     }
@@ -672,14 +672,14 @@ const initialNodes: Node[] = [
   {
     id: '2',
     type: 'custom',
-    position: { x: 200, y: 180 },
+    position: { x: 200, y: 200 },
     data: {
-      label: 'Decision Point',
-      shape: 'diamond',
-      fillColor: '#f8fafc',
-      strokeColor: '#f59e0b',
+      label: 'Select Template',
+      shape: 'rectangle',
+      fillColor: '#3b82f6',
+      strokeColor: '#2563eb',
       strokeWidth: 2,
-      textColor: '#1e293b',
+      textColor: '#fff',
       onLabelChange: () => {},
       onUpdate: () => {}
     }
@@ -687,14 +687,14 @@ const initialNodes: Node[] = [
   {
     id: '3',
     type: 'custom',
-    position: { x: 100, y: 280 },
+    position: { x: 200, y: 320 },
     data: {
-      label: 'Process A',
+      label: 'Customize Design',
       shape: 'rectangle',
-      fillColor: '#f8fafc',
-      strokeColor: '#2563eb',
+      fillColor: '#60a5fa',
+      strokeColor: '#3b82f6',
       strokeWidth: 2,
-      textColor: '#1e293b',
+      textColor: '#fff',
       onLabelChange: () => {},
       onUpdate: () => {}
     }
@@ -702,14 +702,14 @@ const initialNodes: Node[] = [
   {
     id: '4',
     type: 'custom',
-    position: { x: 300, y: 280 },
+    position: { x: 200, y: 440 },
     data: {
-      label: 'Process B',
+      label: 'Export & Share',
       shape: 'rectangle',
-      fillColor: '#f8fafc',
-      strokeColor: '#2563eb',
+      fillColor: '#93c5fd',
+      strokeColor: '#60a5fa',
       strokeWidth: 2,
-      textColor: '#1e293b',
+      textColor: '#fff',
       onLabelChange: () => {},
       onUpdate: () => {}
     }
@@ -735,9 +735,8 @@ const initialEdges: Edge[] = [
     id: 'e2-3', 
     source: '2', 
     target: '3', 
-    sourceHandle: 'left-source',
+    sourceHandle: 'bottom-source',
     targetHandle: 'top-target',
-    label: 'Yes',
     style: { stroke: '#1e293b', strokeWidth: 2 },
     markerEnd: {
       type: MarkerType.ArrowClosed,
@@ -745,12 +744,11 @@ const initialEdges: Edge[] = [
     }
   },
   { 
-    id: 'e2-4', 
-    source: '2', 
+    id: 'e3-4', 
+    source: '3', 
     target: '4', 
-    sourceHandle: 'right-source',
+    sourceHandle: 'bottom-source',
     targetHandle: 'top-target',
-    label: 'No',
     style: { stroke: '#1e293b', strokeWidth: 2 },
     markerEnd: {
       type: MarkerType.ArrowClosed,
