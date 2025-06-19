@@ -68,52 +68,77 @@ export interface Subscription {
 export class StripeService {
   // Subscription tier definitions
   static readonly TIERS: Record<string, SubscriptionTier> = {
-    starter: {
-      id: 'starter',
-      name: 'Starter',
-      price_monthly: 29,
-      price_yearly: 290, // ~$24/month
+    free: {
+      id: 'free',
+      name: 'Free',
+      price_monthly: 0,
+      price_yearly: 0,
       features: [
-        'Up to 5 users',
-        '3 compliance frameworks',
-        'Basic reporting',
-        'Email support',
-        '10GB storage'
+        'Full feature access (demo)',
+        'Demo workflows',
+        'Community support',
+        'Testing environment'
       ],
-      user_limit: 5,
-      storage_limit_gb: 10,
+      user_limit: 1,
+      storage_limit_gb: 1,
+      support_level: 'community'
+    },
+    team: {
+      id: 'team',
+      name: 'Team',
+      price_monthly: 499,
+      price_yearly: 4990, // ~€416/month
+      features: [
+        'Up to 50 team members',
+        'Multi-framework compliance tracking',
+        'Team collaboration tools',
+        'Automated requirement assignments',
+        'Email notifications',
+        'Basic reporting & analytics',
+        'Email support'
+      ],
+      user_limit: 50,
+      storage_limit_gb: 100,
       support_level: 'email'
     },
-    professional: {
-      id: 'professional',
-      name: 'Professional',
-      price_monthly: 99,
-      price_yearly: 990, // ~$82.50/month
+    business: {
+      id: 'business',
+      name: 'Business',
+      price_monthly: 699,
+      price_yearly: 6990, // ~€582/month
       features: [
-        'Up to 25 users',
-        'All compliance frameworks',
+        'Everything in Team',
+        'Up to 250 team members',
+        'AuditReady Risk Management',
+        'Learning Management System',
         'Advanced reporting & analytics',
+        'Custom templates & workflows',
+        'API integrations',
         'Priority email support',
-        'API access',
-        '100GB storage'
+        'Slack/Teams integration'
       ],
-      user_limit: 25,
-      storage_limit_gb: 100,
+      user_limit: 250,
+      storage_limit_gb: 500,
       support_level: 'priority_email'
     },
     enterprise: {
       id: 'enterprise',
       name: 'Enterprise',
-      price_monthly: 299,
-      price_yearly: 2990, // ~$249/month
+      price_monthly: 999,
+      price_yearly: 9990, // ~€832/month
       features: [
-        'Unlimited users',
-        'All compliance frameworks',
-        'Custom reporting',
-        'Dedicated support manager',
-        'SSO integration',
-        'Custom integrations',
-        'Unlimited storage'
+        'Everything in Business',
+        'Unlimited team members',
+        'Phishing Simulation Tool',
+        'AuditReady AI Editor',
+        'Advanced threat detection',
+        'Custom compliance frameworks',
+        'White-label solutions',
+        'Dedicated account manager',
+        'SSO & SAML integration',
+        'On-premise deployment options',
+        '24/7 phone support',
+        'SLA guarantees'
       ],
       user_limit: -1, // Unlimited
       storage_limit_gb: -1, // Unlimited

@@ -63,7 +63,7 @@ export const supabaseAdmin = (() => {
 
 // Demo credentials for showcase purposes
 export const DEMO_EMAIL = "demo@auditready.com";
-export const DEMO_PASSWORD = "Demo123!";
+export const DEMO_PASSWORD = "AuditReady@Demo2025!";
 
 // Auth helper functions
 export const supabaseAuth = {

@@ -223,10 +223,34 @@ const PricingAssessment = () => {
   };
 
 
-  const handleSelectTier = (tierId: string) => {
-    // Store the selected tier and assessment data, then redirect to signup
+  const handleSelectTier = async (tierId: string) => {
+    // Store the selected tier and assessment data
     localStorage.setItem('auditready_assessment_data', JSON.stringify(assessmentData));
     localStorage.setItem('auditready_selected_tier', tierId);
+    
+    // Handle payment flow based on tier
+    if (tierId === 'free') {
+      // Free tier goes directly to signup
+      navigate('/signup');
+      return;
+    }
+    
+    if (tierId === 'enterprise') {
+      // Enterprise goes to contact sales
+      navigate('/contact');
+      return;
+    }
+    
+    // For paid tiers, check if Stripe is configured
+    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!publishableKey || publishableKey === 'your-stripe-publishable-key') {
+      // If Stripe not configured, go directly to signup
+      navigate('/signup');
+      return;
+    }
+    
+    // TODO: Implement guest checkout for paid tiers
+    // For now, redirect to signup (payment will happen after account creation)
     navigate('/signup');
   };
 
@@ -247,21 +271,21 @@ const PricingAssessment = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="text-center space-y-3">
-              <Building2 className={`h-14 w-14 mx-auto ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
-              <h2 className={`text-3xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+          <div className="space-y-4">
+            <div className="text-center space-y-1">
+              <Building2 className={`h-8 w-8 mx-auto ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+              <h2 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
                 Tell us about your organization
               </h2>
-              <p className={`text-lg ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
+              <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                 Help us understand your compliance needs and recommend the perfect plan
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8 mt-6">
-              <div className="space-y-6">
+            <div className="grid lg:grid-cols-3 gap-4 mt-4">
+              <div className="space-y-3">
                 <div>
-                  <label className={`text-base font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  <label className={`text-sm font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
                     Organization Name
                   </label>
                   <Input
@@ -272,15 +296,15 @@ const PricingAssessment = () => {
                       ...prev,
                       organizationName: e.target.value
                     }))}
-                    className={`mt-3 h-14 text-base ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-700 border-slate-600'}`}
+                    className={`mt-1 h-10 text-sm ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-700 border-slate-600'}`}
                   />
                 </div>
 
                 <div>
-                  <label className={`text-base font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  <label className={`text-sm font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
                     Organization Type
                   </label>
-                  <div className="grid grid-cols-1 gap-3 mt-3">
+                  <div className="grid grid-cols-1 gap-1 mt-1">
                     {organizationTypes.map((type) => (
                       <button
                         key={type.id}
@@ -288,7 +312,7 @@ const PricingAssessment = () => {
                           ...prev,
                           organizationType: type.id
                         }))}
-                        className={`p-3 text-left rounded-lg border transition-all ${
+                        className={`p-2 text-left rounded-lg border transition-all text-sm ${
                           assessmentData.organizationType === type.id
                             ? theme === 'light'
                               ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -351,7 +375,7 @@ const PricingAssessment = () => {
                           ...prev,
                           companySize: option.id
                         }))}
-                        className={`p-3 text-left rounded-lg border transition-all ${
+                        className={`p-2 text-left rounded-lg border transition-all text-sm ${
                           assessmentData.companySize === option.id
                             ? theme === 'light'
                               ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -594,13 +618,40 @@ const PricingAssessment = () => {
     <div className={`min-h-screen ${theme === 'light' ? 'bg-slate-50' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Header */}
       <div className={`border-b ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800 border-slate-700'}`}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
-            <h1 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+            <h1 className={`text-base font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
               Find Your Perfect Plan
             </h1>
           </div>
+          
+          {/* Step Progress Indicator */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    step < currentStep 
+                      ? `${theme === 'light' ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'}` 
+                      : step === currentStep 
+                      ? `${theme === 'light' ? 'bg-blue-100 text-blue-600 border-2 border-blue-600' : 'bg-blue-900/50 text-blue-400 border-2 border-blue-400'}` 
+                      : `${theme === 'light' ? 'bg-slate-100 text-slate-400' : 'bg-slate-700 text-slate-500'}`
+                  }`}>
+                    {step < currentStep ? '✓' : step}
+                  </div>
+                  {step < totalSteps && (
+                    <div className={`w-6 h-0.5 ${
+                      step < currentStep 
+                        ? `${theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'}` 
+                        : `${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'}`
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -617,36 +668,8 @@ const PricingAssessment = () => {
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="w-full mx-auto px-6 py-4">
-        <div className="flex items-center justify-center mb-8">
-          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
-            <div key={step} className="flex items-center">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
-                step < currentStep
-                  ? theme === 'light'
-                    ? 'bg-blue-600 border-blue-600 text-white'
-                    : 'bg-blue-500 border-blue-500 text-white'
-                  : step === currentStep
-                    ? theme === 'light'
-                      ? 'border-blue-600 bg-blue-50 text-blue-600'
-                      : 'border-blue-400 bg-blue-900/30 text-blue-400'
-                    : theme === 'light'
-                      ? 'border-slate-300 text-slate-400'
-                      : 'border-slate-600 text-slate-500'
-              }`}>
-                {step < currentStep ? <Check className="h-6 w-6" /> : step}
-              </div>
-              {step < totalSteps && (
-                <div className={`w-32 h-0.5 mx-6 ${
-                  step < currentStep
-                    ? theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'
-                    : theme === 'light' ? 'bg-slate-300' : 'bg-slate-600'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
+      {/* Main Content */}
+      <div className="w-full mx-auto px-6 py-2">
 
         {/* Step Content */}
         <div className="w-full max-w-7xl mx-auto px-4">

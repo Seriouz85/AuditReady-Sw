@@ -143,14 +143,19 @@ const Onboarding = () => {
   const handleComplete = async () => {
     setIsLoading(true);
     try {
-      // TODO: Save onboarding data to Supabase
-      console.log("Onboarding data:", onboardingData);
+      // Save onboarding data to localStorage for use in payment flow
+      localStorage.setItem('auditready_onboarding_data', JSON.stringify(onboardingData));
+      
+      // Get intended plan from session storage (set from pricing cards)
+      const intendedPlan = sessionStorage.getItem('intendedPlan') || 'team';
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      toast.success("Welcome to AuditReady! Your organization is ready to go.");
-      navigate("/app");
+      toast.success("Setup complete! Let's set up your subscription.");
+      
+      // Navigate to pricing assessment for payment
+      navigate('/pricing-assessment');
     } catch (error) {
       console.error("Onboarding completion failed:", error);
       toast.error("Failed to complete setup. Please try again.");
@@ -178,23 +183,23 @@ const Onboarding = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <Building2 className={`h-12 w-12 mx-auto ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
-              <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+          <div className="space-y-4">
+            <div className="text-center space-y-1">
+              <Building2 className={`h-8 w-8 mx-auto ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+              <h2 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
                 Tell us about your organization
               </h2>
-              <p className={theme === 'light' ? 'text-slate-600' : 'text-slate-300'}>
+              <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                 This helps us customize AuditReady for your needs
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
+            <div className="space-y-3">
+              <div className="space-y-1">
                 <label className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
                   Organization Size
                 </label>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-1">
                   {organizationSizes.map((size) => (
                     <button
                       key={size}
@@ -202,7 +207,7 @@ const Onboarding = () => {
                         ...prev,
                         organizationInfo: { ...prev.organizationInfo, size }
                       }))}
-                      className={`p-3 text-left rounded-lg border transition-all ${
+                      className={`p-2 text-left rounded-lg border transition-all text-sm ${
                         onboardingData.organizationInfo.size === size
                           ? theme === 'light'
                             ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -230,7 +235,7 @@ const Onboarding = () => {
                         ...prev,
                         organizationInfo: { ...prev.organizationInfo, industry }
                       }))}
-                      className={`p-3 text-left rounded-lg border transition-all ${
+                      className={`p-2 text-left rounded-lg border transition-all text-sm ${
                         onboardingData.organizationInfo.industry === industry
                           ? theme === 'light'
                             ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -432,13 +437,40 @@ const Onboarding = () => {
     <div className={`min-h-screen ${theme === 'light' ? 'bg-slate-50' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Header */}
       <div className={`border-b ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800 border-slate-700'}`}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
-            <h1 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-              AuditReady Setup
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+            <h1 className={`text-base font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+              Setup
             </h1>
           </div>
+          
+          {/* Step Progress Indicator */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    step < currentStep 
+                      ? `${theme === 'light' ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'}` 
+                      : step === currentStep 
+                      ? `${theme === 'light' ? 'bg-blue-100 text-blue-600 border-2 border-blue-600' : 'bg-blue-900/50 text-blue-400 border-2 border-blue-400'}` 
+                      : `${theme === 'light' ? 'bg-slate-100 text-slate-400' : 'bg-slate-700 text-slate-500'}`
+                  }`}>
+                    {step < currentStep ? <Check className="h-3 w-3" /> : step}
+                  </div>
+                  {step < totalSteps && (
+                    <div className={`w-6 h-0.5 ${
+                      step < currentStep 
+                        ? `${theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'}` 
+                        : `${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'}`
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          
           <div className="flex items-center gap-2">
             <ZoomToggle />
             <ThemeToggle />
@@ -446,46 +478,18 @@ const Onboarding = () => {
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-8">
-          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
-            <div key={step} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                step < currentStep
-                  ? theme === 'light'
-                    ? 'bg-blue-600 border-blue-600 text-white'
-                    : 'bg-blue-500 border-blue-500 text-white'
-                  : step === currentStep
-                    ? theme === 'light'
-                      ? 'border-blue-600 bg-blue-50 text-blue-600'
-                      : 'border-blue-400 bg-blue-900/30 text-blue-400'
-                    : theme === 'light'
-                      ? 'border-slate-300 text-slate-400'
-                      : 'border-slate-600 text-slate-500'
-              }`}>
-                {step < currentStep ? <Check className="h-5 w-5" /> : step}
-              </div>
-              {step < totalSteps && (
-                <div className={`w-24 h-0.5 mx-4 ${
-                  step < currentStep
-                    ? theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'
-                    : theme === 'light' ? 'bg-slate-300' : 'bg-slate-600'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 py-2">
 
         {/* Step Content */}
         <Card className={`w-full max-w-2xl mx-auto ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800 border-slate-700'}`}>
-          <CardContent className="p-8">
+          <CardContent className="p-6">
             {renderStepContent()}
           </CardContent>
         </Card>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-8 max-w-2xl mx-auto">
+        <div className="flex justify-between mt-4 max-w-2xl mx-auto">
           <Button
             variant="outline"
             onClick={handlePrevious}

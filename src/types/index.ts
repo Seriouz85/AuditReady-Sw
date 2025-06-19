@@ -167,3 +167,40 @@ export interface Notification {
   dueDate?: string;
   createdAt: string;
 }
+
+// Requirement Assignment types
+export interface RequirementAssignment {
+  id: string;
+  requirementId: string;
+  requirementCode: string;
+  requirementName: string;
+  standardId: string;
+  standardName: string;
+  assignedToUserId: string;
+  assignedToUserName: string;
+  assignedToUserEmail: string;
+  assignedByUserId: string;
+  assignedByUserName: string;
+  organizationId: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'overdue' | 'pending_invitation';
+  dueDate?: string;
+  assignedAt: string;
+  completedAt?: string;
+  notes?: string;
+  evidence?: string;
+}
+
+// User Activity types for the Activities page
+export interface UserActivity {
+  id: string;
+  userId: string;
+  type: 'requirement_assigned' | 'requirement_completed' | 'assessment_started' | 'assessment_completed';
+  title: string;
+  description: string;
+  entityId: string; // ID of the related entity
+  entityType: 'requirement' | 'assessment' | 'application';
+  status: 'pending' | 'in-progress' | 'completed';
+  dueDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}

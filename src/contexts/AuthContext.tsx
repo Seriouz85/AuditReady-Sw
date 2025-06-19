@@ -246,7 +246,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
 
       // Check for demo credentials first
-      if (email === 'demo@auditready.com' && password === 'Demo123!') {
+      if (email === 'demo@auditready.com' && password === 'AuditReady@Demo2025!') {
         // Use mock authentication for demo
         const { mockSignIn } = await import('@/lib/mockAuth');
         const mockUser = await mockSignIn(email, password);

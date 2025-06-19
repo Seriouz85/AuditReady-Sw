@@ -19,7 +19,7 @@ export const auth = getAuth(app);
 
 // Demo credentials for login purposes
 export const DEMO_EMAIL = "demo@auditready.com";
-export const DEMO_PASSWORD = "Demo123!";
+export const DEMO_PASSWORD = "AuditReady@Demo2025!";
 export const ADMIN_EMAIL = "admin@auditready.com";
 export const ADMIN_PASSWORD = "Admin123!";
 

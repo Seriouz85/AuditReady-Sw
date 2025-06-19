@@ -40,8 +40,8 @@ export default function Landing() {
 
   const handlePricingClick = async (tier: 'free' | 'team' | 'business' | 'enterprise') => {
     if (tier === 'free') {
-      // Free tier goes to signup
-      navigate('/signup');
+      // Free tier goes to onboarding
+      navigate('/onboarding');
       return;
     }
 
@@ -54,8 +54,8 @@ export default function Landing() {
     // Check if Stripe is configured
     const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
     if (!publishableKey || publishableKey === 'your-stripe-publishable-key') {
-      // If Stripe not configured, go to pricing flow
-      navigate('/pricing');
+      // If Stripe not configured, go to onboarding flow
+      navigate('/onboarding');
       return;
     }
 
@@ -75,10 +75,10 @@ export default function Landing() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        // Store the intended plan and redirect to signup
+        // Store the intended plan and redirect to onboarding
         sessionStorage.setItem('intendedPlan', tier);
         sessionStorage.setItem('intendedPriceId', plan.stripePriceId);
-        navigate('/signup');
+        navigate('/onboarding');
         return;
       }
 
@@ -167,7 +167,7 @@ export default function Landing() {
             <Button 
               size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 text-xs sm:text-sm font-semibold shadow-md border-2 border-blue-500/20"
-              onClick={() => navigate("/pricing")}
+              onClick={() => navigate("/onboarding")}
             >
               Get Started
             </Button>
@@ -207,7 +207,7 @@ export default function Landing() {
             <Button 
               size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-lg w-full sm:w-auto"
-              onClick={() => navigate("/pricing")}
+              onClick={() => navigate("/onboarding")}
             >
               Start Your Journey
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -610,25 +610,32 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-16 sm:py-20 px-3 sm:px-4">
+      {/* Enhanced Pricing Section */}
+      <section id="pricing" className={`py-24 px-3 sm:px-4 ${theme === 'light' ? 'bg-gradient-to-b from-slate-50 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
         <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+            <Badge variant="outline" className={`mb-6 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
               Simple, Transparent Pricing
+            </Badge>
+            <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+              Choose Your Perfect Plan
             </h2>
-            <p className={`text-lg ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} max-w-3xl mx-auto`}>
-              Choose the perfect plan for your organization. All plans include core compliance features with no hidden fees.
+            <p className={`text-xl ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} max-w-3xl mx-auto mb-8`}>
+              Scale your compliance management as your organization grows. All plans include enterprise-grade security with no hidden fees.
             </p>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${theme === 'light' ? 'bg-blue-50 text-blue-700' : 'bg-blue-900/30 text-blue-300'}`}>
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="text-sm font-medium">14-day free trial • No credit card required • Cancel anytime</span>
+            </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-full mx-auto px-2 sm:px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-full mx-auto pt-12">
             {/* Free Plan */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -637,36 +644,44 @@ export default function Landing() {
               viewport={{ once: true }}
               className="h-full"
             >
-              <Card className={`h-full text-center relative ${theme === 'light' ? 'border-slate-200 hover:border-blue-300' : 'border-slate-600 hover:border-blue-500'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
-                <CardContent className="p-8 flex flex-col h-full">
-                  <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-900/30'}`}>
-                    <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+              <Card className={`h-full relative ${theme === 'light' ? 'border-slate-200 hover:border-blue-300 bg-white' : 'border-slate-600 hover:border-blue-500 bg-slate-800'} transition-all duration-300 hover:shadow-xl flex flex-col overflow-hidden`}>
+                <CardContent className="p-6 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="text-center mb-6">
+                    <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-900/30'}`}>
+                      <Shield className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+                    </div>
+                    <h3 className={`text-xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Free</h3>
+                    <div className={`text-4xl font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>€0</div>
+                    <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>forever</p>
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Free</h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>€0</div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>forever</p>
-                  <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Test version with mock auth</p>
-                  <ul className="space-y-2 mb-6 text-left flex-1">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Full feature access</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Demo workflows</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Community support</span>
-                    </li>
-                  </ul>
+
+                  {/* Features */}
+                  <div className="flex-1 mb-6">
+                    <ul className="space-y-3 text-left">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Full feature access (demo)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Demo workflows & data</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Community support</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* CTA */}
                   <Button 
-                    className="w-full mt-auto"
+                    className="w-full"
                     variant="outline"
                     onClick={() => handlePricingClick('free')}
                     disabled={isProcessingPayment}
                   >
-                    Start Free
+                    Start Free Trial
                   </Button>
                 </CardContent>
               </Card>
@@ -680,49 +695,62 @@ export default function Landing() {
               viewport={{ once: true }}
               className="h-full"
             >
-              <Card className={`h-full text-center relative ${theme === 'light' ? 'border-blue-500 shadow-lg' : 'border-blue-400 shadow-lg'} transition-all duration-300 flex flex-col`}>
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+              <Card className={`h-full relative ${theme === 'light' ? 'border-blue-500 shadow-xl bg-white' : 'border-blue-400 shadow-xl bg-slate-800'} transition-all duration-300 flex flex-col ring-2 ring-blue-500/20`}>
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                  <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
                     Most Popular
                   </span>
                 </div>
-                <CardContent className="p-8 flex flex-col h-full">
-                  <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-blue-500`}>
-                    <Users className="h-8 w-8 text-white" />
+                <CardContent className="p-6 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="text-center mb-6 mt-2">
+                    <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                      <Users className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className={`text-xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {dynamicPlans.find(p => p.id === 'team')?.name || 'Team'}
+                    </h3>
+                    <div className={`text-4xl font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'team')?.discountedPrice || dynamicPlans.find(p => p.id === 'team')?.price || 499}`}
+                    </div>
+                    <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+                      per {dynamicPlans.find(p => p.id === 'team')?.interval || 'month'}
+                    </p>
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-                    {dynamicPlans.find(p => p.id === 'team')?.name || 'Team'}
-                  </h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-                    {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'team')?.discountedPrice || dynamicPlans.find(p => p.id === 'team')?.price || 499}`}
-                    {dynamicPlans.find(p => p.id === 'team')?.discountedPrice && (
-                      <span className="text-lg line-through text-gray-400 ml-2">€{dynamicPlans.find(p => p.id === 'team')?.price}</span>
-                    )}
+
+                  {/* Features */}
+                  <div className="flex-1 mb-6">
+                    <ul className="space-y-3 text-left">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Up to 50 team members</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Multi-framework compliance</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Team collaboration tools</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Automated assignments</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Basic reporting</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Email support</span>
+                      </li>
+                    </ul>
                   </div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
-                    per {dynamicPlans.find(p => p.id === 'team')?.interval || 'month'}
-                  </p>
-                  <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Excl. VAT • 1-50 employees</p>
-                  <ul className="space-y-2 mb-6 text-left flex-1">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>All core features</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Multi-framework support</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Team collaboration</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Email support</span>
-                    </li>
-                  </ul>
+
+                  {/* CTA */}
                   <Button 
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white mt-auto"
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                     onClick={() => handlePricingClick('team')}
                     disabled={isProcessingPayment}
                   >
@@ -740,44 +768,61 @@ export default function Landing() {
               viewport={{ once: true }}
               className="h-full"
             >
-              <Card className={`h-full text-center relative ${theme === 'light' ? 'border-slate-200 hover:border-blue-300' : 'border-slate-600 hover:border-blue-500'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
-                <CardContent className="p-8 flex flex-col h-full">
-                  <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 ${theme === 'light' ? 'bg-purple-100' : 'bg-purple-900/30'}`}>
-                    <Building2 className={`h-8 w-8 ${theme === 'light' ? 'text-purple-600' : 'text-purple-400'}`} />
+              <Card className={`h-full relative ${theme === 'light' ? 'border-purple-300 hover:border-purple-400 bg-white' : 'border-purple-400 hover:border-purple-300 bg-slate-800'} transition-all duration-300 hover:shadow-xl flex flex-col overflow-hidden`}>
+                <CardContent className="p-6 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="text-center mb-6">
+                    <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg">
+                      <Building2 className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className={`text-xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {dynamicPlans.find(p => p.id === 'business')?.name || 'Business'}
+                    </h3>
+                    <div className={`text-4xl font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'business')?.discountedPrice || dynamicPlans.find(p => p.id === 'business')?.price || 699}`}
+                    </div>
+                    <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+                      per {dynamicPlans.find(p => p.id === 'business')?.interval || 'month'}
+                    </p>
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-                    {dynamicPlans.find(p => p.id === 'business')?.name || 'Business'}
-                  </h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-                    {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'business')?.discountedPrice || dynamicPlans.find(p => p.id === 'business')?.price || 699}`}
-                    {dynamicPlans.find(p => p.id === 'business')?.discountedPrice && (
-                      <span className="text-lg line-through text-gray-400 ml-2">€{dynamicPlans.find(p => p.id === 'business')?.price}</span>
-                    )}
+
+                  {/* Features */}
+                  <div className="flex-1 mb-6">
+                    <ul className="space-y-3 text-left">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Everything in Team</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Up to 250 team members</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>AuditReady Risk Management</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>Learning Management System</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Advanced reporting</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Custom templates</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Priority support</span>
+                      </li>
+                    </ul>
                   </div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
-                    per {dynamicPlans.find(p => p.id === 'business')?.interval || 'month'}
-                  </p>
-                  <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Excl. VAT • 50-1000 employees</p>
-                  <ul className="space-y-2 mb-6 text-left flex-1">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Everything in Team</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Custom templates</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>API integrations</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Priority support</span>
-                    </li>
-                  </ul>
+
+                  {/* CTA */}
                   <Button 
-                    className="w-full mt-auto"
+                    className="w-full"
                     variant="outline"
                     onClick={() => handlePricingClick('business')}
                     disabled={isProcessingPayment}
@@ -796,45 +841,66 @@ export default function Landing() {
               viewport={{ once: true }}
               className="h-full"
             >
-              <Card className={`h-full text-center relative ${theme === 'light' ? 'border-slate-200 hover:border-blue-300' : 'border-slate-600 hover:border-blue-500'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
-                <CardContent className="p-8 flex flex-col h-full">
-                  <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 ${theme === 'light' ? 'bg-amber-100' : 'bg-amber-900/30'}`}>
-                    <Crown className={`h-8 w-8 ${theme === 'light' ? 'text-amber-600' : 'text-amber-400'}`} />
+              <Card className={`h-full relative ${theme === 'light' ? 'border-amber-300 hover:border-amber-400 bg-white' : 'border-amber-400 hover:border-amber-300 bg-slate-800'} transition-all duration-300 hover:shadow-xl flex flex-col overflow-hidden`}>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
+                <CardContent className="p-6 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="text-center mb-6">
+                    <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg">
+                      <Crown className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className={`text-xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {dynamicPlans.find(p => p.id === 'enterprise')?.name || 'Enterprise'}
+                    </h3>
+                    <div className={`text-4xl font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'enterprise')?.discountedPrice || dynamicPlans.find(p => p.id === 'enterprise')?.price || 999}`}
+                    </div>
+                    <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+                      per {dynamicPlans.find(p => p.id === 'enterprise')?.interval || 'month'}
+                    </p>
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-                    {dynamicPlans.find(p => p.id === 'enterprise')?.name || 'Enterprise'}
-                  </h3>
-                  <div className={`text-4xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
-                    {pricingLoading ? '...' : `€${dynamicPlans.find(p => p.id === 'enterprise')?.discountedPrice || dynamicPlans.find(p => p.id === 'enterprise')?.price || 999}`}
-                    {dynamicPlans.find(p => p.id === 'enterprise')?.discountedPrice && (
-                      <span className="text-lg line-through text-gray-400 ml-2">€{dynamicPlans.find(p => p.id === 'enterprise')?.price}</span>
-                    )}
+
+                  {/* Features */}
+                  <div className="flex-1 mb-6">
+                    <ul className="space-y-3 text-left">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Everything in Business</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Unlimited team members</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-amber-700' : 'text-amber-300'}`}>Phishing Simulation Tool</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-amber-700' : 'text-amber-300'}`}>AuditReady AI Editor</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Advanced threat detection</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>White-label solutions</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Dedicated account manager</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>24/7 phone support & SLA</span>
+                      </li>
+                    </ul>
                   </div>
-                  <p className={`text-base mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
-                    per {dynamicPlans.find(p => p.id === 'enterprise')?.interval || 'month'}
-                  </p>
-                  <p className={`text-sm mb-6 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Excl. VAT • 1000+ employees</p>
-                  <ul className="space-y-2 mb-6 text-left flex-1">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Everything in Business</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>White-label solution</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Dedicated support</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>24/7 phone support</span>
-                    </li>
-                  </ul>
+
+                  {/* CTA */}
                   <Button 
-                    className="w-full mt-auto"
-                    variant="outline"
+                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg"
                     onClick={() => handlePricingClick('enterprise')}
                     disabled={isProcessingPayment}
                   >
@@ -889,7 +955,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-blue-50 px-8"
-                  onClick={() => navigate("/pricing")}
+                  onClick={() => navigate("/onboarding")}
                 >
                   Get Started Now
                 </Button>

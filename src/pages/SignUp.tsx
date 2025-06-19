@@ -271,13 +271,13 @@ const SignUp = () => {
   return (
     <div className={`min-h-screen flex ${theme === 'light' ? 'bg-slate-100' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Left side - Sign Up Form */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
+      <div className={`flex-1 flex flex-col items-center justify-start py-8 px-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
         <div className="w-full max-w-lg ml-auto mr-8">
           {/* Logo and Theme Toggle */}
-          <div className="w-full flex justify-between items-center mb-8">
+          <div className="w-full flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
-              <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
-              <span className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
+              <Shield className={`h-7 w-7 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+              <span className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
             </div>
             <div className="flex items-center gap-2">
               <ZoomToggle />
@@ -285,7 +285,7 @@ const SignUp = () => {
             </div>
           </div>
           {/* Divider */}
-          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-8`} />
+          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-6`} />
           
           {/* Selected Plan Summary */}
           {selectedTier && (
@@ -314,7 +314,7 @@ const SignUp = () => {
           )}
           
           {/* Sign Up Form */}
-          <div className={`w-full space-y-6 p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-700/70 border-slate-600'}`}> 
+          <div className={`w-full space-y-4 p-6 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-700/70 border-slate-600'}`}> 
             <div className="text-center space-y-2">
               <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Create Your Account</h1>
               <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Start your compliance journey with AuditReady</p>
@@ -335,7 +335,7 @@ const SignUp = () => {
               </div>
             )}
 
-            <form onSubmit={handleSignUp} className="space-y-4">
+            <form onSubmit={handleSignUp} className="space-y-3">
               {/* Personal Information */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

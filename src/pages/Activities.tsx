@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/utils/toast";
+import { requirementAssignmentService } from "@/services/assignments/RequirementAssignmentService";
+import { RequirementAssignment, UserActivity } from "@/types";
 import { 
   CheckCircle, Clock, AlertCircle, Calendar, Search, Filter,
   FileText, User, Tag, ChevronRight, Target
@@ -134,30 +136,102 @@ const Activities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Use demo data for demo accounts, real data for production accounts
+  // Load assignments and activities for the logged-in user
   useEffect(() => {
-    if (isDemo) {
-      setAssignments(demoAssignments);
-      setActivities(demoActivities);
-      setLoading(false);
-    } else {
-      // Load real data from API
+    if (user?.id) {
       loadUserData();
     }
-  }, [isDemo, user]);
+  }, [user?.id, isDemo]);
 
   const loadUserData = async () => {
     try {
       setLoading(true);
-      // TODO: Implement API calls to load real user assignments and activities
-      // const assignmentsData = await userAssignmentsService.getMyAssignments();
-      // const activitiesData = await userActivitiesService.getMyActivities();
-      // setAssignments(assignmentsData);
-      // setActivities(activitiesData);
       
-      // For now, use empty arrays for non-demo accounts
-      setAssignments([]);
-      setActivities([]);
+      if (isDemo) {
+        // Load demo data including any new assignments from our service
+        const demoOrgId = 'demo-org-1';
+        const demoUserId = user?.id || 'demo-user-1';
+        
+        // Get assignments from our service
+        const serviceAssignments = await requirementAssignmentService.getUserAssignments(demoUserId, demoOrgId);
+        
+        // Convert to Activity page format
+        const convertedAssignments = serviceAssignments.map(assignment => ({
+          id: assignment.id,
+          requirementId: assignment.requirementId,
+          requirementCode: assignment.requirementCode,
+          requirementName: assignment.requirementName,
+          requirementDescription: assignment.requirementName,
+          standardId: assignment.standardId,
+          standardName: assignment.standardName,
+          status: assignment.status === 'pending' ? 'assigned' as const : assignment.status as 'assigned' | 'in_progress' | 'completed' | 'overdue',
+          priority: 'medium' as const,
+          dueDate: assignment.dueDate,
+          assignedBy: assignment.assignedByUserName,
+          assignedAt: assignment.assignedAt,
+          notes: assignment.notes
+        }));
+
+        // Get activities from our service
+        const serviceActivities = await requirementAssignmentService.getUserActivities(demoUserId);
+        
+        // Convert to Activity page format
+        const convertedActivities = serviceActivities.map(activity => ({
+          id: activity.id,
+          activityType: activity.type === 'requirement_assigned' ? 'assignment' as const : 'completion' as const,
+          entityType: activity.entityType,
+          entityId: activity.entityId,
+          description: activity.description,
+          createdAt: activity.createdAt,
+          metadata: {
+            title: activity.title,
+            status: activity.status
+          }
+        }));
+
+        // Combine with existing demo data
+        setAssignments([...demoAssignments, ...convertedAssignments]);
+        setActivities([...demoActivities, ...convertedActivities]);
+      } else {
+        // For real accounts, load from assignment service
+        if (user?.id && organization?.id) {
+          const userAssignments = await requirementAssignmentService.getUserAssignments(user.id, organization.id);
+          const userActivities = await requirementAssignmentService.getUserActivities(user.id);
+          
+          // Convert to Activity page format
+          const convertedAssignments = userAssignments.map(assignment => ({
+            id: assignment.id,
+            requirementId: assignment.requirementId,
+            requirementCode: assignment.requirementCode,
+            requirementName: assignment.requirementName,
+            requirementDescription: assignment.requirementName,
+            standardId: assignment.standardId,
+            standardName: assignment.standardName,
+            status: assignment.status === 'pending' ? 'assigned' as const : assignment.status as 'assigned' | 'in_progress' | 'completed' | 'overdue',
+            priority: 'medium' as const,
+            dueDate: assignment.dueDate,
+            assignedBy: assignment.assignedByUserName,
+            assignedAt: assignment.assignedAt,
+            notes: assignment.notes
+          }));
+
+          const convertedActivities = userActivities.map(activity => ({
+            id: activity.id,
+            activityType: activity.type === 'requirement_assigned' ? 'assignment' as const : 'completion' as const,
+            entityType: activity.entityType,
+            entityId: activity.entityId,
+            description: activity.description,
+            createdAt: activity.createdAt,
+            metadata: {
+              title: activity.title,
+              status: activity.status
+            }
+          }));
+
+          setAssignments(convertedAssignments);
+          setActivities(convertedActivities);
+        }
+      }
     } catch (error) {
       console.error('Error loading user data:', error);
       toast.error('Failed to load activities');
@@ -168,17 +242,26 @@ const Activities = () => {
 
   const handleStatusUpdate = async (assignmentId: string, newStatus: string) => {
     try {
-      if (isDemo) {
-        // Update demo data
+      // Update using our assignment service
+      const updatedAssignment = await requirementAssignmentService.updateAssignmentStatus(
+        assignmentId,
+        newStatus as RequirementAssignment['status']
+      );
+
+      if (updatedAssignment) {
+        // Update local state
         setAssignments(prev => prev.map(assignment => 
           assignment.id === assignmentId 
             ? { ...assignment, status: newStatus as any }
             : assignment
         ));
+        
+        // Reload activities to show any new activity records
+        await loadUserData();
+        
         toast.success('Status updated successfully');
       } else {
-        // TODO: API call to update real assignment status
-        toast.success('Status updated successfully');
+        toast.error('Assignment not found');
       }
     } catch (error) {
       console.error('Error updating status:', error);

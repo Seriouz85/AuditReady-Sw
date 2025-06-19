@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "@/utils/toast";
 import { formatDate } from "@/utils/formatDate";
@@ -21,11 +21,13 @@ import { RequirementAssignmentModal } from "@/components/settings/RequirementAss
 import { 
   Download, Save, Upload, UserPlus, Settings as SettingsIcon, Shield, 
   Key, Activity, Trash2, Edit, Eye, Clock,
-  CheckCircle, XCircle, Loader, ListChecks, Search, Filter, Tag
+  CheckCircle, XCircle, Loader, ListChecks, Search, Filter, Tag, Mail
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRequirementsService } from "@/services/requirements/RequirementsService";
+import { requirementAssignmentService } from "@/services/assignments/RequirementAssignmentService";
+import { RequirementAssignment } from "@/types";
 
 // Demo data for demo accounts only
 const demoUsers = [
@@ -71,6 +73,12 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [standardFilter, setStandardFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [inviteForm, setInviteForm] = useState({
+    email: '',
+    name: '',
+    role: 'analyst'
+  });
 
   useEffect(() => {
     loadRequirements();
@@ -80,10 +88,25 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
     try {
       setLoading(true);
       if (isDemo) {
-        // Use mock data for demo
-        const mockRequirements = [
+        // Use mock data for demo - load organization-specific requirements
+        const mockRequirements = await requirementAssignmentService.getOrganizationRequirements('demo-org-1');
+        
+        // Convert to the expected format for the UI
+        const formattedRequirements = mockRequirements.map(req => ({
+          id: req.id,
+          code: req.code,
+          name: req.name,
+          standardId: req.standardId,
+          standardName: getStandardName(req.standardId),
+          tags: req.tags || [],
+          status: req.status
+        }));
+        
+        setRequirements([
+          ...formattedRequirements,
+          // Add some additional demo requirements
           {
-            id: 'req-1',
+            id: 'req-demo-1',
             code: 'A.5.1',
             name: 'Policies for information security',
             standardId: 'iso-27002-2022',
@@ -92,7 +115,7 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
             status: 'not-fulfilled'
           },
           {
-            id: 'req-2',
+            id: 'req-demo-2',
             code: 'A.6.1',
             name: 'Screening',
             standardId: 'iso-27002-2022',
@@ -136,8 +159,8 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
             tags: ['tag-physical', 'tag-organization'],
             status: 'not-fulfilled'
           }
-        ];
-        setRequirements(mockRequirements);
+        ]);
+        // Note: Removed the redundant setRequirements(mockRequirements) call
       } else {
         const data = await requirementsService.getOrganizationRequirements();
         setRequirements(data);
@@ -207,7 +230,19 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
     }
   };
 
-  const handleAssign = () => {
+  // Helper function to get standard name
+  const getStandardName = (standardId: string): string => {
+    const standardNames: Record<string, string> = {
+      'iso-27002-2022': 'ISO 27002:2022',
+      'cis-controls-v8': 'CIS Controls v8',
+      'nist-csf': 'NIST Cybersecurity Framework',
+      'gdpr': 'GDPR',
+      'hipaa': 'HIPAA'
+    };
+    return standardNames[standardId] || 'Unknown Standard';
+  };
+
+  const handleAssign = async () => {
     if (selectedRequirements.length === 0) {
       toast.error("Please select at least one requirement");
       return;
@@ -217,12 +252,123 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
       return;
     }
     
-    const user = users.find(u => u.id === selectedUser);
-    toast.success(`Successfully assigned ${selectedRequirements.length} requirement${selectedRequirements.length !== 1 ? 's' : ''} to ${user?.name || user?.email}`);
+    // If inviting new user, show the invite dialog
+    if (selectedUser === 'invite-new') {
+      setShowInviteDialog(true);
+      return;
+    }
     
-    // Reset selections
-    setSelectedRequirements([]);
-    setSelectedUser("");
+    try {
+      const user = users.find(u => u.id === selectedUser);
+      if (!user) {
+        toast.error("Selected user not found");
+        return;
+      }
+
+      // Convert demo user to InternalUser format
+      const assignedToUser = {
+        id: user.id,
+        name: user.name || user.email,
+        email: user.email,
+        department: user.role
+      };
+
+      // Get selected requirements details
+      const selectedReqs = requirements.filter(req => selectedRequirements.includes(req.id));
+      const requirementDetails = selectedReqs.map(req => ({
+        id: req.id,
+        standardId: req.standardId,
+        section: req.code.split('.')[0] || 'A',
+        code: req.code,
+        name: req.name,
+        description: req.name, // Using name as description for demo
+        status: req.status as any,
+        tags: req.tags,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }));
+
+      // Assign requirements using the service
+      const assignments = await requirementAssignmentService.assignRequirements(
+        selectedRequirements,
+        requirementDetails,
+        assignedToUser,
+        'current-user-id', // In real app, this would come from auth context
+        'Current Admin', // In real app, this would come from auth context
+        'demo-org-1', // In real app, this would come from auth context
+        // Due date could be added here
+      );
+
+      toast.success(`Successfully assigned ${assignments.length} requirement${assignments.length !== 1 ? 's' : ''} to ${user.name || user.email}`);
+      
+      // Reset selections
+      setSelectedRequirements([]);
+      setSelectedUser("");
+
+    } catch (error) {
+      console.error('Assignment error:', error);
+      toast.error("Failed to assign requirements. Please try again.");
+    }
+  };
+
+  const handleInviteAndAssign = async () => {
+    if (!inviteForm.email) {
+      toast.error("Please enter an email address");
+      return;
+    }
+    
+    try {
+      // Get selected requirements details
+      const selectedReqs = requirements.filter(req => selectedRequirements.includes(req.id));
+      const requirementDetails = selectedReqs.map(req => ({
+        id: req.id,
+        standardId: req.standardId,
+        section: req.code.split('.')[0] || 'A',
+        code: req.code,
+        name: req.name,
+        description: req.name,
+        status: req.status as any,
+        tags: req.tags,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }));
+
+      // Invite user and assign requirements
+      const result = await requirementAssignmentService.inviteUserAndAssign(
+        inviteForm.email,
+        inviteForm.name || inviteForm.email,
+        inviteForm.role,
+        selectedRequirements,
+        requirementDetails,
+        'current-user-id', // In real app, from auth context
+        'Current Admin', // In real app, from auth context
+        'demo-org-1' // In real app, from auth context
+      );
+
+      if (result.error) {
+        // Check if it's a seat limit error
+        if (result.error.includes('No available seats')) {
+          toast.error(result.error);
+          // Close current dialog and show upgrade prompt
+          setShowInviteDialog(false);
+          // TODO: Show upgrade dialog
+          return;
+        }
+        throw new Error(result.error);
+      }
+
+      toast.success(`Successfully invited ${inviteForm.email} and assigned ${result.assignments.length} requirement${result.assignments.length !== 1 ? 's' : ''}`);
+      
+      // Reset everything
+      setSelectedRequirements([]);
+      setSelectedUser("");
+      setShowInviteDialog(false);
+      setInviteForm({ email: '', name: '', role: 'analyst' });
+
+    } catch (error) {
+      console.error('Invite and assign error:', error);
+      toast.error(error instanceof Error ? error.message : "Failed to invite user. Please try again.");
+    }
   };
 
   return (
@@ -234,50 +380,91 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search requirements..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      {/* Filters and Assignment Controls */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search requirements..."
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger>
+              <Tag className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="tag-organizational">Organizational</SelectItem>
+              <SelectItem value="tag-identity">Identity</SelectItem>
+              <SelectItem value="tag-endpoint">Endpoint</SelectItem>
+              <SelectItem value="tag-assets">Assets</SelectItem>
+              <SelectItem value="tag-awareness">Awareness</SelectItem>
+              <SelectItem value="tag-network">Network</SelectItem>
+              <SelectItem value="tag-physical">Physical</SelectItem>
+              <SelectItem value="tag-data-management">Data Management</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={standardFilter} onValueChange={setStandardFilter}>
+            <SelectTrigger>
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Filter by standard" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Standards</SelectItem>
+              {uniqueStandards.map(standard => (
+                <SelectItem key={standard.id} value={standard.id}>
+                  {standard.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger>
-            <Tag className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="tag-organizational">Organizational</SelectItem>
-            <SelectItem value="tag-identity">Identity</SelectItem>
-            <SelectItem value="tag-endpoint">Endpoint</SelectItem>
-            <SelectItem value="tag-assets">Assets</SelectItem>
-            <SelectItem value="tag-awareness">Awareness</SelectItem>
-            <SelectItem value="tag-network">Network</SelectItem>
-            <SelectItem value="tag-physical">Physical</SelectItem>
-            <SelectItem value="tag-data-management">Data Management</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value={standardFilter} onValueChange={setStandardFilter}>
-          <SelectTrigger>
-            <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Filter by standard" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Standards</SelectItem>
-            {uniqueStandards.map(standard => (
-              <SelectItem key={standard.id} value={standard.id}>
-                {standard.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+
+        {/* Assignment Controls - Moved here and made more compact */}
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between p-3 bg-muted/30 rounded-lg border">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <span className="text-sm font-medium text-muted-foreground">
+              Assign Selected:
+            </span>
+            <Select value={selectedUser} onValueChange={setSelectedUser}>
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <UserPlus className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Select user" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.filter(user => user.status === 'active').map(user => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.name || user.email} ({user.role})
+                  </SelectItem>
+                ))}
+                <SelectItem value="invite-new" className="border-t">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <span>Invite new user via email</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleAssign} 
+              disabled={selectedRequirements.length === 0 || !selectedUser}
+              size="sm"
+              className="w-full sm:w-auto"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              {selectedUser === 'invite-new' ? 'Invite & Assign' : 'Assign'} ({selectedRequirements.length})
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Requirements List */}
@@ -400,32 +587,85 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
         </ScrollArea>
       </div>
 
-      {/* User Selection and Assignment */}
-      <div className="flex gap-4 items-end">
-        <div className="flex-1 space-y-2">
-          <Label>Assign to User</Label>
-          <Select value={selectedUser} onValueChange={setSelectedUser}>
-            <SelectTrigger>
-              <UserPlus className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Select a user" />
-            </SelectTrigger>
-            <SelectContent>
-              {users.filter(user => user.status === 'active').map(user => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.name || user.email} ({user.role})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button 
-          onClick={handleAssign} 
-          disabled={selectedRequirements.length === 0 || !selectedUser}
-        >
-          <UserPlus className="h-4 w-4 mr-2" />
-          Assign {selectedRequirements.length} Requirement{selectedRequirements.length !== 1 ? 's' : ''}
-        </Button>
-      </div>
+      {/* Invite User Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Invite New User & Assign Requirements</DialogTitle>
+            <DialogDescription>
+              Invite a new team member and assign them {selectedRequirements.length} selected requirement{selectedRequirements.length !== 1 ? 's' : ''}.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="invite-email" className="text-right">
+                Email <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="invite-email"
+                type="email"
+                value={inviteForm.email}
+                onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+                placeholder="user@example.com"
+                className="col-span-3"
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="invite-name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="invite-name"
+                type="text"
+                value={inviteForm.name}
+                onChange={(e) => setInviteForm({ ...inviteForm, name: e.target.value })}
+                placeholder="John Doe (optional)"
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="invite-role" className="text-right">
+                Role <span className="text-red-500">*</span>
+              </Label>
+              <Select 
+                value={inviteForm.role} 
+                onValueChange={(value) => setInviteForm({ ...inviteForm, role: value })}
+              >
+                <SelectTrigger id="invite-role" className="col-span-3">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="analyst">Analyst</SelectItem>
+                  <SelectItem value="editor">Editor</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="rounded-lg bg-muted/50 p-3 mt-2">
+              <p className="text-sm text-muted-foreground">
+                The user will receive an email invitation to join your organization with the selected requirements already assigned to them.
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleInviteAndAssign}>
+              <Mail className="h-4 w-4 mr-2" />
+              Send Invitation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 };
