@@ -72,7 +72,7 @@ export default function About() {
   ];
 
   return (
-    <div className={`min-h-screen ${theme === 'light' ? 'bg-gradient-to-b from-slate-100 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
+    <div className={`min-h-screen ${theme === 'light' ? 'bg-gradient-to-b from-slate-50/50 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 ${theme === 'light' ? 'bg-white/80 border-slate-200' : 'bg-slate-800/90 border-slate-700'} backdrop-blur-md border-b`}>
         <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between max-w-7xl">
@@ -122,13 +122,27 @@ export default function About() {
           transition={{ duration: 1.2, ease: "easeOut" }}
           className="absolute -left-64 md:-left-48 lg:-left-32 top-8 sm:top-12 w-[600px] md:w-[800px] lg:w-[900px] h-[600px] md:h-[800px] lg:h-[900px]"
         >
+          {/* Gradient overlay for smooth blending */}
+          {theme === 'light' && (
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'radial-gradient(ellipse at left center, transparent 0%, transparent 40%, rgba(248,250,252,0.4) 60%, rgba(248,250,252,0.7) 80%, rgba(248,250,252,0.9) 100%)'
+              }}
+            />
+          )}
           <img 
             src="/ar-logo.jpeg" 
             alt="AR Shield Logo"
-            className={`w-full h-full object-contain ${theme === 'light' ? 'opacity-90' : 'opacity-60'}`}
+            className={`w-full h-full object-contain ${theme === 'light' ? 'opacity-100' : 'opacity-60'}`}
             style={{
-              maskImage: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0) 100%)'
+              maskImage: theme === 'light'
+                ? 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%)'
+                : 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage: theme === 'light'
+                ? 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%)'
+                : 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0) 100%)',
+              filter: theme === 'light' ? 'contrast(1.05)' : 'none'
             }}
           />
         </motion.div>
@@ -152,11 +166,11 @@ export default function About() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="space-y-4 sm:space-y-6"
             >
-              <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'} leading-tight tracking-wide font-sans`}>
+              <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light ${theme === 'light' ? 'text-slate-800' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'} leading-tight tracking-wide font-sans`}>
                 Payam Razifar
               </h1>
               
-              <p className={`text-sm sm:text-base md:text-lg lg:text-xl ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} leading-relaxed font-light max-w-xl mx-auto`}>
+              <p className={`text-sm sm:text-base md:text-lg lg:text-xl ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} leading-relaxed font-light max-w-xl mx-auto`}>
                 Transforming Information Security from Complex to Clear
               </p>
               
@@ -185,12 +199,8 @@ export default function About() {
                 transition={{ delay: 0.2 }}
                 className="mb-16"
               >
-                <div className={`relative group`}>
-                  {/* Glowing background effect */}
-                  <div className={`absolute -inset-1 ${theme === 'light' ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-400 to-blue-600'} rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition duration-1000`}></div>
-                  
-                  <Card className={`relative ${theme === 'light' ? 'bg-white/2 border-slate-200/20 shadow-2xl' : 'bg-slate-800/2 border-slate-600/20 shadow-2xl shadow-slate-900/50'} backdrop-blur-sm`}>
-                    <CardContent className="p-8 md:p-10">
+                <div className={`relative`}>
+                    <div className="p-8 md:p-10">
                       {/* Decorative element */}
                       <motion.div
                         initial={{ scale: 0 }}
@@ -201,7 +211,7 @@ export default function About() {
                         <div className={`w-16 h-1 ${theme === 'light' ? 'bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400' : 'bg-gradient-to-r from-blue-300 via-blue-500 to-blue-300'} rounded-full`}></div>
                       </motion.div>
                       
-                      <h2 className={`text-3xl md:text-4xl font-light ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-8 text-center tracking-wide font-sans`}>
+                      <h2 className={`text-3xl md:text-4xl font-light ${theme === 'light' ? 'text-slate-800' : 'text-slate-100'} mb-8 text-center tracking-wide font-sans`}>
                         My Vision
                       </h2>
                       
@@ -229,7 +239,7 @@ export default function About() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.5 }}
-                          className={`text-base md:text-lg ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} leading-relaxed max-w-xl mx-auto font-light italic`}
+                          className={`text-base md:text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} leading-relaxed max-w-xl mx-auto font-light italic`}
                         >
                           I believe information security doesn't have to be overwhelming.<br className="hidden sm:block" />
                           With the right tools and approach, we can transform complex compliance requirements into clear, actionable insights that empower teams to work more effectively and confidently.
@@ -242,7 +252,7 @@ export default function About() {
                         transition={{ delay: 0.6 }}
                         className="grid grid-cols-3 gap-4 md:gap-6"
                       >
-                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50 to-blue-100/50' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
+                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50/70 to-blue-100/40 border border-blue-200/20' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
                           <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
                             Simple
                           </div>
@@ -251,7 +261,7 @@ export default function About() {
                           </p>
                         </div>
                         
-                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-purple-50 to-purple-100/50' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
+                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-purple-50/70 to-purple-100/40 border border-purple-200/20' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
                           <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>
                             Smart
                           </div>
@@ -260,7 +270,7 @@ export default function About() {
                           </p>
                         </div>
                         
-                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50 to-blue-100/50' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
+                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50/70 to-blue-100/40 border border-blue-200/20' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
                           <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
                             Effective
                           </div>
@@ -269,8 +279,7 @@ export default function About() {
                           </p>
                         </div>
                       </motion.div>
-                    </CardContent>
-                  </Card>
+                    </div>
                 </div>
               </motion.div>
             </div>
