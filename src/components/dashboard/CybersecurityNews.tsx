@@ -120,7 +120,7 @@ export const CybersecurityNews = () => {
   }
 
   return (
-    <Card className="shadow-md hover:shadow-lg transition-all h-[650px] border border-border/70" data-card="true">
+    <Card className="shadow-md hover:shadow-lg transition-all h-[710px] border border-border/70" data-card="true">
       <CardContent className="p-4 h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">

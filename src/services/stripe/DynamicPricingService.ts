@@ -100,9 +100,12 @@ export class DynamicPricingService {
         // Extract features from product metadata or description
         const features = this.extractFeatures(product);
 
+        // Clean up product name - remove "Plan" suffix
+        const cleanName = product.name.replace(/\s+Plan$/i, '').trim();
+        
         plans.push({
           id: tierId,
-          name: product.name,
+          name: cleanName,
           price: mainPrice.unit_amount / 100, // Convert from cents
           interval: mainPrice.recurring?.interval || 'one_time',
           stripePriceId: mainPrice.id,

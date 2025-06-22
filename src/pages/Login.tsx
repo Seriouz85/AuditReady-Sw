@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ZoomToggle } from "@/components/ui/zoom-toggle";
+import { EntraIdLoginButton } from "@/components/auth/EntraIdLoginButton";
 
 // Removed unused variables: createAdminUser, ADMIN_EMAIL, ADMIN_PASSWORD, MAIN_APP_URL
 
@@ -324,11 +325,11 @@ const Login = () => {
               <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Welcome Back</h1>
               <p className={`text-base ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure access to your compliance dashboard</p>
               
-              {/* Demo vs Production Mode Indicator */}
+              {/* Demo vs Live Mode Indicator */}
               {isSupabaseConfigured ? (
                 <div className={`mt-2 p-2 rounded-lg border ${theme === 'light' ? 'bg-green-50 border-green-200' : 'bg-green-900/20 border-green-700'}`}>
                   <p className={`text-xs font-medium ${theme === 'light' ? 'text-green-800' : 'text-green-300'}`}>
-                    🟢 Production Mode
+                    🟢 Live Mode
                   </p>
                 </div>
               ) : (
@@ -478,21 +479,19 @@ const Login = () => {
                 </svg>
                 Google
               </Button>
-              <Button 
-                type="button" 
-                onClick={() => handleSocialLogin('microsoft')} 
+              <EntraIdLoginButton
+                tenantId={import.meta.env.VITE_ENTRA_TENANT_ID}
+                clientId={import.meta.env.VITE_ENTRA_CLIENT_ID}
+                redirectUri={`${window.location.origin}/auth/callback/entra`}
                 disabled={isLoading}
-                className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
-                title={isSupabaseConfigured ? 'Sign in with Microsoft' : 'Demo Microsoft login'}
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#f25022" d="M1 1h10v10H1z"/>
-                  <path fill="#00a4ef" d="M13 1h10v10H13z"/>
-                  <path fill="#7fba00" d="M1 13h10v10H1z"/>
-                  <path fill="#ffb900" d="M13 13h10v10H13z"/>
-                </svg>
-                Microsoft
-              </Button>
+                onLoginStart={() => setIsLoading(true)}
+                onLoginError={(error) => {
+                  setIsLoading(false);
+                  setLoginError(error);
+                  toast.error(`Microsoft SSO failed: ${error}`);
+                }}
+                className="w-full"
+              />
             </div>
             
             <div className="text-center space-y-2">

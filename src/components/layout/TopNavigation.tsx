@@ -37,7 +37,7 @@ export const TopNavigation: React.FC = () => {
   const breadcrumbs = getBreadcrumbs();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-full px-4 md:px-6">
         <div className="flex h-16 md:h-20 items-center justify-between">
           {/* Left side - Logo & Breadcrumbs */}
@@ -54,7 +54,7 @@ export const TopNavigation: React.FC = () => {
             
             {breadcrumbs.length > 0 && (
               <>
-                <div className="hidden sm:block h-4 w-px bg-border" />
+                <div className="hidden sm:block h-4 w-px bg-border/70" />
                 <Breadcrumb className="hidden sm:flex">
                   <BreadcrumbList>
                     {breadcrumbs.map((crumb, index) => (

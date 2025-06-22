@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { RequirementAssignmentModal } from "@/components/settings/RequirementAssignmentModal";
 import { 
   Download, Save, Upload, UserPlus, Settings as SettingsIcon, Shield, 
-  Key, Activity, Trash2, Edit, Eye, Clock,
+  Key, Activity, Trash2, Edit, Eye, Clock, Building2, ExternalLink,
   CheckCircle, XCircle, Loader, ListChecks, Search, Filter, Tag, Mail
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -28,6 +28,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRequirementsService } from "@/services/requirements/RequirementsService";
 import { requirementAssignmentService } from "@/services/assignments/RequirementAssignmentService";
 import { RequirementAssignment } from "@/types";
+import { useEntraId } from "@/hooks/useEntraId";
 
 // Demo data for demo accounts only
 const demoUsers = [
@@ -672,6 +673,7 @@ const RequirementAssignmentInterface = ({ users, isDemo }: { users: any[], isDem
 
 const Settings = () => {
   const { user, organization, isDemo, hasPermission } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
     users,
@@ -694,6 +696,12 @@ const Settings = () => {
     updateProfilePicture,
     updateTwoFactorAuth
   } = useProfile();
+
+  const {
+    connections,
+    loading: entraLoading,
+    error: entraError
+  } = useEntraId();
   
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
@@ -1931,16 +1939,88 @@ const Settings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium">Microsoft Azure AD</h4>
-                    <Badge variant="outline">Not Configured</Badge>
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-blue-600" />
+                      <h4 className="font-medium">Microsoft Entra ID</h4>
+                    </div>
+                    {isDemo ? (
+                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Demo Available
+                      </Badge>
+                    ) : connections && connections.length > 0 ? (
+                      <Badge className="bg-green-100 text-green-800 border-green-200">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        {connections.length} Connection{connections.length !== 1 ? 's' : ''}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">Not Configured</Badge>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Enable SSO with Microsoft Active Directory
+                    Enterprise SSO with Microsoft Entra ID (Azure AD)
                   </p>
-                  <Button size="sm" variant="outline" onClick={() => {
-                    toast.info("Azure AD SSO configuration would open here. Contact support for setup assistance.");
-                    // In production, this would open Azure AD configuration wizard
-                  }}>Configure</Button>
+                  {isDemo ? (
+                    <div className="text-xs text-muted-foreground mb-3 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span>Demo Production AD</span>
+                        <Badge className="bg-green-100 text-green-800" variant="outline">
+                          Active
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Demo Dev Environment</span>
+                        <Badge className="bg-blue-100 text-blue-800" variant="outline">
+                          Testing
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Demo: 250 synced users
+                      </div>
+                    </div>
+                  ) : connections && connections.length > 0 && (
+                    <div className="text-xs text-muted-foreground mb-3 space-y-1">
+                      {connections.slice(0, 2).map((conn) => (
+                        <div key={conn.id} className="flex items-center justify-between">
+                          <span>{conn.name}</span>
+                          <Badge 
+                            className={conn.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
+                            variant="outline"
+                          >
+                            {conn.status}
+                          </Badge>
+                        </div>
+                      ))}
+                      {connections.length > 2 && (
+                        <div className="text-xs text-muted-foreground">
+                          +{connections.length - 2} more...
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      variant={connections && connections.length > 0 ? "default" : "outline"}
+                      onClick={() => {
+                        if (isDemo) {
+                          // In demo mode, still allow navigation to see the interface
+                          navigate('/app/admin/sso');
+                          return;
+                        }
+                        // Navigate to Enterprise SSO management page
+                        navigate('/app/admin/sso');
+                      }}
+                    >
+                      {(isDemo || (connections && connections.length > 0)) ? 'Manage' : 'Configure'}
+                    </Button>
+                    {(isDemo || (connections && connections.length > 0)) && (
+                      <Button size="sm" variant="outline" onClick={() => navigate('/app/admin/sso')}>
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        View Details
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="p-4 border rounded-lg">

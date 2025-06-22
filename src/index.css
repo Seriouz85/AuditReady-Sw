@@ -94,12 +94,18 @@ html {
 @layer base {
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    border: none;
   }
 }
 
 /* Base scaling - make app 20% smaller for better desktop experience */
 html {
   font-size: 80%; /* App is designed too big, scale down to reasonable size */
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
 /* Custom styles for the dashboard */

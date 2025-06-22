@@ -86,10 +86,7 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
   };
 
   return (
-    <Card className={cn(
-      "h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200",
-      theme === 'dark' ? 'border border-white/15' : 'border border-border'
-    )}>
+    <Card className="shadow-md hover:shadow-lg transition-all h-full border border-border/70" data-card="true">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

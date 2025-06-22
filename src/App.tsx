@@ -37,6 +37,7 @@ import { StandardDetail } from "./pages/admin/standards/StandardDetail";
 import { OrganizationDetail } from "./pages/admin/organizations/OrganizationDetail";
 import { UserManagement } from "./pages/admin/users/UserManagement";
 import { SystemSettings } from "./pages/admin/system/SystemSettings";
+import EntraCallbackPage from "./pages/auth/EntraCallbackPage";
 
 import { LanguageProvider } from "./providers/LanguageProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
@@ -78,6 +79,7 @@ const App = () => (
                   <Route path="/invite/:token" element={<AcceptInvitation />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/onboarding" element={<PublicOnboarding />} />
+                  <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
                   
                   {/* Protected pages requiring authentication */}
                   {/* Enhanced onboarding flow for authenticated users */}

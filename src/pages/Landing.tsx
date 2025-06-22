@@ -705,7 +705,7 @@ export default function Landing() {
                 </div>
                 <CardContent className="p-6 flex flex-col h-full">
                   {/* Header */}
-                  <div className="text-center mb-6 mt-2">
+                  <div className="text-center mb-6">
                     <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
                       <Users className="h-6 w-6 text-white" />
                     </div>
@@ -801,11 +801,11 @@ export default function Landing() {
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>AuditReady Risk Management</span>
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>AuditReady Risk Management</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>Learning Management System</span>
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Learning Management System</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -875,11 +875,11 @@ export default function Landing() {
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-amber-700' : 'text-amber-300'}`}>Phishing Simulation Tool</span>
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Phishing Simulation Tool</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className={`text-sm font-medium ${theme === 'light' ? 'text-amber-700' : 'text-amber-300'}`}>AuditReady AI Editor</span>
+                        <span className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>AuditReady AI Editor</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />

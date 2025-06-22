@@ -420,8 +420,8 @@ const PublicOnboarding = () => {
             id: "free",
             name: "Free", 
             price: "Free",
-            description: "Perfect for exploring AuditReady features",
-            features: ["Full feature access (demo)", "Demo workflows & data", "Community support"],
+            description: "Perfect for small teams getting started",
+            features: ["Full feature access (demo)", "Demo workflows & data", "Community support", "Basic compliance templates", "Standard reporting", "Getting started guide"],
             recommended: recommendedPlan === 'free',
             popular: false
           },
@@ -440,7 +440,7 @@ const PublicOnboarding = () => {
             name: "Business",
             price: "€699",
             period: "/month", 
-            description: "Advanced features for growing companies",
+            description: "Perfect for growing business teams",
             features: ["Everything in Team", "Up to 250 team members", "AuditReady Risk Management", "Learning Management System", "Advanced reporting", "Custom templates", "Priority support"],
             recommended: recommendedPlan === 'business',
             popular: false
@@ -450,7 +450,7 @@ const PublicOnboarding = () => {
             name: "Enterprise",
             price: "€999",
             period: "/month",
-            description: "Complete solution for large organizations", 
+            description: "Perfect for large enterprise teams", 
             features: ["Everything in Business", "Unlimited team members", "Phishing Simulation Tool", "AuditReady AI Editor", "Advanced threat detection", "White-label solutions", "Dedicated account manager", "24/7 phone support & SLA"],
             recommended: recommendedPlan === 'enterprise',
             popular: false
@@ -533,11 +533,9 @@ const PublicOnboarding = () => {
                         </span>
                       )}
                     </div>
-                    {plan.price !== 'Free' && (
-                      <p className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'} mb-2`}>
-                        Excl. VAT
-                      </p>
-                    )}
+                    <p className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'} mb-2 min-h-[1.25rem]`}>
+                      {plan.price !== 'Free' ? 'Excl. VAT' : ''}
+                    </p>
                     <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} leading-relaxed min-h-[2.5rem] flex items-center justify-center`}>
                       {plan.description}
                     </p>

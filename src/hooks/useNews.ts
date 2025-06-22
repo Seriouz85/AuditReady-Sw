@@ -17,7 +17,26 @@ export const useNews = () => {
     try {
       setLoading(true);
       setError(null);
-      // Load all news items for searching
+      
+      // Check for cached data first to show immediately
+      const cached = localStorage.getItem('cybersecurity_news_cache');
+      if (cached) {
+        try {
+          const cachedData = JSON.parse(cached);
+          setAllNews(cachedData);
+          setNews({
+            ...cachedData,
+            items: cachedData.items.slice(0, 8)
+          });
+          setDisplayedCount(8);
+          setHasMore(cachedData.items.length > 8);
+          setLoading(false); // Show cached content immediately
+        } catch (parseError) {
+          console.error('Error parsing cached news:', parseError);
+        }
+      }
+      
+      // Load fresh news items (this will update cache if successful)
       const allNewsData = await cybersecurityNewsService.getAllNews();
       setAllNews(allNewsData);
       // Initially show first 8 items
@@ -29,7 +48,7 @@ export const useNews = () => {
       setHasMore(allNewsData.items.length > 8);
     } catch (err) {
       console.error('Error loading news:', err);
-      setError('Failed to load cybersecurity news');
+      setError('Failed to load fresh cybersecurity news');
     } finally {
       setLoading(false);
     }

@@ -17,6 +17,7 @@ interface NewsResponse {
 class CybersecurityNewsService {
   private readonly CACHE_KEY = 'cybersecurity_news_cache';
   private readonly CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+  private readonly FETCH_TIMEOUT = 3000; // 3 seconds timeout for RSS feeds
   
   // RSS Feed URLs for cybersecurity news
   private readonly RSS_FEEDS = [
@@ -78,15 +79,22 @@ class CybersecurityNewsService {
    */
   private async fetchLiveNews(): Promise<NewsResponse | null> {
     try {
+      // Set up fetch with timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.FETCH_TIMEOUT);
+      
       // Try The Hacker News RSS feed first (best cybersecurity source)
       const response = await fetch(
         `${this.CORS_PROXY}${encodeURIComponent('https://feeds.feedburner.com/TheHackersNews')}`,
         {
           headers: {
             'Accept': 'application/json'
-          }
+          },
+          signal: controller.signal
         }
       );
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -178,7 +186,7 @@ class CybersecurityNewsService {
       };
       
     } catch (error) {
-      console.error('Error fetching live RSS feed:', error);
+      console.error('Error fetching live RSS feed (falling back to demo data):', error);
       return null; // Fallback to demo data
     }
   }
