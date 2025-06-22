@@ -78,7 +78,7 @@ export default function Landing() {
         // Store the intended plan and redirect to onboarding
         sessionStorage.setItem('intendedPlan', tier);
         sessionStorage.setItem('intendedPriceId', plan.stripePriceId);
-        navigate('/onboarding');
+        navigate('/pricing');
         return;
       }
 
@@ -169,7 +169,7 @@ export default function Landing() {
             <Button 
               size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 text-xs sm:text-sm font-semibold shadow-md border-2 border-blue-500/20"
-              onClick={() => navigate("/start-journey")}
+              onClick={() => navigate("/onboarding")}
             >
               Get Started
             </Button>
@@ -209,7 +209,7 @@ export default function Landing() {
             <Button 
               size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-lg w-full sm:w-auto"
-              onClick={() => navigate("/start-journey")}
+              onClick={() => navigate("/onboarding")}
             >
               Start Your Journey
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -957,7 +957,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-blue-50 px-8"
-                  onClick={() => navigate("/start-journey")}
+                  onClick={() => navigate("/onboarding")}
                 >
                   Get Started Now
                 </Button>

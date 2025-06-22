@@ -36,8 +36,8 @@ export const createCheckoutSession = async (
         organizationName: request.organizationName,
         tier: request.tier,
         userId: user.id,
-        successUrl: `${window.location.origin}/onboarding?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/pricing`
+        successUrl: `${window.location.origin}/signup?session_id={CHECKOUT_SESSION_ID}&payment_success=true`,
+        cancelUrl: `${window.location.origin}/onboarding`
       }
     });
 

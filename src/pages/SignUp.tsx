@@ -33,9 +33,10 @@ const SignUp = () => {
   const [assessmentData, setAssessmentData] = useState<any>(null);
 
   useEffect(() => {
-    // Load assessment data if coming from pricing assessment
+    // Load assessment data if coming from pricing assessment or onboarding
     const savedAssessment = localStorage.getItem('auditready_assessment_data');
-    const savedTier = localStorage.getItem('auditready_selected_tier');
+    const savedOnboardingData = localStorage.getItem('onboardingData');
+    const savedTier = localStorage.getItem('auditready_selected_tier') || localStorage.getItem('selectedPlan');
     
     if (savedAssessment) {
       const assessment = JSON.parse(savedAssessment);
@@ -46,6 +47,16 @@ const SignUp = () => {
           ...prev,
           organizationName: assessment.organizationName
         }));
+      }
+    }
+    
+    // Load from onboarding data if available
+    if (savedOnboardingData && !savedAssessment) {
+      try {
+        const onboardingData = JSON.parse(savedOnboardingData);
+        // You can pre-fill any relevant data from onboarding here if needed
+      } catch (error) {
+        console.error('Error parsing onboarding data:', error);
       }
     }
     
@@ -376,10 +387,10 @@ const SignUp = () => {
   return (
     <div className={`min-h-screen flex ${theme === 'light' ? 'bg-slate-100' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Left side - Sign Up Form */}
-      <div className={`flex-1 flex flex-col items-center justify-start py-8 px-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
+      <div className={`flex-1 flex flex-col items-center justify-start py-3 px-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
         <div className="w-full max-w-lg ml-auto mr-8">
           {/* Logo and Theme Toggle */}
-          <div className="w-full flex justify-between items-center mb-6">
+          <div className="w-full flex justify-between items-center mb-3">
             <div className="flex items-center gap-2">
               <Shield className={`h-7 w-7 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               <span className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
@@ -390,11 +401,11 @@ const SignUp = () => {
             </div>
           </div>
           {/* Divider */}
-          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-6`} />
+          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-3`} />
           
           {/* Selected Plan Summary */}
           {selectedTier && (
-            <div className={`w-full p-4 mb-6 rounded-lg border ${theme === 'light' ? 'bg-blue-50 border-blue-200' : 'bg-blue-900/20 border-blue-700'}`}>
+            <div className={`w-full p-3 mb-3 rounded-lg border ${theme === 'light' ? 'bg-blue-50 border-blue-200' : 'bg-blue-900/20 border-blue-700'}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className={`font-medium ${theme === 'light' ? 'text-blue-900' : 'text-blue-100'}`}>
@@ -409,7 +420,7 @@ const SignUp = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/pricing')}
+                  onClick={() => navigate('/onboarding')}
                   className={`text-xs ${theme === 'light' ? 'border-blue-300 text-blue-700' : 'border-blue-600 text-blue-300'}`}
                 >
                   Change Plan
@@ -419,20 +430,20 @@ const SignUp = () => {
           )}
           
           {/* Sign Up Form */}
-          <div className={`w-full space-y-4 p-6 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-700/70 border-slate-600'}`}> 
-            <div className="text-center space-y-2">
-              <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Create Your Account</h1>
-              <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Start your compliance journey with AuditReady</p>
+          <div className={`w-full space-y-3 p-4 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-700/70 border-slate-600'}`}> 
+            <div className="text-center space-y-1">
+              <h1 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Create Your Account</h1>
+              <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Start your compliance journey with AuditReady</p>
               {!isSupabaseConfigured && (
-                <p className={`mt-2 text-xs ${theme === 'light' ? 'text-amber-600 bg-amber-50' : 'text-amber-400 bg-amber-900/20'} p-2 rounded`}>
+                <p className={`mt-1 text-xs ${theme === 'light' ? 'text-amber-600 bg-amber-50' : 'text-amber-400 bg-amber-900/20'} p-1.5 rounded`}>
                   Demo mode: Account creation simulation
                 </p>
               )}
             </div>
 
             {signupError && (
-              <div className={`rounded-lg p-3 text-sm flex items-start gap-2 border-2 ${theme === 'light' ? 'bg-red-50 border-red-300' : 'bg-red-900/20 border-red-700'}`}> 
-                <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+              <div className={`rounded-lg p-2 text-xs flex items-start gap-2 border-2 ${theme === 'light' ? 'bg-red-50 border-red-300' : 'bg-red-900/20 border-red-700'}`}> 
+                <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
                 <div>
                   <p className={`font-medium ${theme === 'light' ? 'text-red-600' : 'text-red-400'}`}>Signup Error</p>
                   <p className={theme === 'light' ? 'text-red-600' : 'text-red-300'}>{signupError}</p>
@@ -440,27 +451,27 @@ const SignUp = () => {
               </div>
             )}
 
-            <form onSubmit={handleSignUp} className="space-y-3">
+            <form onSubmit={handleSignUp} className="space-y-2">
               {/* Personal Information */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>First Name</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>First Name</label>
                   <Input
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className={`h-12 border-2 transition-all ${theme === 'light' ? 'bg-slate-50 border-slate-200 focus:border-blue-500' : 'bg-slate-600/50 border-slate-500 text-slate-100 focus:border-blue-500'}`}
+                    className={`h-9 border-2 transition-all ${theme === 'light' ? 'bg-slate-50 border-slate-200 focus:border-blue-500' : 'bg-slate-600/50 border-slate-500 text-slate-100 focus:border-blue-500'}`}
                     placeholder="John"
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Last Name</label>
+                <div className="space-y-1">
+                  <label className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Last Name</label>
                   <Input
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`h-12 border-2 transition-all ${theme === 'light' ? 'bg-slate-50 border-slate-200 focus:border-blue-500' : 'bg-slate-600/50 border-slate-500 text-slate-100 focus:border-blue-500'}`}
+                    className={`h-9 border-2 transition-all ${theme === 'light' ? 'bg-slate-50 border-slate-200 focus:border-blue-500' : 'bg-slate-600/50 border-slate-500 text-slate-100 focus:border-blue-500'}`}
                     placeholder="Doe"
                     required
                   />
@@ -469,7 +480,7 @@ const SignUp = () => {
 
               {/* Email */}
               <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Work Email</label>
+                <label className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Work Email</label>
                 <Input
                   type="email"
                   value={formData.email}
@@ -482,7 +493,7 @@ const SignUp = () => {
 
               {/* Organization */}
               <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Organization Name</label>
+                <label className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Organization Name</label>
                 <Input
                   type="text"
                   value={formData.organizationName}
@@ -495,7 +506,7 @@ const SignUp = () => {
 
               {/* Password */}
               <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Password</label>
+                <label className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Password</label>
                 <Input
                   type="password"
                   value={formData.password}
@@ -508,7 +519,7 @@ const SignUp = () => {
 
               {/* Confirm Password */}
               <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Confirm Password</label>
+                <label className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Confirm Password</label>
                 <Input
                   type="password"
                   value={formData.confirmPassword}
@@ -520,14 +531,14 @@ const SignUp = () => {
               </div>
 
               {/* Terms and Conditions */}
-              <div className="space-y-3">
-                <div className="flex items-start space-x-2">
+              <div className="space-y-2">
+                <div className="flex items-start space-x-1.5">
                   <Checkbox 
                     id="terms" 
                     checked={acceptTerms} 
                     onCheckedChange={(checked) => setAcceptTerms(checked === true)} 
                   />
-                  <label htmlFor="terms" className={`text-sm leading-5 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
+                  <label htmlFor="terms" className={`text-xs leading-4 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                     I agree to the{' '}
                     <a href="/terms" className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-400'} hover:underline`}>
                       Terms of Service
@@ -538,13 +549,13 @@ const SignUp = () => {
                     </a>
                   </label>
                 </div>
-                <div className="flex items-start space-x-2">
+                <div className="flex items-start space-x-1.5">
                   <Checkbox 
                     id="marketing" 
                     checked={acceptMarketing} 
                     onCheckedChange={(checked) => setAcceptMarketing(checked === true)} 
                   />
-                  <label htmlFor="marketing" className={`text-sm leading-5 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
+                  <label htmlFor="marketing" className={`text-xs leading-4 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                     I'd like to receive product updates and marketing communications
                   </label>
                 </div>
@@ -552,28 +563,28 @@ const SignUp = () => {
 
               <Button 
                 type="submit" 
-                className="w-full h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-white font-semibold text-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed" 
+                className="w-full h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-white font-semibold text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed" 
                 disabled={isLoading}
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
 
-            <div className="flex items-center gap-2 my-4">
+            <div className="flex items-center gap-2 my-2">
               <div className={`flex-1 h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'}`} />
               <span className={`text-xs ${theme === 'light' ? 'text-slate-400' : 'text-slate-400'}`}>or</span>
               <div className={`flex-1 h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'}`} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-2 mb-3">
               <Button 
                 type="button" 
                 onClick={() => handleSocialSignUp('google')} 
                 disabled={isLoading}
-                className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
+                className={`h-9 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-1.5 text-sm ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
                 title={isSupabaseConfigured ? 'Sign up with Google' : 'Demo Google signup'}
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -585,10 +596,10 @@ const SignUp = () => {
                 type="button" 
                 onClick={() => handleSocialSignUp('microsoft')} 
                 disabled={isLoading}
-                className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
+                className={`h-9 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-1.5 text-sm ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
                 title={isSupabaseConfigured ? 'Sign up with Microsoft' : 'Demo Microsoft signup'}
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#f25022" d="M1 1h10v10H1z"/>
                   <path fill="#00a4ef" d="M13 1h10v10H13z"/>
                   <path fill="#7fba00" d="M1 13h10v10H1z"/>
@@ -613,39 +624,39 @@ const SignUp = () => {
       {/* Right side - Benefits */}
       <div className={`hidden lg:flex flex-1 flex-col justify-center px-4 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-800/50'}`}>
         <div className="max-w-lg mr-auto ml-8">
-          <h2 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Join AuditReady Today</h2>
-          <p className={`mb-6 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
+          <h2 className={`text-xl font-bold mb-3 ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Join AuditReady Today</h2>
+          <p className={`mb-4 text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
             Start your compliance journey with a platform trusted by organizations worldwide
           </p>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className={`p-2 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'}`}>
-                <Building className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+          <div className="space-y-3">
+            <div className="flex items-start gap-2">
+              <div className={`p-1.5 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'}`}>
+                <Building className={`h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               </div>
               <div>
-                <h3 className={`font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Multi-Tenant Architecture</h3>
-                <p className={theme === 'light' ? 'text-slate-600' : 'text-slate-300'}>Secure, isolated environments for your organization</p>
+                <h3 className={`font-semibold text-sm ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Multi-Tenant Architecture</h3>
+                <p className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure, isolated environments for your organization</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className={`p-2 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'}`}>
-                <User className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+            <div className="flex items-start gap-2">
+              <div className={`p-1.5 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'}`}>
+                <User className={`h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               </div>
               <div>
-                <h3 className={`font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Team Collaboration</h3>
-                <p className={theme === 'light' ? 'text-slate-600' : 'text-slate-300'}>Invite team members and manage permissions</p>
+                <h3 className={`font-semibold text-sm ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Team Collaboration</h3>
+                <p className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Invite team members and manage permissions</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className={`p-2 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'}`}>
-                <Shield className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+            <div className="flex items-start gap-2">
+              <div className={`p-1.5 rounded ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'}`}>
+                <Shield className={`h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               </div>
               <div>
-                <h3 className={`font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Enterprise Ready</h3>
-                <p className={theme === 'light' ? 'text-slate-600' : 'text-slate-300'}>SOC 2, GDPR compliant with advanced security</p>
+                <h3 className={`font-semibold text-sm ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Enterprise Ready</h3>
+                <p className={`text-xs ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>SOC 2, GDPR compliant with advanced security</p>
               </div>
             </div>
           </div>

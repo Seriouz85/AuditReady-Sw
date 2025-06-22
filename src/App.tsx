@@ -77,12 +77,12 @@ const App = () => (
                   <Route path="/email-verification" element={<EmailVerification />} />
                   <Route path="/invite/:token" element={<AcceptInvitation />} />
                   <Route path="/about" element={<About />} />
-                  <Route path="/start-journey" element={<PublicOnboarding />} />
+                  <Route path="/onboarding" element={<PublicOnboarding />} />
                   
                   {/* Protected pages requiring authentication */}
                   {/* Enhanced onboarding flow for authenticated users */}
                   <Route 
-                    path="/onboarding" 
+                    path="/onboarding-auth" 
                     element={
                       <ProtectedRoute>
                         <EnhancedOnboardingFlow />
