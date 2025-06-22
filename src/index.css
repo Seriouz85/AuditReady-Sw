@@ -688,17 +688,7 @@ main > div.border-b {
 }
 
 /* Template animations for enhanced visual appeal */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) translateY(-20px) scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) translateY(-20px) scale(1.1);
-  }
-}
-
+/* Animations - converted to Tailwind where possible */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-4px); }
@@ -709,25 +699,7 @@ main > div.border-b {
   100% { background-position: calc(200px + 100%) 0; }
 }
 
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
+/* Essential CSS that can't be replaced with Tailwind */
 
-/* Template card hover effects */
-.template-card:hover .template-preview {
-  transform: scale(1.05);
-  transition: transform 0.3s ease;
-}
-
-.template-card:hover .template-icon {
-  animation: float 2s ease-in-out infinite;
-}
-
-/* Glass morphic effects for better visual appeal */
-.glass-effect {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+/* Template card hover effects - using transform utilities in components instead */
+/* Glass morphic effects - converted to Tailwind backdrop-blur utilities */

@@ -36,7 +36,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { OrgNode, OrgChartInstance } from '@/lib/org-chart/OrgChartTypes';
-import './OrgChart.css';
+import '@/styles/org-chart-minimal.css';
 
 // This is a workaround for TypeScript - we'll use the actual library at runtime
 // but interface with it through our strongly-typed interface

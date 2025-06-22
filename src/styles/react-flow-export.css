@@ -1,22 +1,15 @@
 /**
- * React Flow Export Fixes
- * Ensures proper dimensions for React Flow containers during export
+ * Essential React Flow Overrides
+ * Only includes styles that cannot be achieved with Tailwind
  */
 
-/* Hide React Flow attribution footer completely */
+/* Hide React Flow attribution (required override) */
 .react-flow__attribution {
   display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  width: 0 !important;
-  position: absolute !important;
-  top: -9999px !important;
-  left: -9999px !important;
 }
 
-/* Fix the space below AI input by ensuring proper container sizing */
+/* React Flow container sizing */
 .react-flow-wrapper {
-  /* Revert to original height */
   height: 600px !important;
   max-height: 600px !important;
   /* Ensure no extra margin/padding creates space */

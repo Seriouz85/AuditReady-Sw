@@ -18,6 +18,7 @@ import EnhancedOnboardingFlow from "./pages/EnhancedOnboardingFlow";
 import GuidedStandardImport from "./pages/GuidedStandardImport";
 import AcceptInvitation from "./pages/AcceptInvitation";
 import About from "./pages/About";
+import Documentation from "./pages/Documentation";
 import PublicOnboarding from "./pages/PublicOnboarding";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
@@ -83,6 +84,7 @@ const App = () => (
                   <Route path="/email-verification" element={<EmailVerification />} />
                   <Route path="/invite/:token" element={<AcceptInvitation />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/documentation" element={<Documentation />} />
                   <Route path="/onboarding" element={<PublicOnboarding />} />
                   <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
                   

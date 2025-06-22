@@ -24,7 +24,7 @@ import {
 } from 'reactflow';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import 'reactflow/dist/style.css';
-import '@/styles/org-chart.css';
+import '@/styles/org-chart-minimal.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";

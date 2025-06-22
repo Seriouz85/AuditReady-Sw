@@ -15,9 +15,12 @@
     "predeploy": "npm run build",
     "deploy": "npm run build && git add dist -f && git commit -m 'Deploy build' && git subtree push --prefix dist origin main --force",
     "deploy:force": "npm run build && git add . && git commit -m 'Force deploy to main' && git push origin main --force",
-    "test:mermaid": "jest src/services/mermaid",
-    "build:mermaid": "tsc --project tsconfig.mermaid.json",
-    "dev:mermaid": "npm run test:mermaid -- --watch"
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.3.1",
@@ -117,7 +120,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@playwright/test": "^1.53.1",
     "@tailwindcss/typography": "^0.5.15",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/d3": "^7.4.3",
     "@types/dagre": "^0.7.52",
     "@types/estree": "^1.0.1",
@@ -140,12 +147,14 @@
     "globals": "^15.9.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.0.0-beta.3",
+    "jsdom": "^26.1.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "terser": "^5.43.1",
     "ts-jest": "^29.3.4",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
   }
 }

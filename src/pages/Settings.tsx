@@ -1586,7 +1586,7 @@ const Settings = () => {
                       <div className="text-sm text-muted-foreground">
                         Joined: {formatDateWithTime(getUserJoinedAt(user))}
                       </div>
-                      <div className="flex space-x-2 mt-2">
+                      <div className="flex space-x-2 mt-2 justify-end">
                         <Button size="sm" variant="outline" onClick={() => {
                           toast.info(`Edit user profile for ${getUserDisplayName(user)}. This would open user management interface.`);
                           // In production, this would open user editing modal

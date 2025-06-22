@@ -1,0 +1,56 @@
+/* Minimal ReactFlow styles that can't be replaced with Tailwind */
+/* Only includes essential ReactFlow overrides */
+
+/* ReactFlow viewport background */
+.organizational-chart-component .react-flow__viewport,
+.organizational-chart-component .react-flow__renderer,
+.organizational-chart-component .react-flow__pane,
+.organizational-chart-component .react-flow__container,
+.organizational-chart-component .react-flow__minimap {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* ReactFlow node transitions */
+.organizational-chart-component .react-flow__node {
+  transition: transform 0.1s ease;
+}
+
+.organizational-chart-component .react-flow__node.dragging {
+  transform: scale(1.02);
+}
+
+/* ReactFlow edge styles */
+.organizational-chart-component .react-flow__edge-path {
+  stroke: #b1b1b7;
+  stroke-width: 2;
+}
+
+.organizational-chart-component .react-flow__edge-textbg {
+  fill: white;
+}
+
+.organizational-chart-component .react-flow__connection-path {
+  stroke: #b1b1b7;
+}
+
+/* D3 OrgChart specific styles */
+.chart-container {
+  font-family: inherit;
+}
+
+.chart-container svg {
+  display: block;
+  margin: auto;
+}
+
+/* Animations used by org charts */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

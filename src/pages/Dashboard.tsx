@@ -14,7 +14,7 @@ import { useEffect } from "react";
 const Dashboard = () => {
   console.log("Dashboard component loaded");
   const navigate = useNavigate();
-  const { isPlatformAdmin } = useAuth();
+  const { user, isPlatformAdmin, isDemo } = useAuth();
 
   // Platform admins should see the Platform Admin Console, not customer dashboard
   useEffect(() => {
@@ -23,6 +23,15 @@ const Dashboard = () => {
       navigate("/admin", { replace: true });
     }
   }, [isPlatformAdmin, navigate]);
+
+  const getUserGreeting = () => {
+    if (isDemo) {
+      return "Welcome Demo User";
+    }
+    
+    const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
+    return `Welcome ${displayName}`;
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -101,7 +110,7 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="mt-1 md:mt-0 py-2 px-3 sm:py-1 sm:px-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm">
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-blue-800 dark:text-blue-400">Welcome Security User</h2>
+          <h2 className="text-sm sm:text-base font-medium text-blue-800 dark:text-blue-400">{getUserGreeting()}</h2>
         </div>
       </div>
 

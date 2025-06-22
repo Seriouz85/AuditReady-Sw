@@ -1002,7 +1002,7 @@ export default function Landing() {
             <div>
               <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Resources</h3>
               <ul className="space-y-2">
-                <li><a href="#documentation" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Documentation</a></li>
+                <li><button onClick={() => navigate("/documentation")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Documentation</button></li>
                 <li><a href="#help" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Help Center</a></li>
                 <li><a href="#guides" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Guides</a></li>
                 <li><a href="#api" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>API Reference</a></li>
@@ -1019,7 +1019,7 @@ export default function Landing() {
             </div>
           </div>
           <div className={`text-center ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} pt-8 ${theme === 'light' ? 'border-t border-slate-200' : 'border-t border-slate-600'}`}>
-            <p>© 2024 AuditReady. All rights reserved.</p>
+            <p>© 2025 AuditReady. All rights reserved.</p>
           </div>
         </div>
       </footer>

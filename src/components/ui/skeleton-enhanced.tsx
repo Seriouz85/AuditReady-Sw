@@ -103,8 +103,7 @@ export function ChartSkeleton() {
         {Array.from({ length: 8 }).map((_, i) => (
           <Skeleton 
             key={i} 
-            className="flex-1" 
-            style={{ height: `${Math.random() * 200 + 50}px` }}
+            className={`flex-1 ${i % 3 === 0 ? 'h-32' : i % 3 === 1 ? 'h-48' : 'h-40'}`}
           />
         ))}
       </div>

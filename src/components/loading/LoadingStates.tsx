@@ -55,9 +55,13 @@ export function ProgressLoading({ progress, text, className }: ProgressLoadingPr
         <span>{text || 'Loading...'}</span>
         <span>{Math.round(progress)}%</span>
       </div>
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
         <div 
-          className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+          className={cn(
+            "bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out",
+            progress >= 100 && "w-full",
+            progress < 100 && "transition-[width]"
+          )}
           style={{ width: `${Math.min(progress, 100)}%` }}
         />
       </div>
