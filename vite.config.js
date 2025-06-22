@@ -18,48 +18,73 @@ export default defineConfig(({ command, mode }) => {
           if (isProduction) {
             try {
               // Copy index.html to 404.html for GitHub Pages SPA routing
-              fs.copyFileSync('./dist/index.html', './dist/404.html');
+              if (fs.existsSync('dist/index.html')) {
+                fs.copyFileSync('dist/index.html', 'dist/404.html');
+                console.log('✅ Generated 404.html for GitHub Pages routing');
+              }
               
-              // Create .nojekyll file to disable Jekyll processing
-              fs.writeFileSync('./dist/.nojekyll', '');
+              // Generate _redirects file for Netlify/Vercel
+              const redirectsContent = '/*    /index.html   200';
+              fs.writeFileSync('dist/_redirects', redirectsContent);
+              console.log('✅ Generated _redirects file');
               
-              // Create _redirects file for Netlify/Vercel
-              fs.writeFileSync('./dist/_redirects', '/* /index.html 200');
+              // Generate .nojekyll for GitHub Pages
+              fs.writeFileSync('dist/.nojekyll', '');
+              console.log('✅ Generated .nojekyll file');
               
-              console.log('✅ GitHub Pages files generated successfully!');
             } catch (error) {
-              console.error('❌ Error generating GitHub Pages files:', error);
+              console.warn('⚠️ Warning: Could not generate deployment files:', error.message);
             }
           }
         }
       }
     ],
+    optimizeDeps: {
+      exclude: [
+        'mermaid',
+        '@mermaid-js/mermaid',
+        'quadrantDiagram-120e2f19',
+        'cytoscape',
+        'cytoscape-cose-bilkent',
+        'cytoscape-fcose',
+        'd3',
+        'dagre-d3',
+        'elkjs'
+      ],
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom'
+      ]
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    // Use different base path based on deployment target
-    base: isProduction 
-      ? (isGitHubPages ? './' : '/') 
-      : '/',
+    base: isGitHubPages ? '/audit-readiness-hub/' : '/',
     build: {
       outDir: 'dist',
+      emptyOutDir: true,
       assetsDir: 'assets',
-      // Add source maps for better debugging
       sourcemap: true,
+      minify: 'terser',
       rollupOptions: {
         output: {
+          entryFileNames: `assets/[name]-[hash].js`,
+          chunkFileNames: `assets/[name]-[hash].js`,
+          assetFileNames: `assets/[name]-[hash].[ext]`,
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
-          },
+          }
         },
       },
     },
     server: {
-      port: 3001,
-      open: true, // Auto-open browser
-      host: true, // Listen on all addresses
-    }
+      port: 8080,
+      strictPort: true,
+    },
+    publicDir: 'public',
+    assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.ico']
   }
-}) 
+})

@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
@@ -30,13 +31,14 @@ import CourseDetail from "./pages/LMS/CourseDetail";
 import LMSAdmin from "./pages/LMS/Admin";
 import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
 import GraphicalEditor from "./pages/documents/GraphicalEditor";
-import { AdminDashboard } from "./pages/admin/AdminDashboard";
-import { AnalyticsDashboard } from "./pages/admin/analytics/AnalyticsDashboard";
-import { BillingManagement } from "./pages/admin/billing/BillingManagement";
-import { StandardDetail } from "./pages/admin/standards/StandardDetail";
-import { OrganizationDetail } from "./pages/admin/organizations/OrganizationDetail";
-import { UserManagement } from "./pages/admin/users/UserManagement";
-import { SystemSettings } from "./pages/admin/system/SystemSettings";
+// Lazy load admin components for code splitting
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const AnalyticsDashboard = lazy(() => import("./pages/admin/analytics/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
+const BillingManagement = lazy(() => import("./pages/admin/billing/BillingManagement").then(m => ({ default: m.BillingManagement })));
+const StandardDetail = lazy(() => import("./pages/admin/standards/StandardDetail").then(m => ({ default: m.StandardDetail })));
+const OrganizationDetail = lazy(() => import("./pages/admin/organizations/OrganizationDetail").then(m => ({ default: m.OrganizationDetail })));
+const UserManagement = lazy(() => import("./pages/admin/users/UserManagement").then(m => ({ default: m.UserManagement })));
+const SystemSettings = lazy(() => import("./pages/admin/system/SystemSettings").then(m => ({ default: m.SystemSettings })));
 import EntraCallbackPage from "./pages/auth/EntraCallbackPage";
 
 import { LanguageProvider } from "./providers/LanguageProvider";
@@ -44,6 +46,8 @@ import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { AdminLoadingSpinner } from "./components/AdminLoadingSpinner";
 
 const queryClient = new QueryClient();
 
@@ -59,15 +63,16 @@ const basename = import.meta.env.DEV
 // EmptyLayout removed as it was unused
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <ZoomProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter basename={basename}>
+  <ErrorBoundary context="app-root">
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <ZoomProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter basename={basename}>
                 <Routes>
                   {/* Public pages */}
                   <Route path="/" element={<Landing />} />
@@ -229,7 +234,9 @@ const App = () => (
                     path="/admin" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <AdminDashboard />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <AdminDashboard />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -237,7 +244,9 @@ const App = () => (
                     path="/admin/standards/:id" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <StandardDetail />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <StandardDetail />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -245,7 +254,9 @@ const App = () => (
                     path="/admin/organizations/:id" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <OrganizationDetail />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <OrganizationDetail />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -253,7 +264,9 @@ const App = () => (
                     path="/admin/users" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <UserManagement />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <UserManagement />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -261,7 +274,9 @@ const App = () => (
                     path="/admin/users/*" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <UserManagement />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <UserManagement />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -269,7 +284,9 @@ const App = () => (
                     path="/admin/settings/*" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <SystemSettings />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <SystemSettings />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -277,7 +294,9 @@ const App = () => (
                     path="/admin/system/*" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <SystemSettings />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <SystemSettings />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -285,7 +304,9 @@ const App = () => (
                     path="/admin/analytics" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <AnalyticsDashboard />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <AnalyticsDashboard />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -293,7 +314,9 @@ const App = () => (
                     path="/admin/billing" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <BillingManagement />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <BillingManagement />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -301,7 +324,9 @@ const App = () => (
                     path="/admin/*" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
-                        <AdminDashboard />
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <AdminDashboard />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -315,6 +340,7 @@ const App = () => (
       </ZoomProvider>
     </ThemeProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

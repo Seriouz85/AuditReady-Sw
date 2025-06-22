@@ -5,77 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content="AuditReady - Modern Compliance Management Platform" />
     <meta name="author" content="AuditReady" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="AuditReady - Security Compliance Platform" />
-    <meta property="og:description" content="Transform your compliance journey with AuditReady - the intelligent platform designed for modern security teams." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://seriouz85.github.io/" />
-    <meta property="og:image" content="https://seriouz85.github.io/ar-logo.jpeg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>AuditReady</title>
 
     <!-- D3 and D3-org-chart -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-org-chart@3.1.1/build/d3-org-chart.min.js"></script>
-    
-    <!-- SPA Routing for GitHub Pages -->
-    <script type="text/javascript">
-      // Only run this script on GitHub Pages
-      if (window.location.hostname.includes('github.io')) {
-        // Single Page Apps for GitHub Pages
-        // MIT License
-        // https://github.com/rafgraph/spa-github-pages
-        (function(l) {
-          if (l.search[1] === '/' ) {
-            var decoded = l.search.slice(1).split('&').map(function(s) { 
-              return s.replace(/~and~/g, '&')
-            }).join('?');
-            window.history.replaceState(null, null,
-                l.pathname.slice(0, -1) + decoded + l.hash
-            );
-          }
-        }(window.location))
-      }
-    </script>
-
-    <!-- Handle standalone editor pages -->
-    <script type="text/javascript">
-      // Check if we're accessing the editor route
-      if (window.location.pathname === '/editor') {
-        // Add class to body for CSS targeting
-        document.addEventListener('DOMContentLoaded', function() {
-          document.body.classList.add('standalone-editor-page');
-          
-          // Force isolation by removing app layout elements after they render
-          function isolateEditor() {
-            const layoutElements = document.querySelectorAll(
-              '.app-layout, .layout, #app-layout, #app-header, #app-sidebar, header, nav, aside, ' + 
-              '.navbar, .sidebar, .app-content'
-            );
-            
-            layoutElements.forEach(function(element) {
-              if (element) {
-                element.style.display = 'none';
-                element.style.visibility = 'hidden';
-                element.style.opacity = '0';
-                element.style.pointerEvents = 'none';
-              }
-            });
-          }
-          
-          // Run multiple times to catch elements as they load
-          isolateEditor();
-          setTimeout(isolateEditor, 100);
-          setTimeout(isolateEditor, 500);
-          setTimeout(isolateEditor, 1000);
-        });
-      }
-    </script>
-    <script type="module" crossorigin src="/assets/index-hig4fJJe.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/vendor-Bzgx-mGT.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-D6oAzpQC.css">
+    <script type="module" crossorigin src="/assets/index-uaWztg2h.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-C7EHCLAm.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-C1CvJA3l.css">
   </head>
   <body>
     <div id="root"></div>
