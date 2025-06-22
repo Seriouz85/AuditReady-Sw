@@ -19,7 +19,9 @@ import {
   ListTree,
   Network,
   GraduationCap,
-  Activity
+  Activity,
+  TrendingUp,
+  Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -190,6 +192,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     { to: '/app/standards', icon: <Shield size={20} />, label: t('nav.standards') },
     { to: '/app/requirements', icon: <BookOpen size={20} />, label: t('nav.requirements') },
     { to: '/app/assessments', icon: <CheckSquare size={20} />, label: t('nav.assessments') },
+    { to: '/app/gap-analysis', icon: <TrendingUp size={20} />, label: 'Gap Analysis' },
+    { to: '/app/compliance-monitoring', icon: <Bell size={20} />, label: 'Monitoring & Alerts' },
     { to: '/app/activities', icon: <Activity size={20} />, label: t('nav.activities', 'Activities') },
     { to: '/app/applications', icon: <Laptop size={20} />, label: t('nav.applications') },
     { to: '/lms', icon: <GraduationCap size={20} />, label: 'Learning' },
@@ -210,7 +214,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       icon: <FolderOpen size={20} />, 
       label: t('nav.documents'),
       subItems: [
-        { to: '/app/documents/linked', icon: <FileText size={16} />, label: 'Linked Documents' },
+        { to: '/app/documents/library', icon: <FolderOpen size={16} />, label: 'Document Library' },
         { to: '/app/documents/missing', icon: <AlertCircle size={16} />, label: 'Missing Evidence' },
         { to: '/app/documents/generator', icon: <FileOutput size={16} />, label: 'Document Generator' },
       ]
@@ -220,7 +224,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   ];
 
   const renderNav = () => (
-    <nav className="flex-1 p-6">
+    <nav className="p-6">
       {navItems.map((item) => (
         <NavItem
           key={item.to}
@@ -251,16 +255,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20" style={{ borderLeft: 'none', marginLeft: '0' }}>
-        <div className="flex items-center justify-between border-b border-border h-[65px] px-6">
+        <div className="flex items-center justify-between border-b border-border min-h-[65px] h-[65px] px-6 flex-shrink-0">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
           </div>
         </div>
         
-        {renderNav()}
+        <div className="flex-1 overflow-y-auto">
+          {renderNav()}
+        </div>
         
-        <div className="p-6 border-t border-border">
+        <div className="p-6 border-t border-border flex-shrink-0">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>
@@ -276,16 +282,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         )}
         style={{ borderLeft: 'none' }}
       >
-        <div className="flex items-center justify-between border-b border-border h-[65px] px-6">
+        <div className="flex items-center justify-between border-b border-border min-h-[65px] h-[65px] px-6 flex-shrink-0">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
           </div>
         </div>
         
-        {renderNav()}
+        <div className="flex-1 overflow-y-auto">
+          {renderNav()}
+        </div>
         
-        <div className="p-6 border-t border-border">
+        <div className="p-6 border-t border-border flex-shrink-0">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>

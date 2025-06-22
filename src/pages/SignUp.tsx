@@ -80,26 +80,55 @@ const SignUp = () => {
   };
 
   const validateForm = () => {
-    if (!formData.firstName.trim()) {
+    // Trim all text inputs
+    const trimmedData = {
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim().toLowerCase(),
+      organizationName: formData.organizationName.trim()
+    };
+    
+    if (!trimmedData.firstName) {
       setSignupError("First name is required");
       return false;
     }
-    if (!formData.lastName.trim()) {
+    if (!trimmedData.lastName) {
       setSignupError("Last name is required");
       return false;
     }
-    if (!formData.email.trim()) {
+    if (!trimmedData.email) {
       setSignupError("Email is required");
       return false;
     }
-    if (!formData.organizationName.trim()) {
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedData.email)) {
+      setSignupError("Please enter a valid email address");
+      return false;
+    }
+    
+    if (!trimmedData.organizationName) {
       setSignupError("Organization name is required");
       return false;
     }
+    
+    // Enhanced password validation
     if (formData.password.length < 8) {
       setSignupError("Password must be at least 8 characters long");
       return false;
     }
+    
+    const hasUppercase = /[A-Z]/.test(formData.password);
+    const hasLowercase = /[a-z]/.test(formData.password);
+    const hasNumber = /\d/.test(formData.password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+    
+    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+      setSignupError("Password must contain at least one uppercase letter, lowercase letter, number, and special character");
+      return false;
+    }
+    
     if (formData.password !== formData.confirmPassword) {
       setSignupError("Passwords do not match");
       return false;
@@ -108,6 +137,16 @@ const SignUp = () => {
       setSignupError("You must accept the Terms of Service to continue");
       return false;
     }
+    
+    // Update form data with trimmed values
+    setFormData(prev => ({
+      ...prev,
+      firstName: trimmedData.firstName,
+      lastName: trimmedData.lastName,
+      email: trimmedData.email,
+      organizationName: trimmedData.organizationName
+    }));
+    
     return true;
   };
 
@@ -123,14 +162,42 @@ const SignUp = () => {
 
     try {
       if (isSupabaseConfigured) {
-        // Try Supabase signup
-        const { data, error } = await supabaseAuth.signUp(formData.email, formData.password);
+        // Try Supabase signup with email verification
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/email-verification`,
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              organization_name: formData.organizationName
+            }
+          }
+        });
         
         if (error) {
           console.error("Supabase signup failed:", error);
-          setSignupError(`Signup failed: ${error.message}`);
+          if (error.message.includes('already registered')) {
+            setSignupError('An account with this email already exists. Please sign in instead.');
+          } else if (error.message.includes('Password should be')) {
+            setSignupError('Password must be at least 6 characters long.');
+          } else {
+            setSignupError(`Signup failed: ${error.message}`);
+          }
         } else if (data?.user) {
           console.log("Supabase signup successful:", data.user);
+          
+          // Store temporary signup data for post-verification setup
+          localStorage.setItem('temp_signup_data', JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            organizationName: formData.organizationName,
+            acceptMarketing: acceptMarketing,
+            selectedTier: selectedTier,
+            assessmentData: assessmentData
+          }));
+          
           setShowSuccess(true);
           toast.success("Account created! Please check your email for verification.");
           
@@ -217,9 +284,28 @@ const SignUp = () => {
     setIsLoading(true);
     try {
       if (isSupabaseConfigured) {
-        // TODO: Implement actual OAuth signup with Supabase
-        console.log(`Social signup with ${provider} (not yet configured)`);
-        toast.info(`${provider.charAt(0).toUpperCase() + provider.slice(1)} signup not configured yet`);
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: provider === 'microsoft' ? 'azure' : provider,
+          options: {
+            redirectTo: `${window.location.origin}/email-verification`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
+          }
+        });
+        
+        if (error) {
+          console.error(`${provider} OAuth signup error:`, error);
+          if (error.message.includes('not enabled')) {
+            toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} signup is not configured for this application`);
+          } else {
+            toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} signup failed: ${error.message}`);
+          }
+        } else {
+          // OAuth redirect will happen automatically
+          toast.info(`Redirecting to ${provider.charAt(0).toUpperCase() + provider.slice(1)}...`);
+        }
       } else {
         // Demo mode - simulate social signup success
         await mockSignInAnonymously();
@@ -233,7 +319,8 @@ const SignUp = () => {
       }
     } catch (error) {
       console.error(`${provider} signup failed:`, error);
-      toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} signup failed`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} signup failed: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -256,12 +343,30 @@ const SignUp = () => {
                 : "Your account has been created successfully in demo mode."
               }
             </p>
-            <Button 
-              onClick={() => navigate(isSupabaseConfigured ? "/login" : "/onboarding")} 
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white"
-            >
-              {isSupabaseConfigured ? "Continue to Login" : "Complete Setup"}
-            </Button>
+            {isSupabaseConfigured ? (
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => navigate("/email-verification")} 
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white"
+                >
+                  Go to Email Verification
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate("/login")} 
+                  className="w-full"
+                >
+                  Back to Login
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                onClick={() => navigate("/onboarding")} 
+                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white"
+              >
+                Complete Setup
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -466,6 +571,7 @@ const SignUp = () => {
                 onClick={() => handleSocialSignUp('google')} 
                 disabled={isLoading}
                 className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
+                title={isSupabaseConfigured ? 'Sign up with Google' : 'Demo Google signup'}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -480,6 +586,7 @@ const SignUp = () => {
                 onClick={() => handleSocialSignUp('microsoft')} 
                 disabled={isLoading}
                 className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
+                title={isSupabaseConfigured ? 'Sign up with Microsoft' : 'Demo Microsoft signup'}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#f25022" d="M1 1h10v10H1z"/>

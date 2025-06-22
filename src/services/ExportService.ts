@@ -1,0 +1,708 @@
+/**
+ * Export Service - Comprehensive data export and reporting system
+ * Supports PDF, Excel, CSV exports with custom formatting and branding
+ */
+
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+import { supabase } from '@/lib/supabase';
+import { useMultiTenantServices } from './MultiTenantService';
+
+export interface ExportOptions {
+  format: 'pdf' | 'excel' | 'csv' | 'json';
+  includeCharts?: boolean;
+  includeSummary?: boolean;
+  includeDetails?: boolean;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+  filters?: Record<string, any>;
+  branding?: {
+    logo?: string;
+    organizationName?: string;
+    colors?: {
+      primary: string;
+      secondary: string;
+    };
+  };
+}
+
+export interface ReportData {
+  title: string;
+  subtitle?: string;
+  generatedAt: Date;
+  generatedBy: string;
+  organization: {
+    name: string;
+    id: string;
+  };
+  summary?: {
+    totalRequirements: number;
+    fulfilledRequirements: number;
+    compliancePercentage: number;
+    criticalFindings: number;
+  };
+  sections: ReportSection[];
+  metadata?: Record<string, any>;
+}
+
+export interface ReportSection {
+  title: string;
+  type: 'table' | 'chart' | 'text' | 'image';
+  data: any;
+  columns?: string[];
+  chartType?: 'bar' | 'pie' | 'line' | 'area';
+}
+
+export class ExportService {
+  private static instance: ExportService;
+  private organizationContext: any;
+
+  constructor() {
+    // Initialize with auth context if available
+  }
+
+  static getInstance(): ExportService {
+    if (!ExportService.instance) {
+      ExportService.instance = new ExportService();
+    }
+    return ExportService.instance;
+  }
+
+  setOrganizationContext(context: any): void {
+    this.organizationContext = context;
+  }
+
+  /**
+   * Export compliance assessment report
+   */
+  async exportAssessmentReport(
+    assessmentId: string,
+    options: ExportOptions
+  ): Promise<string> {
+    const reportData = await this.generateAssessmentReportData(assessmentId);
+
+    switch (options.format) {
+      case 'pdf':
+        return this.generatePDFReport(reportData, options);
+      case 'excel':
+        return this.generateExcelReport(reportData, options);
+      case 'csv':
+        return this.generateCSVReport(reportData, options);
+      case 'json':
+        return this.generateJSONReport(reportData, options);
+      default:
+        throw new Error(`Unsupported export format: ${options.format}`);
+    }
+  }
+
+  /**
+   * Export compliance dashboard summary
+   */
+  async exportComplianceSummary(
+    organizationId: string,
+    options: ExportOptions
+  ): Promise<string> {
+    const reportData = await this.generateComplianceSummaryData(organizationId, options);
+
+    switch (options.format) {
+      case 'pdf':
+        return this.generatePDFReport(reportData, options);
+      case 'excel':
+        return this.generateExcelReport(reportData, options);
+      case 'csv':
+        return this.generateCSVReport(reportData, options);
+      default:
+        throw new Error(`Unsupported export format: ${options.format}`);
+    }
+  }
+
+  /**
+   * Export gap analysis report
+   */
+  async exportGapAnalysisReport(
+    gapAnalysisId: string,
+    options: ExportOptions
+  ): Promise<string> {
+    const reportData = await this.generateGapAnalysisReportData(gapAnalysisId);
+
+    switch (options.format) {
+      case 'pdf':
+        return this.generatePDFReport(reportData, options);
+      case 'excel':
+        return this.generateExcelReport(reportData, options);
+      case 'csv':
+        return this.generateCSVReport(reportData, options);
+      default:
+        throw new Error(`Unsupported export format: ${options.format}`);
+    }
+  }
+
+  /**
+   * Generate PDF report with professional formatting
+   */
+  private async generatePDFReport(
+    reportData: ReportData,
+    options: ExportOptions
+  ): Promise<string> {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    let yPosition = 20;
+
+    // Add header with branding
+    if (options.branding?.logo) {
+      // Add logo (would need to be base64 encoded)
+      // doc.addImage(options.branding.logo, 'PNG', 20, 10, 30, 15);
+    }
+
+    // Title
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(reportData.title, 20, yPosition);
+    yPosition += 10;
+
+    if (reportData.subtitle) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      doc.text(reportData.subtitle, 20, yPosition);
+      yPosition += 10;
+    }
+
+    // Report metadata
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated: ${format(reportData.generatedAt, 'PPpp')}`, 20, yPosition);
+    yPosition += 5;
+    doc.text(`Organization: ${reportData.organization.name}`, 20, yPosition);
+    yPosition += 5;
+    doc.text(`Generated by: ${reportData.generatedBy}`, 20, yPosition);
+    yPosition += 15;
+
+    // Summary section
+    if (options.includeSummary && reportData.summary) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Executive Summary', 20, yPosition);
+      yPosition += 10;
+
+      const summaryData = [
+        ['Total Requirements', reportData.summary.totalRequirements.toString()],
+        ['Fulfilled Requirements', reportData.summary.fulfilledRequirements.toString()],
+        ['Compliance Percentage', `${reportData.summary.compliancePercentage}%`],
+        ['Critical Findings', reportData.summary.criticalFindings.toString()]
+      ];
+
+      autoTable(doc, {
+        startY: yPosition,
+        head: [['Metric', 'Value']],
+        body: summaryData,
+        theme: 'grid',
+        styles: { fontSize: 10 },
+        headStyles: { 
+          fillColor: options.branding?.colors?.primary ? 
+            this.hexToRgb(options.branding.colors.primary) : [66, 139, 202] 
+        }
+      });
+
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+    }
+
+    // Report sections
+    for (const section of reportData.sections) {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(section.title, 20, yPosition);
+      yPosition += 10;
+
+      if (section.type === 'table' && section.data && section.columns) {
+        autoTable(doc, {
+          startY: yPosition,
+          head: [section.columns],
+          body: section.data,
+          theme: 'striped',
+          styles: { fontSize: 9 },
+          headStyles: { 
+            fillColor: options.branding?.colors?.primary ? 
+              this.hexToRgb(options.branding.colors.primary) : [66, 139, 202] 
+          }
+        });
+        yPosition = (doc as any).lastAutoTable.finalY + 10;
+      } else if (section.type === 'text') {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const textLines = doc.splitTextToSize(section.data, pageWidth - 40);
+        doc.text(textLines, 20, yPosition);
+        yPosition += textLines.length * 5 + 10;
+      }
+    }
+
+    // Add footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `Page ${i} of ${pageCount} - Generated by AuditReady`,
+        pageWidth - 60,
+        pageHeight - 10
+      );
+    }
+
+    // Save and return blob URL
+    const pdfBlob = doc.output('blob');
+    const url = URL.createObjectURL(pdfBlob);
+    
+    // Store in Supabase storage
+    const fileName = `${reportData.title.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+    await this.uploadToStorage(pdfBlob, fileName, 'application/pdf');
+
+    return url;
+  }
+
+  /**
+   * Generate Excel report with multiple sheets
+   */
+  private async generateExcelReport(
+    reportData: ReportData,
+    options: ExportOptions
+  ): Promise<string> {
+    const workbook = XLSX.utils.book_new();
+
+    // Summary sheet
+    if (options.includeSummary && reportData.summary) {
+      const summaryData = [
+        ['Report Title', reportData.title],
+        ['Generated', format(reportData.generatedAt, 'PPpp')],
+        ['Organization', reportData.organization.name],
+        ['Generated by', reportData.generatedBy],
+        [''],
+        ['Metric', 'Value'],
+        ['Total Requirements', reportData.summary.totalRequirements],
+        ['Fulfilled Requirements', reportData.summary.fulfilledRequirements],
+        ['Compliance Percentage', `${reportData.summary.compliancePercentage}%`],
+        ['Critical Findings', reportData.summary.criticalFindings]
+      ];
+
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+    }
+
+    // Data sheets for each section
+    reportData.sections.forEach((section, index) => {
+      if (section.type === 'table' && section.data && section.columns) {
+        const sheetData = [section.columns, ...section.data];
+        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+        
+        // Auto-size columns
+        const colWidths = section.columns.map((col, colIndex) => {
+          const maxLength = Math.max(
+            col.length,
+            ...section.data.map((row: any[]) => 
+              row[colIndex] ? row[colIndex].toString().length : 0
+            )
+          );
+          return { wch: Math.min(maxLength + 2, 50) };
+        });
+        worksheet['!cols'] = colWidths;
+
+        XLSX.utils.book_append_sheet(
+          workbook, 
+          worksheet, 
+          section.title.substring(0, 31) // Excel sheet name limit
+        );
+      }
+    });
+
+    // Generate and save
+    const excelBuffer = XLSX.write(workbook, { 
+      type: 'array', 
+      bookType: 'xlsx' 
+    });
+    const blob = new Blob([excelBuffer], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
+    
+    const fileName = `${reportData.title.replace(/\s+/g, '_')}_${Date.now()}.xlsx`;
+    await this.uploadToStorage(blob, fileName, blob.type);
+
+    return URL.createObjectURL(blob);
+  }
+
+  /**
+   * Generate CSV report
+   */
+  private async generateCSVReport(
+    reportData: ReportData,
+    options: ExportOptions
+  ): Promise<string> {
+    let csvContent = '';
+
+    // Add header
+    csvContent += `"${reportData.title}"\n`;
+    csvContent += `"Generated: ${format(reportData.generatedAt, 'PPpp')}"\n`;
+    csvContent += `"Organization: ${reportData.organization.name}"\n`;
+    csvContent += `"Generated by: ${reportData.generatedBy}"\n\n`;
+
+    // Add summary
+    if (options.includeSummary && reportData.summary) {
+      csvContent += '"Executive Summary"\n';
+      csvContent += '"Metric","Value"\n';
+      csvContent += `"Total Requirements","${reportData.summary.totalRequirements}"\n`;
+      csvContent += `"Fulfilled Requirements","${reportData.summary.fulfilledRequirements}"\n`;
+      csvContent += `"Compliance Percentage","${reportData.summary.compliancePercentage}%"\n`;
+      csvContent += `"Critical Findings","${reportData.summary.criticalFindings}"\n\n`;
+    }
+
+    // Add sections
+    reportData.sections.forEach(section => {
+      if (section.type === 'table' && section.data && section.columns) {
+        csvContent += `"${section.title}"\n`;
+        csvContent += section.columns.map(col => `"${col}"`).join(',') + '\n';
+        
+        section.data.forEach((row: any[]) => {
+          csvContent += row.map(cell => `"${cell || ''}"`).join(',') + '\n';
+        });
+        csvContent += '\n';
+      }
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const fileName = `${reportData.title.replace(/\s+/g, '_')}_${Date.now()}.csv`;
+    await this.uploadToStorage(blob, fileName, 'text/csv');
+
+    return URL.createObjectURL(blob);
+  }
+
+  /**
+   * Generate JSON report
+   */
+  private async generateJSONReport(
+    reportData: ReportData,
+    options: ExportOptions
+  ): Promise<string> {
+    const jsonData = {
+      ...reportData,
+      exportOptions: options,
+      exportedAt: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { 
+      type: 'application/json' 
+    });
+    
+    const fileName = `${reportData.title.replace(/\s+/g, '_')}_${Date.now()}.json`;
+    await this.uploadToStorage(blob, fileName, 'application/json');
+
+    return URL.createObjectURL(blob);
+  }
+
+  /**
+   * Generate assessment report data
+   */
+  private async generateAssessmentReportData(assessmentId: string): Promise<ReportData> {
+    const { data: assessment, error: assessmentError } = await supabase
+      .from('assessments')
+      .select(`
+        *,
+        organization:organizations(*),
+        creator:organization_users(name),
+        assessment_requirements(
+          *,
+          requirement:requirements_library(*)
+        )
+      `)
+      .eq('id', assessmentId)
+      .single();
+
+    if (assessmentError) {
+      throw new Error(`Failed to fetch assessment: ${assessmentError.message}`);
+    }
+
+    const requirements = assessment.assessment_requirements || [];
+    const totalRequirements = requirements.length;
+    const fulfilledRequirements = requirements.filter(
+      (req: any) => req.status === 'fulfilled'
+    ).length;
+    const compliancePercentage = totalRequirements > 0 
+      ? Math.round((fulfilledRequirements / totalRequirements) * 100) 
+      : 0;
+
+    // Group requirements by status
+    const requirementsByStatus = requirements.reduce((acc: any, req: any) => {
+      if (!acc[req.status]) acc[req.status] = [];
+      acc[req.status].push(req);
+      return acc;
+    }, {});
+
+    const sections: ReportSection[] = [
+      {
+        title: 'Assessment Overview',
+        type: 'table',
+        columns: ['Field', 'Value'],
+        data: [
+          ['Assessment Name', assessment.name],
+          ['Description', assessment.description || 'N/A'],
+          ['Status', assessment.status],
+          ['Start Date', assessment.start_date || 'N/A'],
+          ['Target Completion', assessment.target_completion_date || 'N/A'],
+          ['Progress', `${assessment.progress}%`]
+        ]
+      },
+      {
+        title: 'Requirements Summary',
+        type: 'table',
+        columns: ['Status', 'Count', 'Percentage'],
+        data: [
+          ['Fulfilled', fulfilledRequirements, `${Math.round((fulfilledRequirements / totalRequirements) * 100)}%`],
+          ['Partially Fulfilled', requirementsByStatus['partially-fulfilled']?.length || 0, `${Math.round(((requirementsByStatus['partially-fulfilled']?.length || 0) / totalRequirements) * 100)}%`],
+          ['Not Fulfilled', requirementsByStatus['not-fulfilled']?.length || 0, `${Math.round(((requirementsByStatus['not-fulfilled']?.length || 0) / totalRequirements) * 100)}%`],
+          ['Not Applicable', requirementsByStatus['not-applicable']?.length || 0, `${Math.round(((requirementsByStatus['not-applicable']?.length || 0) / totalRequirements) * 100)}%`]
+        ]
+      },
+      {
+        title: 'Detailed Requirements',
+        type: 'table',
+        columns: ['Requirement Code', 'Title', 'Status', 'Evidence', 'Notes'],
+        data: requirements.map((req: any) => [
+          req.requirement?.requirement_code || 'N/A',
+          req.requirement?.title || 'N/A',
+          req.status,
+          req.evidence ? 'Yes' : 'No',
+          req.notes || 'N/A'
+        ])
+      }
+    ];
+
+    return {
+      title: `Assessment Report - ${assessment.name}`,
+      subtitle: `Compliance Assessment for ${assessment.organization.name}`,
+      generatedAt: new Date(),
+      generatedBy: assessment.creator?.name || 'System',
+      organization: {
+        name: assessment.organization.name,
+        id: assessment.organization.id
+      },
+      summary: {
+        totalRequirements,
+        fulfilledRequirements,
+        compliancePercentage,
+        criticalFindings: requirementsByStatus['not-fulfilled']?.length || 0
+      },
+      sections,
+      metadata: {
+        assessmentId: assessment.id,
+        organizationId: assessment.organization_id
+      }
+    };
+  }
+
+  /**
+   * Generate compliance summary data
+   */
+  private async generateComplianceSummaryData(
+    organizationId: string,
+    options: ExportOptions
+  ): Promise<ReportData> {
+    // Fetch organization data
+    const { data: organization } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('id', organizationId)
+      .single();
+
+    // Fetch compliance data with date range filtering
+    let query = supabase
+      .from('assessments')
+      .select(`
+        *,
+        assessment_requirements(
+          *,
+          requirement:requirements_library(*)
+        )
+      `)
+      .eq('organization_id', organizationId)
+      .eq('status', 'completed');
+
+    if (options.dateRange) {
+      query = query
+        .gte('completed_date', options.dateRange.start.toISOString())
+        .lte('completed_date', options.dateRange.end.toISOString());
+    }
+
+    const { data: assessments } = await query;
+
+    // Calculate overall metrics
+    const totalAssessments = assessments?.length || 0;
+    const allRequirements = assessments?.flatMap(a => a.assessment_requirements) || [];
+    const totalRequirements = allRequirements.length;
+    const fulfilledRequirements = allRequirements.filter(req => req.status === 'fulfilled').length;
+    const compliancePercentage = totalRequirements > 0 
+      ? Math.round((fulfilledRequirements / totalRequirements) * 100) 
+      : 0;
+
+    const sections: ReportSection[] = [
+      {
+        title: 'Organization Overview',
+        type: 'table',
+        columns: ['Field', 'Value'],
+        data: [
+          ['Organization Name', organization?.name || 'N/A'],
+          ['Subscription Tier', organization?.subscription_tier || 'N/A'],
+          ['Total Assessments', totalAssessments],
+          ['Reporting Period', options.dateRange ? 
+            `${format(options.dateRange.start, 'PP')} - ${format(options.dateRange.end, 'PP')}` : 
+            'All Time'
+          ]
+        ]
+      },
+      {
+        title: 'Assessment Summary',
+        type: 'table',
+        columns: ['Assessment', 'Status', 'Progress', 'Completed Date'],
+        data: assessments?.map(assessment => [
+          assessment.name,
+          assessment.status,
+          `${assessment.progress}%`,
+          assessment.completed_date ? format(new Date(assessment.completed_date), 'PP') : 'N/A'
+        ]) || []
+      }
+    ];
+
+    return {
+      title: 'Compliance Summary Report',
+      subtitle: `Organization Compliance Overview`,
+      generatedAt: new Date(),
+      generatedBy: 'System',
+      organization: {
+        name: organization?.name || 'Unknown',
+        id: organizationId
+      },
+      summary: {
+        totalRequirements,
+        fulfilledRequirements,
+        compliancePercentage,
+        criticalFindings: allRequirements.filter(req => req.status === 'not-fulfilled').length
+      },
+      sections
+    };
+  }
+
+  /**
+   * Generate gap analysis report data
+   */
+  private async generateGapAnalysisReportData(gapAnalysisId: string): Promise<ReportData> {
+    const { data: gapAnalysis } = await supabase
+      .from('gap_analysis')
+      .select(`
+        *,
+        organization:organizations(*),
+        gap_items(
+          *,
+          requirement:requirements_library(*)
+        ),
+        recommendations(*)
+      `)
+      .eq('id', gapAnalysisId)
+      .single();
+
+    if (!gapAnalysis) {
+      throw new Error('Gap analysis not found');
+    }
+
+    const sections: ReportSection[] = [
+      {
+        title: 'Gap Analysis Overview',
+        type: 'table',
+        columns: ['Field', 'Value'],
+        data: [
+          ['Analysis Date', format(new Date(gapAnalysis.analysis_date), 'PP')],
+          ['Overall Maturity Score', `${gapAnalysis.overall_maturity_score}/100`],
+          ['Methodology', gapAnalysis.methodology || 'N/A'],
+          ['Total Gap Items', gapAnalysis.gap_items?.length || 0],
+          ['Total Recommendations', gapAnalysis.recommendations?.length || 0]
+        ]
+      },
+      {
+        title: 'Gap Items by Severity',
+        type: 'table',
+        columns: ['Requirement', 'Gap Type', 'Severity', 'Current State', 'Target State'],
+        data: gapAnalysis.gap_items?.map((item: any) => [
+          item.requirement?.title || 'N/A',
+          item.gap_type,
+          item.severity,
+          item.current_state || 'N/A',
+          item.target_state || 'N/A'
+        ]) || []
+      },
+      {
+        title: 'Recommendations',
+        type: 'table',
+        columns: ['Title', 'Type', 'Description', 'Effort', 'Impact'],
+        data: gapAnalysis.recommendations?.map((rec: any) => [
+          rec.title,
+          rec.recommendation_type,
+          rec.description,
+          rec.estimated_effort || 'N/A',
+          rec.expected_impact || 'N/A'
+        ]) || []
+      }
+    ];
+
+    return {
+      title: 'Gap Analysis Report',
+      subtitle: `Compliance Gap Analysis for ${gapAnalysis.organization.name}`,
+      generatedAt: new Date(),
+      generatedBy: 'System',
+      organization: {
+        name: gapAnalysis.organization.name,
+        id: gapAnalysis.organization.id
+      },
+      sections
+    };
+  }
+
+  /**
+   * Upload file to Supabase storage
+   */
+  private async uploadToStorage(blob: Blob, fileName: string, mimeType: string): Promise<string> {
+    const { data, error } = await supabase.storage
+      .from('exports')
+      .upload(`reports/${fileName}`, blob, {
+        contentType: mimeType,
+        upsert: true
+      });
+
+    if (error) {
+      console.error('Failed to upload to storage:', error);
+      // Continue without storage - return blob URL
+      return URL.createObjectURL(blob);
+    }
+
+    return data.path;
+  }
+
+  /**
+   * Helper function to convert hex color to RGB array
+   */
+  private hexToRgb(hex: string): [number, number, number] {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : [66, 139, 202]; // Default blue
+  }
+}
+
+export default ExportService;

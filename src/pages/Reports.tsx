@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ComingSoonBadge } from "@/components/ui/coming-soon-badge";
 import { standards, assessments } from "@/data/mockData";
 import { FileText, Download, Filter } from "lucide-react";
 import { useState } from "react";
+import { toast } from "@/utils/toast";
 
 const Reports = () => {
   const [standardFilter, setStandardFilter] = useState<string>("all");
@@ -25,8 +27,14 @@ const Reports = () => {
   return (
     <div className="space-y-6 px-4 sm:px-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Compliance Reports</h1>
-        <Button className="w-full sm:w-auto">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Compliance Reports</h1>
+          <ComingSoonBadge variant="development" />
+        </div>
+        <Button 
+          className="w-full sm:w-auto" 
+          onClick={() => toast.info('Report generation feature coming soon!')}
+        >
           <FileText className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">Generate Report</span>
           <span className="sm:hidden">Generate</span>

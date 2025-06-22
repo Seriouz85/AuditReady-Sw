@@ -1347,6 +1347,125 @@ const Settings = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Document Access Levels Configuration */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Document Access Levels</CardTitle>
+              <CardDescription>
+                Customize the document access level labels for your organization
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {isDemo && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    📊 Demo Mode: Access level customization is read-only in the demo version.
+                  </p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="access-public">Public Level Label</Label>
+                  <Input 
+                    id="access-public" 
+                    defaultValue="Public" 
+                    disabled={isDemo}
+                    placeholder="e.g., Public, Open, Unrestricted"
+                    onBlur={e => {
+                      if (!isDemo) {
+                        const accessLevels = JSON.parse(localStorage.getItem('organizationAccessLevels') || '{}');
+                        accessLevels.public = e.target.value;
+                        localStorage.setItem('organizationAccessLevels', JSON.stringify(accessLevels));
+                        toast.success('Public access level label updated');
+                      }
+                    }} 
+                  />
+                  <p className="text-xs text-gray-500">Documents visible to all users and external parties</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="access-internal">Internal Level Label</Label>
+                  <Input 
+                    id="access-internal" 
+                    defaultValue="Internal" 
+                    disabled={isDemo}
+                    placeholder="e.g., Internal, Company-wide, Staff"
+                    onBlur={e => {
+                      if (!isDemo) {
+                        const accessLevels = JSON.parse(localStorage.getItem('organizationAccessLevels') || '{}');
+                        accessLevels.internal = e.target.value;
+                        localStorage.setItem('organizationAccessLevels', JSON.stringify(accessLevels));
+                        toast.success('Internal access level label updated');
+                      }
+                    }} 
+                  />
+                  <p className="text-xs text-gray-500">Documents visible to all organization members</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="access-confidential">Confidential Level Label</Label>
+                  <Input 
+                    id="access-confidential" 
+                    defaultValue="Confidential" 
+                    disabled={isDemo}
+                    placeholder="e.g., Confidential, Sensitive, Limited"
+                    onBlur={e => {
+                      if (!isDemo) {
+                        const accessLevels = JSON.parse(localStorage.getItem('organizationAccessLevels') || '{}');
+                        accessLevels.confidential = e.target.value;
+                        localStorage.setItem('organizationAccessLevels', JSON.stringify(accessLevels));
+                        toast.success('Confidential access level label updated');
+                      }
+                    }} 
+                  />
+                  <p className="text-xs text-gray-500">Documents with restricted access to specific users</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="access-restricted">Restricted Level Label</Label>
+                  <Input 
+                    id="access-restricted" 
+                    defaultValue="Restricted" 
+                    disabled={isDemo}
+                    placeholder="e.g., Restricted, Top Secret, Executive"
+                    onBlur={e => {
+                      if (!isDemo) {
+                        const accessLevels = JSON.parse(localStorage.getItem('organizationAccessLevels') || '{}');
+                        accessLevels.restricted = e.target.value;
+                        localStorage.setItem('organizationAccessLevels', JSON.stringify(accessLevels));
+                        toast.success('Restricted access level label updated');
+                      }
+                    }} 
+                  />
+                  <p className="text-xs text-gray-500">Documents with highest security restrictions</p>
+                </div>
+              </div>
+              
+              {!isDemo && (
+                <div className="pt-4 border-t">
+                  <Button onClick={() => {
+                    localStorage.setItem('organizationAccessLevels', JSON.stringify({
+                      public: 'Public',
+                      internal: 'Internal', 
+                      confidential: 'Confidential',
+                      restricted: 'Restricted'
+                    }));
+                    // Reset all input values
+                    const inputs = document.querySelectorAll('#access-public, #access-internal, #access-confidential, #access-restricted') as NodeListOf<HTMLInputElement>;
+                    inputs.forEach((input, index) => {
+                      const defaults = ['Public', 'Internal', 'Confidential', 'Restricted'];
+                      input.value = defaults[index];
+                    });
+                    toast.success('Access level labels reset to defaults');
+                  }}>
+                    Reset to Defaults
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
         
         {/* Users & Access Management */}

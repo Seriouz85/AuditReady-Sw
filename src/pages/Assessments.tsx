@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 // Removed unused Progress component
 // import { Progress } from "@/components/ui/progress"; 
 import { assessments as initialAssessments, standards } from "@/data/mockData";
+import { assessmentProgressService } from "@/services/assessments/AssessmentProgressService";
+import { assessmentStorageService } from "@/services/assessments/AssessmentStorageService";
 // Removed unused BarChart, Calendar, CheckCircle2, User icons
 import { Plus, Check, ChevronsUpDown } from "lucide-react"; 
 import { AssessmentDetail } from "@/components/assessments/AssessmentDetail";
@@ -53,7 +55,17 @@ import {
 import { cn } from "@/lib/utils";
 
 const Assessments = () => {
-  const [assessments, setAssessments] = useState<Assessment[]>(initialAssessments);
+  // Initialize assessments with real progress calculation and stored data
+  const [assessments, setAssessments] = useState<Assessment[]>(() => {
+    const storedAssessments = assessmentStorageService.getAllAssessments();
+    return storedAssessments.map(assessment => {
+      const stats = assessmentProgressService.getAssessmentProgress(assessment);
+      return {
+        ...assessment,
+        progress: stats.progress
+      };
+    });
+  });
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
   const [isNewAssessmentOpen, setIsNewAssessmentOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -105,44 +117,71 @@ const Assessments = () => {
   };
 
   const handleSaveAssessment = (updatedAssessment: Assessment) => {
+    // Get updated progress from the service
+    const stats = assessmentProgressService.getAssessmentProgress(updatedAssessment);
+    const assessmentWithProgress = {
+      ...updatedAssessment,
+      progress: stats.progress
+    };
+    
+    // Save to storage service
+    assessmentStorageService.saveAssessment(assessmentWithProgress);
+    
     const updatedAssessments = assessments.map(a => 
-      a.id === updatedAssessment.id ? updatedAssessment : a
+      a.id === updatedAssessment.id ? assessmentWithProgress : a
     );
     setAssessments(updatedAssessments);
+    
+    // Update selected assessment if it's the one being saved
+    if (selectedAssessment && selectedAssessment.id === updatedAssessment.id) {
+      setSelectedAssessment(assessmentWithProgress);
+    }
+    
     toast.success(t('assessments.toast.saved'));
   };
 
   const handleDeleteAssessment = (id: string) => {
+    // Delete from storage service
+    assessmentStorageService.deleteAssessment(id);
+    
     setAssessments(assessments.filter(a => a.id !== id));
     setSelectedAssessment(null);
     toast.success(t('assessments.toast.deleted'));
   };
 
   const handleCompleteAssessment = (id: string) => {
-    const updatedAssessments = assessments.map(a => 
-      a.id === id ? { 
-        ...a, 
-        status: 'completed', 
-        endDate: new Date().toISOString(), 
-        progress: 100 
-      } as Assessment : a
-    );
-    setAssessments(updatedAssessments);
+    // Update assessment status in storage
+    const updatedAssessment = assessmentStorageService.updateAssessmentStatus(id, 'completed', {
+      endDate: new Date().toISOString(),
+      progress: 100
+    });
+    
+    if (updatedAssessment) {
+      const updatedAssessments = assessments.map(a => 
+        a.id === id ? updatedAssessment : a
+      );
+      setAssessments(updatedAssessments);
+    }
+    
     setSelectedAssessment(null);
     toast.success(t('assessments.toast.completed'));
   };
 
   const handleReopenAssessment = (id: string) => {
-    const updatedAssessments = assessments.map(a => 
-      a.id === id ? { 
-        ...a, 
-        status: 'in-progress', 
-        endDate: null 
-      } as Assessment : a
-    );
-    setAssessments(updatedAssessments);
-    // Keep the assessment detail view open
-    setSelectedAssessment(updatedAssessments.find(a => a.id === id) || null);
+    // Update assessment status in storage
+    const updatedAssessment = assessmentStorageService.updateAssessmentStatus(id, 'in-progress', {
+      endDate: null
+    });
+    
+    if (updatedAssessment) {
+      const updatedAssessments = assessments.map(a => 
+        a.id === id ? updatedAssessment : a
+      );
+      setAssessments(updatedAssessments);
+      // Keep the assessment detail view open
+      setSelectedAssessment(updatedAssessment);
+    }
+    
     toast.success(t('assessments.toast.reopened'));
   };
 
@@ -194,24 +233,18 @@ const Assessments = () => {
       return;
     }
 
-    // Create new assessment
-    const now = new Date().toISOString();
-    const newId = `assessment-${assessments.length + 1}`;
-    
-    const createdAssessment: Assessment = {
-      id: newId,
+    // Create new assessment using storage service
+    const createdAssessment = assessmentStorageService.createAssessment({
       name: newAssessment.name,
       standardIds: newAssessment.standardIds,
       description: newAssessment.description,
       status: 'draft',
       progress: 0,
-      startDate: now,
+      startDate: new Date().toISOString(),
       endDate: null,
       assessorName: newAssessment.assessorName,
       assessorId: 'user-1', // Default user ID
-      updatedAt: now,
-      createdAt: now
-    };
+    });
 
     // Add to assessments
     setAssessments(prev => [...prev, createdAssessment]);

@@ -180,18 +180,20 @@ const Dashboard = () => {
             data-card="true"
           />
         </div>
-        <StatsCard
-          title="Compliance Score"
-          value={`${dashboardStats.complianceScore}%`}
-          icon={<BarChart3 size={16} />}
-          trend={{
-            value: 5,
-            isPositive: true
-          }}
-          description="Overall compliance rate"
-          className="shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-background to-blue-50 dark:from-gray-900 dark:to-blue-950/30 border border-border/70"
-          data-card="true"
-        />
+        <div onClick={() => navigate("/app/compliance-monitoring")} className="cursor-pointer">
+          <StatsCard
+            title="Compliance Score"
+            value={`${dashboardStats.complianceScore}%`}
+            icon={<BarChart3 size={16} />}
+            trend={{
+              value: 5,
+              isPositive: true
+            }}
+            description="Overall compliance rate"
+            className="shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-background to-blue-50 dark:from-gray-900 dark:to-blue-950/30 border border-border/70 hover:bg-muted/20 dark:hover:bg-slate-800/60"
+            data-card="true"
+          />
+        </div>
       </motion.div>
 
       <motion.div

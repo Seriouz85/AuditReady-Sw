@@ -147,10 +147,12 @@ export default function Landing() {
           <div className="flex items-center space-x-1 sm:space-x-4">
             <Button 
               variant="ghost" 
-              className={`hidden md:inline-flex ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+              size="sm"
+              className={`inline-flex ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
               onClick={() => navigate("/about")}
             >
-              About Dev
+              <span className="hidden sm:inline">About Dev</span>
+              <span className="sm:hidden">Dev</span>
             </Button>
             <div className="hidden sm:flex items-center space-x-2">
               <ZoomToggle />
@@ -167,7 +169,7 @@ export default function Landing() {
             <Button 
               size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 text-xs sm:text-sm font-semibold shadow-md border-2 border-blue-500/20"
-              onClick={() => navigate("/onboarding")}
+              onClick={() => navigate("/start-journey")}
             >
               Get Started
             </Button>
@@ -207,7 +209,7 @@ export default function Landing() {
             <Button 
               size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-lg w-full sm:w-auto"
-              onClick={() => navigate("/onboarding")}
+              onClick={() => navigate("/start-journey")}
             >
               Start Your Journey
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -955,7 +957,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-blue-50 px-8"
-                  onClick={() => navigate("/onboarding")}
+                  onClick={() => navigate("/start-journey")}
                 >
                   Get Started Now
                 </Button>

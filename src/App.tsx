@@ -8,11 +8,16 @@ import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ResetPassword from "./pages/ResetPassword";
+import EmailVerification from "./pages/EmailVerification";
 import PricingAssessment from "./pages/PricingAssessment";
 import Onboarding from "./pages/Onboarding";
 import EnhancedOnboarding from "./pages/EnhancedOnboarding";
+import EnhancedOnboardingFlow from "./pages/EnhancedOnboardingFlow";
+import GuidedStandardImport from "./pages/GuidedStandardImport";
 import AcceptInvitation from "./pages/AcceptInvitation";
 import About from "./pages/About";
+import PublicOnboarding from "./pages/PublicOnboarding";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
 import CreateLearningPath from "./pages/LMS/CreateLearningPath";
@@ -68,18 +73,37 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/pricing" element={<PricingAssessment />} />
                   <Route path="/signup" element={<SignUp />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/email-verification" element={<EmailVerification />} />
                   <Route path="/invite/:token" element={<AcceptInvitation />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/start-journey" element={<PublicOnboarding />} />
                   
                   {/* Protected pages requiring authentication */}
-                  {/* Redirect old onboarding routes to pricing */}
+                  {/* Enhanced onboarding flow for authenticated users */}
                   <Route 
                     path="/onboarding" 
-                    element={<Navigate to="/pricing" replace />} 
+                    element={
+                      <ProtectedRoute>
+                        <EnhancedOnboardingFlow />
+                      </ProtectedRoute>
+                    } 
                   />
                   <Route 
-                    path="/onboarding/*" 
-                    element={<Navigate to="/pricing" replace />} 
+                    path="/onboarding-legacy" 
+                    element={
+                      <ProtectedRoute>
+                        <Onboarding />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/guided-import" 
+                    element={
+                      <ProtectedRoute>
+                        <GuidedStandardImport />
+                      </ProtectedRoute>
+                    } 
                   />
                   <Route 
                     path="/app/*" 

@@ -10,11 +10,17 @@ import { Requirement, RequirementStatus, TagCategory, RequirementPriority } from
 import { ArrowLeft, Filter, Plus, Search, Flag, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SaveIndicator } from "@/components/ui/save-indicator";
 import { useTranslation } from "@/lib/i18n";
 import { useRequirementsService, RequirementWithStatus } from "@/services/requirements/RequirementsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/utils/toast";
+import { useRequirementsRealTime } from "@/hooks/useRequirementsRealTime";
+import { RequirementsRealTimeService } from "@/services/requirements/RequirementsRealTimeService";
+import { RequirementCollaborationIndicators } from "@/components/requirements/RequirementCollaborationIndicators";
+import { RequirementConflictResolver } from "@/components/requirements/RequirementConflictResolver";
+import { ConflictResolution } from "@/services/requirements/RequirementsService";
 
 const Requirements = () => {
   const [searchParams] = useSearchParams();
@@ -22,7 +28,7 @@ const Requirements = () => {
   const statusFromUrl = searchParams.get("status") as RequirementStatus | null;
   const priorityFromUrl = searchParams.get("priority") as RequirementPriority | null;
   const { t } = useTranslation();
-  const { isDemo } = useAuth();
+  const { isDemo, organization } = useAuth();
   const requirementsService = useRequirementsService();
   
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,9 +48,33 @@ const Requirements = () => {
   const [selectedRequirement, setSelectedRequirement] = useState<RequirementWithStatus | null>(null);
   const [localRequirements, setLocalRequirements] = useState<RequirementWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [realTimeStatus, setRealTimeStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
   const [sortConfig, setSortConfig] = useState<{ key: keyof RequirementWithStatus; direction: 'asc' | 'desc' } | null>(null);
   const [standards, setStandards] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
+  const [conflictToResolve, setConflictToResolve] = useState<ConflictResolution | null>(null);
+  const [collaborationSessionId, setCollaborationSessionId] = useState<string | null>(null);
+  
+  // Initialize real-time service
+  const realTimeService = RequirementsRealTimeService.getInstance();
+  
+  // Get real-time data
+  const {
+    requirements: realTimeRequirements,
+    activeUsers,
+    recentActivities,
+    isConnected,
+    conflictedRequirements,
+    startCollaboration,
+    endCollaboration,
+    resolveConflict,
+    refreshRequirements
+  } = useRequirementsRealTime({
+    organizationId: organization?.id || '',
+    standardId: standardFilter !== 'all' ? standardFilter : undefined,
+    enabled: !isDemo
+  });
 
   // Load requirements data
   useEffect(() => {
@@ -71,7 +101,38 @@ const Requirements = () => {
     if (newPriorityFromUrl && ['default', 'low', 'medium', 'high'].includes(newPriorityFromUrl)) {
       setPriorityFilter(newPriorityFromUrl);
     }
-  }, [searchParams, standardIdFromUrl]);
+    
+    // Start collaboration session when viewing requirements
+    if (!isDemo && organization?.id) {
+      handleStartCollaboration('viewing');
+    }
+  }, [searchParams, standardIdFromUrl, isDemo]);
+  
+  // Clean up collaboration session on unmount
+  useEffect(() => {
+    return () => {
+      if (collaborationSessionId) {
+        endCollaboration(collaborationSessionId);
+      }
+    };
+  }, [collaborationSessionId, endCollaboration]);
+  
+  // Monitor for conflicts
+  useEffect(() => {
+    conflictedRequirements.forEach(requirementId => {
+      if (!conflictToResolve) {
+        const requirement = localRequirements.find(r => r.id === requirementId);
+        if (requirement) {
+          setConflictToResolve({
+            requirementId,
+            conflictType: 'version_mismatch',
+            localValue: requirement,
+            remoteValue: null
+          });
+        }
+      }
+    });
+  }, [conflictedRequirements, localRequirements, conflictToResolve]);
 
   const loadRequirements = async () => {
     try {
@@ -80,9 +141,18 @@ const Requirements = () => {
         standardFilter !== "all" ? standardFilter : undefined
       );
       setLocalRequirements(requirementsData);
+      
+      // Show helpful message for first-time users
+      if (requirementsData.length === 0 && !isDemo) {
+        toast.info('No requirements found. Import standards first to get started.');
+      }
     } catch (error) {
       console.error('Error loading requirements:', error);
-      toast.error('Failed to load requirements');
+      toast.error(
+        isDemo 
+          ? 'Demo data unavailable' 
+          : 'Failed to load requirements. Please check your connection.'
+      );
     } finally {
       setLoading(false);
     }
@@ -122,6 +192,40 @@ const Requirements = () => {
     setSortConfig({ key, direction });
   };
 
+  // Real-time collaboration handlers
+  const handleStartCollaboration = async (actionType: 'viewing' | 'editing' | 'commenting') => {
+    if (isDemo) return;
+    
+    try {
+      const sessionId = await realTimeService.startCollaboration(
+        organization?.id || '',
+        'general', // General collaboration for the page
+        '', // User ID will be handled by the service
+        actionType
+      );
+      if (sessionId) {
+        setCollaborationSessionId(sessionId);
+      }
+    } catch (error) {
+      console.error('Error starting collaboration:', error);
+    }
+  };
+
+  const handleConflictResolve = async (conflict: ConflictResolution) => {
+    try {
+      await resolveConflict(conflict.requirementId, conflict.resolution || 'keep_remote');
+      setConflictToResolve(null);
+      
+      // Refresh requirements after conflict resolution
+      if (!isDemo) {
+        await refreshRequirements();
+      }
+    } catch (error) {
+      console.error('Error resolving conflict:', error);
+      toast.error('Failed to resolve conflict');
+    }
+  };
+
   const handleUpdateRequirement = async (
     requirementId: string,
     updates: {
@@ -135,7 +239,40 @@ const Requirements = () => {
     }
   ) => {
     try {
-      const result = await requirementsService.updateRequirement(requirementId, updates);
+      // Show saving state
+      setSaveStatus('saving');
+      
+      // Start editing collaboration
+      if (!isDemo) {
+        await handleStartCollaboration('editing');
+      }
+      
+      let result;
+      
+      if (!isDemo) {
+        // Use real-time service for conflict detection
+        const currentReq = localRequirements.find(r => r.id === requirementId);
+        result = await realTimeService.updateRequirementWithConflictDetection(
+          organization?.id || '',
+          requirementId,
+          updates,
+          {
+            expectedVersion: currentReq?.version,
+            optimisticUpdate: true
+          }
+        );
+        
+        // Handle conflicts
+        if (result.conflict) {
+          setConflictToResolve(result.conflict);
+          setSaveStatus('error');
+          return;
+        }
+      } else {
+        // Fallback to regular service for demo mode
+        result = await requirementsService.updateRequirement(requirementId, updates);
+      }
+      
       if (result.success) {
         // Update local state
         setLocalRequirements(prev => prev.map(req => 
@@ -150,17 +287,30 @@ const Requirements = () => {
                 responsibleParty: updates.responsibleParty ?? req.responsibleParty,
                 organizationTags: updates.tags ?? req.organizationTags,
                 riskLevel: updates.riskLevel ?? req.riskLevel,
-                lastUpdated: new Date().toISOString()
+                lastUpdated: new Date().toISOString(),
+                version: result.data?.version || req.version
               }
             : req
         ));
-        toast.success('Requirement updated successfully');
+        setSaveStatus('saved');
+        toast.success(
+          isDemo 
+            ? 'Changes saved locally (demo mode)' 
+            : 'Requirement updated successfully'
+        );
+        
+        // Reset save status after delay
+        setTimeout(() => setSaveStatus('idle'), 2000);
       } else {
+        setSaveStatus('error');
         toast.error(result.error || 'Failed to update requirement');
+        setTimeout(() => setSaveStatus('idle'), 3000);
       }
     } catch (error) {
       console.error('Error updating requirement:', error);
+      setSaveStatus('error');
       toast.error('Failed to update requirement');
+      setTimeout(() => setSaveStatus('idle'), 3000);
     }
   };
 
@@ -362,10 +512,25 @@ const Requirements = () => {
         </div>
         
         {!selectedRequirement && (
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            {t('requirements.button.add', 'Add Requirement')}
-          </Button>
+          <div className="flex items-center gap-4">
+            <SaveIndicator status={saveStatus} isDemo={isDemo} />
+            {!isDemo && (
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full ${
+                  realTimeStatus === 'connected' ? 'bg-green-500' : 
+                  realTimeStatus === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
+                }`} />
+                <span className="text-xs text-muted-foreground">
+                  {realTimeStatus === 'connected' ? 'Live' : 
+                   realTimeStatus === 'reconnecting' ? 'Reconnecting...' : 'Offline'}
+                </span>
+              </div>
+            )}
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('requirements.button.add', 'Add Requirement')}
+            </Button>
+          </div>
         )}
       </div>
       
@@ -553,6 +718,18 @@ const Requirements = () => {
             onGuidanceChange={handleGuidanceChange}
           />
         </>
+      )}
+
+      {/* Conflict Resolution Dialog */}
+      {conflictToResolve && (
+        <RequirementConflictResolver
+          isOpen={!!conflictToResolve}
+          onClose={() => setConflictToResolve(null)}
+          conflict={conflictToResolve}
+          onResolve={handleConflictResolve}
+          requirementTitle={localRequirements.find(r => r.id === conflictToResolve.requirementId)?.name || 'Unknown'}
+          requirementCode={localRequirements.find(r => r.id === conflictToResolve.requirementId)?.code || 'N/A'}
+        />
       )}
     </div>
   );

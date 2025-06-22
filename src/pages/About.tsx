@@ -38,7 +38,7 @@ export default function About() {
     {
       icon: <Brain className="h-8 w-8" />,
       title: "AI Innovation",
-      description: "Smart automation for repetitive security tasks",
+      description: "Smart automation for repetitive security tasks and processes",
       color: "purple"
     },
     {
@@ -199,87 +199,92 @@ export default function About() {
                 transition={{ delay: 0.2 }}
                 className="mb-16"
               >
-                <div className={`relative`}>
-                    <div className="p-8 md:p-10">
-                      {/* Decorative element */}
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                        className="flex justify-center mb-6"
-                      >
-                        <div className={`w-16 h-1 ${theme === 'light' ? 'bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400' : 'bg-gradient-to-r from-blue-300 via-blue-500 to-blue-300'} rounded-full`}></div>
-                      </motion.div>
-                      
-                      <h2 className={`text-3xl md:text-4xl font-light ${theme === 'light' ? 'text-slate-800' : 'text-slate-100'} mb-8 text-center tracking-wide font-sans`}>
-                        My Vision
-                      </h2>
-                      
-                      <div className="text-center mb-10">
-                        <motion.p 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.4 }}
-                          className={`text-xl md:text-2xl lg:text-3xl font-bold mb-6 leading-tight tracking-tight`}
-                        >
-                          <span className={`${theme === 'light' ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent'}`}>
-                            Making compliance intuitive.
-                          </span>
-                          <br />
-                          <span className={`${theme === 'light' ? 'bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent'}`}>
-                            Security accessible.
-                          </span>
-                          <br />
-                          <span className={`${theme === 'light' ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent'}`}>
-                            Work enjoyable.
-                          </span>
-                        </motion.p>
-                        
-                        <motion.p 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className={`text-base md:text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} leading-relaxed max-w-xl mx-auto font-light italic`}
-                        >
-                          I believe information security doesn't have to be overwhelming.<br className="hidden sm:block" />
-                          With the right tools and approach, we can transform complex compliance requirements into clear, actionable insights that empower teams to work more effectively and confidently.
-                        </motion.p>
-                      </div>
-                      
-                      <motion.div 
+                <div className={`relative group`}>
+                  {/* Glowing background effect */}
+                  <div className={`absolute -inset-1 ${theme === 'light' ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-400 to-blue-600'} rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition duration-1000`}></div>
+                  
+                  <Card className={`relative ${theme === 'light' ? 'bg-white/2 border-slate-200/20 shadow-2xl' : 'bg-slate-800/2 border-slate-600/20 shadow-2xl shadow-slate-900/50'} backdrop-blur-sm`}>
+                    <CardContent className="p-8 md:p-10">
+                    {/* Decorative element */}
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                      className="flex justify-center mb-6"
+                    >
+                      <div className={`w-16 h-1 ${theme === 'light' ? 'bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400' : 'bg-gradient-to-r from-blue-300 via-blue-500 to-blue-300'} rounded-full`}></div>
+                    </motion.div>
+                    
+                    <h2 className={`text-3xl md:text-4xl font-light ${theme === 'light' ? 'text-slate-800' : 'text-slate-100'} mb-8 text-center tracking-wide font-sans`}>
+                      My Vision
+                    </h2>
+                    
+                    <div className="text-center mb-10">
+                      <motion.p 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="grid grid-cols-3 gap-4 md:gap-6"
+                        transition={{ delay: 0.4 }}
+                        className={`text-xl md:text-2xl lg:text-3xl font-bold mb-6 leading-tight tracking-tight`}
                       >
-                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50/70 to-blue-100/40 border border-blue-200/20' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
-                          <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
-                            Simple
-                          </div>
-                          <p className={`text-xs md:text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} font-medium tracking-wide uppercase`}>
-                            Complexity simplified
-                          </p>
-                        </div>
-                        
-                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-purple-50/70 to-purple-100/40 border border-purple-200/20' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
-                          <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>
-                            Smart
-                          </div>
-                          <p className={`text-xs md:text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} font-medium tracking-wide uppercase`}>
-                            AI-powered insights
-                          </p>
-                        </div>
-                        
-                        <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50/70 to-blue-100/40 border border-blue-200/20' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
-                          <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
-                            Effective
-                          </div>
-                          <p className={`text-xs md:text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} font-medium tracking-wide uppercase`}>
-                            Results that matter
-                          </p>
-                        </div>
-                      </motion.div>
+                        <span className={`${theme === 'light' ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent'}`}>
+                          Making compliance intuitive.
+                        </span>
+                        <br />
+                        <span className={`${theme === 'light' ? 'bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent'}`}>
+                          Security accessible.
+                        </span>
+                        <br />
+                        <span className={`${theme === 'light' ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent'}`}>
+                          Work enjoyable.
+                        </span>
+                      </motion.p>
+                      
+                      <motion.p 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className={`text-base md:text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} leading-relaxed max-w-xl mx-auto font-light italic`}
+                      >
+                        I believe information security doesn't have to be overwhelming.<br className="hidden sm:block" />
+                        With the right tools and approach, we can transform complex compliance requirements into clear, actionable insights that empower teams to work more effectively and confidently.
+                      </motion.p>
                     </div>
+                    
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="grid grid-cols-3 gap-4 md:gap-6"
+                    >
+                      <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50/70 to-blue-100/40 border border-blue-200/20' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
+                        <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
+                          Simple
+                        </div>
+                        <p className={`text-xs md:text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} font-medium tracking-wide uppercase`}>
+                          Complexity simplified
+                        </p>
+                      </div>
+                      
+                      <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-purple-50/70 to-purple-100/40 border border-purple-200/20' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
+                        <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-purple-700' : 'text-purple-300'}`}>
+                          Smart
+                        </div>
+                        <p className={`text-xs md:text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} font-medium tracking-wide uppercase`}>
+                          AI-powered insights
+                        </p>
+                      </div>
+                      
+                      <div className={`text-center p-4 rounded-xl ${theme === 'light' ? 'bg-gradient-to-br from-blue-50/70 to-blue-100/40 border border-blue-200/20' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10'} backdrop-blur-sm transition-transform hover:scale-105`}>
+                        <div className={`text-3xl md:text-4xl font-black mb-2 font-serif ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}`}>
+                          Effective
+                        </div>
+                        <p className={`text-xs md:text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} font-medium tracking-wide uppercase`}>
+                          Results that matter
+                        </p>
+                      </div>
+                    </motion.div>
+                    </CardContent>
+                  </Card>
                 </div>
               </motion.div>
             </div>
@@ -333,7 +338,7 @@ export default function About() {
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
                 <Card className={`h-full ${theme === 'light' ? 'bg-gradient-to-br from-white to-slate-50/80 border-slate-200 shadow-xl hover:shadow-2xl' : 'bg-gradient-to-br from-slate-800/90 to-slate-700/60 border-slate-600 hover:border-slate-500 shadow-2xl shadow-slate-900/20'} transition-all duration-500 hover:scale-105`}>
-                  <CardContent className="p-10 text-center">
+                  <CardContent className="p-10 text-center h-full flex flex-col">
                     <motion.div
                       whileHover={{ rotate: 360, scale: 1.1 }}
                       transition={{ duration: 0.6 }}
@@ -342,7 +347,7 @@ export default function About() {
                         area.color === 'purple' ? (theme === 'light' ? 'bg-gradient-to-br from-purple-100 to-purple-200' : 'bg-gradient-to-br from-purple-500/20 to-purple-600/30') :
                         area.color === 'green' ? (theme === 'light' ? 'bg-gradient-to-br from-green-100 to-green-200' : 'bg-gradient-to-br from-green-500/20 to-green-600/30') :
                         (theme === 'light' ? 'bg-gradient-to-br from-amber-100 to-amber-200' : 'bg-gradient-to-br from-amber-500/20 to-amber-600/30')
-                      } p-6 mx-auto w-fit mb-8 shadow-lg`}
+                      } p-6 mx-auto w-fit mb-8 shadow-lg flex items-center justify-center`}
                     >
                       <div className={`${
                         area.color === 'blue' ? (theme === 'light' ? 'text-blue-700' : 'text-blue-400') :
@@ -356,6 +361,7 @@ export default function About() {
                     <h3 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-4`}>
                       {area.title}
                     </h3>
+                    {area.color !== 'amber' && <div className="flex-grow"></div>}
                     <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} text-base leading-relaxed font-medium`}>
                       {area.description}
                     </p>

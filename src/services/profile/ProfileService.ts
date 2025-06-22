@@ -10,13 +10,51 @@ export interface UserProfile {
   phone?: string;
   bio?: string;
   avatar_url?: string;
+  job_title?: string;
+  department?: string;
+  manager_id?: string;
+  location?: string;
   timezone?: string;
   language?: string;
+  
+  // Social/Contact info
+  linkedin_url?: string;
+  github_url?: string;
+  website_url?: string;
+  
+  // Preferences
   email_notifications?: boolean;
+  push_notifications?: boolean;
+  sms_notifications?: boolean;
+  marketing_emails?: boolean;
+  
+  // Security
   two_factor_enabled?: boolean;
+  last_password_change?: string;
+  failed_login_attempts?: number;
+  account_locked_until?: string;
+  
+  // Activity
+  last_active?: string;
+  last_login?: string;
+  login_count?: number;
+  
+  // Metadata
+  onboarding_completed?: boolean;
+  terms_accepted_at?: string;
+  privacy_policy_accepted_at?: string;
+  
   preferences?: Record<string, any>;
   created_at?: string;
   updated_at?: string;
+  
+  // Related data
+  manager?: UserProfile;
+  direct_reports?: UserProfile[];
+  organization?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface ProfileUpdateData {
@@ -26,10 +64,35 @@ export interface ProfileUpdateData {
   phone?: string;
   bio?: string;
   avatar_url?: string;
+  job_title?: string;
+  department?: string;
+  manager_id?: string;
+  location?: string;
   timezone?: string;
   language?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  website_url?: string;
   email_notifications?: boolean;
+  push_notifications?: boolean;
+  sms_notifications?: boolean;
+  marketing_emails?: boolean;
   preferences?: Record<string, any>;
+}
+
+export interface AvatarUploadResult {
+  success: boolean;
+  avatar_url?: string;
+  error?: string;
+}
+
+export interface UserActivity {
+  id: string;
+  action: string;
+  details: Record<string, any>;
+  ip_address?: string;
+  user_agent?: string;
+  created_at: string;
 }
 
 class ProfileService {
@@ -291,6 +354,245 @@ class ProfileService {
     } catch (error) {
       console.error('Error updating 2FA settings:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Upload avatar with enhanced validation and storage
+   */
+  async uploadAvatar(file: File): Promise<AvatarUploadResult> {
+    try {
+      // Validate file
+      if (!file.type.startsWith('image/')) {
+        return { success: false, error: 'Please upload an image file' };
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        return { success: false, error: 'File size must be less than 5MB' };
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        return { success: false, error: 'User not authenticated' };
+      }
+
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('user-avatars')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('user-avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      await this.updateProfile({ avatar_url: publicUrl });
+
+      return { success: true, avatar_url: publicUrl };
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      return { success: false, error: 'Failed to upload avatar' };
+    }
+  }
+
+  /**
+   * Remove avatar
+   */
+  async removeAvatar(): Promise<{ success: boolean; error?: string }> {
+    try {
+      await this.updateProfile({ avatar_url: undefined });
+      return { success: true };
+    } catch (error) {
+      console.error('Error removing avatar:', error);
+      return { success: false, error: 'Failed to remove avatar' };
+    }
+  }
+
+  /**
+   * Update notification preferences
+   */
+  async updateNotificationPreferences(preferences: {
+    email_notifications?: boolean;
+    push_notifications?: boolean;
+    sms_notifications?: boolean;
+    marketing_emails?: boolean;
+  }): Promise<{ success: boolean; error?: string }> {
+    try {
+      await this.updateProfile(preferences);
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating notification preferences:', error);
+      return { success: false, error: 'Failed to update notification preferences' };
+    }
+  }
+
+  /**
+   * Get user activity history
+   */
+  async getUserActivity(limit = 50): Promise<UserActivity[]> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      // This would query actual activity logs in production
+      // For demo, return mock data
+      return [
+        {
+          id: '1',
+          action: 'profile_updated',
+          details: { fields_changed: ['first_name', 'last_name'] },
+          ip_address: '192.168.1.100',
+          user_agent: navigator.userAgent,
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '2',
+          action: 'avatar_uploaded',
+          details: { file_size: '2.1MB', file_type: 'image/jpeg' },
+          ip_address: '192.168.1.100',
+          user_agent: navigator.userAgent,
+          created_at: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          id: '3',
+          action: 'password_changed',
+          details: {},
+          ip_address: '192.168.1.100',
+          user_agent: navigator.userAgent,
+          created_at: new Date(Date.now() - 172800000).toISOString()
+        }
+      ];
+    } catch (error) {
+      console.error('Error fetching user activity:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get organization members (for manager selection, etc.)
+   */
+  async getOrganizationMembers(): Promise<Array<{
+    id: string;
+    name: string;
+    job_title?: string;
+    department?: string;
+    avatar_url?: string;
+  }>> {
+    try {
+      // This would query actual organization members in production
+      // For demo, return mock data
+      return [
+        {
+          id: 'demo-user-1',
+          name: 'Demo Admin',
+          job_title: 'Chief Technology Officer',
+          department: 'Technology',
+          avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo Admin'
+        },
+        {
+          id: 'demo-user-2',
+          name: 'Demo CISO',
+          job_title: 'Chief Information Security Officer',
+          department: 'Security',
+          avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo CISO'
+        },
+        {
+          id: 'demo-user-3',
+          name: 'Demo Manager',
+          job_title: 'Security Manager',
+          department: 'Security',
+          avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo Manager'
+        }
+      ];
+    } catch (error) {
+      console.error('Error fetching organization members:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get profile completion percentage
+   */
+  getProfileCompleteness(profile: UserProfile): number {
+    const fields = [
+      'first_name',
+      'last_name',
+      'phone',
+      'bio',
+      'job_title',
+      'department',
+      'location',
+      'avatar_url'
+    ];
+
+    const completed = fields.filter(field => {
+      const value = profile[field as keyof UserProfile];
+      return value && value.toString().trim() !== '';
+    }).length;
+
+    return Math.round((completed / fields.length) * 100);
+  }
+
+  /**
+   * Update last active timestamp
+   */
+  async updateLastActive(): Promise<void> {
+    try {
+      await this.updateProfile({
+        preferences: {
+          last_active: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('Error updating last active:', error);
+      // Don't throw as this is a background operation
+    }
+  }
+
+  /**
+   * Accept terms and privacy policy
+   */
+  async acceptTermsAndPrivacy(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const now = new Date().toISOString();
+      await this.updateProfile({
+        preferences: {
+          terms_accepted_at: now,
+          privacy_policy_accepted_at: now
+        }
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error accepting terms and privacy:', error);
+      return { success: false, error: 'Failed to accept terms and privacy policy' };
+    }
+  }
+
+  /**
+   * Mark onboarding as completed
+   */
+  async completeOnboarding(): Promise<{ success: boolean; error?: string }> {
+    try {
+      await this.updateProfile({
+        preferences: {
+          onboarding_completed: true
+        }
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      return { success: false, error: 'Failed to complete onboarding' };
     }
   }
 }

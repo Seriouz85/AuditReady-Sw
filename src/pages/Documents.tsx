@@ -1,9 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import LinkedDocuments from "@/components/documents/LinkedDocuments";
+import { useAuth } from "@/contexts/AuthContext";
+import { DocumentLibrary } from "@/components/documents/DocumentLibrary";
 import MissingEvidence from "@/components/documents/MissingEvidence";
 import DocumentGenerator from "@/components/documents/DocumentGenerator";
 
 const Documents = () => {
+  const { organization, isDemo } = useAuth();
+  
   // Read the correct key from environment variables
   const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || ""; 
 
@@ -14,10 +17,12 @@ const Documents = () => {
     // return <div>API Key is missing. Please configure it in your .env file.</div>;
   }
 
+  const organizationId = organization?.id || 'demo-org';
+
   return (
     <Routes>
-      <Route path="" element={<Navigate to="linked" replace />} />
-      <Route path="linked" element={<LinkedDocuments />} />
+      <Route path="" element={<Navigate to="library" replace />} />
+      <Route path="library" element={<DocumentLibrary organizationId={organizationId} />} />
       <Route path="missing" element={<MissingEvidence />} />
       <Route path="generator" element={<DocumentGenerator apiKey={geminiApiKey} />} />
     </Routes>

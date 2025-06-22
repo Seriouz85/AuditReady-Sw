@@ -197,17 +197,28 @@ const Login = () => {
     setIsLoading(true);
     try {
       if (isSupabaseConfigured) {
-        // TODO: Implement actual OAuth with Supabase
-        // const { data, error } = await supabase.auth.signInWithOAuth({
-        //   provider: provider,
-        //   options: {
-        //     redirectTo: `${window.location.origin}/app`
-        //   }
-        // });
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: provider === 'microsoft' ? 'azure' : provider,
+          options: {
+            redirectTo: `${window.location.origin}/app`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
+          }
+        });
         
-        // For now, simulate social login
-        console.log(`Social login with ${provider} (not yet configured)`);
-        toast.info(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login not configured yet`);
+        if (error) {
+          console.error(`${provider} OAuth error:`, error);
+          if (error.message.includes('not enabled')) {
+            toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login is not configured for this application`);
+          } else {
+            toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login failed: ${error.message}`);
+          }
+        } else {
+          // OAuth redirect will happen automatically
+          toast.info(`Redirecting to ${provider.charAt(0).toUpperCase() + provider.slice(1)}...`);
+        }
       } else {
         // Demo mode - simulate social login success  
         const result = await signIn(DEMO_EMAIL, DEMO_PASSWORD);
@@ -221,7 +232,8 @@ const Login = () => {
       }
     } catch (error) {
       console.error(`${provider} login failed:`, error);
-      toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login failed`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login failed: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -230,33 +242,58 @@ const Login = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotPasswordEmail) {
+    if (!forgotPasswordEmail.trim()) {
       toast.error("Please enter your email address");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(forgotPasswordEmail)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setIsForgotPasswordLoading(true);
     try {
       if (isSupabaseConfigured) {
-        const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail);
+        const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail, {
+          redirectTo: `${window.location.origin}/reset-password`
+        });
+        
         if (error) {
           console.error("Password reset failed:", error);
-          toast.error(`Password reset failed: ${error.message}`);
+          // Provide more user-friendly error messages
+          if (error.message.includes('User not found')) {
+            toast.error("No account found with this email address");
+          } else if (error.message.includes('Email rate limit exceeded')) {
+            toast.error("Too many password reset attempts. Please try again later.");
+          } else {
+            toast.error(`Password reset failed: ${error.message}`);
+          }
         } else {
-          toast.success("Password reset email sent. Check your inbox!");
+          toast.success("Password reset email sent! Check your inbox and spam folder.");
           setShowForgotPassword(false);
           setForgotPasswordEmail("");
         }
       } else {
-        // Mock mode - just show success message
-        toast.info("Password reset email sent (demo mode)");
+        // Demo mode - simulate realistic behavior
+        console.log("Demo password reset for:", forgotPasswordEmail);
+        
+        // Simulate email validation for demo accounts
+        if (forgotPasswordEmail === 'demo@auditready.com') {
+          toast.success("Password reset email sent! (Demo mode - password remains: AuditReady@Demo2025!)");
+        } else {
+          toast.info("Password reset email sent (demo mode - check console for details)");
+        }
+        
         setShowForgotPassword(false);
         setForgotPasswordEmail("");
       }
     } catch (error) {
       const err = error as Error;
       console.error("Password reset error:", err);
-      toast.error("Failed to send password reset email");
+      toast.error("Failed to send password reset email. Please try again.");
     } finally {
       setIsForgotPasswordLoading(false);
     }
@@ -265,11 +302,11 @@ const Login = () => {
   return (
     <div className={`min-h-screen flex ${theme === 'light' ? 'bg-gradient-to-b from-slate-100 to-white' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Left side - Login Form */}
-      <div className={`flex-1 flex flex-col items-center justify-center p-2 sm:p-4 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
+      <div className={`flex-1 flex flex-col items-center justify-center p-1 sm:p-2 ${theme === 'light' ? 'bg-white' : 'bg-slate-800/90'}`}>
         {/* Card Container for Login */}
         <div className="w-full max-w-lg px-2 sm:ml-auto sm:mr-8">
           {/* Logo and Theme Toggle */}
-          <div className="w-full flex justify-between items-center mb-6 sm:mb-8">
+          <div className="w-full flex justify-between items-center mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
               <Shield className={`h-6 w-6 sm:h-8 sm:w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
               <span className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
@@ -280,17 +317,26 @@ const Login = () => {
             </div>
           </div>
           {/* Divider */}
-          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-6 sm:mb-8`} />
+          <div className={`w-full h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'} mb-3 sm:mb-4`} />
           {/* Card for Login Form */}
-          <div className={`w-full space-y-4 sm:space-y-6 p-4 sm:p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800/90 backdrop-blur-lg border-slate-600'}`}> 
-            <div className="text-center space-y-2">
-              <h1 className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Welcome Back</h1>
-              <p className={`text-sm sm:text-base ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure access to your compliance dashboard</p>
-              <p className={`text-xs sm:text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}</p>
-              {!isSupabaseConfigured && (
-                <p className={`mt-2 text-xs ${theme === 'light' ? 'text-amber-600 bg-amber-50' : 'text-amber-400 bg-amber-900/20'} p-2 rounded`}>
-                  Demo mode: Using local authentication
-                </p>
+          <div className={`w-full space-y-6 p-8 rounded-2xl border shadow-xl ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800/90 backdrop-blur-lg border-slate-600'}`}> 
+            <div className="text-center space-y-4">
+              <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>Welcome Back</h1>
+              <p className={`text-base ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Secure access to your compliance dashboard</p>
+              
+              {/* Demo vs Production Mode Indicator */}
+              {isSupabaseConfigured ? (
+                <div className={`mt-2 p-2 rounded-lg border ${theme === 'light' ? 'bg-green-50 border-green-200' : 'bg-green-900/20 border-green-700'}`}>
+                  <p className={`text-xs font-medium ${theme === 'light' ? 'text-green-800' : 'text-green-300'}`}>
+                    🟢 Production Mode
+                  </p>
+                </div>
+              ) : (
+                <div className={`mt-2 p-2 rounded-lg border ${theme === 'light' ? 'bg-amber-50 border-amber-200' : 'bg-amber-900/20 border-amber-700'}`}>
+                  <p className={`text-xs font-medium ${theme === 'light' ? 'text-amber-800' : 'text-amber-300'}`}>
+                    🧪 Demo Mode
+                  </p>
+                </div>
               )}
             </div>
             {loginError && (
@@ -307,9 +353,9 @@ const Login = () => {
                 </div>
               </div>
             )}
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Email</label>
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-3">
+                <label className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Email</label>
                 <Input
                   type="email"
                   value={email}
@@ -319,8 +365,8 @@ const Login = () => {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>Password</label>
+              <div className="space-y-3">
+                <label className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Password</label>
                 <Input
                   type="password"
                   value={password}
@@ -330,7 +376,7 @@ const Login = () => {
                   required
                 />
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="remember" 
@@ -364,16 +410,22 @@ const Login = () => {
                     <form onSubmit={handleForgotPassword} className="space-y-4">
                       <div className="space-y-2">
                         <label className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
-                          Enter your email address and we'll send you a password reset link.
+                          Enter your email address and we'll send you a secure password reset link.
                         </label>
                         <Input
                           type="email"
                           value={forgotPasswordEmail}
                           onChange={(e) => setForgotPasswordEmail(e.target.value)}
                           className={`${theme === 'light' ? 'bg-slate-50 border-slate-200 focus:border-blue-500' : 'bg-slate-700 border-slate-600 text-slate-100 focus:border-blue-500'}`}
-                          placeholder="Enter your email"
+                          placeholder="Enter your email address"
                           required
+                          autoComplete="email"
                         />
+                        {!isSupabaseConfigured && (
+                          <p className={`text-xs ${theme === 'light' ? 'text-amber-600' : 'text-amber-400'}`}>
+                            Demo mode: Password reset simulation only
+                          </p>
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -396,7 +448,7 @@ const Login = () => {
                   </DialogContent>
                 </Dialog>
               </div>
-              <Button type="submit" className="w-full h-10 sm:h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-white font-semibold text-sm sm:text-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed" disabled={isLoading || isRateLimited}>
+              <Button type="submit" className="w-full h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-white font-semibold text-base transition-all disabled:opacity-60 disabled:cursor-not-allowed" disabled={isLoading || isRateLimited}>
                 {isRateLimited 
                   ? `Try again in ${rateLimitTimeLeft}s` 
                   : isLoading 
@@ -405,17 +457,18 @@ const Login = () => {
                 }
               </Button>
             </form>
-            <div className="flex items-center gap-2 my-2">
+            <div className="flex items-center gap-2 my-1">
               <div className={`flex-1 h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'}`} />
               <span className={`text-xs ${theme === 'light' ? 'text-slate-400' : 'text-slate-400'}`}>or</span>
               <div className={`flex-1 h-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-600'}`} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <Button 
                 type="button" 
                 onClick={() => handleSocialLogin('google')} 
                 disabled={isLoading}
                 className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
+                title={isSupabaseConfigured ? 'Sign in with Google' : 'Demo Google login'}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -430,6 +483,7 @@ const Login = () => {
                 onClick={() => handleSocialLogin('microsoft')} 
                 disabled={isLoading}
                 className={`h-12 rounded-full font-semibold shadow-sm border transition-all flex items-center justify-center gap-2 ${theme === 'light' ? 'bg-white hover:bg-gray-50 text-gray-700 border-slate-200' : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-slate-500'}`}
+                title={isSupabaseConfigured ? 'Sign in with Microsoft' : 'Demo Microsoft login'}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#f25022" d="M1 1h10v10H1z"/>
@@ -441,13 +495,21 @@ const Login = () => {
               </Button>
             </div>
             
-            <div className="text-center">
+            <div className="text-center space-y-2">
               <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                 Don't have an account?{' '}
-                <Link to="/pricing" className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-400'} hover:underline font-medium`}>
-                  Sign up
+                <Link to={isSupabaseConfigured ? "/signup" : "/pricing"} className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-400'} hover:underline font-medium`}>
+                  {isSupabaseConfigured ? "Create account" : "Try demo"}
                 </Link>
               </p>
+              {isSupabaseConfigured && (
+                <p className={`text-xs ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
+                  Or explore our{' '}
+                  <Link to="/pricing" className={`${theme === 'light' ? 'text-blue-600' : 'text-blue-400'} hover:underline`}>
+                    pricing and demo
+                  </Link>
+                </p>
+              )}
             </div>
           </div>
         </div>

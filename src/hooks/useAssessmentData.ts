@@ -1,16 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Assessment, Requirement, RequirementStatus, Standard } from '@/types';
-import { requirements as allRequirements, standards as allStandards } from '@/data/mockData';
+import { standards as allStandards } from '@/data/mockData';
+import { assessmentProgressService, AssessmentStats } from '@/services/assessments/AssessmentProgressService';
 
-interface AssessmentStats {
-  totalRequirements: number;
-  fulfilledCount: number;
-  partialCount: number;
-  notFulfilledCount: number;
-  notApplicableCount: number;
-  progress: number;
-  complianceScore: number;
-}
+// Remove duplicate interface as it's now imported from the service
 
 interface UseAssessmentDataReturn {
   assessment: Assessment;
@@ -27,12 +20,16 @@ interface UseAssessmentDataReturn {
 
 export function useAssessmentData(initialAssessment: Assessment): UseAssessmentDataReturn {
   const [assessment, setAssessment] = useState<Assessment>({...initialAssessment});
-  const [assessmentRequirements, setAssessmentRequirements] = useState<Requirement[]>(
-    allRequirements.filter(req => initialAssessment.standardIds.includes(req.standardId))
-  );
+  const [assessmentRequirements, setAssessmentRequirements] = useState<Requirement[]>([]);
   const [activeStandardId, setActiveStandardId] = useState<string | undefined>(
     initialAssessment.standardIds.length === 1 ? initialAssessment.standardIds[0] : undefined
   );
+  
+  // Initialize requirements with stored statuses
+  useEffect(() => {
+    const requirements = assessmentProgressService.getRequirementsWithStoredStatuses(initialAssessment);
+    setAssessmentRequirements(requirements);
+  }, [initialAssessment]);
   
   // Get standards information
   const standards = useMemo(() => {
@@ -46,50 +43,38 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
       : assessmentRequirements;
   }, [assessmentRequirements, activeStandardId]);
   
-  // Calculate stats
+  // Calculate stats using the progress service
   const stats = useMemo(() => {
-    const totalRequirements = filteredRequirements.length;
-    const fulfilledCount = filteredRequirements.filter(req => req.status === 'fulfilled').length;
-    const partialCount = filteredRequirements.filter(req => req.status === 'partially-fulfilled').length;
-    const notFulfilledCount = filteredRequirements.filter(req => req.status === 'not-fulfilled').length;
-    const notApplicableCount = filteredRequirements.filter(req => req.status === 'not-applicable').length;
-
-    // Calculate progress percentage
-    const applicableCount = totalRequirements - notApplicableCount;
-    const progress = applicableCount === 0 
-      ? 100 
-      : Math.round(((fulfilledCount + (partialCount * 0.5)) / applicableCount) * 100);
-    
-    // Calculate compliance score
-    const complianceScore = applicableCount === 0 
-      ? 100 
-      : Math.round(((fulfilledCount + (partialCount * 0.5)) / applicableCount) * 100);
-    
-    return {
-      totalRequirements,
-      fulfilledCount,
-      partialCount,
-      notFulfilledCount,
-      notApplicableCount,
-      progress,
-      complianceScore,
-    };
+    return assessmentProgressService.calculateAssessmentStats(filteredRequirements);
   }, [filteredRequirements]);
   
   // Update requirement status
   const updateRequirementStatus = (reqId: string, newStatus: RequirementStatus) => {
-    const updatedRequirements = assessmentRequirements.map(req => 
-      req.id === reqId ? { ...req, status: newStatus } : req
-    );
-    
-    setAssessmentRequirements(updatedRequirements);
-    
-    // Update assessment progress
-    setAssessment(prev => ({
-      ...prev,
-      progress: stats.progress,
-      updatedAt: new Date().toISOString(),
-    }));
+    try {
+      // Update the requirement status using the progress service
+      const updatedStats = assessmentProgressService.updateRequirementStatus(
+        assessment.id, 
+        reqId, 
+        newStatus
+      );
+      
+      // Update local requirements state
+      const updatedRequirements = assessmentRequirements.map(req => 
+        req.id === reqId ? { ...req, status: newStatus } : req
+      );
+      setAssessmentRequirements(updatedRequirements);
+      
+      // Update assessment with new progress
+      setAssessment(prev => ({
+        ...prev,
+        progress: updatedStats.progress,
+        updatedAt: new Date().toISOString(),
+      }));
+      
+    } catch (error) {
+      console.error('Error updating requirement status:', error);
+      // Could show a toast error here if needed
+    }
   };
   
   // Update assessment data

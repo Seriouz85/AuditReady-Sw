@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Shield, Building2, Users, Check, ChevronRight, ChevronLeft, 
   Star, Zap, Crown, Calculator, TrendingUp, Home 
@@ -37,6 +37,7 @@ interface PricingTier {
 const PricingAssessment = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
   
@@ -50,6 +51,16 @@ const PricingAssessment = () => {
   });
 
   const totalSteps = 3;
+
+  // Handle recommended plan from onboarding
+  useEffect(() => {
+    const recommended = searchParams.get('recommended');
+    if (recommended) {
+      setRecommendedTier(recommended);
+      // Skip assessment and go directly to pricing if we have a recommendation
+      setCurrentStep(4);
+    }
+  }, [searchParams]);
 
   const organizationTypes = [
     { id: "startup", name: "Startup", description: "Early stage company, rapid growth" },
@@ -271,21 +282,22 @@ const PricingAssessment = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-4">
-            <div className="text-center space-y-1">
-              <Building2 className={`h-8 w-8 mx-auto ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
-              <h2 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+          <div className="space-y-6">
+            <div className="text-center space-y-2">
+              <Building2 className={`h-10 w-10 mx-auto ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
+              <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
                 Tell us about your organization
               </h2>
-              <p className={`text-sm ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
+              <p className={`text-base ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}>
                 Help us understand your compliance needs and recommend the perfect plan
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-4 mt-4">
-              <div className="space-y-3">
+            <div className="grid lg:grid-cols-3 gap-8 mt-8">
+              {/* Left Column - Organization Details */}
+              <div className="space-y-6">
                 <div>
-                  <label className={`text-sm font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  <label className={`text-sm font-semibold mb-2 block ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
                     Organization Name
                   </label>
                   <Input
@@ -296,102 +308,131 @@ const PricingAssessment = () => {
                       ...prev,
                       organizationName: e.target.value
                     }))}
-                    className={`mt-1 h-10 text-sm ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-700 border-slate-600'}`}
+                    className={`h-11 ${theme === 'light' ? 'bg-white border-slate-300 focus:border-blue-500' : 'bg-slate-800 border-slate-600 focus:border-blue-400'}`}
                   />
                 </div>
 
                 <div>
-                  <label className={`text-sm font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  <label className={`text-sm font-semibold mb-3 block ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
                     Organization Type
                   </label>
-                  <div className="grid grid-cols-1 gap-1 mt-1">
+                  <div className="space-y-2">
                     {organizationTypes.map((type) => (
-                      <button
+                      <label
                         key={type.id}
-                        onClick={() => setAssessmentData(prev => ({
-                          ...prev,
-                          organizationType: type.id
-                        }))}
-                        className={`p-2 text-left rounded-lg border transition-all text-sm ${
+                        className={`flex items-start p-3 rounded-lg border cursor-pointer transition-all ${
                           assessmentData.organizationType === type.id
                             ? theme === 'light'
-                              ? 'border-blue-500 bg-blue-50 text-blue-700'
-                              : 'border-blue-400 bg-blue-900/30 text-blue-300'
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-blue-400 bg-blue-900/20'
                             : theme === 'light'
-                              ? 'border-slate-200 hover:border-slate-300'
-                              : 'border-slate-600 hover:border-slate-500'
+                              ? 'border-slate-200 hover:border-slate-300 bg-white'
+                              : 'border-slate-700 hover:border-slate-600 bg-slate-800'
                         }`}
                       >
-                        <div className="font-medium text-sm">{type.name}</div>
-                        <div className={`text-xs ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
-                          {type.description}
+                        <input
+                          type="radio"
+                          name="organizationType"
+                          value={type.id}
+                          checked={assessmentData.organizationType === type.id}
+                          onChange={() => setAssessmentData(prev => ({
+                            ...prev,
+                            organizationType: type.id
+                          }))}
+                          className="mt-0.5 mr-3"
+                        />
+                        <div className="flex-1">
+                          <div className={`font-medium text-sm ${assessmentData.organizationType === type.id ? theme === 'light' ? 'text-blue-700' : 'text-blue-300' : theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                            {type.name}
+                          </div>
+                          <div className={`text-xs mt-0.5 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
+                            {type.description}
+                          </div>
                         </div>
-                      </button>
+                      </label>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className={`text-base font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
-                    Industry
-                  </label>
-                  <div className="grid grid-cols-1 gap-2 mt-3">
-                    {industries.map((industry) => (
-                      <button
-                        key={industry}
-                        onClick={() => setAssessmentData(prev => ({
+              {/* Middle Column - Industry */}
+              <div>
+                <label className={`text-sm font-semibold mb-3 block ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  Industry
+                </label>
+                <div className="space-y-2">
+                  {industries.map((industry) => (
+                    <label
+                      key={industry}
+                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${
+                        assessmentData.industry === industry
+                          ? theme === 'light'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-blue-400 bg-blue-900/20'
+                          : theme === 'light'
+                            ? 'border-slate-200 hover:border-slate-300 bg-white'
+                            : 'border-slate-700 hover:border-slate-600 bg-slate-800'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="industry"
+                        value={industry}
+                        checked={assessmentData.industry === industry}
+                        onChange={() => setAssessmentData(prev => ({
                           ...prev,
                           industry
                         }))}
-                        className={`p-2 text-left rounded-lg border transition-all text-sm ${
-                          assessmentData.industry === industry
-                            ? theme === 'light'
-                              ? 'border-blue-500 bg-blue-50 text-blue-700'
-                              : 'border-blue-400 bg-blue-900/30 text-blue-300'
-                            : theme === 'light'
-                              ? 'border-slate-200 hover:border-slate-300'
-                              : 'border-slate-600 hover:border-slate-500'
-                        }`}
-                      >
+                        className="mr-3"
+                      />
+                      <span className={`text-sm ${assessmentData.industry === industry ? theme === 'light' ? 'text-blue-700' : 'text-blue-300' : theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
                         {industry}
-                      </button>
-                    ))}
-                  </div>
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className={`text-base font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
-                    Company Size
-                  </label>
-                  <div className="grid grid-cols-1 gap-3 mt-3">
-                    {companySizeOptions.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => setAssessmentData(prev => ({
+              {/* Right Column - Company Size */}
+              <div>
+                <label className={`text-sm font-semibold mb-3 block ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  Company Size
+                </label>
+                <div className="space-y-2">
+                  {companySizeOptions.map((option) => (
+                    <label
+                      key={option.id}
+                      className={`flex items-start p-3 rounded-lg border cursor-pointer transition-all ${
+                        assessmentData.companySize === option.id
+                          ? theme === 'light'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-blue-400 bg-blue-900/20'
+                          : theme === 'light'
+                            ? 'border-slate-200 hover:border-slate-300 bg-white'
+                            : 'border-slate-700 hover:border-slate-600 bg-slate-800'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="companySize"
+                        value={option.id}
+                        checked={assessmentData.companySize === option.id}
+                        onChange={() => setAssessmentData(prev => ({
                           ...prev,
                           companySize: option.id
                         }))}
-                        className={`p-2 text-left rounded-lg border transition-all text-sm ${
-                          assessmentData.companySize === option.id
-                            ? theme === 'light'
-                              ? 'border-blue-500 bg-blue-50 text-blue-700'
-                              : 'border-blue-400 bg-blue-900/30 text-blue-300'
-                            : theme === 'light'
-                              ? 'border-slate-200 hover:border-slate-300'
-                              : 'border-slate-600 hover:border-slate-500'
-                        }`}
-                      >
-                        <div className="font-medium text-sm">{option.name}</div>
-                        <div className={`text-xs ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
+                        className="mt-0.5 mr-3"
+                      />
+                      <div className="flex-1">
+                        <div className={`font-medium text-sm ${assessmentData.companySize === option.id ? theme === 'light' ? 'text-blue-700' : 'text-blue-300' : theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
+                          {option.name}
+                        </div>
+                        <div className={`text-xs mt-0.5 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
                           {option.description}
                         </div>
-                      </button>
-                    ))}
-                  </div>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
@@ -618,7 +659,7 @@ const PricingAssessment = () => {
     <div className={`min-h-screen ${theme === 'light' ? 'bg-slate-50' : 'bg-gradient-to-b from-slate-900 to-slate-800'}`}>
       {/* Header */}
       <div className={`border-b ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-800 border-slate-700'}`}>
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}`} />
             <h1 className={`text-base font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'}`}>
@@ -626,8 +667,19 @@ const PricingAssessment = () => {
             </h1>
           </div>
           
-          {/* Step Progress Indicator */}
-          <div className="flex items-center gap-2">
+          {/* Center section with Home button and Step Progress */}
+          <div className="flex items-center gap-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className={`flex items-center gap-2 ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Button>
+            
+            {/* Step Progress Indicator */}
             <div className="flex items-center gap-1">
               {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
                 <div key={step} className="flex items-center">
@@ -653,15 +705,6 @@ const PricingAssessment = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className={`flex items-center gap-2 ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
-            >
-              <Home className="h-4 w-4" />
-              Home
-            </Button>
             <ZoomToggle />
             <ThemeToggle />
           </div>

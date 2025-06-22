@@ -36,6 +36,40 @@ export interface RequirementWithStatus extends Requirement {
   organizationTags?: string[];
   riskLevel?: string;
   lastUpdated?: string;
+  // Real-time collaboration fields
+  organization_requirement_id?: string;
+  evidence_summary?: string;
+  last_edited_by?: string;
+  last_edited_at?: string;
+  version?: number;
+  is_locked?: boolean;
+  locked_by?: string;
+  locked_at?: string;
+}
+
+export interface RequirementUpdateOptions {
+  optimisticUpdate?: boolean;
+  skipConflictCheck?: boolean;
+  expectedVersion?: number;
+}
+
+export interface ConflictResolution {
+  requirementId: string;
+  conflictType: 'version_mismatch' | 'concurrent_edit' | 'lock_conflict';
+  localValue: any;
+  remoteValue: any;
+  resolution?: 'keep_local' | 'keep_remote' | 'merge';
+}
+
+export interface RequirementActivity {
+  id: string;
+  requirement_id: string;
+  user_id: string;
+  activity_type: string;
+  old_value?: any;
+  new_value?: any;
+  description?: string;
+  created_at: string;
 }
 
 export class RequirementsService {
@@ -126,9 +160,12 @@ export class RequirementsService {
     }
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      // Use upsert to create or update
       const { error } = await supabase
         .from('organization_requirements')
-        .update({
+        .upsert({
+          organization_id: organizationId,
+          requirement_id: requirementId,
           status: updates.status,
           fulfillment_percentage: updates.fulfillmentPercentage,
           evidence: updates.evidence,
@@ -137,14 +174,56 @@ export class RequirementsService {
           tags: updates.tags,
           risk_level: updates.riskLevel,
           updated_at: new Date().toISOString()
-        })
-        .eq('organization_id', organizationId)
-        .eq('requirement_id', requirementId);
+        }, {
+          onConflict: 'organization_id,requirement_id'
+        });
 
       if (error) throw error;
       return { success: true };
     } catch (error) {
       console.error('Error updating organization requirement:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      };
+    }
+  }
+
+  // Create organization requirement record
+  async createOrganizationRequirement(
+    organizationId: string,
+    requirementId: string,
+    updates: {
+      status?: RequirementStatus;
+      fulfillmentPercentage?: number;
+      evidence?: string;
+      notes?: string;
+      responsibleParty?: string;
+      tags?: string[];
+      riskLevel?: string;
+    }
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('organization_requirements')
+        .insert({
+          organization_id: organizationId,
+          requirement_id: requirementId,
+          status: updates.status || 'not-fulfilled',
+          fulfillment_percentage: updates.fulfillmentPercentage || 0,
+          evidence: updates.evidence || '',
+          notes: updates.notes || '',
+          responsible_party: updates.responsibleParty || '',
+          tags: updates.tags || [],
+          risk_level: updates.riskLevel || 'medium',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error('Error creating organization requirement:', error);
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
@@ -237,25 +316,45 @@ export const useRequirementsService = () => {
     }
   ): Promise<{ success: boolean; error?: string }> => {
     if (isDemo) {
-      // Handle demo mode - update localStorage
-      const savedUpdates = localStorage.getItem('requirementUpdates');
-      const currentUpdates = savedUpdates ? JSON.parse(savedUpdates) : {};
-      
-      currentUpdates[requirementId] = {
-        ...currentUpdates[requirementId],
-        ...updates,
-        lastUpdated: new Date().toISOString()
-      };
-      
-      localStorage.setItem('requirementUpdates', JSON.stringify(currentUpdates));
-      return { success: true };
+      // Handle demo mode - update localStorage with better error handling
+      try {
+        const savedUpdates = localStorage.getItem('requirementUpdates');
+        const currentUpdates = savedUpdates ? JSON.parse(savedUpdates) : {};
+        
+        currentUpdates[requirementId] = {
+          ...currentUpdates[requirementId],
+          ...updates,
+          lastUpdated: new Date().toISOString()
+        };
+        
+        localStorage.setItem('requirementUpdates', JSON.stringify(currentUpdates));
+        
+        // Also persist to sessionStorage as backup
+        sessionStorage.setItem('requirementUpdates', JSON.stringify(currentUpdates));
+        
+        return { success: true };
+      } catch (error) {
+        console.error('Error saving requirement updates:', error);
+        return { success: false, error: 'Failed to save changes locally' };
+      }
     }
 
     if (!organization) {
       return { success: false, error: 'No organization found' };
     }
 
-    return service.updateOrganizationRequirement(organization.id, requirementId, updates);
+    // First try to update existing record, if not found create new one
+    try {
+      const result = await service.updateOrganizationRequirement(organization.id, requirementId, updates);
+      if (!result.success && result.error?.includes('not found')) {
+        // Try to create the requirement record if it doesn't exist
+        return await service.createOrganizationRequirement(organization.id, requirementId, updates);
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating requirement:', error);
+      return { success: false, error: 'Failed to update requirement' };
+    }
   };
 
   const getStandardRequirements = async (standardId: string): Promise<Requirement[]> => {

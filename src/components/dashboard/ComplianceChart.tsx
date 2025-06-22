@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { RequirementStatus } from "@/types";
+import { Shield } from "lucide-react";
 
 interface ComplianceChartProps {
   data: {
@@ -88,10 +90,23 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
       "h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200",
       theme === 'dark' ? 'border border-white/15' : 'border border-border'
     )}>
-      <CardHeader className="text-center pt-1 pb-0">
-        <CardTitle className="flex flex-col items-center">
-          <span className="text-lg font-bold">Compliance Status</span>
-        </CardTitle>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
+              <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <CardTitle className="text-lg font-semibold">Compliance Status</CardTitle>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="px-2 py-1 h-auto text-xs"
+            onClick={() => navigate('/app/requirements')}
+          >
+            View All
+          </Button>
+        </div>
       </CardHeader>
       
       <CardContent className="flex flex-col items-center gap-0 pt-0 px-1 pb-2">
@@ -158,29 +173,25 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
         </div>
 
         {/* Status Legend */}
-        <div className="grid grid-cols-2 gap-1.5 w-full max-w-[380px] mt-[-8px]">
+        <div className="grid grid-cols-2 gap-2 w-full max-w-[320px] mt-[-8px]">
           {chartData.map((item, index) => (
             <div
               key={item.name}
               className={cn(
-                "flex items-center px-1.5 py-1.5 rounded-lg transition-all duration-200",
+                "flex items-center px-3 py-2 rounded-lg transition-all duration-200",
                 "bg-white dark:bg-slate-900",
-                "border border-slate-200 dark:border-slate-800",
-                "hover:scale-105 hover:shadow-md",
-                "cursor-pointer",
-                activeIndex === index && "ring-2 ring-blue-500 scale-105 shadow-md"
+                "border border-slate-200/60 dark:border-slate-800/60",
+                "hover:scale-[1.02] hover:shadow-sm",
+                "cursor-pointer max-w-[150px]",
+                activeIndex === index && "ring-1 ring-blue-400 scale-[1.02] shadow-sm"
               )}
               onMouseEnter={() => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
               onClick={() => item.statusSlug && handleNavigate(item.statusSlug)}
             >
-              {item.name === "Not Applicable" ? (
-                <div className="w-5 h-5 rounded-full mr-2" style={{ backgroundColor: item.color }} />
-              ) : (
-                <div className="w-5 h-5 rounded-full mr-2" style={{ backgroundColor: item.color }} />
-              )}
-              <div className="flex flex-col">
-                <span className="text-xs font-medium leading-tight">{item.name}</span>
+              <div className="w-3 h-3 rounded-full mr-2 flex-shrink-0" style={{ backgroundColor: item.color }} />
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-xs font-medium leading-tight truncate">{item.name}</span>
                 <span className="text-xs text-muted-foreground leading-tight">
                   {item.value} ({Math.round((item.value / total) * 100)}%)
                 </span>

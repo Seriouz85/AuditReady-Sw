@@ -97,6 +97,11 @@ html {
   }
 }
 
+/* Base scaling - make app 20% smaller for better desktop experience */
+html {
+  font-size: 80%; /* App is designed too big, scale down to reasonable size */
+}
+
 /* Custom styles for the dashboard */
 .status-fulfilled {
   @apply text-green-500 bg-green-50 dark:bg-green-900/20;

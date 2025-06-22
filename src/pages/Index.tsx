@@ -21,6 +21,8 @@ import RiskDetail from "@/pages/risk-management/manage/RiskDetail";
 import RiskAssignment from "@/pages/risk-management/manage/RiskAssignment";
 import OrgChart from "@/pages/OrgChart";
 import OrganizationStructurePage from "@/pages/organizations/structure";
+import GapAnalysis from "@/pages/GapAnalysis";
+import ComplianceMonitoring from "@/pages/ComplianceMonitoring";
 
 const Index = () => {
   return (
@@ -47,6 +49,8 @@ const Index = () => {
         <Route path="/risk-management/manage/risks/:riskId/assign" element={<RiskAssignment />} />
         <Route path="/risk-management/manage/settings" element={<RiskSettings />} />
         <Route path="/risk-management/reports" element={<RiskReports />} />
+        <Route path="/gap-analysis" element={<GapAnalysis />} />
+        <Route path="/compliance-monitoring" element={<ComplianceMonitoring />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>

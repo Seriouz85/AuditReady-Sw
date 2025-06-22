@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -8,6 +8,7 @@ import { formatDate } from "@/utils/formatDate";
 import { standards } from "@/data/mockData";
 import { useTranslation } from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
+import { assessmentProgressService } from "@/services/assessments/AssessmentProgressService";
 
 interface AssessmentCardProps {
   assessment: Assessment;
@@ -19,6 +20,12 @@ export function AssessmentCard({ assessment, onContinue }: AssessmentCardProps) 
   
   // Get standards information
   const selectedStandards = standards.filter(s => assessment.standardIds.includes(s.id));
+  
+  // Get real-time progress from the service
+  const currentProgress = useMemo(() => {
+    const stats = assessmentProgressService.getAssessmentProgress(assessment);
+    return stats.progress;
+  }, [assessment]);
   
   // Format the status text based on assessment status
   const getStatusText = () => {
@@ -77,15 +84,15 @@ export function AssessmentCard({ assessment, onContinue }: AssessmentCardProps) 
         <div className="space-y-2">
           <div className="flex justify-between text-sm items-center">
             <span>{t('assessment.progress')}</span>
-            <span className="font-medium">{assessment.progress}%</span>
+            <span className="font-medium">{currentProgress}%</span>
           </div>
           <Progress 
-            value={assessment.progress} 
+            value={currentProgress} 
             className="h-2"
           >
             <div 
               className={`h-full ${getProgressColor()}`}
-              style={{ width: `${assessment.progress}%` }}
+              style={{ width: `${currentProgress}%` }}
             ></div>
           </Progress>
         </div>

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/utils/toast';
+import { documentUploadService } from '@/services/documents/DocumentUploadService';
 
 interface Organization {
   id: string;
@@ -233,6 +234,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setOrganization(demoOrg);
     setUserRole(demoRole);
     setOrganizationUser(demoOrgUser);
+    
+    // Initialize demo documents
+    documentUploadService.initializeDemoDocuments();
   };
 
   const refreshUserData = async () => {

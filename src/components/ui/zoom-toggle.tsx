@@ -15,11 +15,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-// Define zoom levels
+// Define zoom levels - Fixed to use proper scaling
 const ZOOM_LEVELS = {
-  default: 80, // Default (scaled down by 20%)
-  medium: 90,  // +10% from default
-  large: 100,  // +20% from default
+  default: 100, // True default size (no scaling)
+  medium: 110,  // +10% larger
+  large: 120,   // +20% larger
 };
 
 // Create a context to store and share zoom state
@@ -34,16 +34,17 @@ export function ZoomProvider({ children }: { children: React.ReactNode }) {
   
   // Apply zoom level when it changes or on initial load
   useEffect(() => {
-    document.documentElement.style.fontSize = `${currentZoom}%`;
+    // Base size is 80% (reasonable desktop size), zoom options scale from there
+    document.documentElement.style.fontSize = `${80 * (currentZoom / 100)}%`;
     localStorage.setItem('appZoomLevel', currentZoom.toString());
   }, [currentZoom]);
   
   // Load saved zoom level from localStorage on initial render
   useEffect(() => {
-    const savedZoom = localStorage.getItem('appZoomLevel');
-    if (savedZoom) {
-      setCurrentZoom(parseInt(savedZoom, 10));
-    }
+    // Clear any old zoom values and reset to proper default (80% base size)
+    localStorage.removeItem('appZoomLevel');
+    setCurrentZoom(ZOOM_LEVELS.default);
+    document.documentElement.style.fontSize = '80%';
   }, []);
   
   return (

@@ -7,4 +7,6 @@ export const toast = {
   error: (message: string, options = {}) => sonnerToast.error(message, { duration: 3000, ...options }),
   warning: (message: string, options = {}) => sonnerToast.warning(message, { duration: 3000, ...options }),
   info: (message: string, options = {}) => sonnerToast.info(message, { duration: 3000, ...options }),
+  loading: (message: string, options = {}) => sonnerToast.loading(message, { duration: Infinity, ...options }),
+  dismiss: (toastId?: string | number) => sonnerToast.dismiss(toastId),
 };
