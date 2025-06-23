@@ -19,6 +19,12 @@ import GuidedStandardImport from "./pages/GuidedStandardImport";
 import AcceptInvitation from "./pages/AcceptInvitation";
 import About from "./pages/About";
 import Documentation from "./pages/Documentation";
+import Privacy from "./pages/legal/Privacy";
+import Terms from "./pages/legal/Terms";
+import Security from "./pages/legal/Security";
+import Cookies from "./pages/legal/Cookies";
+import Features from "./pages/Features";
+import Roadmap from "./pages/Roadmap";
 import PublicOnboarding from "./pages/PublicOnboarding";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
@@ -41,6 +47,7 @@ const OrganizationDetail = lazy(() => import("./pages/admin/organizations/Organi
 const UserManagement = lazy(() => import("./pages/admin/users/UserManagement").then(m => ({ default: m.UserManagement })));
 const SystemSettings = lazy(() => import("./pages/admin/system/SystemSettings").then(m => ({ default: m.SystemSettings })));
 import EntraCallbackPage from "./pages/auth/EntraCallbackPage";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 import { LanguageProvider } from "./providers/LanguageProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";
@@ -74,6 +81,7 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <BrowserRouter basename={basename}>
+                <ScrollToTop />
                 <Routes>
                   {/* Public pages */}
                   <Route path="/" element={<Landing />} />
@@ -85,6 +93,12 @@ const App = () => (
                   <Route path="/invite/:token" element={<AcceptInvitation />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/documentation" element={<Documentation />} />
+                  <Route path="/features" element={<Features />} />
+                  <Route path="/roadmap" element={<Roadmap />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/security" element={<Security />} />
+                  <Route path="/cookies" element={<Cookies />} />
                   <Route path="/onboarding" element={<PublicOnboarding />} />
                   <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
                   

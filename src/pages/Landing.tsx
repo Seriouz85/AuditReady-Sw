@@ -144,6 +144,20 @@ export default function Landing() {
               AuditReady
             </span>
           </div>
+          
+          {/* Center Navigation */}
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className={`inline-flex ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+              onClick={() => navigate("/roadmap")}
+            >
+              <span className="hidden md:inline">Roadmap</span>
+              <span className="md:hidden">Map</span>
+            </Button>
+          </div>
+          
           <div className="flex items-center space-x-1 sm:space-x-4">
             <Button 
               variant="ghost" 
@@ -984,37 +998,33 @@ export default function Landing() {
             <div>
               <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Product</h3>
               <ul className="space-y-2">
-                <li><a href="#features" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-300 hover:text-slate-100'}`}>Features</a></li>
+                <li><button onClick={() => navigate("/features")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-300 hover:text-slate-100'} text-left`}>Features</button></li>
                 <li><a href="#pricing" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Pricing</a></li>
-                <li><a href="#security" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Security</a></li>
-                <li><a href="#roadmap" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Roadmap</a></li>
+                <li><button onClick={() => navigate("/security")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Security</button></li>
               </ul>
             </div>
             <div>
-              <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Company</h3>
-              <ul className="space-y-2">
-                <li><a href="#about" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>About</a></li>
-                <li><a href="#careers" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Careers</a></li>
-                <li><a href="#blog" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Blog</a></li>
-                <li><a href="#press" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Press</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Resources</h3>
+              <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Platform</h3>
               <ul className="space-y-2">
                 <li><button onClick={() => navigate("/documentation")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Documentation</button></li>
-                <li><a href="#help" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Help Center</a></li>
-                <li><a href="#guides" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Guides</a></li>
-                <li><a href="#api" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>API Reference</a></li>
+                <li><button onClick={() => navigate("/roadmap")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Roadmap</button></li>
+                <li><button onClick={() => navigate("/about")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>About Dev</button></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Support</h3>
+              <ul className="space-y-2">
+                <li><span className={`${theme === 'light' ? 'text-slate-400' : 'text-slate-500'} cursor-not-allowed`}>Help Center</span></li>
+                <li><span className={`${theme === 'light' ? 'text-slate-400' : 'text-slate-500'} cursor-not-allowed`}>API Reference</span></li>
+                <li><span className={`${theme === 'light' ? 'text-slate-400' : 'text-slate-500'} cursor-not-allowed`}>Status Page</span></li>
               </ul>
             </div>
             <div>
               <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Legal</h3>
               <ul className="space-y-2">
-                <li><a href="#privacy" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Privacy</a></li>
-                <li><a href="#terms" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Terms</a></li>
-                <li><a href="#security" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Security</a></li>
-                <li><a href="#cookies" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Cookies</a></li>
+                <li><button onClick={() => navigate("/privacy")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Privacy Policy</button></li>
+                <li><button onClick={() => navigate("/terms")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Terms of Service</button></li>
+                <li><button onClick={() => navigate("/cookies")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Cookie Policy</button></li>
               </ul>
             </div>
           </div>
