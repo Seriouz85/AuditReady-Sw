@@ -970,8 +970,8 @@ export default function ComplianceSimplification() {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-800 dark:to-indigo-800 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
+          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            <div className="flex items-center space-x-3 sm:space-x-6">
               <Button
                 variant="ghost"
                 size="sm"
@@ -979,44 +979,44 @@ export default function ComplianceSimplification() {
                 className="flex items-center space-x-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
+                <span className="hidden sm:inline">Back</span>
               </Button>
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-white/10 rounded-lg">
                   <Lightbulb className="w-6 h-6" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">Compliance Simplification</h1>
-                  <p className="text-sm text-white/80">How AuditReady AI unifies overlapping compliance requirements</p>
+                  <h1 className="text-lg sm:text-2xl font-bold">Compliance Simplification</h1>
+                  <p className="text-xs sm:text-sm text-white/80 hidden sm:block">How AuditReady AI unifies overlapping compliance requirements</p>
                 </div>
               </div>
             </div>
             <Button
               onClick={exportToCSV}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full self-start lg:self-auto"
             >
               <FileSpreadsheet className="w-4 h-4 mr-2" />
-              Export to CSV
+              <span className="hidden sm:inline">Export to </span>CSV
             </Button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 rounded-2xl">
-            <TabsTrigger value="overview" className="flex items-center space-x-2 rounded-xl">
+            <TabsTrigger value="overview" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Eye className="w-4 h-4" />
               <span>Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="mapping" className="flex items-center space-x-2 rounded-xl">
+            <TabsTrigger value="mapping" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Target className="w-4 h-4" />
-              <span>Framework Mapping</span>
+              <span className="hidden sm:inline">Framework </span>Mapping
             </TabsTrigger>
-            <TabsTrigger value="unified" className="flex items-center space-x-2 rounded-xl">
+            <TabsTrigger value="unified" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Zap className="w-4 h-4" />
-              <span>Unified Requirements</span>
+              <span className="hidden sm:inline">Unified </span>Requirements
             </TabsTrigger>
           </TabsList>
 
@@ -1178,13 +1178,13 @@ export default function ComplianceSimplification() {
               </div>
 
               {/* Category Filters */}
-              <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:flex-wrap sm:gap-4 sm:items-center sm:space-y-0">
                 <div className="flex items-center space-x-2">
                   <Target className="w-4 h-4 text-gray-600" />
                   <span className="text-sm font-medium">Filter by Category:</span>
                 </div>
                 <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger className="w-[400px]">
+                  <SelectTrigger className="w-full sm:w-[400px] max-w-lg">
                     <SelectValue placeholder="Select a category to filter" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1213,32 +1213,33 @@ export default function ComplianceSimplification() {
                   >
                     <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
                       <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                        <CardTitle className="flex items-center justify-between">
+                        <CardTitle className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                           <div className="flex items-center space-x-3">
                             <div className="p-2 bg-white/20 rounded-lg">
                               <Target className="w-5 h-5" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-semibold">{mapping.category}</h3>
-                              <p className="text-sm text-white/80 font-normal">{mapping.auditReadyUnified.title}</p>
+                              <h3 className="text-base sm:text-lg font-semibold">{mapping.category}</h3>
+                              <p className="text-xs sm:text-sm text-white/80 font-normal">{mapping.auditReadyUnified.title}</p>
                             </div>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setSelectedMapping(selectedMapping === mapping.id ? null : mapping.id)}
-                            className="text-white hover:bg-white/20"
+                            className="text-white hover:bg-white/20 self-start sm:self-auto"
                           >
                             <Eye className="w-4 h-4 mr-2" />
-                            {selectedMapping === mapping.id ? 'Hide Details' : 'Show Details'}
+                            <span className="hidden sm:inline">{selectedMapping === mapping.id ? 'Hide Details' : 'Show Details'}</span>
+                            <span className="sm:hidden">{selectedMapping === mapping.id ? 'Hide' : 'Show'}</span>
                           </Button>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="p-0">
                         {/* Framework Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-b border-slate-200 dark:border-slate-700">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-b border-slate-200 dark:border-slate-700">
                           {/* ISO 27001 Column */}
-                          <div className="p-6 border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
+                          <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
                             <div className="flex items-center space-x-2 mb-4">
                               <Shield className="w-5 h-5 text-blue-600" />
                               <h4 className="font-semibold text-blue-900 dark:text-blue-100">ISO 27001</h4>
@@ -1254,7 +1255,7 @@ export default function ComplianceSimplification() {
                           </div>
 
                           {/* ISO 27002 Column */}
-                          <div className="p-6 border-r border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-green-900/10">
+                          <div className="p-4 sm:p-6 border-b sm:border-b-0 lg:border-r border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-green-900/10">
                             <div className="flex items-center space-x-2 mb-4">
                               <Lock className="w-5 h-5 text-green-600" />
                               <h4 className="font-semibold text-green-900 dark:text-green-100">ISO 27002</h4>
@@ -1270,7 +1271,7 @@ export default function ComplianceSimplification() {
                           </div>
 
                           {/* CIS Controls Column */}
-                          <div className="p-6 border-r border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10">
+                          <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10">
                             <div className="flex items-center space-x-2 mb-4">
                               <Settings className="w-5 h-5 text-purple-600" />
                               <h4 className="font-semibold text-purple-900 dark:text-purple-100">CIS Controls IG3</h4>
@@ -1305,7 +1306,7 @@ export default function ComplianceSimplification() {
                           </div>
 
                           {/* AuditReady Unified Column */}
-                          <div className="p-6 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/10 dark:to-yellow-900/10">
+                          <div className="p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/10 dark:to-yellow-900/10">
                             <div className="flex items-center space-x-2 mb-4">
                               <Zap className="w-5 h-5 text-orange-600" />
                               <h4 className="font-semibold text-orange-900 dark:text-orange-100">AuditReady Unified</h4>
@@ -1330,10 +1331,10 @@ export default function ComplianceSimplification() {
                               animate={{ opacity: 1, height: "auto" }}
                               exit={{ opacity: 0, height: 0 }}
                               transition={{ duration: 0.3 }}
-                              className="p-6 bg-gray-50 dark:bg-gray-800/50"
+                              className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-800/50"
                             >
                               <h5 className="font-semibold mb-4 text-gray-900 dark:text-white">Unified Sub-Requirements</h5>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 gap-4">
                                 {mapping.auditReadyUnified.subRequirements.map((subReq, i) => (
                                   <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                                     <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
