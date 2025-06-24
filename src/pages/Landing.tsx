@@ -1014,6 +1014,14 @@ export default function Landing() {
             <div>
               <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold mb-4`}>Support</h3>
               <ul className="space-y-2">
+                <li>
+                  <button 
+                    onClick={() => navigate("/compliance-simplification")} 
+                    className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left transition-colors`}
+                  >
+                    Compliance Simplification
+                  </button>
+                </li>
                 <li><span className={`${theme === 'light' ? 'text-slate-400' : 'text-slate-500'} cursor-not-allowed`}>Help Center</span></li>
                 <li><span className={`${theme === 'light' ? 'text-slate-400' : 'text-slate-500'} cursor-not-allowed`}>API Reference</span></li>
                 <li><span className={`${theme === 'light' ? 'text-slate-400' : 'text-slate-500'} cursor-not-allowed`}>Status Page</span></li>

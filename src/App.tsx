@@ -25,6 +25,7 @@ import Security from "./pages/legal/Security";
 import Cookies from "./pages/legal/Cookies";
 import Features from "./pages/Features";
 import Roadmap from "./pages/Roadmap";
+import ComplianceSimplification from "./pages/ComplianceSimplification";
 import PublicOnboarding from "./pages/PublicOnboarding";
 import LMS from "./pages/LMS";
 import TrenningLMS from "./pages/LMS/index";
@@ -95,6 +96,7 @@ const App = () => (
                   <Route path="/documentation" element={<Documentation />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/roadmap" element={<Roadmap />} />
+                  <Route path="/compliance-simplification" element={<ComplianceSimplification />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/security" element={<Security />} />
