@@ -397,7 +397,7 @@ export default function Roadmap() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white shadow-lg">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-800 dark:to-indigo-800 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
@@ -405,14 +405,14 @@ export default function Roadmap() {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/')}
-                className="flex items-center space-x-2 text-white/80 hover:text-white hover:bg-white/10"
+                className="flex items-center space-x-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
               </Button>
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-white/10 rounded-lg">
-                  <Map className="w-6 h-6" />
+                  <Shield className="w-6 h-6" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold">Product Roadmap</h1>
@@ -428,20 +428,20 @@ export default function Roadmap() {
       <div className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 bg-white dark:bg-gray-800 shadow-lg">
-              <TabsTrigger value="overview" className="flex items-center space-x-2">
+            <TabsList className="grid w-full grid-cols-4 bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 rounded-2xl">
+              <TabsTrigger value="overview" className="flex items-center space-x-2 rounded-xl">
                 <Eye className="w-4 h-4" />
                 <span>Overview</span>
               </TabsTrigger>
-              <TabsTrigger value="current" className="flex items-center space-x-2">
+              <TabsTrigger value="current" className="flex items-center space-x-2 rounded-xl">
                 <CheckCircle className="w-4 h-4" />
                 <span>Current Status</span>
               </TabsTrigger>
-              <TabsTrigger value="future" className="flex items-center space-x-2">
+              <TabsTrigger value="future" className="flex items-center space-x-2 rounded-xl">
                 <Rocket className="w-4 h-4" />
                 <span>Future Roadmap</span>
               </TabsTrigger>
-              <TabsTrigger value="timeline" className="flex items-center space-x-2">
+              <TabsTrigger value="timeline" className="flex items-center space-x-2 rounded-xl">
                 <Calendar className="w-4 h-4" />
                 <span>Timeline</span>
               </TabsTrigger>
@@ -458,10 +458,10 @@ export default function Roadmap() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Card className="text-center border-2 hover:shadow-lg transition-shadow">
+                    <Card className="text-center border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow rounded-2xl">
                       <CardContent className="p-6">
                         <div className="flex justify-center mb-3">
-                          <div className={`p-3 bg-gradient-to-r ${getStatColor(stat.color)} text-white rounded-lg`}>
+                          <div className={`p-3 bg-gradient-to-r ${getStatColor(stat.color)} text-white rounded-xl shadow-lg`}>
                             {stat.icon}
                           </div>
                         </div>
@@ -478,8 +478,8 @@ export default function Roadmap() {
               </div>
 
               {/* Vision Statement */}
-              <Card className="border-2 border-blue-200 dark:border-blue-800">
-                <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
+              <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl">
+                <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-2xl">
                   <CardTitle className="flex items-center space-x-3">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Target className="w-6 h-6" />
@@ -524,8 +524,8 @@ export default function Roadmap() {
               </Card>
 
               {/* Key Achievements */}
-              <Card className="border-2 border-green-200 dark:border-green-800">
-                <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-lg">
+              <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl">
+                <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-2xl">
                   <CardTitle className="flex items-center space-x-3">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Award className="w-6 h-6" />
@@ -594,7 +594,7 @@ export default function Roadmap() {
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Card className="border-2 hover:shadow-lg transition-shadow">
+                      <Card className="border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow rounded-2xl">
                         <CardHeader>
                           <div className="flex items-center justify-between">
                             <div>
@@ -609,8 +609,15 @@ export default function Roadmap() {
                               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{item.quarter}</p>
                             </div>
                             <div className="text-right">
-                              <div className="text-2xl font-bold text-gray-900 dark:text-white">{item.progress}%</div>
-                              <Progress value={item.progress} className="w-20 mt-1" />
+                              <div className="relative">
+                                <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                  {item.progress}%
+                                </div>
+                                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                                  Complete
+                                </div>
+                              </div>
+                              <Progress value={item.progress} className="w-24 mt-2" />
                             </div>
                           </div>
                         </CardHeader>
@@ -689,7 +696,7 @@ export default function Roadmap() {
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Card className="border-2 hover:shadow-lg transition-shadow">
+                      <Card className="border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow rounded-2xl">
                         <CardHeader>
                           <div className="flex items-center justify-between">
                             <div>
@@ -1007,16 +1014,16 @@ export default function Roadmap() {
                                     </motion.div>
                                   )}
                                   
-                                  <Card className={`h-full border transition-all duration-300 ${
+                                  <Card className={`h-full border-2 transition-all duration-300 rounded-2xl ${
                                     hoveredMilestone === index
-                                      ? 'border-blue-400 dark:border-blue-500 shadow-lg ring-1 ring-blue-400/20'
+                                      ? 'border-blue-500 dark:border-blue-400 shadow-lg ring-2 ring-blue-500/20'
                                       : milestone.status === 'completed' 
-                                      ? 'border-green-200 dark:border-green-800'
+                                      ? 'border-green-200 dark:border-green-700'
                                       : milestone.status === 'in-progress'
-                                      ? 'border-cyan-200 dark:border-cyan-800'
+                                      ? 'border-cyan-200 dark:border-cyan-700'
                                       : milestone.status === 'upcoming'
-                                      ? 'border-blue-200 dark:border-blue-800'
-                                      : 'border-purple-200 dark:border-purple-800'
+                                      ? 'border-blue-200 dark:border-blue-700'
+                                      : 'border-purple-200 dark:border-purple-700'
                                   }`}>
                                     <CardContent className="p-2">
                                       <div className="flex items-center justify-between mb-1">
@@ -1049,13 +1056,13 @@ export default function Roadmap() {
                                         {milestone.achievements.slice(0, 2).map((achievement, i) => (
                                           <span 
                                             key={i} 
-                                            className="px-1 py-0.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-xs font-medium"
+                                            className="px-1 py-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full text-xs font-medium shadow-sm"
                                           >
                                             {achievement.split(':')[0].substring(0, 8)}...
                                           </span>
                                         ))}
                                         {milestone.achievements.length > 2 && (
-                                          <span className="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs">
+                                          <span className="px-1 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs">
                                             +{milestone.achievements.length - 2}
                                           </span>
                                         )}
