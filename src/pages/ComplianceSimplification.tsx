@@ -100,7 +100,8 @@ const complianceMapping = [
         { code: 'A.6.6', title: 'Confidentiality or non-disclosure agreements', description: 'Confidentiality or non-disclosure agreements should be identified and regularly reviewed' },
         { code: 'A.8.1', title: 'Operational procedures and responsibilities', description: 'Operating procedures should be documented and maintained' },
         { code: 'A.8.6', title: 'Capacity management', description: 'The use of resources should be monitored and tuned' },
-        { code: 'A.8.14', title: 'Change management procedures', description: 'Changes should be controlled by formal change management procedures' }
+        { code: 'A.8.14', title: 'Change management procedures', description: 'Changes should be controlled by formal change management procedures' },
+        { code: 'A.7.7', title: 'Clear desk and clear screen', description: 'Rules for maintaining clear desk and clear screen should be established' }
       ],
       cisControls: [
         // CIS controls are primarily technical - governance is mainly ISO focus
@@ -401,7 +402,7 @@ const complianceMapping = [
         'c) Implement protection against environmental threats',
         'd) Secure equipment and protect against theft or damage',
         'e) Implement secure disposal or reuse of equipment',
-        'f) Control unattended user equipment and clear desk/screen policies',
+        'f) Control unattended user equipment and secure work environments',
         'g) Establish equipment maintenance and support procedures',
         'h) Monitor and log physical access to secure areas'
       ]
@@ -415,7 +416,6 @@ const complianceMapping = [
         { code: 'A.7.4', title: 'Physical security monitoring', description: 'Premises should be continuously monitored for unauthorized physical access' },
         { code: 'A.7.5', title: 'Protecting against physical and environmental threats', description: 'Protection against physical and environmental threats should be designed and implemented' },
         { code: 'A.7.6', title: 'Working in secure areas', description: 'Procedures for working in secure areas should be designed and implemented' },
-        { code: 'A.7.7', title: 'Clear desk and clear screen', description: 'Rules for maintaining clear desk and clear screen should be established' },
         { code: 'A.7.8', title: 'Equipment siting and protection', description: 'Equipment should be sited and protected to reduce risks from environmental threats' },
         { code: 'A.7.9', title: 'Security of assets off-premises', description: 'Off-site assets should be protected taking into account different risks' },
         { code: 'A.7.10', title: 'Storage media', description: 'Storage media should be protected against unauthorized access during transportation' },
