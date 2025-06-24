@@ -44,6 +44,7 @@ export default function Roadmap() {
   const [selectedQuarter, setSelectedQuarter] = useState('all');
   const [hoveredMilestone, setHoveredMilestone] = useState<number | null>(null);
   const [carouselPosition, setCarouselPosition] = useState(0);
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Calculate current position based on actual date
   const getCurrentTimePosition = () => {
@@ -203,7 +204,7 @@ export default function Roadmap() {
       quarter: "Q3 2025",
       category: "ai",
       features: [
-        "Advanced Document AI: Word, Excel, PDF requirement interpretation",
+        "Advanced Compliance AI: Word, Excel, PDF requirement interpretation",
         "AI Insights Engine: Risk management and application analytics",
         "Enhanced Visual Flow AI: Complex diagram generation with advanced layouts", 
         "Intelligent Compliance Copilot: Real-time guidance and recommendations"
@@ -301,7 +302,7 @@ export default function Roadmap() {
       title: "AI Intelligence", 
       status: "in-progress", 
       color: "blue",
-      description: "Advanced Document AI, Visual Flow Editor, AI Insights Engine, Compliance Copilot",
+      description: "Advanced Compliance AI, Visual Flow Editor, AI Insights Engine, Compliance Copilot",
       achievements: ["Real-time AI Processing", "Document Interpretation", "Smart Risk Analytics"]
     },
     { 
@@ -426,7 +427,7 @@ export default function Roadmap() {
       {/* Content */}
       <div className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <Tabs defaultValue="overview" className="space-y-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             <TabsList className="grid w-full grid-cols-4 bg-white dark:bg-gray-800 shadow-lg">
               <TabsTrigger value="overview" className="flex items-center space-x-2">
                 <Eye className="w-4 h-4" />
@@ -743,16 +744,16 @@ export default function Roadmap() {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
                     
                     <div className="relative z-10 p-12">
-                      <div className="text-center mb-12">
+                      <div className="text-center mb-6">
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.8 }}
                         >
-                          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
                             Innovation Timeline
                           </h2>
-                          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                          <p className="text-sm text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
                             Witness the evolution of compliance technology through our revolutionary development journey
                           </p>
                         </motion.div>
@@ -760,11 +761,11 @@ export default function Roadmap() {
 
                       {/* Visual Timeline */}
                       <div className="relative">
-                        {/* Main Timeline Path */}
+                        {/* Main Timeline Graph */}
                         <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8">
                           <svg 
                             viewBox="0 0 1400 600" 
-                            className="w-full h-auto mb-6"
+                            className="w-full h-auto"
                             preserveAspectRatio="xMidYMid meet"
                           >
                             {/* Gradient Definitions */}
@@ -783,13 +784,42 @@ export default function Roadmap() {
                                   <feMergeNode in="SourceGraphic"/>
                                 </feMerge>
                               </filter>
+                              <filter id="shadow">
+                                <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.3"/>
+                              </filter>
                             </defs>
                             
+                            {/* Grid Lines for better readability */}
+                            <defs>
+                              <pattern id="grid" width="100" height="50" patternUnits="userSpaceOnUse">
+                                <path d="M 100 0 L 0 0 0 50" fill="none" stroke="#e5e7eb" strokeWidth="0.5" opacity="0.3"/>
+                              </pattern>
+                            </defs>
+                            <rect width="1400" height="600" fill="url(#grid)" />
+
+                            {/* X-Axis */}
+                            <line x1="120" y1="480" x2="1280" y2="480" stroke="#374151" strokeWidth="3" />
+                            
+                            {/* Y-Axis */}
+                            <line x1="120" y1="480" x2="120" y2="80" stroke="#374151" strokeWidth="3" />
+                            
+                            {/* Y-Axis Labels */}
+                            <text x="110" y="465" textAnchor="end" className="fill-gray-800 dark:fill-gray-200 text-sm font-semibold">Foundation</text>
+                            <text x="110" y="365" textAnchor="end" className="fill-gray-800 dark:fill-gray-200 text-sm font-semibold">Advanced</text>
+                            <text x="110" y="265" textAnchor="end" className="fill-gray-800 dark:fill-gray-200 text-sm font-semibold">Innovative</text>
+                            <text x="110" y="165" textAnchor="end" className="fill-gray-800 dark:fill-gray-200 text-sm font-semibold">Revolutionary</text>
+                            
+                            {/* Y-Axis Title */}
+                            <text x="20" y="50" textAnchor="start" className="fill-gray-900 dark:fill-gray-100 text-base font-bold">Innovation Impact</text>
+                            
+                            {/* X-Axis Title */}
+                            <text x="700" y="560" textAnchor="middle" className="fill-gray-900 dark:fill-gray-100 text-base font-bold">Development Timeline</text>
+
                             {/* True Exponential Growth Curve */}
                             <motion.path
-                              d="M 120 400 C 200 390, 280 375, 360 350 C 440 320, 520 280, 600 220 C 680 150, 760 90, 840 50 C 920 25, 1000 15, 1080 10 C 1160 8, 1240 7, 1280 6"
+                              d="M 120 450 C 240 430, 360 390, 480 320 C 600 240, 720 160, 840 100 C 960 60, 1080 30, 1200 20 C 1240 15, 1280 12, 1280 10"
                               stroke="url(#exponentialGradient)"
-                              strokeWidth="5"
+                              strokeWidth="6"
                               fill="none"
                               filter="url(#glow)"
                               initial={{ pathLength: 0 }}
@@ -797,139 +827,144 @@ export default function Roadmap() {
                               transition={{ duration: 4, ease: "easeInOut" }}
                             />
 
-                            {/* Grid Lines for better readability */}
-                            <defs>
-                              <pattern id="grid" width="100" height="50" patternUnits="userSpaceOnUse">
-                                <path d="M 100 0 L 0 0 0 50" fill="none" stroke="#e5e7eb" strokeWidth="0.5" opacity="0.3"/>
-                              </pattern>
-                            </defs>
-                            <rect width="1400" height="500" fill="url(#grid)" />
-
-                            {/* X-Axis */}
-                            <line x1="120" y1="430" x2="1280" y2="430" stroke="#6b7280" strokeWidth="2" />
-                            
-                            {/* Y-Axis */}
-                            <line x1="120" y1="430" x2="120" y2="50" stroke="#6b7280" strokeWidth="2" />
-                            
-                            {/* Y-Axis Labels */}
-                            <text x="100" y="420" textAnchor="end" className="fill-gray-600 text-sm font-medium">Foundation</text>
-                            <text x="100" y="320" textAnchor="end" className="fill-gray-600 text-sm font-medium">Advanced</text>
-                            <text x="100" y="220" textAnchor="end" className="fill-gray-600 text-sm font-medium">Innovative</text>
-                            <text x="100" y="120" textAnchor="end" className="fill-gray-600 text-sm font-medium">Revolutionary</text>
-                            <text x="80" y="250" textAnchor="middle" className="fill-gray-700 text-base font-bold" transform="rotate(-90, 80, 250)">Innovation Impact</text>
-
                             {/* Current Time Marker */}
                             <motion.g
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
-                              transition={{ delay: 3, duration: 1 }}
+                              transition={{ delay: 2, duration: 1 }}
                             >
                               <line 
                                 x1={currentTime.position + 25} 
-                                y1="50" 
+                                y1="80" 
                                 x2={currentTime.position + 25} 
-                                y2="450" 
+                                y2="480" 
                                 stroke="#ef4444" 
-                                strokeWidth="4" 
-                                strokeDasharray="12,6"
-                                opacity="0.9"
+                                strokeWidth="3" 
+                                strokeDasharray="8,4"
+                                opacity="0.8"
                               />
                               <rect 
                                 x={currentTime.position - 25} 
-                                y="15" 
+                                y="45" 
                                 width="100" 
-                                height="30" 
+                                height="28" 
                                 fill="#ef4444" 
-                                rx="15"
-                                stroke="#dc2626"
-                                strokeWidth="2"
+                                rx="14"
+                                filter="url(#shadow)"
                               />
                               <text 
                                 x={currentTime.position + 25} 
-                                y="34" 
+                                y="63" 
                                 textAnchor="middle" 
                                 className="fill-white text-sm font-bold"
                               >
                                 NOW ({currentTime.label})
                               </text>
                               
-                              {/* Pulsing glow effect for NOW marker */}
-                              <motion.rect 
-                                x={currentTime.position - 25} 
-                                y="15" 
-                                width="100" 
-                                height="30" 
-                                fill="none"
-                                stroke="#ef4444" 
-                                strokeWidth="2"
-                                rx="15"
-                                opacity="0.6"
-                                animate={{ scale: [1, 1.1, 1], opacity: [0.6, 0.2, 0.6] }}
-                                transition={{ duration: 2.5, repeat: Infinity }}
+                              {/* Pulsing effect */}
+                              <motion.circle
+                                cx={currentTime.position + 25}
+                                cy={480}
+                                r="6"
+                                fill="#ef4444"
+                                animate={{ r: [6, 10, 6], opacity: [1, 0.3, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
                               />
                             </motion.g>
                             
-                            {/* Timeline Milestones with True Exponential Positioning */}
+                            {/* Timeline Milestones */}
                             {milestones.map((milestone, index) => {
-                              // Spread across full width with exponential X spacing
-                              const baseX = 120;
-                              const maxX = 1280;
-                              const exponentialX = baseX + (Math.pow(index + 1, 1.2) / Math.pow(milestones.length, 1.2)) * (maxX - baseX);
-                              const x = Math.min(exponentialX, maxX);
+                              // Position calculation
+                              const positions = [120, 360, 600, 840, 1080, 1280];
+                              const x = positions[index] || 1280;
                               
-                              // True exponential Y positioning
-                              const maxY = 400;
-                              const minY = 60;
-                              const exponentialFactor = Math.pow(2.5, index) / Math.pow(2.5, milestones.length - 1);
-                              const y = maxY - (exponentialFactor * (maxY - minY));
+                              // Exponential Y positioning
+                              const yPositions = [450, 390, 320, 160, 100, 20];
+                              const y = yPositions[index] || 20;
                               
                               return (
                                 <motion.g
                                   key={milestone.date}
                                   initial={{ opacity: 0, scale: 0 }}
                                   animate={{ opacity: 1, scale: 1 }}
-                                  transition={{ delay: 1 + index * 0.4, duration: 0.8 }}
+                                  transition={{ delay: 0.5 + index * 0.3, duration: 0.8 }}
                                 >
-                                  {/* Milestone Circle */}
-                                  <circle
-                                    cx={x}
-                                    cy={y}
-                                    r={12 + index * 2}
-                                    fill={milestone.status === 'completed' ? '#10b981' : 
-                                          milestone.status === 'in-progress' ? '#06b6d4' :
-                                          milestone.status === 'upcoming' ? '#3b82f6' : '#8b5cf6'}
-                                    stroke="white"
-                                    strokeWidth="3"
-                                    filter="url(#glow)"
-                                    className="cursor-pointer transition-all duration-300 hover:opacity-80"
-                                    onMouseEnter={() => {
-                                      setHoveredMilestone(index);
-                                      setCarouselPosition(index);
-                                    }}
-                                    onMouseLeave={() => setHoveredMilestone(null)}
-                                  />
+                                  {/* Connecting line from dot to card */}
+                                  {hoveredMilestone === index && (
+                                    <motion.line
+                                      x1={x}
+                                      y1={y}
+                                      x2={x}
+                                      y2={550}
+                                      stroke="#3b82f6"
+                                      strokeWidth="2"
+                                      strokeDasharray="4,4"
+                                      initial={{ pathLength: 0 }}
+                                      animate={{ pathLength: 1 }}
+                                      transition={{ duration: 0.3 }}
+                                    />
+                                  )}
                                   
-                                  {/* Pulsing Animation - Only for in-progress status (current active work) */}
+                                  {/* Milestone Circle */}
+                                  <g
+                                    className="cursor-pointer"
+                                    onMouseEnter={() => setHoveredMilestone(index)}
+                                    onMouseLeave={() => setHoveredMilestone(null)}
+                                  >
+                                    <circle
+                                      cx={x}
+                                      cy={y}
+                                      r="15"
+                                      fill={milestone.status === 'completed' ? '#10b981' : 
+                                            milestone.status === 'in-progress' ? '#06b6d4' :
+                                            milestone.status === 'upcoming' ? '#3b82f6' : '#8b5cf6'}
+                                      stroke="white"
+                                      strokeWidth="4"
+                                      filter="url(#shadow)"
+                                      className="transition-all duration-300"
+                                      style={{
+                                        transform: hoveredMilestone === index ? 'scale(1.2)' : 'scale(1)',
+                                        transformOrigin: `${x}px ${y}px`
+                                      }}
+                                    />
+                                    
+                                    {/* Icon inside circle */}
+                                    {milestone.status === 'completed' && (
+                                      <text x={x} y={y + 5} textAnchor="middle" className="fill-white text-lg font-bold pointer-events-none">✓</text>
+                                    )}
+                                    {milestone.status === 'in-progress' && (
+                                      <text x={x} y={y + 5} textAnchor="middle" className="fill-white text-lg font-bold pointer-events-none">•••</text>
+                                    )}
+                                    {milestone.status === 'upcoming' && (
+                                      <text x={x} y={y + 5} textAnchor="middle" className="fill-white text-lg font-bold pointer-events-none">→</text>
+                                    )}
+                                    {milestone.status === 'planned' && (
+                                      <text x={x} y={y + 5} textAnchor="middle" className="fill-white text-base font-bold pointer-events-none">◯</text>
+                                    )}
+                                  </g>
+                                  
+                                  {/* Pulsing for in-progress */}
                                   {milestone.status === 'in-progress' && (
                                     <motion.circle
                                       cx={x}
                                       cy={y}
-                                      r={12 + index * 2}
+                                      r="15"
                                       fill="none"
                                       stroke="#06b6d4"
                                       strokeWidth="3"
-                                      opacity="0.7"
-                                      animate={{ r: [12 + index * 2, 22 + index * 2, 12 + index * 2], opacity: [0.7, 0.1, 0.7] }}
+                                      opacity="0.6"
+                                      animate={{ r: [15, 25, 15], opacity: [0.6, 0.1, 0.6] }}
                                       transition={{ duration: 2.5, repeat: Infinity }}
+                                      pointerEvents="none"
                                     />
                                   )}
                                   
                                   {/* X-Axis Date Label */}
                                   <text 
                                     x={x} 
-                                    y="560" 
+                                    y="510" 
                                     textAnchor="middle" 
-                                    className="fill-gray-700 text-sm font-bold"
+                                    className="fill-gray-700 dark:fill-gray-300 text-sm font-semibold"
                                   >
                                     {milestone.date}
                                   </text>
@@ -938,144 +973,119 @@ export default function Roadmap() {
                             })}
                           </svg>
                           
-                          {/* Implementation Cards Carousel */}
-                          <div className="mt-4 relative">
-                            {/* Labels */}
-                            <div className="flex justify-between items-center mb-6 px-4">
-                              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">Past</h3>
-                              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400">Future</h3>
-                            </div>
-                            
-                            {/* Carousel Container */}
-                            <div className="overflow-hidden px-4">
-                              <motion.div 
-                                className="flex gap-6"
-                                animate={{ 
-                                  x: `${-carouselPosition * (100/3)}%`
-                                }}
-                                transition={{ duration: 0.4, ease: "easeInOut" }}
-                              >
-                                {milestones.map((milestone, index) => (
-                                  <motion.div
-                                    key={milestone.date}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 2 + index * 0.1, duration: 0.6 }}
-                                    className="min-w-[33.33%] flex-shrink-0"
-                                  >
-                                    <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-2 transition-all duration-300 h-full ${
-                                      hoveredMilestone === index
-                                        ? 'border-blue-400 dark:border-blue-500 shadow-xl transform scale-105'
-                                        : milestone.status === 'in-progress'
-                                        ? 'border-blue-300 dark:border-blue-600'
-                                        : 'border-gray-200 dark:border-gray-700'
-                                    }`}>
-                                      <div className="flex items-center justify-between mb-4">
-                                        <div className={`w-4 h-4 rounded-full ${
+                          {/* Milestone Details Section - Compact Grid */}
+                          <div className="mt-4">
+                            <div className="grid grid-cols-3 gap-2">
+                              {milestones.map((milestone, index) => (
+                                <motion.div
+                                  key={milestone.date}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ 
+                                    opacity: 1, 
+                                    y: 0,
+                                    scale: hoveredMilestone === index ? 1.02 : 1
+                                  }}
+                                  transition={{ 
+                                    delay: 2 + index * 0.1, 
+                                    duration: 0.6,
+                                    scale: { duration: 0.3 }
+                                  }}
+                                  onMouseEnter={() => setHoveredMilestone(index)}
+                                  onMouseLeave={() => setHoveredMilestone(null)}
+                                  onClick={() => setActiveTab('future')}
+                                  className="relative cursor-pointer"
+                                >
+                                  {/* Connection indicator */}
+                                  {hoveredMilestone === index && (
+                                    <motion.div
+                                      className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-10"
+                                      initial={{ opacity: 0, y: 5 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ duration: 0.3 }}
+                                    >
+                                      <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-blue-500"></div>
+                                    </motion.div>
+                                  )}
+                                  
+                                  <Card className={`h-full border transition-all duration-300 ${
+                                    hoveredMilestone === index
+                                      ? 'border-blue-400 dark:border-blue-500 shadow-lg ring-1 ring-blue-400/20'
+                                      : milestone.status === 'completed' 
+                                      ? 'border-green-200 dark:border-green-800'
+                                      : milestone.status === 'in-progress'
+                                      ? 'border-cyan-200 dark:border-cyan-800'
+                                      : milestone.status === 'upcoming'
+                                      ? 'border-blue-200 dark:border-blue-800'
+                                      : 'border-purple-200 dark:border-purple-800'
+                                  }`}>
+                                    <CardContent className="p-2">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                                           milestone.status === 'completed' ? 'bg-green-500' :
                                           milestone.status === 'in-progress' ? 'bg-cyan-500' :
                                           milestone.status === 'upcoming' ? 'bg-blue-500' : 'bg-purple-500'
-                                        }`}></div>
-                                        <Badge className={`${
+                                        } text-white text-xs font-bold`}>
+                                          {milestone.status === 'completed' ? '✓' :
+                                           milestone.status === 'in-progress' ? '•' :
+                                           milestone.status === 'upcoming' ? '→' : '◯'}
+                                        </div>
+                                        <Badge className={`text-xs px-1 py-0 ${
                                           milestone.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
                                           milestone.status === 'in-progress' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400' :
-                                          milestone.status === 'upcoming' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
-                                        } text-xs px-2 py-1`}>
+                                          milestone.status === 'upcoming' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 
+                                          'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                                        }`}>
                                           {milestone.date}
                                         </Badge>
                                       </div>
                                       
-                                      <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-3">{milestone.title}</h4>
+                                      <h4 className="font-semibold text-xs text-gray-900 dark:text-white mb-1 line-clamp-1">{milestone.title}</h4>
                                       
-                                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">
                                         {milestone.description}
                                       </p>
                                       
-                                      <div className="flex flex-wrap gap-2">
-                                        {milestone.achievements.slice(0, 3).map((achievement, i) => (
+                                      <div className="flex flex-wrap gap-1">
+                                        {milestone.achievements.slice(0, 2).map((achievement, i) => (
                                           <span 
                                             key={i} 
-                                            className="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-xs font-medium"
+                                            className="px-1 py-0.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-xs font-medium"
                                           >
-                                            {achievement}
+                                            {achievement.split(':')[0].substring(0, 8)}...
                                           </span>
                                         ))}
+                                        {milestone.achievements.length > 2 && (
+                                          <span className="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs">
+                                            +{milestone.achievements.length - 2}
+                                          </span>
+                                        )}
                                       </div>
-                                    </div>
-                                  </motion.div>
-                                ))}
-                              </motion.div>
+                                    </CardContent>
+                                  </Card>
+                                </motion.div>
+                              ))}
                             </div>
                           </div>
                         </div>
 
-
-                        {/* Timeline Content Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                          {milestones.slice(0, 4).map((milestone, index) => (
-                            <motion.div
-                              key={milestone.date}
-                              initial={{ opacity: 0, y: 30 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1 + index * 0.2 }}
-                              className="relative h-full"
-                            >
-                              <Card className={`h-full border-2 transition-all duration-300 hover:shadow-xl hover:scale-105 ${
-                                milestone.status === 'completed' 
-                                  ? 'border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 hover:border-green-300' 
-                                  : milestone.status === 'in-progress'
-                                  ? 'border-cyan-200 bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20 hover:border-cyan-300'
-                                  : milestone.status === 'upcoming'
-                                  ? 'border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 hover:border-blue-300'
-                                  : 'border-purple-200 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 hover:border-purple-300'
-                              }`}>
-                                <CardContent className="p-6 h-full flex flex-col justify-between">
-                                  <div className="text-center">
-                                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                                      milestone.status === 'completed' 
-                                        ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
-                                        : milestone.status === 'in-progress'
-                                        ? 'bg-gradient-to-br from-cyan-500 to-teal-600'
-                                        : milestone.status === 'upcoming'
-                                        ? 'bg-gradient-to-br from-blue-500 to-cyan-600'
-                                        : 'bg-gradient-to-br from-purple-500 to-violet-600'
-                                    } shadow-lg transform transition-transform duration-300 hover:scale-110`}>
-                                      {milestone.status === 'completed' ? (
-                                        <CheckCircle className="w-8 h-8 text-white" />
-                                      ) : milestone.status === 'in-progress' ? (
-                                        <Settings className="w-8 h-8 text-white animate-spin" />
-                                      ) : milestone.status === 'upcoming' ? (
-                                        <Zap className="w-8 h-8 text-white" />
-                                      ) : (
-                                        <Clock className="w-8 h-8 text-white" />
-                                      )}
-                                    </div>
-                                    
-                                    <h3 className="font-bold text-lg mb-2 min-h-[3rem] flex items-center justify-center">{milestone.title}</h3>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
-                                      {milestone.date}
-                                    </p>
-                                  </div>
-                                  
-                                  <div className="mt-auto flex justify-center">
-                                    <Badge className={`${
-                                      milestone.status === 'completed' 
-                                        ? 'bg-green-500 hover:bg-green-600 text-white border-0 shadow-md hover:shadow-lg' 
-                                        : milestone.status === 'upcoming'
-                                        ? 'bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-md hover:shadow-lg'
-                                        : milestone.status === 'in-progress'
-                                        ? 'bg-cyan-500 hover:bg-cyan-600 text-white border-0 shadow-md hover:shadow-lg'
-                                        : 'bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-md hover:shadow-lg'
-                                    } transition-all duration-300 transform hover:scale-105`}>
-                                      {milestone.status === 'completed' ? '✓ Completed' : 
-                                       milestone.status === 'in-progress' ? '🔄 In Progress' :
-                                       milestone.status === 'upcoming' ? '⚡ Active' : '📋 Planned'}
-                                    </Badge>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </motion.div>
-                          ))}
+                        {/* Timeline Legend */}
+                        <div className="mt-8 flex flex-wrap justify-center gap-6">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Completed</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 rounded-full bg-cyan-500"></div>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">In Progress</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Upcoming</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 rounded-full bg-purple-500"></div>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Planned</span>
+                          </div>
                         </div>
 
                       </div>
