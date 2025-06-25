@@ -105,6 +105,15 @@ const complianceMapping = [
       ],
       cisControls: [
         // CIS controls are primarily technical - governance is mainly ISO focus
+      ],
+      gdpr: [
+        { code: 'Art. 5', title: 'Principles relating to processing of personal data', description: 'Lawfulness, fairness, transparency, purpose limitation, data minimisation' },
+        { code: 'Art. 24', title: 'Responsibility of the controller', description: 'Controller shall implement appropriate technical and organisational measures' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles at design time' },
+        { code: 'Art. 30', title: 'Records of processing activities', description: 'Maintain records of all processing activities' },
+        { code: 'Art. 35', title: 'Data protection impact assessment', description: 'Carry out impact assessment for high-risk processing' },
+        { code: 'Art. 37', title: 'Designation of the data protection officer', description: 'Designate DPO where required' },
+        { code: 'Art. 39', title: 'Tasks of the data protection officer', description: 'DPO tasks include monitoring compliance and training' }
       ]
     }
   },
@@ -139,6 +148,10 @@ const complianceMapping = [
       ],
       cisControls: [
         // Risk management is primarily an ISO focus - CIS is more control-focused
+      ],
+      gdpr: [
+        { code: 'Art. 35', title: 'Data protection impact assessment', description: 'Carry out impact assessment for high-risk processing' },
+        { code: 'Art. 36', title: 'Prior consultation', description: 'Consult supervisory authority where DPIA indicates high risk' }
       ]
     }
   },
@@ -173,6 +186,10 @@ const complianceMapping = [
         { code: '2.5', title: 'Allowlist Authorized Software', description: 'Use technical controls to enforce allowlisting' },
         { code: '2.6', title: 'Allowlist Authorized Libraries', description: 'Allowlist authorized software libraries' },
         { code: '2.7', title: 'Allowlist Authorized Scripts', description: 'Allowlist authorized scripts' }
+      ],
+      gdpr: [
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement appropriate technical measures including software security controls' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles in software management' }
       ]
     }
   },
@@ -261,6 +278,13 @@ const complianceMapping = [
         { code: '6.4', title: 'Require MFA for Remote Network Access', description: 'Require MFA for remote network access' },
         { code: '6.5', title: 'Require MFA for Administrative Access', description: 'Require MFA for administrative access' },
         { code: '3.3', title: 'Configure Data Access Control Lists', description: 'Configure data access control lists on local and remote filesystems' }
+      ],
+      gdpr: [
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement appropriate technical and organisational measures to ensure security' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles including access controls' },
+        { code: 'Art. 15', title: 'Right of access by the data subject', description: 'Data subjects have right to access their personal data' },
+        { code: 'Art. 16', title: 'Right to rectification', description: 'Data subjects have right to obtain rectification of inaccurate personal data' },
+        { code: 'Art. 17', title: 'Right to erasure (right to be forgotten)', description: 'Data subjects have right to obtain erasure of personal data' }
       ]
     }
   },
@@ -315,6 +339,15 @@ const complianceMapping = [
         { code: '3.11', title: 'Encrypt Sensitive Data at Rest', description: 'Encrypt sensitive data at rest' },
         { code: '3.13', title: 'Deploy a Data Loss Prevention Solution', description: 'Deploy data loss prevention solution' },
         { code: '3.14', title: 'Log Sensitive Data Access', description: 'Log sensitive data access including modification and disposal' }
+      ],
+      gdpr: [
+        { code: 'Art. 5', title: 'Principles relating to processing of personal data', description: 'Data minimisation, purpose limitation, accuracy, storage limitation' },
+        { code: 'Art. 6', title: 'Lawfulness of processing', description: 'Processing shall be lawful only if at least one legal basis applies' },
+        { code: 'Art. 17', title: 'Right to erasure (right to be forgotten)', description: 'Data subjects have right to obtain erasure of personal data' },
+        { code: 'Art. 18', title: 'Right to restriction of processing', description: 'Data subject has right to obtain restriction of processing' },
+        { code: 'Art. 20', title: 'Right to data portability', description: 'Data subject has right to receive personal data in structured format' },
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement appropriate technical measures including encryption' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles by design' }
       ]
     }
   },
@@ -353,6 +386,10 @@ const complianceMapping = [
         { code: '4.10', title: 'Enforce Automatic Device Lock', description: 'Enforce automatic device lock on portable end-user devices' },
         { code: '4.11', title: 'Enforce Remote Wipe Capability', description: 'Enforce remote wipe capability on portable devices' },
         { code: '4.12', title: 'Separate Enterprise Workspaces', description: 'Separate enterprise workspaces on mobile devices' }
+      ],
+      gdpr: [
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement appropriate technical and organisational measures to ensure security' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles including secure configurations' }
       ]
     }
   },
@@ -387,6 +424,10 @@ const complianceMapping = [
         { code: '7.5', title: 'Perform Automated Operating System Patch Management', description: 'Perform automated operating system patch management' },
         { code: '7.6', title: 'Perform Automated Application Patch Management', description: 'Perform automated application patch management' },
         { code: '7.7', title: 'Remediate Detected Vulnerabilities', description: 'Remediate detected vulnerabilities in enterprise assets' }
+      ],
+      gdpr: [
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement appropriate technical and organisational measures to ensure security' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles including vulnerability management' }
       ]
     }
   },
@@ -426,6 +467,10 @@ const complianceMapping = [
       ],
       cisControls: [
         // Physical security related CIS controls moved to correct category - backup/recovery controls moved to business continuity
+      ],
+      gdpr: [
+        { code: 'Art. 32', title: 'Security of processing', description: 'Technical measures including pseudonymisation and encryption of personal data' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement appropriate safeguards including physical security' }
       ]
     }
   },
@@ -557,6 +602,11 @@ const complianceMapping = [
         { code: '17.7', title: 'Conduct Routine Incident Response Exercises', description: 'Conduct routine incident response exercises' },
         { code: '17.8', title: 'Conduct Post-Incident Reviews', description: 'Conduct post-incident reviews to improve processes' },
         { code: '17.9', title: 'Establish Role-Based Communication Plans', description: 'Establish role-based communication plans' }
+      ],
+      gdpr: [
+        { code: 'Art. 33', title: 'Notification of a personal data breach to the supervisory authority', description: 'Controller shall notify supervisory authority within 72 hours of breach' },
+        { code: 'Art. 34', title: 'Communication of a personal data breach to the data subject', description: 'Controller shall communicate breach to data subjects when high risk' },
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement measures to restore availability and access to personal data in case of incident' }
       ]
     }
   },
@@ -604,6 +654,10 @@ const complianceMapping = [
         { code: '13.9', title: 'Deploy Port-Level Access Control', description: 'Deploy port-level access control for network infrastructure' },
         { code: '13.10', title: 'Perform Application Layer Filtering', description: 'Perform application layer filtering for network communications' },
         { code: '13.11', title: 'Tune Security Event Alerting Thresholds', description: 'Tune security event alerting thresholds monthly' }
+      ],
+      gdpr: [
+        { code: 'Art. 32', title: 'Security of processing', description: 'Implement appropriate technical measures to ensure network security' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Implement data protection principles in network design' }
       ]
     }
   },
@@ -645,6 +699,12 @@ const complianceMapping = [
         { code: '15.5', title: 'Assess Service Provider Security Annually', description: 'Assess service provider security annually' },
         { code: '15.6', title: 'Monitor Service Provider Access', description: 'Monitor service provider access to enterprise assets' },
         { code: '15.7', title: 'Securely Decommission Service Providers', description: 'Securely decommission service provider access' }
+      ],
+      gdpr: [
+        { code: 'Art. 28', title: 'Processor', description: 'Processing by a processor shall be governed by a contract or other legal act' },
+        { code: 'Art. 44', title: 'General principle for transfers', description: 'Any transfer of personal data to third countries requires adequate protection' },
+        { code: 'Art. 46', title: 'Transfers subject to appropriate safeguards', description: 'Transfers to third countries with appropriate safeguards' },
+        { code: 'Art. 32', title: 'Security of processing', description: 'Controller and processor shall implement appropriate security measures' }
       ]
     }
   },
@@ -681,6 +741,10 @@ const complianceMapping = [
         { code: '14.7', title: 'Train Workforce on Social Engineering', description: 'Train on social engineering attack identification' },
         { code: '14.8', title: 'Train Workforce on Secure Development', description: 'Train development personnel on secure coding' },
         { code: '14.9', title: 'Conduct Role-Specific Security Training', description: 'Provide specialized training based on job roles' }
+      ],
+      gdpr: [
+        { code: 'Art. 39', title: 'Tasks of the data protection officer', description: 'DPO tasks include monitoring compliance and training staff' },
+        { code: 'Art. 32', title: 'Security of processing', description: 'Controller shall ensure staff are trained on data protection measures' }
       ]
     }
   },
@@ -753,6 +817,10 @@ const complianceMapping = [
         { code: '17.7', title: 'Conduct Routine Incident Response Exercises', description: 'Plan and conduct routine incident response exercises' },
         { code: '17.8', title: 'Conduct Post-Incident Reviews', description: 'Conduct post-incident reviews to improve processes' },
         { code: '17.9', title: 'Establish Role-Based Communication Plans', description: 'Establish role-based communication plans' }
+      ],
+      gdpr: [
+        { code: 'Art. 30', title: 'Records of processing activities', description: 'Maintain records of all processing activities' },
+        { code: 'Art. 5', title: 'Principles relating to processing of personal data', description: 'Accountability - demonstrate compliance with processing principles' }
       ]
     }
   },
@@ -884,6 +952,80 @@ const complianceMapping = [
         { code: '8.8', title: 'Collect Command-Line Audit Logs', description: 'Collect command-line audit logs' }
       ]
     }
+  },
+  
+  // Single comprehensive GDPR compliance group (only shown when GDPR is selected)
+  {
+    id: 'gdpr-unified',
+    category: 'GDPR Unified Compliance',
+    auditReadyUnified: {
+      title: 'Comprehensive GDPR Data Protection Implementation',
+      description: 'Complete GDPR compliance framework covering all essential privacy and data protection requirements',
+      subRequirements: [
+        'a) Establish lawful basis for all personal data processing activities and maintain processing records',
+        'b) Implement consent mechanisms that are freely given, specific, informed and unambiguous',
+        'c) Design and implement data protection by design and by default in all systems',
+        'd) Establish comprehensive data subject rights fulfillment processes (access, rectification, erasure, portability)',
+        'e) Conduct Data Protection Impact Assessments (DPIA) for high-risk processing activities',
+        'f) Implement personal data breach detection, notification and response procedures',
+        'g) Establish data retention, deletion and cross-border transfer compliance procedures',
+        'h) Designate Data Protection Officer (DPO) where required and define responsibilities',
+        'i) Implement privacy-enhancing technologies and data minimization principles',
+        'j) Establish processor agreements and third-party data protection compliance',
+        'k) Implement age verification and parental consent mechanisms for children',
+        'l) Design transparent privacy notices and cookie consent management',
+        'm) Establish automated decision-making and profiling disclosure procedures',
+        'n) Implement data portability and interoperability mechanisms',
+        'o) Establish supervisory authority liaison and regulatory compliance monitoring'
+      ]
+    },
+    frameworks: {
+      iso27001: [],
+      iso27002: [
+        { code: 'A.5.34', title: 'Privacy and protection of personally identifiable information', description: 'Ensure privacy and protection of PII' },
+        { code: 'A.5.12', title: 'Classification of information', description: 'Information shall be classified according to information security needs' },
+        { code: 'A.5.13', title: 'Labelling of information', description: 'An appropriate set of procedures for information labelling shall be developed' },
+        { code: 'A.5.14', title: 'Information transfer', description: 'Information transfer rules and procedures shall be in place' },
+        { code: 'A.8.10', title: 'Information deletion', description: 'Information stored in information systems should be deleted' },
+        { code: 'A.8.11', title: 'Data masking', description: 'Data masking should be used in accordance with policy' },
+        { code: 'A.8.12', title: 'Data leakage prevention', description: 'Data leakage prevention measures should be applied' }
+      ],
+      cisControls: [],
+      gdpr: [
+        { code: 'Art. 1', title: 'Subject matter and objectives', description: 'Establish framework for protection of natural persons regarding personal data processing' },
+        { code: 'Art. 2', title: 'Material scope', description: 'Determine whether processing of personal data falls within scope of GDPR' },
+        { code: 'Art. 3', title: 'Territorial scope', description: 'Determine territorial applicability of GDPR to processing activities' },
+        { code: 'Art. 5', title: 'Principles relating to processing of personal data', description: 'Personal data shall be processed lawfully, fairly, transparently with purpose limitation and data minimisation' },
+        { code: 'Art. 6', title: 'Lawfulness of processing', description: 'Processing shall be lawful only if and to the extent that at least one condition applies' },
+        { code: 'Art. 7', title: 'Conditions for consent', description: 'Where processing is based on consent, the controller shall be able to demonstrate consent' },
+        { code: 'Art. 8', title: 'Conditions applicable to child\'s consent', description: 'Where child is below age of 16 years, processing shall be lawful only if consent is given by holder of parental responsibility' },
+        { code: 'Art. 12', title: 'Transparent information, communication and modalities', description: 'Controller shall provide transparent information about processing to data subjects' },
+        { code: 'Art. 13', title: 'Information to be provided where personal data are collected', description: 'Where personal data are collected, controller shall provide specific information to data subject' },
+        { code: 'Art. 14', title: 'Information to be provided where personal data have not been obtained', description: 'Where personal data have not been obtained from data subject, controller shall provide information' },
+        { code: 'Art. 15', title: 'Right of access by the data subject', description: 'Data subject shall have right to obtain confirmation as to whether personal data are being processed' },
+        { code: 'Art. 16', title: 'Right to rectification', description: 'Data subject shall have right to obtain without undue delay rectification of inaccurate personal data' },
+        { code: 'Art. 17', title: 'Right to erasure (right to be forgotten)', description: 'Data subject shall have right to obtain erasure of personal data concerning him or her without undue delay' },
+        { code: 'Art. 18', title: 'Right to restriction of processing', description: 'Data subject shall have right to obtain restriction of processing where certain conditions apply' },
+        { code: 'Art. 20', title: 'Right to data portability', description: 'Data subject shall have right to receive personal data in structured, commonly used format' },
+        { code: 'Art. 21', title: 'Right to object', description: 'Data subject shall have right to object to processing of personal data concerning him or her' },
+        { code: 'Art. 22', title: 'Automated individual decision-making, including profiling', description: 'Data subject shall have right not to be subject to automated decision-making' },
+        { code: 'Art. 24', title: 'Responsibility of the controller', description: 'Controller shall implement appropriate technical and organisational measures to ensure compliance' },
+        { code: 'Art. 25', title: 'Data protection by design and by default', description: 'Controller shall implement appropriate technical and organisational measures to ensure processing complies with regulation' },
+        { code: 'Art. 28', title: 'Processor', description: 'Where processing is carried out on behalf of controller, controller shall use only processors providing sufficient guarantees' },
+        { code: 'Art. 30', title: 'Records of processing activities', description: 'Each controller shall maintain record of processing activities under its responsibility' },
+        { code: 'Art. 32', title: 'Security of processing', description: 'Controller and processor shall implement appropriate technical and organisational measures to ensure security' },
+        { code: 'Art. 33', title: 'Notification of a personal data breach to the supervisory authority', description: 'Controller shall notify supervisory authority without undue delay and where feasible not later than 72 hours' },
+        { code: 'Art. 34', title: 'Communication of a personal data breach to the data subject', description: 'When breach is likely to result in high risk, controller shall communicate breach to data subject without undue delay' },
+        { code: 'Art. 35', title: 'Data protection impact assessment', description: 'Where type of processing is likely to result in high risk, controller shall carry out impact assessment' },
+        { code: 'Art. 36', title: 'Prior consultation', description: 'Controller shall consult supervisory authority prior to processing where DPIA indicates high risk' },
+        { code: 'Art. 37', title: 'Designation of the data protection officer', description: 'Controller and processor shall designate data protection officer in certain cases' },
+        { code: 'Art. 44', title: 'General principle for transfers', description: 'Any transfer of personal data to third country shall take place only if conditions are met' },
+        { code: 'Art. 46', title: 'Transfers subject to appropriate safeguards', description: 'In absence of adequacy decision, controller may transfer personal data with appropriate safeguards' },
+        { code: 'Art. 47', title: 'Binding corporate rules', description: 'Implement binding corporate rules for transfers within multinational corporate groups' },
+        { code: 'Art. 48', title: 'Transfers not authorized by Union law', description: 'Prohibition on transfers based on third country judgments or administrative decisions unless authorized' },
+        { code: 'Art. 49', title: 'Derogations for specific situations', description: 'Apply specific derogations only where no adequacy decision or appropriate safeguards exist' }
+      ]
+    }
   }
 ];
 
@@ -893,6 +1035,35 @@ export default function ComplianceSimplification() {
   const [activeTab, setActiveTab] = useState('overview');
   const [filterFramework, setFilterFramework] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  
+  // Framework selection state
+  const [selectedFrameworks, setSelectedFrameworks] = useState({
+    iso27001: true,
+    iso27002: true,
+    cisControls: 'ig3', // 'ig1', 'ig2', 'ig3', or null
+    gdpr: false
+  });
+  
+  // AI generation state
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [showGeneration, setShowGeneration] = useState(false);
+  
+  // Handle framework selection with AI generation animation
+  const handleFrameworkChange = (newFrameworks: typeof selectedFrameworks) => {
+    setIsGenerating(true);
+    setShowGeneration(true);
+    
+    // Simulate AI processing time
+    setTimeout(() => {
+      setSelectedFrameworks(newFrameworks);
+      setIsGenerating(false);
+      
+      // Hide generation animation after showing results
+      setTimeout(() => {
+        setShowGeneration(false);
+      }, 2000);
+    }, 2500);
+  };
 
   const exportToCSV = () => {
     // Create CSV data
@@ -938,10 +1109,133 @@ export default function ComplianceSimplification() {
     document.body.removeChild(link);
   };
 
+  // Create numbered category options for the filter dropdown
+  const categoryOptions = useMemo(() => {
+    // Apply same dynamic numbering logic as filteredMappings
+    const nonGdprGroups = complianceMapping.filter(mapping => mapping.id !== 'gdpr-unified');
+    const gdprGroups = complianceMapping.filter(mapping => mapping.id === 'gdpr-unified');
+    
+    // Number non-GDPR groups sequentially
+    const numberedNonGdpr = nonGdprGroups.map((mapping, index) => {
+      const number = String(index + 1).padStart(2, '0');
+      return {
+        ...mapping,
+        category: mapping.category.startsWith(number + '.') ? mapping.category : `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
+      };
+    });
+    
+    // Number GDPR groups to come after non-GDPR groups
+    const numberedGdpr = gdprGroups.map((mapping) => {
+      const number = String(nonGdprGroups.length + 1).padStart(2, '0');
+      return {
+        ...mapping,
+        category: `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
+      };
+    });
+    
+    return [...numberedNonGdpr, ...numberedGdpr];
+  }, []);
+
+  // Calculate dynamic statistics
+  const overviewStats = useMemo(() => {
+    // Calculate total maximum requirements across all frameworks (with safe fallbacks)
+    const maxRequirements = complianceMapping.reduce((total, mapping) => {
+      const iso27001Count = mapping.frameworks?.iso27001?.length || 0;
+      const iso27002Count = mapping.frameworks?.iso27002?.length || 0;
+      const cisControlsCount = mapping.frameworks?.cisControls?.length || 0;
+      const gdprCount = mapping.frameworks?.gdpr?.length || 0;
+      
+      return total + iso27001Count + iso27002Count + cisControlsCount + gdprCount;
+    }, 0);
+    
+    // Number of unified groups
+    const unifiedGroups = complianceMapping.length;
+    
+    // Calculate reduction metrics with safe fallbacks
+    const reduction = maxRequirements - unifiedGroups;
+    const reductionPercentage = maxRequirements > 0 ? ((reduction / maxRequirements) * 100).toFixed(1) : '0.0';
+    const efficiencyRatio = unifiedGroups > 0 ? Math.round(maxRequirements / unifiedGroups) : 0;
+    
+    return {
+      maxRequirements,
+      unifiedGroups,
+      reduction,
+      reductionPercentage,
+      efficiencyRatio
+    };
+  }, []);
+
   const filteredMappings = useMemo(() => {
     let filtered = complianceMapping;
     
-    // Filter by framework
+    // First, filter to show only GDPR group when GDPR is selected, or non-GDPR groups when other frameworks are selected
+    if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls) {
+      // GDPR only - show only the unified GDPR group
+      filtered = filtered.filter(mapping => mapping.id === 'gdpr-unified');
+    } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls)) {
+      // Other frameworks without GDPR - show only non-GDPR groups
+      filtered = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
+    } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls)) {
+      // Mixed selection - show all relevant groups
+      filtered = complianceMapping;
+    } else {
+      // Nothing selected - show non-GDPR groups by default
+      filtered = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
+    }
+    
+    // Filter by framework selection
+    filtered = filtered.map(mapping => {
+      // For GDPR group, only show GDPR frameworks
+      if (mapping.id === 'gdpr-unified') {
+        return selectedFrameworks.gdpr ? mapping : null;
+      }
+      
+      // For non-GDPR groups, filter based on selected frameworks
+      const newMapping = {
+        ...mapping,
+        frameworks: {
+          iso27001: selectedFrameworks.iso27001 ? mapping.frameworks.iso27001 : [],
+          iso27002: selectedFrameworks.iso27002 ? mapping.frameworks.iso27002 : [],
+          gdpr: [], // Never show GDPR in non-GDPR groups
+          cisControls: selectedFrameworks.cisControls ? 
+            mapping.frameworks.cisControls.filter(control => {
+              // Filter CIS controls based on IG level
+              const ig3OnlyControls = [
+                '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
+                '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
+                '15.5', '15.6', '15.7', '16.12', '16.13', '16.14', 
+                '17.9', '18.4', '18.5'
+              ];
+              
+              if (selectedFrameworks.cisControls === 'ig1') {
+                // IG1: Exclude IG3-only controls and assume most advanced controls are IG2+
+                return !ig3OnlyControls.includes(control.code) && 
+                       !control.code.startsWith('13.') && 
+                       !control.code.startsWith('16.') && 
+                       !control.code.startsWith('17.') && 
+                       !control.code.startsWith('18.');
+              } else if (selectedFrameworks.cisControls === 'ig2') {
+                // IG2: Include IG1 + some advanced controls but exclude IG3-only
+                return !ig3OnlyControls.includes(control.code);
+              } else if (selectedFrameworks.cisControls === 'ig3') {
+                // IG3: Include all controls
+                return true;
+              }
+              return false;
+            }) : []
+        }
+      };
+      
+      // Only include the mapping if it has at least one framework with controls
+      const hasControls = newMapping.frameworks.iso27001.length > 0 || 
+                         newMapping.frameworks.iso27002.length > 0 || 
+                         newMapping.frameworks.cisControls.length > 0 ||
+                         newMapping.frameworks.gdpr.length > 0;
+      
+      return hasControls ? newMapping : null;
+    }).filter(mapping => mapping !== null);
+    
+    // Filter by traditional framework filter (for backwards compatibility)
     if (filterFramework !== 'all') {
       filtered = filtered.filter(mapping => {
         switch (filterFramework) {
@@ -951,6 +1245,8 @@ export default function ComplianceSimplification() {
             return mapping.frameworks.iso27002.length > 0;
           case 'cis':
             return mapping.frameworks.cisControls.length > 0;
+          case 'gdpr':
+            return mapping.frameworks.gdpr.length > 0;
           default:
             return true;
         }
@@ -962,8 +1258,30 @@ export default function ComplianceSimplification() {
       filtered = filtered.filter(mapping => mapping.id === filterCategory);
     }
     
-    return filtered;
-  }, [filterFramework, filterCategory]);
+    // Apply dynamic numbering: GDPR always comes last
+    const nonGdprGroups = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
+    const gdprGroups = filtered.filter(mapping => mapping.id === 'gdpr-unified');
+    
+    // Number non-GDPR groups sequentially
+    const numberedNonGdpr = nonGdprGroups.map((mapping, index) => {
+      const number = String(index + 1).padStart(2, '0');
+      return {
+        ...mapping,
+        category: mapping.category.startsWith(number + '.') ? mapping.category : `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
+      };
+    });
+    
+    // Number GDPR groups to come after non-GDPR groups
+    const numberedGdpr = gdprGroups.map((mapping) => {
+      const number = String(nonGdprGroups.length + 1).padStart(2, '0');
+      return {
+        ...mapping,
+        category: `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
+      };
+    });
+    
+    return [...numberedNonGdpr, ...numberedGdpr];
+  }, [selectedFrameworks, filterFramework, filterCategory]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
@@ -1037,30 +1355,30 @@ export default function ComplianceSimplification() {
               </CardHeader>
               <CardContent className="p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="text-center">
+                  <div className="text-center flex flex-col min-h-[200px]">
                     <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl mb-4">
                       <BookOpen className="w-12 h-12 text-red-600 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Overlapping Requirements</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Overlapping Requirements</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
                       Multiple frameworks often have similar requirements with different wording, creating confusion and redundancy.
                     </p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center flex flex-col min-h-[200px]">
                     <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl mb-4">
                       <Users className="w-12 h-12 text-orange-600 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Implementation Confusion</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Implementation Confusion</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
                       Teams struggle to understand which requirements apply and how to avoid duplicate work across frameworks.
                     </p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center flex flex-col min-h-[200px]">
                     <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl mb-4">
                       <Settings className="w-12 h-12 text-yellow-600 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Resource Inefficiency</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Resource Inefficiency</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
                       Organizations waste time and resources implementing the same control multiple times for different frameworks.
                     </p>
                   </div>
@@ -1083,30 +1401,30 @@ export default function ComplianceSimplification() {
               </CardHeader>
               <CardContent className="p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="text-center">
+                  <div className="text-center flex flex-col min-h-[200px]">
                     <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl mb-4">
                       <Shield className="w-12 h-12 text-green-600 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Intelligent Unification</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Our AI transforms 248 scattered requirements from 3 frameworks into just 21 comprehensive requirement groups, reducing complexity by 91.5%.
+                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Intelligent Unification</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                      Our AI transforms {overviewStats.maxRequirements} scattered requirements from multiple frameworks into just {overviewStats.unifiedGroups} comprehensive requirement groups, reducing complexity by {overviewStats.reductionPercentage}%.
                     </p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center flex flex-col min-h-[200px]">
                     <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl mb-4">
                       <CheckCircle className="w-12 h-12 text-blue-600 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Complete Coverage</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Complete Coverage</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
                       Every detail from source frameworks is preserved in our unified requirements, ensuring nothing is lost.
                     </p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center flex flex-col min-h-[200px]">
                     <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl mb-4">
                       <Target className="w-12 h-12 text-purple-600 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Clear Implementation</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Clear Implementation</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
                       Plain language descriptions with actionable sub-requirements make implementation straightforward and effective.
                     </p>
                   </div>
@@ -1117,27 +1435,50 @@ export default function ComplianceSimplification() {
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[
-                { value: "248→21", label: "Requirements Simplified", desc: "From 248 scattered requirements to 21 unified groups", color: "blue" },
-                { value: "91.5%", label: "Complexity Reduction", desc: "227 fewer requirements to manage", color: "green" },
-                { value: "12:1", label: "Efficiency Ratio", desc: "12 traditional requirements per 1 unified group", color: "purple" },
-                { value: "100%", label: "Coverage Maintained", desc: "All original requirements preserved", color: "orange" }
+                { 
+                  value: `${overviewStats.maxRequirements}→${overviewStats.unifiedGroups}`, 
+                  label: "Requirements Simplified", 
+                  desc: `From ${overviewStats.maxRequirements} scattered requirements to ${overviewStats.unifiedGroups} unified groups`, 
+                  color: "blue" 
+                },
+                { 
+                  value: `${overviewStats.reductionPercentage}%`, 
+                  label: "Complexity Reduction", 
+                  desc: `${overviewStats.reduction} fewer requirements to manage`, 
+                  color: "green" 
+                },
+                { 
+                  value: `${overviewStats.efficiencyRatio}:1`, 
+                  label: "Efficiency Ratio", 
+                  desc: `${overviewStats.efficiencyRatio} traditional requirements per 1 unified group`, 
+                  color: "purple" 
+                },
+                { 
+                  value: "100%", 
+                  label: "Coverage Maintained", 
+                  desc: "All original requirements preserved", 
+                  color: "orange" 
+                }
               ].map((stat, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  className="flex"
                 >
-                  <Card className="text-center border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow rounded-2xl">
-                    <CardContent className="p-6">
-                      <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                  <Card className="text-center border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow rounded-2xl flex-1">
+                    <CardContent className="p-6 flex flex-col min-h-[160px] h-[160px]">
+                      <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent h-12 flex items-center justify-center">
                         {stat.value}
                       </div>
-                      <div className="font-semibold text-gray-900 dark:text-white mb-1">
+                      <div className="font-semibold text-gray-900 dark:text-white h-6 flex items-center justify-center mt-2">
                         {stat.label}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        {stat.desc}
+                      <div className="flex-1 flex items-start justify-center pt-3">
+                        <div className="text-xs text-gray-600 dark:text-gray-400 leading-tight text-center px-1">
+                          {stat.desc}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -1148,6 +1489,291 @@ export default function ComplianceSimplification() {
 
           {/* Framework Mapping Tab */}
           <TabsContent value="mapping" className="space-y-6">
+            {/* Framework Selection Interface - Enhanced */}
+            <div className="relative">
+              {/* AI Generation Overlay */}
+              <AnimatePresence>
+                {showGeneration && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl border-2 border-blue-200 dark:border-blue-800 flex flex-col items-center justify-center"
+                  >
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 180, 360] 
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: isGenerating ? Infinity : 0 
+                      }}
+                      className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4"
+                    >
+                      <Zap className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <motion.h3
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="text-xl font-semibold text-gray-900 dark:text-white mb-2"
+                    >
+                      {isGenerating ? 'AI Analyzing Frameworks...' : 'Unified Requirements Generated!'}
+                    </motion.h3>
+                    <motion.p
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-sm text-gray-600 dark:text-gray-400 text-center max-w-md"
+                    >
+                      {isGenerating 
+                        ? 'Our AI is processing your selected frameworks and creating optimized unified requirements...'
+                        : 'Your customized compliance roadmap is ready! Scroll down to see the unified requirements.'
+                      }
+                    </motion.p>
+                    {!isGenerating && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.5, type: "spring" }}
+                        className="mt-4 flex items-center space-x-2 text-green-600"
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="text-sm font-medium">Generation Complete</span>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <Card className="border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20">
+                <CardHeader className="text-center">
+                  <CardTitle className="flex items-center justify-center space-x-3 text-xl">
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Settings className="w-6 h-6 text-blue-600" />
+                    </motion.div>
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      AI-Powered Framework Unification
+                    </span>
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    Select your compliance frameworks and watch our AI instantly generate unified, simplified requirements tailored to your organization
+                  </p>
+                </CardHeader>
+                
+                <CardContent className="space-y-8">
+                  {/* Framework Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
+                    
+                    {/* ISO 27001 Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[160px] flex flex-col ${
+                        selectedFrameworks.iso27001
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg shadow-blue-500/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-blue-300'
+                      }`}
+                      onClick={() => handleFrameworkChange({ ...selectedFrameworks, iso27001: !selectedFrameworks.iso27001 })}
+                    >
+                      {/* Selected Badge at Top */}
+                      {selectedFrameworks.iso27001 && (
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-blue-500 text-white px-2 py-1 text-xs">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
+                        <div className={`p-2 rounded-full ${selectedFrameworks.iso27001 ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-5 h-5 ${selectedFrameworks.iso27001 ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">ISO 27001</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">Information Security Management System</p>
+                        </div>
+                      </div>
+                      {selectedFrameworks.iso27001 && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+
+                    {/* ISO 27002 Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[160px] flex flex-col ${
+                        selectedFrameworks.iso27002
+                          ? 'border-green-500 bg-green-50 dark:bg-green-900/20 shadow-lg shadow-green-500/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-green-300'
+                      }`}
+                      onClick={() => handleFrameworkChange({ ...selectedFrameworks, iso27002: !selectedFrameworks.iso27002 })}
+                    >
+                      {/* Selected Badge at Top */}
+                      {selectedFrameworks.iso27002 && (
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-green-500 text-white px-2 py-1 text-xs">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
+                        <div className={`p-2 rounded-full ${selectedFrameworks.iso27002 ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Lock className={`w-5 h-5 ${selectedFrameworks.iso27002 ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">ISO 27002</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">Information Security Controls</p>
+                        </div>
+                      </div>
+                      {selectedFrameworks.iso27002 && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+
+                    {/* CIS Controls Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 min-h-[160px] flex flex-col ${
+                        selectedFrameworks.cisControls
+                          ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg shadow-purple-500/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800'
+                      }`}
+                    >
+                      {/* Selected Badge at Top */}
+                      {selectedFrameworks.cisControls && (
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-purple-500 text-white px-2 py-1 text-xs">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
+                        <div className={`p-2 rounded-full ${selectedFrameworks.cisControls ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Settings className={`w-5 h-5 ${selectedFrameworks.cisControls ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">CIS Controls</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">Cybersecurity Best Practices</p>
+                        </div>
+                        
+                        {/* IG Level Selection */}
+                        <div className="space-y-1 w-full">
+                          {['ig1', 'ig2', 'ig3'].map((level) => (
+                            <motion.button
+                              key={level}
+                              whileTap={{ scale: 0.95 }}
+                              className={`w-full p-1.5 rounded-lg text-xs font-medium transition-all ${
+                                selectedFrameworks.cisControls === level
+                                  ? 'bg-purple-500 text-white'
+                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-purple-100 dark:hover:bg-purple-900/50'
+                              }`}
+                              onClick={() => handleFrameworkChange({ 
+                                ...selectedFrameworks, 
+                                cisControls: selectedFrameworks.cisControls === level ? null : level 
+                              })}
+                            >
+                              {level.toUpperCase()} - {level === 'ig1' ? 'Basic' : level === 'ig2' ? 'Foundational' : 'Organizational'}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+                      {selectedFrameworks.cisControls && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+
+                    {/* GDPR Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[160px] flex flex-col ${
+                        selectedFrameworks.gdpr
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 shadow-lg shadow-orange-500/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-orange-300'
+                      }`}
+                      onClick={() => handleFrameworkChange({ ...selectedFrameworks, gdpr: !selectedFrameworks.gdpr })}
+                    >
+                      {/* Selected Badge at Top */}
+                      {selectedFrameworks.gdpr && (
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-orange-500 text-white px-2 py-1 text-xs">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
+                        <div className={`p-2 rounded-full ${selectedFrameworks.gdpr ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <BookOpen className={`w-5 h-5 ${selectedFrameworks.gdpr ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">GDPR</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">EU Data Protection Regulation</p>
+                        </div>
+                      </div>
+                      {selectedFrameworks.gdpr && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </div>
+
+                  {/* Quick Selection Presets */}
+                  <div className="border-t pt-6">
+                    <h4 className="text-lg font-semibold mb-4 text-center">Quick Presets</h4>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {[
+                        { name: 'Comprehensive Security', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig3', gdpr: false } },
+                        { name: 'Privacy Focused', frameworks: { iso27001: false, iso27002: false, cisControls: null, gdpr: true } },
+                        { name: 'EU Compliance', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig2', gdpr: true } },
+                        { name: 'Basic Security', frameworks: { iso27001: true, iso27002: false, cisControls: 'ig1', gdpr: false } }
+                      ].map((preset) => (
+                        <Button
+                          key={preset.name}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleFrameworkChange(preset.frameworks)}
+                          className="hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/20"
+                        >
+                          {preset.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Filters */}
             <div className="space-y-4">
               {/* Framework Filters */}
@@ -1161,7 +1787,8 @@ export default function ComplianceSimplification() {
                     { id: 'all', label: 'All Frameworks', icon: <Target className="w-4 h-4" /> },
                     { id: 'iso27001', label: 'ISO 27001', icon: <Shield className="w-4 h-4" /> },
                     { id: 'iso27002', label: 'ISO 27002', icon: <Lock className="w-4 h-4" /> },
-                    { id: 'cis', label: 'CIS Controls', icon: <Settings className="w-4 h-4" /> }
+                    { id: 'cis', label: 'CIS Controls', icon: <Settings className="w-4 h-4" /> },
+                    { id: 'gdpr', label: 'GDPR', icon: <BookOpen className="w-4 h-4" /> }
                   ].map((filter) => (
                     <Button
                       key={filter.id}
@@ -1189,7 +1816,7 @@ export default function ComplianceSimplification() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {complianceMapping.map((mapping) => (
+                    {categoryOptions.map((mapping) => (
                       <SelectItem key={mapping.id} value={mapping.id}>
                         {mapping.category}
                       </SelectItem>
@@ -1223,8 +1850,29 @@ export default function ComplianceSimplification() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="p-0">
-                        {/* Framework Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-slate-200 dark:border-slate-700">
+                        {/* Framework Grid - Different layout for GDPR vs other frameworks */}
+                        {mapping.id === 'gdpr-unified' ? (
+                          /* GDPR-only layout */
+                          <div className="border-b border-slate-200 dark:border-slate-700">
+                            <div className="p-4 sm:p-6 bg-orange-50 dark:bg-orange-900/10">
+                              <div className="flex items-center space-x-2 mb-4">
+                                <BookOpen className="w-5 h-5 text-orange-600" />
+                                <h4 className="font-semibold text-orange-900 dark:text-orange-100">GDPR Articles</h4>
+                              </div>
+                              <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-orange-100 dark:scrollbar-thumb-orange-600 dark:scrollbar-track-orange-900">
+                                {mapping.frameworks.gdpr.map((req, i) => (
+                                  <div key={i} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-orange-200 dark:border-orange-700">
+                                    <div className="font-medium text-sm text-orange-900 dark:text-orange-100">{req.code}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">{req.title}</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">{req.description}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Regular 3-column layout for ISO/CIS frameworks */
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-slate-200 dark:border-slate-700">
                           {/* ISO 27001 Column */}
                           <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
                             <div className="flex items-center space-x-2 mb-4">
@@ -1261,39 +1909,22 @@ export default function ComplianceSimplification() {
                           <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10">
                             <div className="flex items-center space-x-2 mb-4">
                               <Settings className="w-5 h-5 text-purple-600" />
-                              <h4 className="font-semibold text-purple-900 dark:text-purple-100">CIS Controls IG3</h4>
+                              <h4 className="font-semibold text-purple-900 dark:text-purple-100">
+                                CIS Controls {selectedFrameworks.cisControls ? selectedFrameworks.cisControls.toUpperCase() : 'IG3'}
+                              </h4>
                             </div>
                             <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
-                              {mapping.frameworks.cisControls.map((req, i) => {
-                                // List of CIS controls that are IG3-ONLY (not required for IG1 or IG2) based on official CIS Controls v8.1.2
-                                const ig3OnlyControls = [
-                                  '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
-                                  '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
-                                  '15.5', '15.6', '15.7', '16.12', '16.13', '16.14', 
-                                  '17.9', '18.4', '18.5'
-                                ];
-                                const isIG3Only = ig3OnlyControls.includes(req.code);
-                                
-                                return (
-                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700 relative">
-                                    <div className="flex items-start justify-between">
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm text-purple-900 dark:text-purple-100">{req.code}</div>
-                                        <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
-                                      </div>
-                                      {isIG3Only && (
-                                        <Badge className="ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 text-xs px-1.5 py-0">
-                                          IG3-specific
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                              {mapping.frameworks.cisControls.map((req, i) => (
+                                <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700">
+                                  <div className="font-medium text-sm text-purple-900 dark:text-purple-100">{req.code}</div>
+                                  <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                </div>
+                              ))}
                             </div>
                           </div>
 
                         </div>
+                        )}
 
                         {/* AuditReady Unified Row */}
                         <div className="p-3 sm:p-4 bg-gradient-to-r from-orange-500 to-yellow-500 text-white border-b border-slate-200 dark:border-slate-700">
@@ -1311,12 +1942,21 @@ export default function ComplianceSimplification() {
                               <div className="text-center bg-white/20 rounded-lg px-3 py-1">
                                 <span className="text-xs font-medium block">
                                   {(() => {
-                                    const totalFrameworkReqs = 
-                                      mapping.frameworks.iso27001.length + 
-                                      mapping.frameworks.iso27002.length + 
-                                      mapping.frameworks.cisControls.length;
-                                    const reductionPercent = Math.round((1 - 1 / totalFrameworkReqs) * 100);
-                                    return `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction`;
+                                    if (mapping.id === 'gdpr-unified') {
+                                      // For GDPR groups, show GDPR articles count
+                                      const totalGdprReqs = mapping.frameworks.gdpr.length;
+                                      const unifiedReqs = mapping.auditReadyUnified.subRequirements.length;
+                                      const reductionPercent = totalGdprReqs > 1 ? Math.round((1 - unifiedReqs / totalGdprReqs) * 100) : 0;
+                                      return `Unifies ${totalGdprReqs} GDPR articles - ${reductionPercent}% simpler`;
+                                    } else {
+                                      // For regular groups, show framework requirements
+                                      const totalFrameworkReqs = 
+                                        mapping.frameworks.iso27001.length + 
+                                        mapping.frameworks.iso27002.length + 
+                                        mapping.frameworks.cisControls.length;
+                                      const reductionPercent = totalFrameworkReqs > 1 ? Math.round((1 - 1 / totalFrameworkReqs) * 100) : 0;
+                                      return `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction`;
+                                    }
                                   })()}
                                 </span>
                               </div>
@@ -1380,6 +2020,55 @@ export default function ComplianceSimplification() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-8">
+                {/* Framework Unification Introduction */}
+                <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                      <Filter className="w-5 h-5 mr-2 text-blue-600" />
+                      Framework Integration Overview
+                    </h3>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Generated Requirements</div>
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        {filteredMappings.length}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">unified groups</div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                    The following unified requirements have been generated by consolidating controls from your selected compliance frameworks:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedFrameworks.iso27001 && (
+                      <Badge className="bg-blue-500 text-white px-3 py-1">
+                        <Shield className="w-3 h-3 mr-1" />
+                        ISO 27001
+                      </Badge>
+                    )}
+                    {selectedFrameworks.iso27002 && (
+                      <Badge className="bg-green-500 text-white px-3 py-1">
+                        <Lock className="w-3 h-3 mr-1" />
+                        ISO 27002
+                      </Badge>
+                    )}
+                    {selectedFrameworks.cisControls && (
+                      <Badge className="bg-purple-500 text-white px-3 py-1">
+                        <Settings className="w-3 h-3 mr-1" />
+                        CIS Controls {selectedFrameworks.cisControls.toUpperCase()}
+                      </Badge>
+                    )}
+                    {selectedFrameworks.gdpr && (
+                      <Badge className="bg-orange-500 text-white px-3 py-1">
+                        <BookOpen className="w-3 h-3 mr-1" />
+                        GDPR
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
+                    Each unified requirement below eliminates duplicate controls and combines overlapping requirements into streamlined, actionable guidelines.
+                  </p>
+                </div>
+                
                 <div className="space-y-6">
                   {complianceMapping.map((mapping, index) => (
                     <motion.div
