@@ -1012,11 +1012,11 @@ export default function ComplianceSimplification() {
             </TabsTrigger>
             <TabsTrigger value="mapping" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Target className="w-4 h-4" />
-              <span className="hidden sm:inline">Framework </span>Mapping
+              <span>Framework Mapping</span>
             </TabsTrigger>
             <TabsTrigger value="unified" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Zap className="w-4 h-4" />
-              <span className="hidden sm:inline">Unified </span>Requirements
+              <span>Unified Requirements</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1244,7 +1244,7 @@ export default function ComplianceSimplification() {
                               <Shield className="w-5 h-5 text-blue-600" />
                               <h4 className="font-semibold text-blue-900 dark:text-blue-100">ISO 27001</h4>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100 dark:scrollbar-thumb-blue-600 dark:scrollbar-track-blue-900">
                               {mapping.frameworks.iso27001.map((req, i) => (
                                 <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-blue-200 dark:border-blue-700">
                                   <div className="font-medium text-sm text-blue-900 dark:text-blue-100">{req.code}</div>
@@ -1260,7 +1260,7 @@ export default function ComplianceSimplification() {
                               <Lock className="w-5 h-5 text-green-600" />
                               <h4 className="font-semibold text-green-900 dark:text-green-100">ISO 27002</h4>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-green-100 dark:scrollbar-thumb-green-600 dark:scrollbar-track-green-900">
                               {mapping.frameworks.iso27002.map((req, i) => (
                                 <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-green-200 dark:border-green-700">
                                   <div className="font-medium text-sm text-green-900 dark:text-green-100">{req.code}</div>
@@ -1276,7 +1276,7 @@ export default function ComplianceSimplification() {
                               <Settings className="w-5 h-5 text-purple-600" />
                               <h4 className="font-semibold text-purple-900 dark:text-purple-100">CIS Controls IG3</h4>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
                               {mapping.frameworks.cisControls.map((req, i) => {
                                 // Determine if this is an IG3-only control based on common patterns
                                 const controlNumber = parseFloat(req.code.split('.')[1]);
