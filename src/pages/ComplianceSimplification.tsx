@@ -1213,46 +1213,16 @@ export default function ComplianceSimplification() {
                   >
                     <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
                       <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                        <CardTitle>
-                          <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-white/20 rounded-lg">
-                              <Target className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <h3 className="text-base sm:text-lg font-semibold">{mapping.category}</h3>
-                            </div>
+                        <CardTitle className="flex items-center space-x-3">
+                          <div className="p-2 bg-white/20 rounded-lg">
+                            <Target className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-base sm:text-lg font-semibold">{mapping.category}</h3>
                           </div>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="p-0">
-                        {/* AuditReady Unified Row */}
-                        <div className="p-4 sm:p-6 bg-gradient-to-r from-orange-500 to-yellow-500 text-white border-b border-slate-200 dark:border-slate-700">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-white/20 rounded-lg">
-                                <Zap className="w-5 h-5" />
-                              </div>
-                              <div>
-                                <h4 className="font-semibold text-lg">AuditReady Unified</h4>
-                                <p className="text-sm text-white/90">{mapping.auditReadyUnified.title}</p>
-                                <p className="text-xs text-white/80 mt-1">{mapping.auditReadyUnified.description}</p>
-                                <Badge className="bg-white/20 text-white border-0 mt-2">
-                                  {mapping.auditReadyUnified.subRequirements.length} sub-requirements
-                                </Badge>
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedMapping(selectedMapping === mapping.id ? null : mapping.id)}
-                              className="text-white hover:bg-white/20 self-start sm:self-auto whitespace-nowrap"
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              <span>{selectedMapping === mapping.id ? 'Hide Sub-Requirements' : 'Show Sub-Requirements'}</span>
-                            </Button>
-                          </div>
-                        </div>
-
                         {/* Framework Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-slate-200 dark:border-slate-700">
                           {/* ISO 27001 Column */}
@@ -1296,7 +1266,7 @@ export default function ComplianceSimplification() {
                             <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
                               {mapping.frameworks.cisControls.map((req, i) => {
                                 // Determine if this is an IG3-only control based on common patterns
-                                const controlNumber = parseFloat(req.code.split('.')[1]);
+                                const controlNumber = parseFloat(req.code.split('.')[1] || '0');
                                 const isIG3Only = controlNumber >= 7 || 
                                   req.code.startsWith('18.') || // Penetration testing is IG3 only
                                   req.code.startsWith('13.7') || req.code.startsWith('13.8') || req.code.startsWith('13.9') || req.code.startsWith('13.10') || req.code.startsWith('13.11') ||
@@ -1324,6 +1294,44 @@ export default function ComplianceSimplification() {
 
                         </div>
 
+                        {/* AuditReady Unified Row */}
+                        <div className="p-3 sm:p-4 bg-gradient-to-r from-orange-500 to-yellow-500 text-white border-b border-slate-200 dark:border-slate-700">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-1.5 bg-white/20 rounded-lg">
+                                <Zap className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-base">AuditReady Unified</h4>
+                                <p className="text-xs text-white/90">{mapping.auditReadyUnified.title}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <div className="text-center bg-white/20 rounded-lg px-3 py-1">
+                                <span className="text-xs font-medium block">
+                                  {(() => {
+                                    const totalFrameworkReqs = 
+                                      mapping.frameworks.iso27001.length + 
+                                      mapping.frameworks.iso27002.length + 
+                                      mapping.frameworks.cisControls.length;
+                                    const reductionPercent = Math.round((1 - 1 / totalFrameworkReqs) * 100);
+                                    return `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction`;
+                                  })()}
+                                </span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedMapping(selectedMapping === mapping.id ? null : mapping.id)}
+                                className="text-white hover:bg-white/20 whitespace-nowrap text-xs px-2 py-1 h-auto"
+                              >
+                                <Eye className="w-3 h-3 mr-1" />
+                                <span>{selectedMapping === mapping.id ? 'Hide' : 'Show'} Sub-Requirements</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Detailed View */}
                         <AnimatePresence>
                           {selectedMapping === mapping.id && (
@@ -1332,9 +1340,10 @@ export default function ComplianceSimplification() {
                               animate={{ opacity: 1, height: "auto" }}
                               exit={{ opacity: 0, height: 0 }}
                               transition={{ duration: 0.3 }}
-                              className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-800/50"
+                              className="bg-gray-50 dark:bg-gray-800/50"
                             >
-                              <h5 className="font-semibold mb-4 text-gray-900 dark:text-white">Unified Sub-Requirements</h5>
+                              <div className="p-4 sm:p-6">
+                                <h5 className="font-semibold mb-4 text-gray-900 dark:text-white">Unified Sub-Requirements</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {mapping.auditReadyUnified.subRequirements.map((subReq, i) => (
                                   <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -1342,6 +1351,7 @@ export default function ComplianceSimplification() {
                                     <span className="text-sm text-gray-700 dark:text-gray-300">{subReq}</span>
                                   </div>
                                 ))}
+                              </div>
                               </div>
                             </motion.div>
                           )}
