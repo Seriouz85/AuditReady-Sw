@@ -1265,13 +1265,14 @@ export default function ComplianceSimplification() {
                             </div>
                             <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
                               {mapping.frameworks.cisControls.map((req, i) => {
-                                // Determine if this is an IG3-only control based on common patterns
-                                const controlNumber = parseFloat(req.code.split('.')[1] || '0');
-                                const isIG3Only = controlNumber >= 7 || 
-                                  req.code.startsWith('18.') || // Penetration testing is IG3 only
-                                  req.code.startsWith('13.7') || req.code.startsWith('13.8') || req.code.startsWith('13.9') || req.code.startsWith('13.10') || req.code.startsWith('13.11') ||
-                                  req.code.startsWith('12.6') || req.code.startsWith('12.7') || req.code.startsWith('12.8') ||
-                                  req.code.startsWith('17.7') || req.code.startsWith('17.8') || req.code.startsWith('17.9');
+                                // List of CIS controls that are IG3-ONLY (not required for IG1 or IG2) based on official CIS Controls v8.1.2
+                                const ig3OnlyControls = [
+                                  '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
+                                  '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
+                                  '15.5', '15.6', '15.7', '16.12', '16.13', '16.14', 
+                                  '17.9', '18.4', '18.5'
+                                ];
+                                const isIG3Only = ig3OnlyControls.includes(req.code);
                                 
                                 return (
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700 relative">
@@ -1282,7 +1283,7 @@ export default function ComplianceSimplification() {
                                       </div>
                                       {isIG3Only && (
                                         <Badge className="ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 text-xs px-1.5 py-0">
-                                          IG3
+                                          IG3-specific
                                         </Badge>
                                       )}
                                     </div>
