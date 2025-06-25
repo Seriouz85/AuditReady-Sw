@@ -1213,31 +1213,48 @@ export default function ComplianceSimplification() {
                   >
                     <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
                       <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                        <CardTitle className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                        <CardTitle>
                           <div className="flex items-center space-x-3">
                             <div className="p-2 bg-white/20 rounded-lg">
                               <Target className="w-5 h-5" />
                             </div>
                             <div>
                               <h3 className="text-base sm:text-lg font-semibold">{mapping.category}</h3>
-                              <p className="text-xs sm:text-sm text-white/80 font-normal">{mapping.auditReadyUnified.title}</p>
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedMapping(selectedMapping === mapping.id ? null : mapping.id)}
-                            className="text-white hover:bg-white/20 self-start sm:self-auto"
-                          >
-                            <Eye className="w-4 h-4 mr-2" />
-                            <span className="hidden sm:inline">{selectedMapping === mapping.id ? 'Hide Details' : 'Show Details'}</span>
-                            <span className="sm:hidden">{selectedMapping === mapping.id ? 'Hide' : 'Show'}</span>
-                          </Button>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="p-0">
+                        {/* AuditReady Unified Row */}
+                        <div className="p-4 sm:p-6 bg-gradient-to-r from-orange-500 to-yellow-500 text-white border-b border-slate-200 dark:border-slate-700">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-white/20 rounded-lg">
+                                <Zap className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-lg">AuditReady Unified</h4>
+                                <p className="text-sm text-white/90">{mapping.auditReadyUnified.title}</p>
+                                <p className="text-xs text-white/80 mt-1">{mapping.auditReadyUnified.description}</p>
+                                <Badge className="bg-white/20 text-white border-0 mt-2">
+                                  {mapping.auditReadyUnified.subRequirements.length} sub-requirements
+                                </Badge>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedMapping(selectedMapping === mapping.id ? null : mapping.id)}
+                              className="text-white hover:bg-white/20 self-start sm:self-auto whitespace-nowrap"
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              <span>{selectedMapping === mapping.id ? 'Hide Sub-Requirements' : 'Show Sub-Requirements'}</span>
+                            </Button>
+                          </div>
+                        </div>
+
                         {/* Framework Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-b border-slate-200 dark:border-slate-700">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-slate-200 dark:border-slate-700">
                           {/* ISO 27001 Column */}
                           <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
                             <div className="flex items-center space-x-2 mb-4">
@@ -1305,22 +1322,6 @@ export default function ComplianceSimplification() {
                             </div>
                           </div>
 
-                          {/* AuditReady Unified Column */}
-                          <div className="p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/10 dark:to-yellow-900/10">
-                            <div className="flex items-center space-x-2 mb-4">
-                              <Zap className="w-5 h-5 text-orange-600" />
-                              <h4 className="font-semibold text-orange-900 dark:text-orange-100">AuditReady Unified</h4>
-                            </div>
-                            <div className="p-4 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-xl">
-                              <div className="font-semibold text-sm mb-2">{mapping.auditReadyUnified.title}</div>
-                              <div className="text-xs opacity-90">{mapping.auditReadyUnified.description}</div>
-                              <div className="mt-2 text-xs">
-                                <Badge className="bg-white/20 text-white border-0">
-                                  {mapping.auditReadyUnified.subRequirements.length} sub-requirements
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
                         </div>
 
                         {/* Detailed View */}
