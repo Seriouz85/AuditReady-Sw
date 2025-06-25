@@ -1334,7 +1334,7 @@ export default function ComplianceSimplification() {
                               className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-800/50"
                             >
                               <h5 className="font-semibold mb-4 text-gray-900 dark:text-white">Unified Sub-Requirements</h5>
-                              <div className="grid grid-cols-1 gap-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {mapping.auditReadyUnified.subRequirements.map((subReq, i) => (
                                   <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                                     <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
