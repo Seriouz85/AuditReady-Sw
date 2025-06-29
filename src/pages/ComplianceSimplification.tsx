@@ -29,66 +29,64 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const complianceMapping = [
   {
     id: 'governance-leadership',
-    category: '01. Governance & Leadership',
+    category: 'Governance & Leadership',
     auditReadyUnified: {
       title: 'Information Security Governance & Leadership',
       description: 'Comprehensive governance framework with leadership commitment and organizational structure',
       subRequirements: [
-        'a) Establish top management leadership and commitment to information security',
-        'b) Define and communicate information security policies and objectives',
-        'c) Assign and communicate security roles, responsibilities, and authorities',
-        'd) Determine organizational context and interested party requirements',
-        'e) Define and maintain ISMS scope and boundaries',
-        'f) Establish governance committees and oversight mechanisms',
-        'g) Define information security metrics and reporting procedures',
-        'h) Implement continual improvement processes',
-        'i) Establish contacts with relevant authorities and special interest groups',
-        'j) Include information security in project management activities',
-        'k) Conduct internal information security audits at planned intervals',
-        'l) Ensure compliance with information security policies and procedures',
-        'm) Monitor and measure information security performance',
-        'n) Establish and maintain audit trails and logging requirements',
-        'o) Conduct management reviews of the ISMS at planned intervals',
-        'p) Implement corrective and preventive actions for non-conformities',
-        'q) Maintain compliance with legal and regulatory requirements',
-        'r) Document and communicate audit findings and recommendations',
-        's) Document all information security policies, procedures, and standards',
-        't) Maintain accurate and up-to-date security documentation',
-        'u) Control access to security documentation and records',
-        'v) Establish document version control and approval processes',
-        'w) Protect security documentation from unauthorized modification',
-        'x) Implement secure storage and backup of critical documents',
-        'y) Define retention periods for security records and documentation',
-        'z) Establish procedures for secure disposal of sensitive documents'
+        'a) UNIFIED POLICY FRAMEWORK: Establish comprehensive information security policy that satisfies ISO 27001 leadership requirements, ISO 27002 policy controls, GDPR data protection principles, and NIS2 governance measures - ensuring top management commitment and regulatory compliance across all frameworks',
+        'b) UNIFIED GOVERNANCE STRUCTURE: Define integrated governance with clear roles, responsibilities, and authorities that address ISO 27001 ISMS scope, ISO 27002 organizational controls, GDPR controller/processor responsibilities, and NIS2 cybersecurity governance requirements',
+        'c) UNIFIED RISK MANAGEMENT: Implement consolidated risk assessment and treatment processes that satisfy ISO 27001 risk management, ISO 27002 threat intelligence, GDPR data protection impact assessments, and NIS2 cybersecurity risk management measures',
+        'd) UNIFIED COMPLIANCE MONITORING: Establish integrated audit, monitoring, and review processes that meet ISO 27001 internal audit requirements, ISO 27002 independent reviews, GDPR compliance monitoring, and NIS2 effectiveness assessment obligations',
+        'e) UNIFIED DOCUMENTATION SYSTEM: Maintain comprehensive documentation framework that satisfies ISO 27001 documented information requirements, ISO 27002 operating procedures, GDPR records of processing, and NIS2 policy documentation mandates',
+        'f) UNIFIED STAKEHOLDER ENGAGEMENT: Establish consolidated communication with authorities, special interest groups, and relevant parties as required by ISO 27002 contacts, GDPR supervisory authority relations, and NIS2 incident reporting obligations',
+        'g) UNIFIED CONTINUOUS IMPROVEMENT: Implement integrated improvement processes that address ISO 27001 continual improvement, ISO 27002 learning from incidents, GDPR regular review requirements, and NIS2 effectiveness evaluation measures'
       ]
     },
     frameworks: {
       iso27001: [
         { code: '4.1', title: 'Understanding the organization and its context', description: 'Determine external and internal issues relevant to ISMS' },
-        { code: '4.2', title: 'Understanding interested parties', description: 'Determine relevant interested parties and their requirements' },
-        { code: '4.3', title: 'Determining ISMS scope', description: 'Determine boundaries and applicability of ISMS' },
+        { code: '4.2', title: 'Understanding the needs and expectations of interested parties', description: 'Determine relevant interested parties and their requirements' },
+        { code: '4.3', title: 'Determining the scope of the information security management system', description: 'Determine boundaries and applicability of ISMS' },
         { code: '4.4', title: 'Information security management system', description: 'Establish, implement, maintain and improve ISMS' },
         { code: '5.1', title: 'Leadership and commitment', description: 'Top management demonstrates leadership in ISMS' },
         { code: '5.2', title: 'Policy', description: 'Establish information security policy' },
         { code: '5.3', title: 'Roles, responsibilities and authorities', description: 'Assign and communicate security roles' },
+        { code: '6.1.1', title: 'General', description: 'Plan actions to address risks and opportunities' },
+        { code: '6.1.2', title: 'Information security risk assessment', description: 'Establish and apply risk assessment process' },
+        { code: '6.1.3', title: 'Information security risk treatment', description: 'Establish and apply risk treatment process' },
+        { code: '6.2', title: 'Information security objectives and planning to achieve them', description: 'Establish information security objectives' },
+        { code: '6.3', title: 'Planning of changes', description: 'Plan changes to ISMS' },
+        { code: '7.1', title: 'Resources', description: 'Provide resources needed for ISMS' },
+        { code: '7.2', title: 'Competence', description: 'Ensure competence of persons affecting ISMS' },
+        { code: '7.3', title: 'Awareness', description: 'Ensure awareness of information security policy' },
+        { code: '7.4', title: 'Communication', description: 'Determine internal and external communications' },
+        { code: '7.5.1', title: 'General', description: 'Include documented information required by standard' },
+        { code: '7.5.2', title: 'Creating and updating', description: 'Create and update documented information' },
+        { code: '7.5.3', title: 'Control of documented information', description: 'Control documented information required by ISMS' },
+        { code: '8.1', title: 'Operational planning and control', description: 'Plan, implement and control processes needed' },
+        { code: '8.2', title: 'Information security risk assessment', description: 'Perform risk assessments at planned intervals' },
+        { code: '8.3', title: 'Information security risk treatment', description: 'Implement risk treatment process' },
         { code: '9.1', title: 'Monitoring, measurement, analysis and evaluation', description: 'Determine what needs to be monitored and measured' },
-        { code: '9.2', title: 'Internal audit', description: 'Conduct internal audits at planned intervals' },
-        { code: '9.3', title: 'Management review', description: 'Top management shall review the ISMS at planned intervals' },
-        { code: '10.1', title: 'Nonconformity and corrective action', description: 'When nonconformity occurs, take corrective action' },
-        { code: '10.2', title: 'Continual improvement', description: 'Continually improve the ISMS' },
-        { code: '7.5', title: 'Documented information', description: 'Create and update documented information required by ISMS' }
+        { code: '9.2.1', title: 'Internal audit - General', description: 'Conduct internal audits at planned intervals' },
+        { code: '9.2.2', title: 'Internal audit programme', description: 'Plan, establish and maintain audit programme' },
+        { code: '9.3.1', title: 'Management review - General', description: 'Top management shall review ISMS at planned intervals' },
+        { code: '9.3.2', title: 'Management review inputs', description: 'Management review shall include specified inputs' },
+        { code: '9.3.3', title: 'Management review results', description: 'Management review results shall include decisions' },
+        { code: '10.1', title: 'Continual improvement', description: 'Continually improve suitability and effectiveness of ISMS' },
+        { code: '10.2', title: 'Nonconformity and corrective action', description: 'When nonconformity occurs, take corrective action' }
       ],
       iso27002: [
         { code: 'A.5.1', title: 'Information security policies', description: 'Management direction and support for information security' },
         { code: 'A.5.3', title: 'Contact with authorities', description: 'Maintain appropriate contacts with relevant authorities' },
-        { code: 'A.5.4', title: 'Contact with special interest groups', description: 'Maintain contacts with special interest groups' },
+        { code: 'A.5.4', title: 'Management responsibilities', description: 'Management should require all personnel to apply information security in accordance with established policies' },
         { code: 'A.5.5', title: 'Information security in project management', description: 'Include information security in project management' },
+        { code: 'A.5.6', title: 'Contact with special interest groups', description: 'Maintain contact with special interest groups to stay current with security trends and threats' },
+        { code: 'A.5.8', title: 'Threat intelligence', description: 'Information relating to threats should be collected and analyzed' },
         { code: 'A.5.2', title: 'Information security roles and responsibilities', description: 'Information security roles and responsibilities should be defined and allocated' },
         { code: 'A.5.31', title: 'Legal, statutory, regulatory and contractual requirements', description: 'Identify and comply with legal requirements' },
         { code: 'A.5.32', title: 'Intellectual property rights', description: 'Protect intellectual property rights' },
         { code: 'A.5.33', title: 'Protection of records', description: 'Protect records from loss, destruction, and falsification' },
-        { code: 'A.5.34', title: 'Privacy and protection of personally identifiable information', description: 'Ensure privacy and protection of PII' },
-        { code: 'A.5.35', title: 'Independent review of information security', description: 'Conduct independent reviews of information security' },
         { code: 'A.5.36', title: 'Compliance with policies, procedures and standards', description: 'Ensure compliance with security policies and procedures' },
         { code: 'A.5.37', title: 'Documented operating procedures', description: 'Document and maintain operating procedures' },
         { code: 'A.5.10', title: 'Acceptable use of information and other associated assets', description: 'Rules for acceptable use should be identified and implemented' },
@@ -98,13 +96,21 @@ const complianceMapping = [
         { code: 'A.6.4', title: 'Disciplinary process', description: 'Disciplinary process should be established for violations of information security' },
         { code: 'A.6.5', title: 'Responsibilities after termination', description: 'Information security responsibilities that remain valid after termination should be defined' },
         { code: 'A.6.6', title: 'Confidentiality or non-disclosure agreements', description: 'Confidentiality or non-disclosure agreements should be identified and regularly reviewed' },
-        { code: 'A.8.1', title: 'Operational procedures and responsibilities', description: 'Operating procedures should be documented and maintained' },
-        { code: 'A.8.6', title: 'Capacity management', description: 'The use of resources should be monitored and tuned' },
-        { code: 'A.8.14', title: 'Change management procedures', description: 'Changes should be controlled by formal change management procedures' },
-        { code: 'A.7.7', title: 'Clear desk and clear screen', description: 'Rules for maintaining clear desk and clear screen should be established' }
       ],
       cisControls: [
         // CIS controls are primarily technical - governance is mainly ISO focus
+      ],
+      nis2: [
+        { code: 'Art. 21(2)(a)', title: 'Risk assessments and security policies', description: 'Policies on risk analysis and information system security' },
+        { code: 'Art. 21(2)(b)', title: 'Incident handling', description: 'Incident handling including prevention, detection, and response' },
+        { code: 'Art. 21(2)(c)', title: 'Business continuity', description: 'Business continuity and crisis management' },
+        { code: 'Art. 21(2)(d)', title: 'Supply chain security', description: 'Supply chain security including relationships with suppliers and service providers' },
+        { code: 'Art. 21(2)(e)', title: 'Security in acquisition and development', description: 'Security in network and information systems acquisition, development, and maintenance' },
+        { code: 'Art. 21(2)(f)', title: 'Cybersecurity training', description: 'Basic cyber hygiene practices and cybersecurity training' },
+        { code: 'Art. 21(2)(g)', title: 'Effectiveness assessment', description: 'Policies and procedures to assess the effectiveness of cybersecurity risk-management measures' },
+        { code: 'Art. 21(2)(h)', title: 'Cryptography policies', description: 'Policies and procedures regarding the use of cryptography and encryption' },
+        { code: 'Art. 21(2)(i)', title: 'Human resources security', description: 'Human resources security, access control policies and asset management' },
+        { code: 'Art. 21(2)(j)', title: 'Multi-factor authentication', description: 'Use of multi-factor authentication and secured communication systems' }
       ],
       gdpr: [
         { code: 'Art. 5', title: 'Principles relating to processing of personal data', description: 'Lawfulness, fairness, transparency, purpose limitation, data minimisation' },
@@ -119,35 +125,30 @@ const complianceMapping = [
   },
   {
     id: 'risk-management',
-    category: '02. Risk Management',
+    category: 'Risk Management',
     auditReadyUnified: {
       title: 'Information Security Risk Management',
       description: 'Comprehensive risk assessment, treatment, and monitoring framework',
       subRequirements: [
-        'a) Plan and conduct information security risk assessments',
-        'b) Identify, analyze, and evaluate information security risks',
-        'c) Develop and implement risk treatment plans',
-        'd) Monitor and review risk management processes',
-        'e) Retain documented information on risk management activities',
-        'f) Establish risk acceptance criteria and risk appetite',
-        'g) Implement controls based on risk assessment outcomes'
+        'a) UNIFIED RISK IDENTIFICATION: Establish comprehensive risk assessment process that integrates ISO 27002 threat intelligence collection, GDPR data processing risk identification, and NIS2 cybersecurity threat analysis into one systematic approach',
+        'b) UNIFIED RISK EVALUATION: Implement consolidated risk analysis methodology that addresses both quantitative and qualitative assessment criteria, satisfying GDPR data protection impact assessment requirements and NIS2 cybersecurity risk evaluation measures',
+        'c) UNIFIED RISK TREATMENT: Develop integrated risk treatment strategy that implements appropriate technical and organizational measures satisfying ISO 27002 controls, GDPR Article 32 security requirements, and NIS2 cybersecurity risk management measures',
+        'd) UNIFIED RISK MONITORING: Establish continuous risk monitoring and effectiveness assessment process that meets NIS2 Article 21(2)(g) effectiveness evaluation requirements and GDPR regular review obligations'
       ]
     },
     frameworks: {
       iso27001: [
-        { code: '6.1.1', title: 'General (Risk management)', description: 'Plan actions to address risks and opportunities' },
-        { code: '6.1.2', title: 'Information security risk assessment', description: 'Establish and apply risk assessment process' },
-        { code: '6.1.3', title: 'Information security risk treatment', description: 'Establish and apply risk treatment process' },
-        { code: '6.2', title: 'Information security objectives', description: 'Establish information security objectives' },
-        { code: '6.3', title: 'Planning of changes', description: 'Plan changes to ISMS' },
-        { code: '8.2', title: 'Information security risk assessment', description: 'Information security risk assessments shall be performed at planned intervals' },
-        { code: '8.3', title: 'Information security risk treatment', description: 'Information security risk treatment process shall be implemented' }
+        // Risk management is primarily an ISO focus covered in governance section
       ],
       iso27002: [
-        // Risk management is primarily ISO 27001 focus
+        { code: 'A.5.7', title: 'Threat intelligence', description: 'Information relating to threats should be collected and analyzed' }
       ],
       cisControls: [
         // Risk management is primarily an ISO focus - CIS is more control-focused
+      ],
+      nis2: [
+        { code: 'Art. 21(2)(a)', title: 'Risk assessments and security policies', description: 'Policies on risk analysis and information system security' },
+        { code: 'Art. 21(2)(g)', title: 'Effectiveness assessment', description: 'Policies and procedures to assess the effectiveness of cybersecurity risk-management measures' }
       ],
       gdpr: [
         { code: 'Art. 35', title: 'Data protection impact assessment', description: 'Carry out impact assessment for high-risk processing' },
@@ -157,7 +158,7 @@ const complianceMapping = [
   },
   {
     id: 'software-assets',
-    category: '03. Inventory and Control of Software Assets',
+    category: 'Inventory and Control of Software Assets',
     auditReadyUnified: {
       title: 'Software Asset Inventory and Control',
       description: 'Comprehensive software asset management including inventory, licensing, and allowlisting',
@@ -175,8 +176,10 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.19', title: 'Installation of software on operational systems', description: 'Procedures should be implemented for controlling software installation' },
-        { code: 'A.8.13', title: 'Operating system software', description: 'Use of operating system software should be managed' }
+        { code: 'A.5.9', title: 'Inventory of information and other associated assets', description: 'An inventory of information and other associated assets shall be drawn up and maintained' },
+        { code: 'A.5.12', title: 'Classification of information', description: 'Information should be classified in terms of legal requirements and value' },
+        { code: 'A.5.13', title: 'Labelling of information', description: 'Appropriate set of procedures for information labelling should be developed' },
+        { code: 'A.5.14', title: 'Information transfer', description: 'Information transfer rules, procedures or agreements should be in place' }
       ],
       cisControls: [
         { code: '2.1', title: 'Establish Software Inventory', description: 'Maintain accurate software inventory' },
@@ -195,9 +198,9 @@ const complianceMapping = [
   },
   {
     id: 'hardware-assets',
-    category: '04. Inventory and Control of Hardware Assets',
+    category: 'Inventory and Control of Hardware Assets',
     auditReadyUnified: {
-      title: 'Comprehensive Asset Management',
+      title: 'Inventory and Control of Hardware Assets',
       description: 'Unified approach to managing all enterprise assets including hardware, software, and data',
       subRequirements: [
         'a) Maintain accurate and up-to-date asset inventories',
@@ -215,7 +218,20 @@ const complianceMapping = [
         // Asset management is primarily covered by ISO 27002 controls
       ],
       iso27002: [
-        { code: 'A.5.9', title: 'Inventory of information and other associated assets', description: 'Assets should be identified and inventory maintained' }
+        { code: 'A.7.1', title: 'Physical security perimeters', description: 'Physical security perimeters should be defined and used' },
+        { code: 'A.7.2', title: 'Physical entry', description: 'Secure areas should be protected by appropriate entry controls' },
+        { code: 'A.7.3', title: 'Securing offices, rooms and facilities', description: 'Detect and deter unauthorized physical access to facilities and secure areas' },
+        { code: 'A.7.4', title: 'Working in secure areas', description: 'Procedures for working in secure areas should be designed and applied' },
+        { code: 'A.7.5', title: 'Protecting against physical and environmental threats', description: 'Protect information and other assets in secure areas from damage and unauthorized interference' },
+        { code: 'A.7.6', title: 'Protection of equipment', description: 'Equipment should be protected against security threats and environmental hazards' },
+        { code: 'A.7.7', title: 'Clear desk and clear screen', description: 'A clear desk policy and a clear screen policy should be adopted' },
+        { code: 'A.7.8', title: 'Equipment siting and protection', description: 'Equipment should be sited securely and protected from environmental threats' },
+        { code: 'A.7.9', title: 'Security of assets off-premises', description: 'Off-site assets should be protected by appropriate security controls' },
+        { code: 'A.7.10', title: 'Storage media', description: 'Storage media should be managed throughout their life cycle' },
+        { code: 'A.7.11', title: 'Supporting utilities', description: 'Information processing facilities should be protected from power failures and utility disruptions' },
+        { code: 'A.7.12', title: 'Cabling security', description: 'Cables carrying or supporting information services should be protected' },
+        { code: 'A.7.13', title: 'Equipment maintenance', description: 'Equipment should be maintained correctly to ensure availability, integrity and confidentiality' },
+        { code: 'A.7.14', title: 'Secure disposal or reuse of equipment', description: 'Items of equipment containing storage media should be verified to ensure that data cannot be recovered' }
       ],
       cisControls: [
         { code: '1.1', title: 'Establish Asset Inventory', description: 'Maintain accurate, detailed enterprise asset inventory' },
@@ -235,7 +251,7 @@ const complianceMapping = [
   },
   {
     id: 'access-control',
-    category: '05. Identity & Access Management',
+    category: 'Access Control',
     auditReadyUnified: {
       title: 'Identity & Access Management',
       description: 'Unified access control framework covering identity lifecycle, authentication, and authorization',
@@ -252,18 +268,18 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [
-        { code: 'A.5.15', title: 'Access control', description: 'Control physical and logical access to information and assets' },
-        { code: 'A.5.16', title: 'Identity management', description: 'Manage the full life cycle of identities' },
-        { code: 'A.5.17', title: 'Authentication information', description: 'Control allocation and management of authentication information' },
-        { code: 'A.5.18', title: 'Access rights', description: 'Provision, review, modify and remove access rights' }
       ],
       iso27002: [
-        { code: 'A.8.1', title: 'User access management', description: 'Ensure authorized user access and prevent unauthorized access' },
-        { code: 'A.8.2', title: 'Privileged access rights', description: 'Restrict and control privileged access rights' },
-        { code: 'A.8.3', title: 'Information access restriction', description: 'Restrict access to information and application functions' },
-        { code: 'A.8.4', title: 'Access to source code', description: 'Access to source code should be restricted' },
-        { code: 'A.8.5', title: 'Secure authentication', description: 'Implement secure authentication procedures' },
-        { code: 'A.6.7', title: 'Remote working', description: 'Security measures should be implemented for remote working' }
+        { code: 'A.8.1', title: 'User access management', description: 'Formal user access provisioning process should be implemented' },
+        { code: 'A.8.2', title: 'Privileged access rights', description: 'The allocation and use of privileged access rights should be restricted and managed' },
+        { code: 'A.8.3', title: 'Information access restriction', description: 'Access to information and systems should be restricted' },
+        { code: 'A.8.4', title: 'Access to source code', description: 'Read and write access to source code repositories should be restricted' },
+        { code: 'A.8.5', title: 'Secure authentication', description: 'Secure authentication technologies and procedures should be implemented' },
+        { code: 'A.8.6', title: 'Capacity management', description: 'The use of resources should be monitored and tuned' },
+        { code: 'A.5.15', title: 'Access control', description: 'Access to information and associated assets should be controlled based on business and information security requirements' },
+        { code: 'A.5.16', title: 'Identity management', description: 'The full life cycle of identities should be managed' },
+        { code: 'A.5.17', title: 'Authentication information', description: 'Allocation and management of authentication information should be controlled by a management process' },
+        { code: 'A.5.18', title: 'Access rights', description: 'Access rights to information and other associated assets should be provisioned, reviewed, modified and removed' }
       ],
       cisControls: [
         { code: '5.1', title: 'Establish Account Inventory', description: 'Maintain inventory of all enterprise accounts' },
@@ -290,7 +306,7 @@ const complianceMapping = [
   },
   {
     id: 'data-protection',
-    category: '06. Data Protection',
+    category: 'Data Protection',
     auditReadyUnified: {
       title: 'Data Protection & Cryptographic Controls',
       description: 'Comprehensive data protection including classification, handling, encryption, and privacy',
@@ -313,18 +329,12 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [
-        { code: 'A.5.12', title: 'Classification of information', description: 'Classify information according to security needs' },
-        { code: 'A.5.13', title: 'Labelling of information', description: 'Develop and implement information labelling procedures' },
-        { code: 'A.5.14', title: 'Information transfer', description: 'Establish information transfer rules and procedures' }
       ],
       iso27002: [
-        { code: 'A.5.12', title: 'Classification of information', description: 'Information shall be classified according to information security needs' },
-        { code: 'A.5.13', title: 'Labelling of information', description: 'An appropriate set of procedures for information labelling shall be developed' },
-        { code: 'A.5.14', title: 'Information transfer', description: 'Information transfer rules and procedures shall be in place' },
-        { code: 'A.8.24', title: 'Use of cryptography', description: 'Policy on the use of cryptographic controls' },
-        { code: 'A.8.10', title: 'Information deletion', description: 'Information stored in information systems should be deleted' },
-        { code: 'A.8.11', title: 'Data masking', description: 'Data masking should be used in accordance with policy' },
-        { code: 'A.8.12', title: 'Data leakage prevention', description: 'Data leakage prevention measures should be applied' }
+        { code: 'A.8.10', title: 'Information deletion', description: 'Information stored in information systems should be deleted when no longer required' },
+        { code: 'A.8.11', title: 'Data masking', description: 'Data masking should be used in accordance with the organization policy' },
+        { code: 'A.8.12', title: 'Data leakage prevention', description: 'Data leakage prevention measures should be applied to systems, networks and any other devices' },
+        { code: 'A.8.24', title: 'Use of cryptography', description: 'Rules for the effective use of cryptography should be defined and implemented' }
       ],
       cisControls: [
         { code: '3.1', title: 'Establish Data Management Process', description: 'Establish and maintain data management process' },
@@ -353,7 +363,7 @@ const complianceMapping = [
   },
   {
     id: 'secure-configuration',
-    category: '07. Secure Configuration of Hardware and Software',
+    category: 'Secure Configuration',
     auditReadyUnified: {
       title: 'Secure Configuration Management',
       description: 'Enterprise-wide secure configuration management for all assets and systems',
@@ -371,7 +381,9 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.9', title: 'Configuration management', description: 'Configurations should be established and maintained' }
+        { code: 'A.8.9', title: 'Configuration management', description: 'Configurations of hardware, software, services and networks should be established and maintained' },
+        { code: 'A.8.18', title: 'Use of privileged utility programs', description: 'The use of utility programs that might be capable of overriding system and application controls should be restricted and tightly controlled' },
+        { code: 'A.8.19', title: 'Installation of software on operational systems', description: 'Procedures should be implemented to control the installation of software on operational systems' }
       ],
       cisControls: [
         { code: '4.1', title: 'Establish Secure Configurations', description: 'Establish and maintain secure configurations for enterprise assets' },
@@ -395,26 +407,24 @@ const complianceMapping = [
   },
   {
     id: 'vulnerability-management',
-    category: '08. Continuous Vulnerability Management',
+    category: 'Vulnerability Management',
     auditReadyUnified: {
       title: 'Continuous Vulnerability Management',
       description: 'Comprehensive vulnerability management including assessment, patching, and remediation',
       subRequirements: [
-        'a) Establish and maintain vulnerability management processes',
-        'b) Establish and maintain vulnerability scanning processes',
-        'c) Perform automated vulnerability scans of enterprise assets',
-        'd) Perform vulnerability scans on network infrastructure',
-        'e) Perform automated operating system patch management',
-        'f) Perform automated application patch management',
-        'g) Remediate detected vulnerabilities in enterprise assets',
-        'h) Information about technical vulnerabilities should be obtained'
+        'a) Establish and maintain comprehensive vulnerability management processes and procedures',
+        'b) Perform automated vulnerability scans of all enterprise assets and network infrastructure',
+        'c) Perform automated operating system patch management across all systems',
+        'd) Perform automated application patch management for all software',
+        'e) Remediate detected vulnerabilities in enterprise assets based on risk priority',
+        'f) Obtain and analyze threat intelligence and technical vulnerability information'
       ]
     },
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.5.7', title: 'Threat intelligence', description: 'Information to help identify, analyze, and understand threats should be collected and analyzed' },
-        { code: 'A.8.8', title: 'Management of technical vulnerabilities', description: 'Information about technical vulnerabilities should be obtained' }
+        { code: 'A.8.8', title: 'Management of technical vulnerabilities', description: 'Information about technical vulnerabilities should be obtained and managed' },
+        { code: 'A.8.13', title: 'Application software management', description: 'Applications should be managed throughout their lifecycle' }
       ],
       cisControls: [
         { code: '7.1', title: 'Establish Asset Vulnerability Management', description: 'Establish and maintain vulnerability management process' },
@@ -433,7 +443,7 @@ const complianceMapping = [
   },
   {
     id: 'physical-environmental',
-    category: '09. Physical & Environmental Security',
+    category: 'Physical Security',
     auditReadyUnified: {
       title: 'Physical & Environmental Security Controls',
       description: 'Comprehensive physical security covering facilities, equipment, and environmental controls',
@@ -451,19 +461,6 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.7.1', title: 'Physical security perimeters', description: 'Physical security perimeters should be defined and used' },
-        { code: 'A.7.2', title: 'Physical entry', description: 'Secure areas should be protected by appropriate entry controls' },
-        { code: 'A.7.3', title: 'Securing offices, rooms and facilities', description: 'Physical security for offices, rooms and facilities should be designed and implemented' },
-        { code: 'A.7.4', title: 'Physical security monitoring', description: 'Premises should be continuously monitored for unauthorized physical access' },
-        { code: 'A.7.5', title: 'Protecting against physical and environmental threats', description: 'Protection against physical and environmental threats should be designed and implemented' },
-        { code: 'A.7.6', title: 'Working in secure areas', description: 'Procedures for working in secure areas should be designed and implemented' },
-        { code: 'A.7.8', title: 'Equipment siting and protection', description: 'Equipment should be sited and protected to reduce risks from environmental threats' },
-        { code: 'A.7.9', title: 'Security of assets off-premises', description: 'Off-site assets should be protected taking into account different risks' },
-        { code: 'A.7.10', title: 'Storage media', description: 'Storage media should be protected against unauthorized access during transportation' },
-        { code: 'A.7.11', title: 'Supporting utilities', description: 'Equipment should be protected from power failures and utility disruptions' },
-        { code: 'A.7.12', title: 'Cabling security', description: 'Power and telecommunications cabling should be protected from interference or damage' },
-        { code: 'A.7.13', title: 'Equipment maintenance', description: 'Equipment should be correctly maintained to ensure continued availability' },
-        { code: 'A.7.14', title: 'Secure disposal or re-use of equipment', description: 'Equipment should be verified to ensure sensitive data removal before disposal' }
       ],
       cisControls: [
         // Physical security related CIS controls moved to correct category - backup/recovery controls moved to business continuity
@@ -476,7 +473,7 @@ const complianceMapping = [
   },
   {
     id: 'network-security',
-    category: '10. Network Infrastructure Management',
+    category: 'Network Security',
     auditReadyUnified: {
       title: 'Network Infrastructure Management',
       description: 'Comprehensive network security including infrastructure protection, monitoring, and secure communications',
@@ -493,13 +490,11 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [
-        { code: 'A.5.23', title: 'Information security for use of cloud services', description: 'Establish processes for cloud service security' }
       ],
       iso27002: [
-        { code: 'A.8.20', title: 'Networks security management', description: 'Networks should be managed and controlled' },
-        { code: 'A.8.21', title: 'Security of network services', description: 'Security mechanisms and service levels should be identified' },
-        { code: 'A.8.22', title: 'Segregation in networks', description: 'Groups of information services should be segregated' },
-        { code: 'A.8.23', title: 'Web filtering', description: 'Access to external websites should be managed' }
+        { code: 'A.8.20', title: 'Networks security management', description: 'Networks should be managed and controlled to protect information in systems and applications' },
+        { code: 'A.8.21', title: 'Security of network services', description: 'Security mechanisms, service levels and management requirements of all network services should be identified and included in network services agreements' },
+        { code: 'A.8.22', title: 'Segregation of networks', description: 'Groups of information services, users and information systems should be segregated on networks' }
       ],
       cisControls: [
         { code: '12.1', title: 'Ensure Network Infrastructure is Up-to-Date', description: 'Ensure network infrastructure is current and supported' },
@@ -518,7 +513,7 @@ const complianceMapping = [
   },
   {
     id: 'secure-development',
-    category: '11. Secure Software Development',
+    category: 'Secure Development',
     auditReadyUnified: {
       title: 'Secure Software Development Lifecycle',
       description: 'Comprehensive secure development practices covering SDLC, testing, and deployment',
@@ -538,16 +533,16 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.25', title: 'Secure system engineering principles', description: 'Apply secure engineering principles' },
-        { code: 'A.8.26', title: 'Application security requirements', description: 'Identify and specify security requirements' },
-        { code: 'A.8.27', title: 'Secure system architecture and engineering principles', description: 'Apply secure architecture principles' },
-        { code: 'A.8.28', title: 'Secure coding', description: 'Apply secure coding principles to software development' },
-        { code: 'A.8.29', title: 'Secure development life cycle', description: 'Rules for secure development should be established' },
-        { code: 'A.8.4', title: 'Access to source code', description: 'Control access to program source code' },
-        { code: 'A.8.30', title: 'Outsourced development', description: 'Direct, monitor and review outsourced system development activities' },
-        { code: 'A.8.31', title: 'Separation of development, testing and operational environments', description: 'Separate development, testing and operational environments' },
-        { code: 'A.8.33', title: 'Test information', description: 'Select test information carefully, protect and control test information' },
-        { code: 'A.8.15', title: 'Access control to program source code', description: 'Access to program source code should be controlled' }
+        { code: 'A.8.25', title: 'Secure system development lifecycle', description: 'Information security should be integrated into the system development lifecycle' },
+        { code: 'A.8.26', title: 'Application security requirements', description: 'Information security requirements should be identified and applied' },
+        { code: 'A.8.27', title: 'Secure system architecture and engineering principles', description: 'Principles for engineering secure systems should be established and applied' },
+        { code: 'A.8.28', title: 'Secure coding', description: 'Secure coding principles should be applied to software development' },
+        { code: 'A.8.29', title: 'Security testing in development and acceptance', description: 'Security testing should be defined and applied' },
+        { code: 'A.8.30', title: 'Outsourced development', description: 'Activities related to outsourced development should be directed, monitored and reviewed' },
+        { code: 'A.8.31', title: 'Separation of development, testing and operational environments', description: 'Development, testing and operational environments should be separated' },
+        { code: 'A.8.32', title: 'Change management', description: 'Changes to information systems should be controlled' },
+        { code: 'A.8.33', title: 'Test information', description: 'Test information should be selected carefully and protected' },
+        { code: 'A.8.34', title: 'Protection of information systems during audit testing', description: 'Information systems should be protected during audit testing procedures' }
       ],
       cisControls: [
         { code: '16.1', title: 'Establish Application Security Program', description: 'Establish and maintain application security program' },
@@ -563,7 +558,7 @@ const complianceMapping = [
   },
   {
     id: 'incident-response',
-    category: '12. Incident Response & Security Event Management',
+    category: 'Incident Response',
     auditReadyUnified: {
       title: 'Incident Response & Security Event Management',
       description: 'Comprehensive incident response covering detection, analysis, containment, and recovery',
@@ -580,17 +575,13 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [
-        { code: 'A.5.24', title: 'Information security incident management planning and preparation', description: 'Plan and prepare for incident management' },
-        { code: 'A.5.25', title: 'Assessment and decision on information security events', description: 'Assess and decide on information security events' },
-        { code: 'A.5.26', title: 'Response to information security incidents', description: 'Respond to information security incidents' },
-        { code: 'A.5.27', title: 'Learning from information security incidents', description: 'Learn from information security incidents' }
       ],
       iso27002: [
-        { code: 'A.5.24', title: 'Information security incident management planning and preparation', description: 'Plan and prepare for managing information security incidents' },
-        { code: 'A.5.25', title: 'Assessment and decision on information security events', description: 'Information security events should be assessed' },
+        { code: 'A.5.24', title: 'Information security incident management planning and preparation', description: 'Information security incident management should be planned and prepared' },
+        { code: 'A.5.25', title: 'Assessment and decision on information security events', description: 'Information security events should be assessed and decisions made' },
         { code: 'A.5.26', title: 'Response to information security incidents', description: 'Information security incidents should be responded to' },
-        { code: 'A.5.27', title: 'Learning from information security incidents', description: 'Knowledge gained from incidents should be used' },
-        { code: 'A.6.8', title: 'Information security event reporting', description: 'Information security events should be reported through appropriate management channels' }
+        { code: 'A.5.27', title: 'Learning from information security incidents', description: 'Knowledge gained from information security incidents should be used' },
+        { code: 'A.5.28', title: 'Collection of evidence', description: 'Evidence relating to information security events should be collected' }
       ],
       cisControls: [
         { code: '17.1', title: 'Designate Personnel to Manage Incident Handling', description: 'Designate personnel to manage incident response' },
@@ -612,7 +603,7 @@ const complianceMapping = [
   },
   {
     id: 'network-monitoring',
-    category: '13. Network Monitoring & Defense',
+    category: 'Network Defense',
     auditReadyUnified: {
       title: 'Network Monitoring & Defense',
       description: 'Comprehensive network monitoring, intrusion detection, and network defense capabilities',
@@ -630,9 +621,9 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.20', title: 'Networks security management', description: 'Networks should be controlled and protected' },
-        { code: 'A.8.21', title: 'Security of network services', description: 'Security mechanisms should be agreed and defined' },
-        { code: 'A.8.22', title: 'Segregation in networks', description: 'Groups of information services should be segregated' }
+        { code: 'A.8.16', title: 'Monitoring activities', description: 'Networks, systems and applications should be monitored for anomalous behaviour' },
+        { code: 'A.8.17', title: 'Clock synchronisation', description: 'The clocks of information processing systems should be synchronised' },
+        { code: 'A.8.15', title: 'Logging', description: 'Logs that record activities, exceptions, faults and other relevant security events should be produced and maintained' }
       ],
       cisControls: [
         { code: '12.1', title: 'Ensure Network Infrastructure is Up-to-Date', description: 'Ensure network infrastructure is current and supported' },
@@ -663,7 +654,7 @@ const complianceMapping = [
   },
   {
     id: 'supplier-management',
-    category: '14. Supplier & Third-Party Risk Management',
+    category: 'Supplier Risk',
     auditReadyUnified: {
       title: 'Supplier & Third-Party Risk Management',
       description: 'Comprehensive supplier and third-party risk management including vendor relationships and cloud services',
@@ -680,16 +671,13 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [
-        { code: 'A.5.19', title: 'Information security in supplier relationships', description: 'Manage information security risks with suppliers' },
-        { code: 'A.5.20', title: 'Addressing information security within supplier agreements', description: 'Establish security requirements in supplier agreements' },
-        { code: 'A.5.21', title: 'Managing information security in the ICT supply chain', description: 'Manage security risks in ICT supply chain' },
-        { code: 'A.5.22', title: 'Monitoring, review and change management of supplier services', description: 'Monitor and review supplier security practices' },
-        { code: 'A.5.23', title: 'Information security for use of cloud services', description: 'Establish processes for cloud service security' }
       ],
       iso27002: [
-        { code: 'A.5.19', title: 'Information security in supplier relationships', description: 'Processes should be defined for managing supplier relationships' },
-        { code: 'A.5.20', title: 'Addressing information security within supplier agreements', description: 'Security requirements should be established in supplier agreements' },
-        { code: 'A.5.21', title: 'Managing information security in the ICT supply chain', description: 'Processes should be defined for managing ICT supply chain risks' }
+        { code: 'A.5.19', title: 'Information security in supplier relationships', description: 'Processes and procedures should be defined to manage information security risks' },
+        { code: 'A.5.20', title: 'Addressing information security within supplier agreements', description: 'Relevant information security requirements should be addressed and remediated' },
+        { code: 'A.5.21', title: 'Managing information security in the ICT supply chain', description: 'Processes and procedures should be defined to manage information security risks' },
+        { code: 'A.5.22', title: 'Monitoring, review and change management of supplier services', description: 'Organizations should monitor and review supplier service delivery' },
+        { code: 'A.5.23', title: 'Information security for use of cloud services', description: 'Processes for acquisition, use and management of cloud services should be established' }
       ],
       cisControls: [
         { code: '15.1', title: 'Establish Service Provider Management Process', description: 'Establish and maintain service provider management process' },
@@ -710,7 +698,7 @@ const complianceMapping = [
   },
   {
     id: 'security-awareness',
-    category: '15. Security Awareness & Skills Training',
+    category: 'Security Awareness',
     auditReadyUnified: {
       title: 'Security Awareness & Skills Training Program',
       description: 'Comprehensive security awareness and training program covering all aspects of cybersecurity education',
@@ -729,7 +717,9 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.6.3', title: 'Information security awareness, education and training', description: 'All personnel should receive appropriate information security awareness training' }
+        { code: 'A.6.3', title: 'Information security awareness, education and training', description: 'All personnel should receive appropriate awareness education and training' },
+        { code: 'A.6.7', title: 'Remote working', description: 'Security measures should be implemented when personnel work remotely' },
+        { code: 'A.6.8', title: 'Information security event reporting', description: 'Personnel should report information security events through management channels' }
       ],
       cisControls: [
         { code: '14.1', title: 'Establish Security Awareness Program', description: 'Educate workforce on secure interaction with enterprise assets' },
@@ -751,7 +741,7 @@ const complianceMapping = [
   // New comprehensive categories to capture all missing requirements
   {
     id: 'business-continuity',
-    category: '16. Business Continuity & Disaster Recovery Management',
+    category: 'Business Continuity',
     auditReadyUnified: {
       title: 'Business Continuity & Disaster Recovery Management',
       description: 'Comprehensive business continuity planning covering disruption management and recovery capabilities',
@@ -768,11 +758,10 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [
-        { code: '8.1', title: 'Operational planning and control', description: 'Plan, implement and control processes for meeting information security requirements' }
       ],
       iso27002: [
-        { code: 'A.5.29', title: 'Information security during disruption', description: 'Plan for maintaining information security during disruption' },
-        { code: 'A.5.30', title: 'ICT readiness for business continuity', description: 'Prepare ICT for business continuity' }
+        { code: 'A.5.29', title: 'Information security during disruption', description: 'Plans should be developed for maintaining information security during disruption' },
+        { code: 'A.5.30', title: 'ICT readiness for business continuity', description: 'ICT readiness should be planned and implemented for business continuity' }
       ],
       cisControls: [
         { code: '11.1', title: 'Establish Data Recovery Process', description: 'Establish and maintain data recovery practices' },
@@ -785,7 +774,7 @@ const complianceMapping = [
   },
   {
     id: 'compliance-audit',
-    category: '17. Incident Response Management',
+    category: 'Incident Management',
     auditReadyUnified: {
       title: 'Incident Response Management Framework',
       description: 'Comprehensive incident response and management covering detection, response, and recovery',
@@ -803,9 +792,7 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.5.25', title: 'Assessment and decision on information security events', description: 'Assess and decide on classification of information security events' },
-        { code: 'A.5.26', title: 'Response to information security incidents', description: 'Respond to information security incidents according to documented procedures' },
-        { code: 'A.5.27', title: 'Learning from information security incidents', description: 'Knowledge gained from information security incidents shall be used' }
+        { code: 'A.8.14', title: 'Redundancy of information processing facilities', description: 'Information processing facilities should be implemented with redundancy' }
       ],
       cisControls: [
         { code: '17.1', title: 'Designate Personnel to Manage Incident Handling', description: 'Designate one key person and at least one backup to manage incident handling' },
@@ -826,7 +813,7 @@ const complianceMapping = [
   },
   {
     id: 'malware-protection',
-    category: '18. Malware Defenses',
+    category: 'Malware Defense',
     auditReadyUnified: {
       title: 'Malware Protection & Anti-Virus Controls',
       description: 'Comprehensive malware protection covering detection, prevention, and response',
@@ -844,7 +831,7 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.7', title: 'Protection against malware', description: 'Detection, prevention and recovery controls should be implemented' }
+        { code: 'A.8.7', title: 'Protection against malware', description: 'Detection, prevention and recovery controls against malware should be implemented' }
       ],
       cisControls: [
         { code: '10.1', title: 'Deploy Anti-Malware Software', description: 'Deploy anti-malware software on enterprise assets' },
@@ -859,7 +846,7 @@ const complianceMapping = [
   },
   {
     id: 'web-email-security',
-    category: '19. Email & Web Browser Protections',
+    category: 'Email & Web Security',
     auditReadyUnified: {
       title: 'Web & Email Security Controls',
       description: 'Comprehensive security for web browsing, email communications, and web-based applications',
@@ -877,7 +864,7 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.23', title: 'Web filtering', description: 'Access to external websites should be managed' }
+        { code: 'A.8.23', title: 'Web filtering', description: 'Access to external websites should be managed to reduce exposure to malicious content' }
       ],
       cisControls: [
         { code: '9.1', title: 'Ensure Use of Only Fully Supported Browsers and Email Clients', description: 'Use only fully supported browsers and email clients' },
@@ -892,7 +879,7 @@ const complianceMapping = [
   },
   {
     id: 'penetration-testing',
-    category: '20. Penetration Testing',
+    category: 'Penetration Testing',
     auditReadyUnified: {
       title: 'Penetration Testing & Security Validation',
       description: 'Comprehensive security testing including penetration tests and red team exercises',
@@ -909,7 +896,9 @@ const complianceMapping = [
     },
     frameworks: {
       iso27001: [],
-      iso27002: [],
+      iso27002: [
+        { code: 'A.5.35', title: 'Independent review of information security', description: 'Conduct independent reviews of information security' }
+      ],
       cisControls: [
         { code: '18.1', title: 'Establish Penetration Testing Program', description: 'Establish and maintain penetration testing program' },
         { code: '18.2', title: 'Perform Periodic External Penetration Tests', description: 'Perform external penetration tests based on program requirements' },
@@ -921,7 +910,7 @@ const complianceMapping = [
   },
   {
     id: 'audit-log-management',
-    category: '21. Audit Log Management',
+    category: 'Audit Logging',
     auditReadyUnified: {
       title: 'Audit Log Management',
       description: 'Comprehensive audit log collection, storage, and monitoring for security and compliance',
@@ -939,7 +928,6 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.8.16', title: 'Monitoring activities', description: 'Networks, systems and applications should be monitored' }
       ],
       cisControls: [
         { code: '8.1', title: 'Establish Audit Log Management Process', description: 'Establish and maintain audit log management process' },
@@ -982,13 +970,7 @@ const complianceMapping = [
     frameworks: {
       iso27001: [],
       iso27002: [
-        { code: 'A.5.34', title: 'Privacy and protection of personally identifiable information', description: 'Ensure privacy and protection of PII' },
-        { code: 'A.5.12', title: 'Classification of information', description: 'Information shall be classified according to information security needs' },
-        { code: 'A.5.13', title: 'Labelling of information', description: 'An appropriate set of procedures for information labelling shall be developed' },
-        { code: 'A.5.14', title: 'Information transfer', description: 'Information transfer rules and procedures shall be in place' },
-        { code: 'A.8.10', title: 'Information deletion', description: 'Information stored in information systems should be deleted' },
-        { code: 'A.8.11', title: 'Data masking', description: 'Data masking should be used in accordance with policy' },
-        { code: 'A.8.12', title: 'Data leakage prevention', description: 'Data leakage prevention measures should be applied' }
+        { code: 'A.5.34', title: 'Privacy and protection of personally identifiable information', description: 'Ensure privacy and protection of PII' }
       ],
       cisControls: [],
       gdpr: [
@@ -1037,25 +1019,42 @@ export default function ComplianceSimplification() {
   const [filterCategory, setFilterCategory] = useState('all');
   
   // Framework selection state
-  const [selectedFrameworks, setSelectedFrameworks] = useState({
+  const [selectedFrameworks, setSelectedFrameworks] = useState<{
+    iso27001: boolean;
+    iso27002: boolean;
+    cisControls: 'ig1' | 'ig2' | 'ig3' | null;
+    gdpr: boolean;
+  }>({
     iso27001: true,
     iso27002: true,
-    cisControls: 'ig3', // 'ig1', 'ig2', 'ig3', or null
+    cisControls: 'ig3',
     gdpr: false
   });
   
   // AI generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [showGeneration, setShowGeneration] = useState(false);
+  const [frameworksSelected, setFrameworksSelected] = useState({
+    iso27001: true,
+    iso27002: true,
+    cisControls: 'ig3' as 'ig1' | 'ig2' | 'ig3' | null,
+    gdpr: false,
+    nis2: false
+  });
   
-  // Handle framework selection with AI generation animation
-  const handleFrameworkChange = (newFrameworks: typeof selectedFrameworks) => {
+  // Handle framework selection
+  const handleFrameworkToggle = (framework: string, value: any) => {
+    setFrameworksSelected(prev => ({ ...prev, [framework]: value }));
+  };
+  
+  // Handle generation button
+  const handleGenerate = () => {
     setIsGenerating(true);
     setShowGeneration(true);
     
     // Simulate AI processing time
     setTimeout(() => {
-      setSelectedFrameworks(newFrameworks);
+      setSelectedFrameworks(frameworksSelected);
       setIsGenerating(false);
       
       // Hide generation animation after showing results
@@ -1074,6 +1073,7 @@ export default function ComplianceSimplification() {
       'ISO 27001 Controls',
       'ISO 27002 Controls',
       'CIS Controls',
+      'NIS2 Articles',
       'Unified Description'
     ];
 
@@ -1085,6 +1085,7 @@ export default function ComplianceSimplification() {
         mapping.frameworks.iso27001.map(r => `${r.code}: ${r.title}`).join('; '),
         mapping.frameworks.iso27002.map(r => `${r.code}: ${r.title}`).join('; '),
         mapping.frameworks.cisControls.map(r => `${r.code}: ${r.title}`).join('; '),
+        (mapping.frameworks.nis2 || []).map(r => `${r.code}: ${r.title}`).join('; '),
         mapping.auditReadyUnified.description
       ])
     );
@@ -1169,13 +1170,13 @@ export default function ComplianceSimplification() {
     let filtered = complianceMapping;
     
     // First, filter to show only GDPR group when GDPR is selected, or non-GDPR groups when other frameworks are selected
-    if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls) {
+    if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls && !selectedFrameworks.nis2) {
       // GDPR only - show only the unified GDPR group
       filtered = filtered.filter(mapping => mapping.id === 'gdpr-unified');
-    } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls)) {
+    } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
       // Other frameworks without GDPR - show only non-GDPR groups
       filtered = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
-    } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls)) {
+    } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
       // Mixed selection - show all relevant groups
       filtered = complianceMapping;
     } else {
@@ -1196,6 +1197,7 @@ export default function ComplianceSimplification() {
         frameworks: {
           iso27001: selectedFrameworks.iso27001 ? mapping.frameworks.iso27001 : [],
           iso27002: selectedFrameworks.iso27002 ? mapping.frameworks.iso27002 : [],
+          nis2: selectedFrameworks.nis2 ? (mapping.frameworks.nis2 || []) : [],
           gdpr: [], // Never show GDPR in non-GDPR groups
           cisControls: selectedFrameworks.cisControls ? 
             mapping.frameworks.cisControls.filter(control => {
@@ -1246,7 +1248,7 @@ export default function ComplianceSimplification() {
           case 'cis':
             return mapping.frameworks.cisControls.length > 0;
           case 'gdpr':
-            return mapping.frameworks.gdpr.length > 0;
+            return (mapping.frameworks.gdpr?.length || 0) > 0;
           default:
             return true;
         }
@@ -1323,7 +1325,7 @@ export default function ComplianceSimplification() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 rounded-2xl">
+          <TabsList className="grid w-full grid-cols-4 bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 rounded-2xl">
             <TabsTrigger value="overview" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Eye className="w-4 h-4" />
               <span>Overview</span>
@@ -1335,6 +1337,10 @@ export default function ComplianceSimplification() {
             <TabsTrigger value="unified" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
               <Zap className="w-4 h-4" />
               <span>Unified Requirements</span>
+            </TabsTrigger>
+            <TabsTrigger value="overlap" className="flex items-center space-x-1 sm:space-x-2 rounded-xl text-xs sm:text-sm">
+              <Eye className="w-4 h-4" />
+              <span>Framework Overlap</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1566,21 +1572,21 @@ export default function ComplianceSimplification() {
                 
                 <CardContent className="space-y-8">
                   {/* Framework Cards Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-stretch">
                     
                     {/* ISO 27001 Card */}
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[160px] flex flex-col ${
-                        selectedFrameworks.iso27001
+                      className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all duration-300 min-h-[100px] flex flex-col ${
+                        frameworksSelected.iso27001
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg shadow-blue-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-blue-300'
                       }`}
-                      onClick={() => handleFrameworkChange({ ...selectedFrameworks, iso27001: !selectedFrameworks.iso27001 })}
+                      onClick={() => handleFrameworkToggle('iso27001', !frameworksSelected.iso27001)}
                     >
                       {/* Selected Badge at Top */}
-                      {selectedFrameworks.iso27001 && (
+                      {frameworksSelected.iso27001 && (
                         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-blue-500 text-white px-2 py-1 text-xs">
                             Selected
@@ -1589,15 +1595,18 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
-                        <div className={`p-2 rounded-full ${selectedFrameworks.iso27001 ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Shield className={`w-5 h-5 ${selectedFrameworks.iso27001 ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-1 rounded-full ${frameworksSelected.iso27001 ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-3 h-3 ${frameworksSelected.iso27001 ? 'text-white' : 'text-gray-600'}`} />
                         </div>
-                        <div className="flex flex-col space-y-2">
-                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">ISO 27001</h3>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">Information Security Management System</p>
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">ISO 27001</h3>
+                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">Info Security Management</p>
+                          <p className="text-[9px] text-blue-600 dark:text-blue-400 font-medium text-center">
+                            {complianceMapping.reduce((total, mapping) => total + mapping.frameworks.iso27001.length, 0)} requirements
+                          </p>
                         </div>
                       </div>
-                      {selectedFrameworks.iso27001 && (
+                      {frameworksSelected.iso27001 && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1612,15 +1621,15 @@ export default function ComplianceSimplification() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[160px] flex flex-col ${
-                        selectedFrameworks.iso27002
+                      className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all duration-300 min-h-[100px] flex flex-col ${
+                        frameworksSelected.iso27002
                           ? 'border-green-500 bg-green-50 dark:bg-green-900/20 shadow-lg shadow-green-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-green-300'
                       }`}
-                      onClick={() => handleFrameworkChange({ ...selectedFrameworks, iso27002: !selectedFrameworks.iso27002 })}
+                      onClick={() => handleFrameworkToggle('iso27002', !frameworksSelected.iso27002)}
                     >
                       {/* Selected Badge at Top */}
-                      {selectedFrameworks.iso27002 && (
+                      {frameworksSelected.iso27002 && (
                         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-green-500 text-white px-2 py-1 text-xs">
                             Selected
@@ -1629,15 +1638,18 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
-                        <div className={`p-2 rounded-full ${selectedFrameworks.iso27002 ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Lock className={`w-5 h-5 ${selectedFrameworks.iso27002 ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-1 rounded-full ${frameworksSelected.iso27002 ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Lock className={`w-3 h-3 ${frameworksSelected.iso27002 ? 'text-white' : 'text-gray-600'}`} />
                         </div>
-                        <div className="flex flex-col space-y-2">
-                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">ISO 27002</h3>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">Information Security Controls</p>
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">ISO 27002</h3>
+                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">Information Security Controls</p>
+                          <p className="text-[9px] text-green-600 dark:text-green-400 font-medium text-center">
+                            {complianceMapping.reduce((total, mapping) => total + mapping.frameworks.iso27002.length, 0)} requirements
+                          </p>
                         </div>
                       </div>
-                      {selectedFrameworks.iso27002 && (
+                      {frameworksSelected.iso27002 && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1652,13 +1664,13 @@ export default function ComplianceSimplification() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       className={`relative p-4 rounded-xl border-2 transition-all duration-300 min-h-[160px] flex flex-col ${
-                        selectedFrameworks.cisControls
+                        frameworksSelected.cisControls
                           ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg shadow-purple-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800'
                       }`}
                     >
                       {/* Selected Badge at Top */}
-                      {selectedFrameworks.cisControls && (
+                      {frameworksSelected.cisControls && (
                         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-purple-500 text-white px-2 py-1 text-xs">
                             Selected
@@ -1667,12 +1679,15 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
-                        <div className={`p-2 rounded-full ${selectedFrameworks.cisControls ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Settings className={`w-5 h-5 ${selectedFrameworks.cisControls ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-1 rounded-full ${frameworksSelected.cisControls ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Settings className={`w-3 h-3 ${frameworksSelected.cisControls ? 'text-white' : 'text-gray-600'}`} />
                         </div>
-                        <div className="flex flex-col space-y-2">
-                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">CIS Controls</h3>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">Cybersecurity Best Practices</p>
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">CIS Controls</h3>
+                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">Cybersecurity Best Practices</p>
+                          <p className="text-[9px] text-purple-600 dark:text-purple-400 font-medium text-center">
+                            {complianceMapping.reduce((total, mapping) => total + mapping.frameworks.cisControls.length, 0)} requirements
+                          </p>
                         </div>
                         
                         {/* IG Level Selection */}
@@ -1682,21 +1697,18 @@ export default function ComplianceSimplification() {
                               key={level}
                               whileTap={{ scale: 0.95 }}
                               className={`w-full p-1.5 rounded-lg text-xs font-medium transition-all ${
-                                selectedFrameworks.cisControls === level
+                                frameworksSelected.cisControls === level
                                   ? 'bg-purple-500 text-white'
                                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-purple-100 dark:hover:bg-purple-900/50'
                               }`}
-                              onClick={() => handleFrameworkChange({ 
-                                ...selectedFrameworks, 
-                                cisControls: selectedFrameworks.cisControls === level ? null : level 
-                              })}
+                              onClick={() => handleFrameworkToggle('cisControls', frameworksSelected.cisControls === level ? null : level as 'ig1' | 'ig2' | 'ig3')}
                             >
                               {level.toUpperCase()} - {level === 'ig1' ? 'Basic' : level === 'ig2' ? 'Foundational' : 'Organizational'}
                             </motion.button>
                           ))}
                         </div>
                       </div>
-                      {selectedFrameworks.cisControls && (
+                      {frameworksSelected.cisControls && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1711,15 +1723,15 @@ export default function ComplianceSimplification() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[160px] flex flex-col ${
-                        selectedFrameworks.gdpr
+                      className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all duration-300 min-h-[100px] flex flex-col ${
+                        frameworksSelected.gdpr
                           ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 shadow-lg shadow-orange-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-orange-300'
                       }`}
-                      onClick={() => handleFrameworkChange({ ...selectedFrameworks, gdpr: !selectedFrameworks.gdpr })}
+                      onClick={() => handleFrameworkToggle('gdpr', !frameworksSelected.gdpr)}
                     >
                       {/* Selected Badge at Top */}
-                      {selectedFrameworks.gdpr && (
+                      {frameworksSelected.gdpr && (
                         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-orange-500 text-white px-2 py-1 text-xs">
                             Selected
@@ -1728,15 +1740,61 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-6">
-                        <div className={`p-2 rounded-full ${selectedFrameworks.gdpr ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <BookOpen className={`w-5 h-5 ${selectedFrameworks.gdpr ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-1 rounded-full ${frameworksSelected.gdpr ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <BookOpen className={`w-3 h-3 ${frameworksSelected.gdpr ? 'text-white' : 'text-gray-600'}`} />
                         </div>
-                        <div className="flex flex-col space-y-2">
-                          <h3 className="font-semibold text-base h-6 flex items-center justify-center">GDPR</h3>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-2">EU Data Protection Regulation</p>
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">GDPR</h3>
+                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">EU Data Protection Regulation</p>
+                          <p className="text-[9px] text-orange-600 dark:text-orange-400 font-medium text-center">
+                            {complianceMapping.reduce((total, mapping) => total + (mapping.frameworks.gdpr?.length || 0), 0)} requirements
+                          </p>
                         </div>
                       </div>
-                      {selectedFrameworks.gdpr && (
+                      {frameworksSelected.gdpr && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+
+                    {/* NIS2 Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all duration-300 min-h-[100px] flex flex-col ${
+                        frameworksSelected.nis2
+                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 shadow-lg shadow-indigo-500/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-indigo-300'
+                      }`}
+                      onClick={() => handleFrameworkToggle('nis2', !frameworksSelected.nis2)}
+                    >
+                      {/* Selected Badge at Top */}
+                      {frameworksSelected.nis2 && (
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-indigo-500 text-white px-2 py-1 text-xs">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center space-y-2 flex-1 pt-4">
+                        <div className={`p-1 rounded-full ${frameworksSelected.nis2 ? 'bg-indigo-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-3 h-3 ${frameworksSelected.nis2 ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">NIS2</h3>
+                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">EU Cybersecurity Directive</p>
+                          <p className="text-[9px] text-indigo-600 dark:text-indigo-400 font-medium text-center">
+                            {complianceMapping.reduce((total, mapping) => total + (mapping.frameworks.nis2?.length || 0), 0)} requirements
+                          </p>
+                        </div>
+                      </div>
+                      {frameworksSelected.nis2 && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1753,22 +1811,57 @@ export default function ComplianceSimplification() {
                     <h4 className="text-lg font-semibold mb-4 text-center">Quick Presets</h4>
                     <div className="flex flex-wrap justify-center gap-3">
                       {[
-                        { name: 'Comprehensive Security', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig3', gdpr: false } },
-                        { name: 'Privacy Focused', frameworks: { iso27001: false, iso27002: false, cisControls: null, gdpr: true } },
-                        { name: 'EU Compliance', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig2', gdpr: true } },
-                        { name: 'Basic Security', frameworks: { iso27001: true, iso27002: false, cisControls: 'ig1', gdpr: false } }
+                        { name: 'Comprehensive Security', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig3' as const, gdpr: false, nis2: false } },
+                        { name: 'Privacy Focused', frameworks: { iso27001: false, iso27002: false, cisControls: null, gdpr: true, nis2: false } },
+                        { name: 'EU Compliance', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig2' as const, gdpr: true, nis2: true } },
+                        { name: 'Basic Security', frameworks: { iso27001: true, iso27002: false, cisControls: 'ig1' as const, gdpr: false, nis2: false } }
                       ].map((preset) => (
                         <Button
                           key={preset.name}
                           variant="outline"
                           size="sm"
-                          onClick={() => handleFrameworkChange(preset.frameworks)}
+                          onClick={() => {
+                            setFrameworksSelected(preset.frameworks);
+                          }}
                           className="hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/20"
                         >
                           {preset.name}
                         </Button>
                       ))}
                     </div>
+                  </div>
+                  
+                  {/* Generate Button */}
+                  <div className="border-t pt-8">
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={handleGenerate}
+                        disabled={isGenerating || (!frameworksSelected.iso27001 && !frameworksSelected.iso27002 && !frameworksSelected.cisControls && !frameworksSelected.gdpr && !frameworksSelected.nis2)}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-12 py-4 rounded-xl shadow-lg text-lg transition-all duration-300 transform hover:scale-105"
+                        size="lg"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              className="w-6 h-6 mr-3"
+                            >
+                              <Zap className="w-6 h-6" />
+                            </motion.div>
+                            Generating Unified Requirements...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-6 h-6 mr-3" />
+                            Generate Unified Requirements
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+                      Select frameworks above and click to generate your unified compliance requirements
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -1788,7 +1881,8 @@ export default function ComplianceSimplification() {
                     { id: 'iso27001', label: 'ISO 27001', icon: <Shield className="w-4 h-4" /> },
                     { id: 'iso27002', label: 'ISO 27002', icon: <Lock className="w-4 h-4" /> },
                     { id: 'cis', label: 'CIS Controls', icon: <Settings className="w-4 h-4" /> },
-                    { id: 'gdpr', label: 'GDPR', icon: <BookOpen className="w-4 h-4" /> }
+                    { id: 'gdpr', label: 'GDPR', icon: <BookOpen className="w-4 h-4" /> },
+                    { id: 'nis2', label: 'NIS2', icon: <Shield className="w-4 h-4" /> }
                   ].map((filter) => (
                     <Button
                       key={filter.id}
@@ -1860,7 +1954,7 @@ export default function ComplianceSimplification() {
                                 <h4 className="font-semibold text-orange-900 dark:text-orange-100">GDPR Articles</h4>
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-orange-100 dark:scrollbar-thumb-orange-600 dark:scrollbar-track-orange-900">
-                                {mapping.frameworks.gdpr.map((req, i) => (
+                                {(mapping.frameworks.gdpr || []).map((req, i) => (
                                   <div key={i} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-orange-200 dark:border-orange-700">
                                     <div className="font-medium text-sm text-orange-900 dark:text-orange-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">{req.title}</div>
@@ -1871,8 +1965,12 @@ export default function ComplianceSimplification() {
                             </div>
                           </div>
                         ) : (
-                          /* Regular 3-column layout for ISO/CIS frameworks */
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-slate-200 dark:border-slate-700">
+                          /* Regular layout for ISO/CIS/NIS2 frameworks */
+                          <div className={`grid gap-0 border-b border-slate-200 dark:border-slate-700 ${
+                            selectedFrameworks.nis2 
+                              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' 
+                              : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                          }`}>
                           {/* ISO 27001 Column */}
                           <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
                             <div className="flex items-center space-x-2 mb-4">
@@ -1906,7 +2004,9 @@ export default function ComplianceSimplification() {
                           </div>
 
                           {/* CIS Controls Column */}
-                          <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10">
+                          <div className={`p-4 sm:p-6 border-b sm:border-b-0 border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10 ${
+                            selectedFrameworks.nis2 ? 'lg:border-r' : 'sm:border-r'
+                          }`}>
                             <div className="flex items-center space-x-2 mb-4">
                               <Settings className="w-5 h-5 text-purple-600" />
                               <h4 className="font-semibold text-purple-900 dark:text-purple-100">
@@ -1922,6 +2022,24 @@ export default function ComplianceSimplification() {
                               ))}
                             </div>
                           </div>
+
+                          {/* NIS2 Column - Only show if NIS2 is selected */}
+                          {selectedFrameworks.nis2 && (
+                            <div className="p-4 sm:p-6 bg-indigo-50 dark:bg-indigo-900/10">
+                              <div className="flex items-center space-x-2 mb-4">
+                                <Shield className="w-5 h-5 text-indigo-600" />
+                                <h4 className="font-semibold text-indigo-900 dark:text-indigo-100">NIS2</h4>
+                              </div>
+                              <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-indigo-100 dark:scrollbar-thumb-indigo-600 dark:scrollbar-track-indigo-900">
+                                {(mapping.frameworks.nis2 || []).map((req, i) => (
+                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-indigo-200 dark:border-indigo-700">
+                                    <div className="font-medium text-sm text-indigo-900 dark:text-indigo-100">{req.code}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                         </div>
                         )}
@@ -1944,7 +2062,7 @@ export default function ComplianceSimplification() {
                                   {(() => {
                                     if (mapping.id === 'gdpr-unified') {
                                       // For GDPR groups, show GDPR articles count
-                                      const totalGdprReqs = mapping.frameworks.gdpr.length;
+                                      const totalGdprReqs = mapping.frameworks.gdpr?.length || 0;
                                       const unifiedReqs = mapping.auditReadyUnified.subRequirements.length;
                                       const reductionPercent = totalGdprReqs > 1 ? Math.round((1 - unifiedReqs / totalGdprReqs) * 100) : 0;
                                       return `Unifies ${totalGdprReqs} GDPR articles - ${reductionPercent}% simpler`;
@@ -2063,10 +2181,26 @@ export default function ComplianceSimplification() {
                         GDPR
                       </Badge>
                     )}
+                    {selectedFrameworks.nis2 && (
+                      <Badge className="bg-indigo-500 text-white px-3 py-1">
+                        <Shield className="w-3 h-3 mr-1" />
+                        NIS2
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
                     Each unified requirement below eliminates duplicate controls and combines overlapping requirements into streamlined, actionable guidelines.
                   </p>
+                  <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                      <div className="text-2xl font-bold text-blue-600">{complianceMapping.length}</div>
+                      <div className="text-gray-600 dark:text-gray-400">Total Groups</div>
+                    </div>
+                    <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
+                      <div className="text-2xl font-bold text-purple-600">{complianceMapping.reduce((total, group) => total + group.auditReadyUnified.subRequirements.length, 0)}</div>
+                      <div className="text-gray-600 dark:text-gray-400">Total Sub-requirements</div>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-6">
@@ -2081,7 +2215,7 @@ export default function ComplianceSimplification() {
                       <div className="flex items-start justify-between mb-4">
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                            {mapping.auditReadyUnified.title}
+                            {mapping.category.replace(/^\d+\. /, '')}
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                             {mapping.auditReadyUnified.description}
@@ -2093,26 +2227,598 @@ export default function ComplianceSimplification() {
                         <div className="text-right">
                           <div className="text-xs text-gray-500 dark:text-gray-400">Replaces</div>
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {mapping.frameworks.iso27001.length + mapping.frameworks.iso27002.length + mapping.frameworks.cisControls.length}
+                            {mapping.frameworks.iso27001.length + mapping.frameworks.iso27002.length + mapping.frameworks.cisControls.length + (mapping.frameworks.gdpr?.length || 0)}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">requirements</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            {mapping.auditReadyUnified.subRequirements.length} sub-requirements
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-4">
                         <h4 className="font-medium text-gray-900 dark:text-white">Implementation Guidelines:</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {mapping.auditReadyUnified.subRequirements.map((subReq, i) => (
-                            <div key={i} className="flex items-start space-x-2 text-sm">
-                              <ArrowRight className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                              <span className="text-gray-700 dark:text-gray-300">{subReq}</span>
-                            </div>
-                          ))}
+                        <div className="space-y-4">
+                          {(() => {
+                            // Group sub-requirements for better organization
+                            const groupedSubReqs = {
+                              'Core Requirements': mapping.auditReadyUnified.subRequirements.filter((_, i) => i < Math.ceil(mapping.auditReadyUnified.subRequirements.length / 3)),
+                              'Implementation Standards': mapping.auditReadyUnified.subRequirements.filter((_, i) => i >= Math.ceil(mapping.auditReadyUnified.subRequirements.length / 3) && i < Math.ceil(mapping.auditReadyUnified.subRequirements.length * 2 / 3)),
+                              'Monitoring & Compliance': mapping.auditReadyUnified.subRequirements.filter((_, i) => i >= Math.ceil(mapping.auditReadyUnified.subRequirements.length * 2 / 3))
+                            };
+                            
+                            return Object.entries(groupedSubReqs).map(([groupName, requirements]) => (
+                              requirements.length > 0 && (
+                                <div key={groupName} className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
+                                  <h5 className="font-medium text-sm text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                    {groupName}
+                                  </h5>
+                                  <div className="space-y-2">
+                                    {requirements.map((subReq, i) => (
+                                      <div key={i} className="flex items-start space-x-2 text-sm">
+                                        <ArrowRight className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
+                                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{subReq}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            ));
+                          })()}
                         </div>
                       </div>
                     </motion.div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          {/* Framework Overlap Tab */}
+          <TabsContent value="overlap" className="space-y-6">
+            <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl">
+              <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-2xl">
+                <CardTitle className="flex items-center space-x-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Eye className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Framework Overlap Analysis</h2>
+                    <p className="text-sm text-white/80 font-normal">Visual representation of how your selected frameworks overlap</p>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-8">
+                {/* Check if any frameworks are selected */}
+                {(selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.gdpr || selectedFrameworks.nis2) ? (
+                  <>
+                {/* Overlap Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600">
+                      {Object.values(selectedFrameworks).filter(v => v).length}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Frameworks Selected</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600">
+                      {complianceMapping.reduce((total, mapping) => {
+                        const frameworkCount = Object.entries(mapping.frameworks).filter(([key, value]) => {
+                          if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
+                          if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
+                          return selectedFrameworks[key] && value.length > 0;
+                        }).length;
+                        return total + (frameworkCount > 1 ? 1 : 0);
+                      }, 0)}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Groups with Overlap</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600">
+                      {(() => {
+                        const overlapRate = complianceMapping.reduce((total, mapping) => {
+                          const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
+                            if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
+                            if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
+                            return selectedFrameworks[key] && value.length > 0;
+                          });
+                          const maxReqs = activeFrameworks.length > 0 ? Math.max(...activeFrameworks.map(([_, reqs]) => reqs.length)) : 0;
+                          const totalReqs = activeFrameworks.reduce((sum, [_, reqs]) => sum + reqs.length, 0);
+                          return total + (totalReqs > 0 ? ((totalReqs - maxReqs) / totalReqs) * 100 : 0);
+                        }, 0);
+                        return Math.round(overlapRate / Math.max(complianceMapping.length, 1));
+                      })()}%
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Average Overlap Rate</div>
+                  </div>
+                </div>
+                
+                {/* Visual Overlap Matrix */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold mb-6">Interactive Framework Overlap Visualization</h3>
+                  
+                  {/* Framework Overlap Zones Visualization */}
+                  <div className="mb-8">
+                    <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 min-h-[500px] overflow-hidden">
+                      <svg
+                        width="100%"
+                        height="600"
+                        viewBox="0 0 900 600"
+                        className="w-full h-full"
+                      >
+                        <defs>
+                          {/* Gradient definitions for each framework */}
+                          <radialGradient id="iso27001Gradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2" />
+                          </radialGradient>
+                          <radialGradient id="iso27002Gradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#34d399" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#10b981" stopOpacity="0.2" />
+                          </radialGradient>
+                          <radialGradient id="cisControlsGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.2" />
+                          </radialGradient>
+                          <radialGradient id="gdprGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#fb923c" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#f97316" stopOpacity="0.2" />
+                          </radialGradient>
+                          <radialGradient id="nis2Gradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#818cf8" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#6366f1" stopOpacity="0.2" />
+                          </radialGradient>
+                        </defs>
+                        
+                        {/* Framework Overlapping Circles */}
+                        {(() => {
+                          const activeFrameworks = [
+                            { key: 'iso27001', name: 'ISO 27001', gradient: 'iso27001Gradient', color: '#3b82f6', icon: Shield, active: selectedFrameworks.iso27001 },
+                            { key: 'iso27002', name: 'ISO 27002', gradient: 'iso27002Gradient', color: '#10b981', icon: Lock, active: selectedFrameworks.iso27002 },
+                            { key: 'cisControls', name: 'CIS Controls', gradient: 'cisControlsGradient', color: '#8b5cf6', icon: Settings, active: selectedFrameworks.cisControls },
+                            { key: 'gdpr', name: 'GDPR', gradient: 'gdprGradient', color: '#f97316', icon: BookOpen, active: selectedFrameworks.gdpr },
+                            { key: 'nis2', name: 'NIS2', gradient: 'nis2Gradient', color: '#6366f1', icon: Shield, active: selectedFrameworks.nis2 }
+                          ].filter(f => f.active);
+                          
+                          if (activeFrameworks.length === 0) return null;
+                          
+                          // Dynamic positioning based on number of active frameworks
+                          const positions = (() => {
+                            const center = { x: 450, y: 300 };
+                            if (activeFrameworks.length === 1) {
+                              return [center];
+                            } else if (activeFrameworks.length === 2) {
+                              return [
+                                { x: center.x - 60, y: center.y },
+                                { x: center.x + 60, y: center.y }
+                              ];
+                            } else if (activeFrameworks.length === 3) {
+                              return [
+                                { x: center.x, y: center.y - 60 },
+                                { x: center.x - 60, y: center.y + 40 },
+                                { x: center.x + 60, y: center.y + 40 }
+                              ];
+                            } else if (activeFrameworks.length === 4) {
+                              return [
+                                { x: center.x - 60, y: center.y - 50 },
+                                { x: center.x + 60, y: center.y - 50 },
+                                { x: center.x - 60, y: center.y + 50 },
+                                { x: center.x + 60, y: center.y + 50 }
+                              ];
+                            } else {
+                              // 5 frameworks - pentagon layout
+                              return activeFrameworks.map((_, i) => {
+                                const angle = (i * 72 - 90) * Math.PI / 180;
+                                return {
+                                  x: center.x + Math.cos(angle) * 70,
+                                  y: center.y + Math.sin(angle) * 70
+                                };
+                              });
+                            }
+                          })();
+                          
+                          return activeFrameworks.map((framework, index) => {
+                            const position = positions[index];
+                            const requirementCount = complianceMapping.reduce((total, mapping) => {
+                              const frameworkReqs = mapping.frameworks[framework.key];
+                              return total + (frameworkReqs ? frameworkReqs.length : 0);
+                            }, 0);
+                            
+                            return (
+                              <g key={framework.key}>
+                                {/* Overlapping Circle */}
+                                <motion.circle
+                                  initial={{ r: 0, opacity: 0 }}
+                                  animate={{ r: 100, opacity: 1 }}
+                                  transition={{ delay: index * 0.2, duration: 0.8 }}
+                                  cx={position.x}
+                                  cy={position.y}
+                                  r="100"
+                                  fill={`url(#${framework.gradient})`}
+                                  stroke={framework.color}
+                                  strokeWidth="2"
+                                  className="hover:opacity-80 transition-opacity cursor-pointer"
+                                />
+                                
+                                {/* Framework Label */}
+                                <motion.g
+                                  initial={{ opacity: 0, scale: 0 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ delay: index * 0.2 + 0.5 }}
+                                >
+                                  <circle
+                                    cx={position.x}
+                                    cy={position.y}
+                                    r="20"
+                                    fill={framework.color}
+                                    className="drop-shadow-lg"
+                                  />
+                                  <text
+                                    x={position.x}
+                                    y={position.y + 35}
+                                    textAnchor="middle"
+                                    className="text-sm font-semibold fill-gray-900 dark:fill-white"
+                                  >
+                                    {framework.name}
+                                  </text>
+                                  <text
+                                    x={position.x}
+                                    y={position.y + 50}
+                                    textAnchor="middle"
+                                    className="text-xs fill-gray-600 dark:fill-gray-400"
+                                  >
+                                    {requirementCount} reqs
+                                  </text>
+                                </motion.g>
+                              </g>
+                            );
+                          });
+                        })()}
+                        
+                        {/* Radar-Style Group Labels Around the Perimeter */}
+                        {(() => {
+                          const overlappingGroups = complianceMapping.filter(mapping => {
+                            const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
+                              if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
+                              if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
+                              return selectedFrameworks[key] && value.length > 0;
+                            });
+                            return activeFrameworks.length > 1;
+                          });
+                          
+                          return overlappingGroups.map((mapping, index) => {
+                            // Position labels around the perimeter with optimal spacing
+                            const totalGroups = overlappingGroups.length;
+                            const angle = (index * 360 / totalGroups - 90) * Math.PI / 180; // Start from top
+                            const radius = Math.max(260, Math.min(350, 220 + totalGroups * 8)); // Better dynamic radius with more spacing
+                            const x = 450 + Math.cos(angle) * radius;
+                            const y = 300 + Math.sin(angle) * radius;
+                            
+                            const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
+                              if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
+                              if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
+                              return selectedFrameworks[key] && value.length > 0;
+                            });
+                            
+                            return (
+                              <motion.g
+                                key={mapping.id}
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 1 + index * 0.1 }}
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  const element = document.getElementById(`group-card-${mapping.id}`);
+                                  if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    // Add visual highlight
+                                    element.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50');
+                                    setTimeout(() => {
+                                      element.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50');
+                                    }, 2000);
+                                  }
+                                }}
+                              >
+                                {/* Corner edge design */}
+                                <g>
+                                  {/* Main label background with corner edges - smaller and more elegant */}
+                                  <rect
+                                    x={x - 55}
+                                    y={y - 18}
+                                    width="110"
+                                    height="36"
+                                    rx="8"
+                                    fill="rgba(99, 102, 241, 0.15)"
+                                    stroke="#6366f1"
+                                    strokeWidth="1.5"
+                                    className="drop-shadow-md"
+                                  />
+                                  
+                                  {/* Refined corner accent lines matching new smaller size */}
+                                  <line x1={x - 55} y1={y - 18} x2={x - 42} y2={y - 18} stroke="#6366f1" strokeWidth="2.5" />
+                                  <line x1={x - 55} y1={y - 18} x2={x - 55} y2={y - 5} stroke="#6366f1" strokeWidth="2.5" />
+                                  
+                                  <line x1={x + 55} y1={y - 18} x2={x + 42} y2={y - 18} stroke="#6366f1" strokeWidth="2.5" />
+                                  <line x1={x + 55} y1={y - 18} x2={x + 55} y2={y - 5} stroke="#6366f1" strokeWidth="2.5" />
+                                  
+                                  <line x1={x - 55} y1={y + 18} x2={x - 42} y2={y + 18} stroke="#6366f1" strokeWidth="2.5" />
+                                  <line x1={x - 55} y1={y + 18} x2={x - 55} y2={y + 5} stroke="#6366f1" strokeWidth="2.5" />
+                                  
+                                  <line x1={x + 55} y1={y + 18} x2={x + 42} y2={y + 18} stroke="#6366f1" strokeWidth="2.5" />
+                                  <line x1={x + 55} y1={y + 18} x2={x + 55} y2={y + 5} stroke="#6366f1" strokeWidth="2.5" />
+                                  
+                                  {/* Enhanced connection line to center */}
+                                  <line 
+                                    x1={450} 
+                                    y1={300} 
+                                    x2={x > 450 ? x - 55 : x + 55} 
+                                    y2={y} 
+                                    stroke="#6366f1" 
+                                    strokeWidth="1.5" 
+                                    strokeDasharray="4,2" 
+                                    opacity="0.5"
+                                  />
+                                  
+                                  {/* Refined indicator dot */}
+                                  <circle cx={x} cy={y} r="4" fill="#6366f1" className="drop-shadow-sm" />
+                                  <circle cx={x} cy={y} r="1.5" fill="#ffffff" />
+                                </g>
+                                
+                                {/* Compact group name */}
+                                <text
+                                  x={x}
+                                  y={y - 3}
+                                  textAnchor="middle"
+                                  className="text-xs font-bold fill-gray-900 dark:fill-white"
+                                  style={{ filter: 'drop-shadow(0.5px 0.5px 1px rgba(0,0,0,0.4))' }}
+                                >
+                                  {mapping.category.length > 15 ? mapping.category.substring(0, 15) + '...' : mapping.category}
+                                </text>
+                                
+                                {/* Compact info display */}
+                                <text
+                                  x={x}
+                                  y={y + 8}
+                                  textAnchor="middle"
+                                  className="text-xs fill-indigo-700 dark:fill-indigo-300 font-medium"
+                                >
+                                  {activeFrameworks.length}F • {Math.round((1 - mapping.auditReadyUnified.subRequirements.length / activeFrameworks.reduce((sum, [_, reqs]) => sum + reqs.length, 0)) * 100)}% eff
+                                </text>
+                              </motion.g>
+                            );
+                          });
+                        })()}
+                        
+                        {/* Central Unified Circle Encompassing All */}
+                        <motion.g
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 2, type: "spring" }}
+                        >
+                          {/* Large encompassing circle for AuditReady Unified */}
+                          <circle
+                            cx="450"
+                            cy="300"
+                            r="180"
+                            fill="none"
+                            stroke="url(#unifiedRingGradient)"
+                            strokeWidth="4"
+                            strokeDasharray="10,5"
+                            className="opacity-60"
+                          />
+                          
+                          {/* Central unified hub */}
+                          <circle
+                            cx="450"
+                            cy="120"
+                            r="30"
+                            fill="url(#unifiedGradient)"
+                            stroke="#fbbf24"
+                            strokeWidth="3"
+                            className="drop-shadow-lg"
+                          />
+                          
+                          {/* Unified icon */}
+                          <circle cx="450" cy="120" r="12" fill="#fff" />
+                          <text x="450" y="125" textAnchor="middle" className="text-sm font-bold fill-orange-600">⚡</text>
+                          
+                          <text
+                            x="450"
+                            y="95"
+                            textAnchor="middle"
+                            className="text-sm font-bold fill-gray-900 dark:fill-white"
+                          >
+                            AuditReady Unified
+                          </text>
+                          <text
+                            x="450"
+                            y="155"
+                            textAnchor="middle"
+                            className="text-xs fill-gray-600 dark:fill-gray-400"
+                          >
+                            Encompasses All Frameworks
+                          </text>
+                          <text
+                            x="450"
+                            y="168"
+                            textAnchor="middle"
+                            className="text-xs fill-orange-600 dark:fill-orange-400 font-medium"
+                          >
+                            {complianceMapping.length} unified control groups
+                          </text>
+                        </motion.g>
+                        
+                        {/* Additional gradients */}
+                        <defs>
+                          <radialGradient id="unifiedGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
+                            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.4" />
+                          </radialGradient>
+                          <linearGradient id="unifiedRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
+                            <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.6" />
+                            <stop offset="100%" stopColor="#ea580c" stopOpacity="0.4" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Interactive Framework Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {complianceMapping.filter(mapping => {
+                      const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
+                        if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
+                        if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
+                        return selectedFrameworks[key] && value.length > 0;
+                      });
+                      return activeFrameworks.length > 1;
+                    }).slice(0, 6).map((mapping, index) => {
+                      const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
+                        if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
+                        if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
+                        return selectedFrameworks[key] && value.length > 0;
+                      });
+                      
+                      const totalOriginalReqs = activeFrameworks.reduce((sum, [_, reqs]) => sum + reqs.length, 0);
+                      const unifiedReqs = mapping.auditReadyUnified.subRequirements.length;
+                      const efficiency = Math.round((1 - unifiedReqs / totalOriginalReqs) * 100);
+                      
+                      return (
+                        <motion.div
+                          key={mapping.id}
+                          id={`group-card-${mapping.id}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
+                        >
+                          <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-3">
+                            {mapping.category.replace(/^\d+\. /, '')}
+                          </h4>
+                          
+                          {/* Visual Overlap Representation */}
+                          <div className="mb-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs text-gray-600 dark:text-gray-400">Requirements</span>
+                              <span className="text-xs font-medium text-green-600">{efficiency}% reduction</span>
+                            </div>
+                            
+                            {/* Before/After Bars */}
+                            <div className="space-y-2">
+                              {/* Original Requirements Bar */}
+                              <div className="relative">
+                                <div className="text-xs text-gray-500 mb-1">Before: {totalOriginalReqs} requirements</div>
+                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full" style={{ width: '100%' }} />
+                                </div>
+                              </div>
+                              
+                              {/* Unified Requirements Bar */}
+                              <div className="relative">
+                                <div className="text-xs text-gray-500 mb-1">After: {unifiedReqs} unified requirements</div>
+                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full" style={{ width: `${(unifiedReqs / totalOriginalReqs) * 100}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Framework Badges */}
+                          <div className="flex flex-wrap gap-1">
+                            {activeFrameworks.map(([framework, requirements]) => {
+                              const colors = {
+                                iso27001: 'bg-blue-100 text-blue-700 border-blue-200',
+                                iso27002: 'bg-green-100 text-green-700 border-green-200',
+                                cisControls: 'bg-purple-100 text-purple-700 border-purple-200',
+                                gdpr: 'bg-orange-100 text-orange-700 border-orange-200',
+                                nis2: 'bg-indigo-100 text-indigo-700 border-indigo-200'
+                              };
+                              return (
+                                <span key={framework} className={`text-xs px-2 py-1 rounded-full border ${colors[framework]}`}>
+                                  {framework.toUpperCase()}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {/* Framework Legend */}
+                <div className="border-t pt-6">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Selected Frameworks</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {selectedFrameworks.iso27001 && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                        <span className="text-sm">ISO 27001</span>
+                      </div>
+                    )}
+                    {selectedFrameworks.iso27002 && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-500 rounded"></div>
+                        <span className="text-sm">ISO 27002</span>
+                      </div>
+                    )}
+                    {selectedFrameworks.cisControls && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-purple-500 rounded"></div>
+                        <span className="text-sm">CIS Controls ({selectedFrameworks.cisControls.toUpperCase()})</span>
+                      </div>
+                    )}
+                    {selectedFrameworks.gdpr && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                        <span className="text-sm">GDPR</span>
+                      </div>
+                    )}
+                    {selectedFrameworks.nis2 && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-indigo-500 rounded"></div>
+                        <span className="text-sm">NIS2</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                </>
+                ) : (
+                  /* No frameworks selected state */
+                  <div className="text-center py-12">
+                    <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                      <Eye className="w-12 h-12 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                      No Frameworks Selected
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                      Select frameworks in the "Framework Mapping" tab and click "Generate Unified Requirements" to see overlap analysis and efficiency insights.
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center space-x-2">
+                          <Shield className="w-4 h-4 text-blue-500" />
+                          <span>ISO 27001/27002</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Settings className="w-4 h-4 text-purple-500" />
+                          <span>CIS Controls</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <BookOpen className="w-4 h-4 text-orange-500" />
+                          <span>GDPR</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Shield className="w-4 h-4 text-indigo-500" />
+                          <span>NIS2</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
