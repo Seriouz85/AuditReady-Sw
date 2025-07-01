@@ -828,10 +828,14 @@ export const AdminDashboard: React.FC = () => {
         {/* Enhanced Main Content Tabs */}
         <Tabs defaultValue="standards" className="space-y-6">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
-            <TabsList className="grid w-full grid-cols-6 bg-gray-100 rounded-xl p-1">
+            <TabsList className="grid w-full grid-cols-7 bg-gray-100 rounded-xl p-1">
               <TabsTrigger value="standards" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
                 <Shield className="w-4 h-4 mr-2" />
                 Standards
+              </TabsTrigger>
+              <TabsTrigger value="compliance" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <BookOpen className="w-4 h-4 mr-2" />
+                Compliance
               </TabsTrigger>
               <TabsTrigger value="organizations" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
                 <Building className="w-4 h-4 mr-2" />
@@ -931,6 +935,144 @@ export const AdminDashboard: React.FC = () => {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        {/* Compliance Tab */}
+        <TabsContent value="compliance" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Compliance Management</h2>
+              <p className="text-muted-foreground">Manage unified compliance categories and requirements</p>
+            </div>
+            <Button onClick={() => navigate('/admin/compliance')} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Manage Compliance
+            </Button>
+          </div>
+
+          {/* Compliance Overview Cards */}
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-blue-700">Categories</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-900">22</div>
+                <p className="text-xs text-blue-600">Unified compliance categories</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-green-700">Requirements</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-900">154</div>
+                <p className="text-xs text-green-600">Total unified requirements</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-purple-700">Mappings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-900">2,847</div>
+                <p className="text-xs text-purple-600">Framework control mappings</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-orange-700">Frameworks</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-900">5</div>
+                <p className="text-xs text-orange-600">Supported frameworks</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center text-blue-800">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Quick Actions
+              </CardTitle>
+              <CardDescription>Common compliance management tasks</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Button variant="outline" className="h-20 flex-col border-blue-200 text-blue-700 hover:bg-blue-50" onClick={() => navigate('/admin/compliance')}>
+                  <BookOpen className="w-6 h-6 mb-2" />
+                  <span className="text-sm">Manage Categories</span>
+                </Button>
+                <Button variant="outline" className="h-20 flex-col border-purple-200 text-purple-700 hover:bg-purple-50" onClick={() => navigate('/admin/compliance')}>
+                  <FileText className="w-6 h-6 mb-2" />
+                  <span className="text-sm">Edit Requirements</span>
+                </Button>
+                <Button variant="outline" className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" onClick={() => navigate('/admin/compliance')}>
+                  <Link className="w-6 h-6 mb-2" />
+                  <span className="text-sm">Manage Mappings</span>
+                </Button>
+                <Button variant="outline" className="h-20 flex-col border-orange-200 text-orange-700 hover:bg-orange-50" onClick={() => navigate('/compliance-simplification')}>
+                  <Eye className="w-6 h-6 mb-2" />
+                  <span className="text-sm">Preview UI</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Compliance Updates</CardTitle>
+              <CardDescription>Latest changes to compliance data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded">
+                      <BookOpen className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Security Awareness category updated</p>
+                      <p className="text-sm text-gray-600">Added screening requirement as sub-requirement</p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-500">2 hours ago</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded">
+                      <Link className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">New ISO 27001 mappings added</p>
+                      <p className="text-sm text-gray-600">Mapped 47 controls to unified requirements</p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-500">1 day ago</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded">
+                      <FileText className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">GDPR Unified Compliance category created</p>
+                      <p className="text-sm text-gray-600">Added comprehensive GDPR requirements</p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-500">3 days ago</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
             <TabsContent value="organizations" className="space-y-6">

@@ -31,6 +31,7 @@ export const AdminNavigation: React.FC = () => {
     { to: '/admin/standards', icon: <Shield size={20} />, label: 'Standards' },
     { to: '/admin/organizations', icon: <Building size={20} />, label: 'Organizations' },
     { to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
+    { to: '/admin/compliance', icon: <BookOpen size={20} />, label: 'Compliance' },
     { to: '/admin/system', icon: <Settings size={20} />, label: 'System' },
     { to: '/admin/logs', icon: <Activity size={20} />, label: 'Audit Logs' },
   ];

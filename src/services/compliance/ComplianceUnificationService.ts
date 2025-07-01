@@ -181,38 +181,38 @@ class ComplianceUnificationService {
    */
   async getComplianceMappingData(selectedFrameworks: string[]): Promise<ComplianceMappingData[]> {
     try {
-      // Check cache first
+      // Temporarily disable cache for debugging
       const cacheKey = `compliance_mapping_${selectedFrameworks.sort().join('_')}`;
-      const cached = complianceCacheService.get<ComplianceMappingData[]>(cacheKey, {
-        storage: 'memory',
-        ttl: 15 * 60 * 1000 // 15 minutes
-      });
+      // Clear any existing cache
+      complianceCacheService.remove(cacheKey, 'memory');
       
-      if (cached) {
-        return cached;
-      }
+      console.log('Fetching fresh compliance mapping data for frameworks:', selectedFrameworks);
 
       // Get all unified categories with requirements
       const categories = await this.getUnifiedCategories();
+      console.log('Found unified categories:', categories.length);
       
       // Get framework requirements based on category keywords
       const frameworkRequirements = await this.getFrameworkRequirementsByCategories(categories, selectedFrameworks);
+      console.log('Framework requirements:', Object.keys(frameworkRequirements).length, 'categories mapped');
       
       const result: ComplianceMappingData[] = [];
       
       for (const category of categories) {
-        for (const requirement of (category.requirements || [])) {
-          // Get relevant framework requirements for this category
-          const categoryFrameworks = frameworkRequirements[category.name] || {};
-          
-          // Create a mapping entry for each requirement
+        // Create one entry per category (not per requirement) as the original design expected
+        const categoryFrameworks = frameworkRequirements[category.name] || {};
+        
+        // Get the first requirement for this category (the current design expects one requirement per category)
+        const primaryRequirement = category.requirements?.[0];
+        
+        if (primaryRequirement) {
           result.push({
-            id: `${category.id}-${requirement.id}`,
+            id: category.id,
             category: category.name,
             auditReadyUnified: {
-              title: requirement.title,
-              description: requirement.description,
-              subRequirements: requirement.subRequirements
+              title: primaryRequirement.title,
+              description: primaryRequirement.description,
+              subRequirements: primaryRequirement.subRequirements
             },
             frameworks: {
               iso27001: selectedFrameworks.includes('iso27001') ? (categoryFrameworks.iso27001 || []) : [],
@@ -225,6 +225,8 @@ class ComplianceUnificationService {
         }
       }
       
+      console.log('Generated compliance mapping data:', result.length, 'items');
+      
       // If we have the AI engine available, use it to enhance the results
       if (complianceEngine && typeof complianceEngine.processComplianceMappings === 'function') {
         try {
@@ -235,6 +237,7 @@ class ComplianceUnificationService {
           );
           
           if (enhancedResult && enhancedResult.length > 0) {
+            console.log('AI engine enhanced results:', enhancedResult.length, 'items');
             // Cache the enhanced result
             complianceCacheService.set(cacheKey, enhancedResult, {
               storage: 'memory',
@@ -324,13 +327,16 @@ export function useComplianceMappingData(selectedFrameworks: Record<string, bool
     .map(([code]) => code);
     
   return useQuery({
-    queryKey: ['compliance-mapping-data', frameworkCodes],
-    queryFn: () => complianceUnificationService.getComplianceMappingData(frameworkCodes),
+    queryKey: ['compliance-mapping-data', frameworkCodes.sort().join('-')],
+    queryFn: () => {
+      console.log('React Query: Executing query for frameworks:', frameworkCodes);
+      return complianceUnificationService.getComplianceMappingData(frameworkCodes);
+    },
     enabled: true, // Always enabled to show all categories
-    staleTime: 5 * 60 * 1000, // 5 minutes cache
-    cacheTime: 10 * 60 * 1000, // 10 minutes cache
+    staleTime: 0, // Always refetch for debugging
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
+    retry: 1,
   });
 }
 
