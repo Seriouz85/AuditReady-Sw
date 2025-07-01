@@ -75,6 +75,7 @@ export default function ComplianceSimplification() {
   };
   const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook);
   
+  
   // Use database data
   const complianceMappingData = fetchedComplianceMapping || [];
   
@@ -88,9 +89,11 @@ export default function ComplianceSimplification() {
     setIsGenerating(true);
     setShowGeneration(true);
     
+    // Immediately update the frameworks to trigger data refetch
+    setSelectedFrameworks(frameworksSelected);
+    
     // Simulate AI processing time
     setTimeout(() => {
-      setSelectedFrameworks(frameworksSelected);
       setIsGenerating(false);
       
       // Hide generation animation after showing results

@@ -153,6 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (orgUserError.code === 'PGRST116') {
           // No organization found - user needs onboarding
           console.log('User has no organization - needs onboarding');
+          setLoading(false); // Ensure loading state is cleared
           return;
         }
         console.warn('Organization data fetch failed:', {
@@ -160,6 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           message: orgUserError.message,
           details: orgUserError.details
         });
+        setLoading(false); // Ensure loading state is cleared
         return; // Don't throw error, just return gracefully
       }
 

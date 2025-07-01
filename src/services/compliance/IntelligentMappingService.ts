@@ -143,18 +143,15 @@ export class IntelligentMappingService {
         }
       }
 
-      // If no requirements were mapped but frameworks were selected, add some fallback requirements
+      // Count total mapped requirements
       const totalMappedRequirements = Object.values(result).reduce((total, categoryFrameworks) => {
         return total + Object.values(categoryFrameworks).reduce((categoryTotal, reqs) => categoryTotal + reqs.length, 0);
       }, 0);
 
       console.log('Total mapped requirements:', totalMappedRequirements);
+      console.log('Returning result with', totalMappedRequirements, 'mapped requirements');
 
-      if (totalMappedRequirements === 0 && selectedFrameworks.length > 0) {
-        console.log('No requirements mapped, adding fallback requirements...');
-        await this.addFallbackRequirements(result, selectedFrameworks);
-      }
-
+      // Return only real database requirements - no fallback fake data
       return result;
     } catch (error) {
       console.error('Error in intelligent mapping:', error);
@@ -310,91 +307,6 @@ export class IntelligentMappingService {
     }
   }
 
-  /**
-   * Add fallback requirements when intelligent mapping fails
-   */
-  private async addFallbackRequirements(
-    result: MappedRequirements,
-    selectedFrameworks: string[]
-  ): Promise<void> {
-    try {
-      console.log('Adding fallback requirements for frameworks:', selectedFrameworks);
-      
-      // Get a few requirements for each selected framework to at least show something
-      for (const framework of selectedFrameworks) {
-        let standardName = '';
-        let frameworkKey = '';
-        
-        switch (framework) {
-          case 'iso27001':
-            standardName = 'ISO/IEC 27001';
-            frameworkKey = 'iso27001';
-            break;
-          case 'iso27002':
-            standardName = 'ISO/IEC 27002';
-            frameworkKey = 'iso27002';
-            break;
-          case 'cisControls':
-            standardName = 'CIS Controls Implementation Group 3';
-            frameworkKey = 'cisControls';
-            break;
-          case 'gdpr':
-            standardName = 'GDPR';
-            frameworkKey = 'gdpr';
-            break;
-          case 'nis2':
-            // Skip NIS2 for now as we don't have much data
-            continue;
-        }
-
-        if (standardName && frameworkKey) {
-          const { data: standard } = await supabase
-            .from('standards_library')
-            .select('id')
-            .ilike('name', `%${standardName}%`)
-            .limit(1)
-            .single();
-
-          if (standard) {
-            const { data: requirements } = await supabase
-              .from('requirements_library')
-              .select('id, control_id, title, description')
-              .eq('standard_id', standard.id)
-              .limit(5); // Just get a few requirements
-
-            if (requirements && requirements.length > 0) {
-              // Add these requirements to the first few categories
-              const categoryNames = Object.keys(result);
-              const requirementsPerCategory = Math.ceil(requirements.length / Math.min(categoryNames.length, 5));
-              
-              categoryNames.slice(0, 5).forEach((categoryName, index) => {
-                const categoryRequirements = requirements.slice(
-                  index * requirementsPerCategory,
-                  (index + 1) * requirementsPerCategory
-                );
-                
-                categoryRequirements.forEach(req => {
-                  result[categoryName][frameworkKey].push({
-                    id: req.id,
-                    code: req.control_id || 'N/A',
-                    title: req.title || '',
-                    description: req.description || '',
-                    standardName: standardName,
-                    chapter: undefined,
-                    section: req.control_id
-                  });
-                });
-              });
-
-              console.log(`Added ${requirements.length} fallback requirements for ${framework}`);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error adding fallback requirements:', error);
-    }
-  }
 
   /**
    * Get requirement clusters for intelligent grouping
