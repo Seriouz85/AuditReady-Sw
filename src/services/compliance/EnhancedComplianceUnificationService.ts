@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { complianceCacheService } from './ComplianceCacheService';
+import { cleanMarkdownFormatting } from '@/utils/textFormatting';
 
 // Critical compliance details that must be preserved in unified requirements
 interface CriticalComplianceDetail {
@@ -311,7 +312,7 @@ class EnhancedComplianceUnificationService {
 
             // Extract critical details from this requirement
             const criticalDetails = this.extractCriticalDetails(
-              `${req.title} ${req.description || ''} ${req.official_description || ''}`,
+              cleanMarkdownFormatting(`${req.title} ${req.description || ''} ${req.official_description || ''}`),
               req.standard.name,
               req.control_id
             );
@@ -327,7 +328,7 @@ class EnhancedComplianceUnificationService {
             frameworkGroups[standardCode].push({
               code: req.control_id,
               title: req.title,
-              description: req.official_description || req.description || '',
+              description: cleanMarkdownFormatting(req.official_description || req.description || ''),
               criticalDetails: criticalDetails.map(detail => 
                 `${detail.timeframe}: ${detail.action}`
               ).filter(Boolean)

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { complianceEngine } from './ComplianceUnificationEngine';
 import { complianceCacheService } from './ComplianceCacheService';
+import { cleanMarkdownFormatting } from '@/utils/textFormatting';
 
 export interface UnifiedRequirement {
   id: string;
@@ -189,7 +190,7 @@ class ComplianceUnificationService {
           id: mapping.requirement.id,
           code: mapping.requirement.requirement_code,
           title: mapping.requirement.title,
-          description: mapping.requirement.official_description,
+          description: cleanMarkdownFormatting(mapping.requirement.official_description || ''),
           standard: mapping.requirement.standard
         } : undefined
       }));
@@ -368,7 +369,7 @@ class ComplianceUnificationService {
         result[categoryName].push({
           code: mapping.requirement.control_id,
           title: mapping.requirement.title,
-          description: mapping.requirement.audit_ready_guidance || '',
+          description: cleanMarkdownFormatting(mapping.requirement.audit_ready_guidance || ''),
           relevanceLevel: mapping.relevance_level
         });
       }
@@ -445,7 +446,7 @@ class ComplianceUnificationService {
         const reqData = {
           code: mapping.requirement.control_id || 'N/A',
           title: mapping.requirement.title || '',
-          description: mapping.requirement.description || ''
+          description: cleanMarkdownFormatting(mapping.requirement.description || '')
         };
 
         // Map to appropriate framework based on standard name
@@ -458,8 +459,10 @@ class ComplianceUnificationService {
         if (selectedFrameworks.includes('cisControls') && standardName.includes('CIS Controls')) {
           // Filter CIS Controls by specific IG level if provided
           if (cisIGLevel) {
-            const igLevelName = `CIS Controls Implementation Group ${cisIGLevel.toUpperCase().replace('IG', '')} (${cisIGLevel.toUpperCase()})`;
-            if (standardName === igLevelName) {
+            // Fix: Use includes() instead of exact match to handle various naming formats
+            const igLevel = cisIGLevel.toUpperCase().replace('IG', '');
+            if (standardName.includes(`Implementation Group ${igLevel}`) || 
+                standardName.includes(`(IG${igLevel})`)) {
               result[categoryName]?.cisControls.push(reqData);
             }
           } else {

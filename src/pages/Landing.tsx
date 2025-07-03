@@ -1001,17 +1001,6 @@ export default function Landing() {
                 <li><button onClick={() => navigate("/features")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-300 hover:text-slate-100'} text-left`}>Features</button></li>
                 <li><a href="#pricing" className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>Pricing</a></li>
                 <li><button onClick={() => navigate("/security")} className={`${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'} text-left`}>Security</button></li>
-                <li>
-                  <button 
-                    onClick={() => navigate("/test-project")} 
-                    className={`${theme === 'light' ? 'text-blue-600 hover:text-blue-800' : 'text-blue-400 hover:text-blue-200'} text-left font-medium transition-colors flex items-center gap-1`}
-                  >
-                    <span className="inline-flex items-center">
-                      AI Test Project
-                      <Badge variant="outline" className="ml-2 text-xs bg-blue-100 text-blue-700 border-blue-300">NEW</Badge>
-                    </span>
-                  </button>
-                </li>
               </ul>
             </div>
             <div>

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cleanMarkdownFormatting } from '@/utils/textFormatting';
 import { 
   ArrowLeft, 
   Download, 
@@ -226,32 +227,7 @@ export default function ComplianceSimplification() {
           iso27002: selectedFrameworks.iso27002 && mapping.frameworks?.iso27002 ? mapping.frameworks.iso27002 : [],
           nis2: selectedFrameworks.nis2 ? (mapping.frameworks?.nis2 || []) : [],
           gdpr: [], // Never show GDPR in non-GDPR groups
-          cisControls: selectedFrameworks.cisControls && mapping.frameworks?.cisControls ? 
-            mapping.frameworks.cisControls.filter(control => {
-              // Filter CIS controls based on IG level
-              const ig3OnlyControls = [
-                '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
-                '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
-                '15.5', '15.6', '15.7', '16.12', '16.13', '16.14', 
-                '17.9', '18.4', '18.5'
-              ];
-              
-              if (selectedFrameworks.cisControls === 'ig1') {
-                // IG1: Exclude IG3-only controls and assume most advanced controls are IG2+
-                return !ig3OnlyControls.includes(control.code) && 
-                       !control.code.startsWith('13.') && 
-                       !control.code.startsWith('16.') && 
-                       !control.code.startsWith('17.') && 
-                       !control.code.startsWith('18.');
-              } else if (selectedFrameworks.cisControls === 'ig2') {
-                // IG2: Include IG1 + some advanced controls but exclude IG3-only
-                return !ig3OnlyControls.includes(control.code);
-              } else if (selectedFrameworks.cisControls === 'ig3') {
-                // IG3: Include all controls
-                return true;
-              }
-              return false;
-            }) : []
+          cisControls: selectedFrameworks.cisControls && mapping.frameworks?.cisControls ? mapping.frameworks.cisControls : []
         }
       };
       
@@ -582,125 +558,184 @@ export default function ComplianceSimplification() {
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-8">
+          <TabsContent value="overview" className="space-y-6">
             {/* Problem Statement */}
-            <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl">
-              <CardHeader className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-t-2xl">
-                <CardTitle className="flex items-center space-x-3">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <Target className="w-6 h-6" />
+            <Card className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-red-50 via-orange-50 to-amber-50 dark:from-red-950/50 dark:via-orange-950/50 dark:to-amber-950/50 border-b border-red-100 dark:border-red-800/30 pb-4">
+                <CardTitle className="flex items-start space-x-3">
+                  <div className="p-2 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg shadow-md shadow-red-500/20">
+                    <Target className="w-5 h-5 text-white" />
                   </div>
-                  <div>
-                    <h2 className="text-xl font-semibold">The Compliance Complexity Problem</h2>
-                    <p className="text-sm text-white/80 font-normal">Why traditional compliance is overwhelming</p>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">The Compliance Complexity Problem</h2>
+                      <div className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                        <span className="text-xs font-medium text-red-700 dark:text-red-300">CHALLENGE</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Why traditional compliance is overwhelming organizations worldwide</p>
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="text-center flex flex-col min-h-[200px]">
-                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl mb-4">
-                      <BookOpen className="w-12 h-12 text-red-600 mx-auto" />
+              <CardContent className="p-5">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl mb-3 w-fit mx-auto">
+                      <BookOpen className="w-8 h-8 text-red-600 dark:text-red-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Overlapping Requirements</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                    <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-slate-100">Overlapping Requirements</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                       Multiple frameworks often have similar requirements with different wording, creating confusion and redundancy.
                     </p>
-                  </div>
-                  <div className="text-center flex flex-col min-h-[200px]">
-                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl mb-4">
-                      <Users className="w-12 h-12 text-orange-600 mx-auto" />
+                  </motion.div>
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl mb-3 w-fit mx-auto">
+                      <Users className="w-8 h-8 text-orange-600 dark:text-orange-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Implementation Confusion</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                    <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-slate-100">Implementation Confusion</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                       Teams struggle to understand which requirements apply and how to avoid duplicate work across frameworks.
                     </p>
-                  </div>
-                  <div className="text-center flex flex-col min-h-[200px]">
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl mb-4">
-                      <Settings className="w-12 h-12 text-yellow-600 mx-auto" />
+                  </motion.div>
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl mb-3 w-fit mx-auto">
+                      <Settings className="w-8 h-8 text-amber-600 dark:text-amber-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Resource Inefficiency</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                    <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-slate-100">Resource Inefficiency</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                       Organizations waste time and resources implementing the same control multiple times for different frameworks.
                     </p>
-                  </div>
+                  </motion.div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Solution Statement */}
-            <Card className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl">
-              <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-t-2xl">
-                <CardTitle className="flex items-center space-x-3">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <Zap className="w-6 h-6" />
+            <Card className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-green-50 via-emerald-50 to-blue-50 dark:from-green-950/50 dark:via-emerald-950/50 dark:to-blue-950/50 border-b border-green-100 dark:border-green-800/30 pb-4">
+                <CardTitle className="flex items-start justify-between">
+                  <div className="flex items-start space-x-3 flex-1">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg shadow-md shadow-green-500/20">
+                      <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">The AuditReady Solution</h2>
+                        <div className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 rounded-full">
+                          <span className="text-xs font-medium text-green-700 dark:text-green-300">SOLUTION</span>
+                        </div>
+                      </div>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">AI-powered compliance unification that transforms complexity into clarity</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-semibold">The AuditReady Solution</h2>
-                    <p className="text-sm text-white/80 font-normal">AI-powered compliance unification</p>
-                  </div>
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="ml-4"
+                  >
+                    <Button
+                      onClick={() => setActiveTab('mapping')}
+                      className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white shadow-lg shadow-blue-500/25 border-0 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      Unify Frameworks
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </motion.div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="text-center flex flex-col min-h-[200px]">
-                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl mb-4">
-                      <Shield className="w-12 h-12 text-green-600 mx-auto" />
+              <CardContent className="p-5">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl mb-3 w-fit mx-auto">
+                      <Shield className="w-8 h-8 text-green-600 dark:text-green-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Intelligent Unification</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                    <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-slate-100">Intelligent Unification</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                       Our AI transforms {maximumOverviewStats.maxRequirements} scattered requirements from multiple frameworks into just {maximumOverviewStats.unifiedGroups} comprehensive requirement groups, reducing complexity by {maximumOverviewStats.reductionPercentage}%.
                     </p>
-                  </div>
-                  <div className="text-center flex flex-col min-h-[200px]">
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl mb-4">
-                      <CheckCircle className="w-12 h-12 text-blue-600 mx-auto" />
+                  </motion.div>
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl mb-3 w-fit mx-auto">
+                      <CheckCircle className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Complete Coverage</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                    <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-slate-100">Complete Coverage</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                       Every detail from source frameworks is preserved in our unified requirements, ensuring nothing is lost.
                     </p>
-                  </div>
-                  <div className="text-center flex flex-col min-h-[200px]">
-                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl mb-4">
-                      <Target className="w-12 h-12 text-purple-600 mx-auto" />
+                  </motion.div>
+                  <motion.div 
+                    className="text-center"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl mb-3 w-fit mx-auto">
+                      <Target className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Clear Implementation</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
+                    <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-slate-100">Clear Implementation</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                       Plain language descriptions with actionable sub-requirements make implementation straightforward and effective.
                     </p>
-                  </div>
+                  </motion.div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { 
                   value: `${maximumOverviewStats.maxRequirements}→${maximumOverviewStats.unifiedGroups}`, 
                   label: "Requirements Simplified", 
                   desc: `From ${maximumOverviewStats.maxRequirements} scattered requirements to ${maximumOverviewStats.unifiedGroups} unified groups`, 
-                  color: "blue" 
+                  color: "blue",
+                  bgClass: "bg-blue-50 dark:bg-blue-900/20",
+                  textClass: "text-blue-600 dark:text-blue-400"
                 },
                 { 
                   value: `${maximumOverviewStats.reductionPercentage}%`, 
                   label: "Complexity Reduction", 
                   desc: `${maximumOverviewStats.reduction} fewer requirements to manage`, 
-                  color: "green" 
+                  color: "green",
+                  bgClass: "bg-green-50 dark:bg-green-900/20",
+                  textClass: "text-green-600 dark:text-green-400"
                 },
                 { 
                   value: `${maximumOverviewStats.efficiencyRatio}:1`, 
                   label: "Efficiency Ratio", 
                   desc: `${maximumOverviewStats.efficiencyRatio} traditional requirements per 1 unified group`, 
-                  color: "purple" 
+                  color: "purple",
+                  bgClass: "bg-purple-50 dark:bg-purple-900/20",
+                  textClass: "text-purple-600 dark:text-purple-400"
                 },
                 { 
                   value: "100%", 
                   label: "Coverage Maintained", 
                   desc: "All original requirements preserved", 
-                  color: "orange" 
+                  color: "emerald",
+                  bgClass: "bg-emerald-50 dark:bg-emerald-900/20",
+                  textClass: "text-emerald-600 dark:text-emerald-400"
                 }
               ].map((stat, index) => (
                 <motion.div
@@ -708,20 +743,19 @@ export default function ComplianceSimplification() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -4, scale: 1.02 }}
                   className="flex"
                 >
-                  <Card className="text-center border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow rounded-2xl flex-1">
-                    <CardContent className="p-6 flex flex-col min-h-[160px] h-[160px]">
-                      <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent h-12 flex items-center justify-center">
+                  <Card className={`text-center border border-slate-200 dark:border-slate-700 rounded-xl ${stat.bgClass} hover:shadow-md transition-all duration-200 flex-1`}>
+                    <CardContent className="p-4">
+                      <div className={`text-2xl font-bold ${stat.textClass} mb-2`}>
                         {stat.value}
                       </div>
-                      <div className="font-semibold text-gray-900 dark:text-white h-6 flex items-center justify-center mt-2">
+                      <div className="font-medium text-slate-900 dark:text-slate-100 text-sm mb-2">
                         {stat.label}
                       </div>
-                      <div className="flex-1 flex items-start justify-center pt-3">
-                        <div className="text-xs text-gray-600 dark:text-gray-400 leading-tight text-center px-1">
-                          {stat.desc}
-                        </div>
+                      <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        {stat.desc}
                       </div>
                     </CardContent>
                   </Card>
@@ -808,64 +842,6 @@ export default function ComplianceSimplification() {
                 </CardHeader>
                 
                 <CardContent className="space-y-8">
-                  {/* Industry Sector Selection */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                      <Building2 className="w-5 h-5 text-blue-600" />
-                      Industry Sector
-                      <Badge variant="outline" className="ml-2 text-xs">
-                        Smart Filtering
-                      </Badge>
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Select your industry sector to get tailored requirements and sector-specific guidance
-                    </p>
-                    <div className="max-w-md">
-                      <Select value={selectedIndustrySector || 'none'} onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select your industry sector" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                              General / All Industries
-                            </div>
-                          </SelectItem>
-                          {industrySectors?.map((sector) => (
-                            <SelectItem key={sector.id} value={sector.id}>
-                              <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${
-                                  sector.nis2Essential ? 'bg-red-500' : 
-                                  sector.nis2Important ? 'bg-orange-500' : 
-                                  'bg-green-500'
-                                }`}></div>
-                                <span>{sector.name}</span>
-                                {sector.nis2Essential && (
-                                  <Badge variant="destructive" className="text-xs ml-1">
-                                    NIS2 Essential
-                                  </Badge>
-                                )}
-                                {sector.nis2Important && !sector.nis2Essential && (
-                                  <Badge variant="secondary" className="text-xs ml-1">
-                                    NIS2 Important
-                                  </Badge>
-                                )}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {selectedIndustrySector && industrySectors && (
-                        <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                          <p className="text-sm text-blue-800 dark:text-blue-200">
-                            {industrySectors.find(s => s.id === selectedIndustrySector)?.description}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
                   {/* Framework Cards Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
                     
@@ -1113,6 +1089,69 @@ export default function ComplianceSimplification() {
                           <CheckCircle className="w-4 h-4 text-white" />
                         </motion.div>
                       )}
+                      
+                      {/* Industry Sector Selection - Only show when NIS2 is selected */}
+                      {frameworksSelected.nis2 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-4 pt-4 border-t border-indigo-200 dark:border-indigo-700"
+                        >
+                          <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-indigo-700 dark:text-indigo-300">
+                            <Building2 className="w-4 h-4" />
+                            Industry Sector
+                            <Badge variant="outline" className="text-xs border-indigo-300 text-indigo-600">
+                              NIS2 Filtering
+                            </Badge>
+                          </h4>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                            Select your sector for NIS2-specific requirements
+                          </p>
+                          <Select value={selectedIndustrySector || 'none'} onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}>
+                            <SelectTrigger className="w-full text-xs h-8">
+                              <SelectValue placeholder="Select industry sector" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                  General / All Industries
+                                </div>
+                              </SelectItem>
+                              {industrySectors?.map((sector) => (
+                                <SelectItem key={sector.id} value={sector.id}>
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-2 h-2 rounded-full ${
+                                      sector.nis2Essential ? 'bg-red-500' : 
+                                      sector.nis2Important ? 'bg-orange-500' : 
+                                      'bg-green-500'
+                                    }`}></div>
+                                    <span className="text-xs">{sector.name}</span>
+                                    {sector.nis2Essential && (
+                                      <Badge variant="destructive" className="text-xs ml-1 px-1 py-0">
+                                        Essential
+                                      </Badge>
+                                    )}
+                                    {sector.nis2Important && !sector.nis2Essential && (
+                                      <Badge variant="secondary" className="text-xs ml-1 px-1 py-0">
+                                        Important
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {selectedIndustrySector && industrySectors && (
+                            <div className="mt-2 p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded border border-indigo-200 dark:border-indigo-700">
+                              <p className="text-xs text-indigo-800 dark:text-indigo-200">
+                                {industrySectors.find(s => s.id === selectedIndustrySector)?.description}
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
                     </motion.div>
                   </div>
 
@@ -1268,7 +1307,7 @@ export default function ComplianceSimplification() {
                                   <div key={i} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-orange-200 dark:border-orange-700">
                                     <div className="font-medium text-sm text-orange-900 dark:text-orange-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">{req.title}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">{req.description}</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">{cleanMarkdownFormatting(req.description)}</div>
                                   </div>
                                 ))}
                               </div>
@@ -1345,6 +1384,9 @@ export default function ComplianceSimplification() {
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-indigo-200 dark:border-indigo-700">
                                     <div className="font-medium text-sm text-indigo-900 dark:text-indigo-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                    {req.description && (
+                                      <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">{cleanMarkdownFormatting(req.description)}</div>
+                                    )}
                                   </div>
                                 ))}
                               </div>
