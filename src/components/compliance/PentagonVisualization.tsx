@@ -321,14 +321,22 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
             </feMerge>
           </filter>
           
-          {/* Pentagon glow effect for AuditReady Unified hover */}
-          <filter id="pentagonGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-            <feMerge> 
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/> 
+          {/* Subtle pentagon glow effect for AuditReady Unified hover */}
+          <filter id="pentagonGlow" x="-10%" y="-10%" width="120%" height="120%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="softGlow"/>
+            <feColorMatrix in="softGlow" mode="matrix" values="0 0 0 0 0.31  0 0 0 0 0.27  0 0 0 0 0.89  0 0 0 0.8 0" result="coloredGlow"/>
+            <feMerge>
+              <feMergeNode in="coloredGlow"/>
+              <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
+          
+          {/* Ultra-subtle unified gradient for hover */}
+          <radialGradient id="unifiedHoverGradient" cx="50%" cy="50%" r="80%">
+            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="#7c3aed" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.2" />
+          </radialGradient>
         </defs>
 
         {/* Pentagon base */}
@@ -418,26 +426,24 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
         {/* AR Unified overlay - premium security coverage */}
         <motion.polygon
           points={unifiedZonePoints}
-          fill="url(#unifiedGradient)"
+          fill={hoveredUnified ? "url(#unifiedHoverGradient)" : "url(#unifiedGradient)"}
           stroke="#4f46e5"
-          strokeWidth={hoveredUnified ? "6" : "3"}
-          strokeDasharray="20,8"
-          filter={hoveredUnified ? "url(#pentagonGlow)" : "url(#glow)"}
+          strokeWidth={hoveredUnified ? "4" : "2"}
+          strokeDasharray={hoveredUnified ? "0" : "20,8"}
+          filter={hoveredUnified ? "url(#pentagonGlow)" : "none"}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ 
-            opacity: 1, 
-            scale: hoveredUnified ? 1.02 : 1,
-            // Subtle pulsing to show unified coverage, enhanced when hovered
-            strokeOpacity: hoveredUnified ? [0.9, 1, 0.9] : [0.8, 1, 0.8]
+            opacity: hoveredUnified ? 0.9 : 0.7, 
+            scale: hoveredUnified ? 1.01 : 1,
+            strokeOpacity: hoveredUnified ? 1 : 0.6
           }}
           transition={{ 
-            duration: hoveredUnified ? 0.3 : 1.2, 
+            duration: 0.3,
             delay: hoveredUnified ? 0 : 1,
-            strokeOpacity: { duration: hoveredUnified ? 1 : 2, repeat: Infinity, ease: "easeInOut" }
+            ease: "easeInOut"
           }}
           style={{
-            transformOrigin: 'center',
-            filter: hoveredUnified ? 'drop-shadow(0 0 20px rgba(79, 70, 229, 0.6))' : 'none'
+            transformOrigin: 'center'
           }}
         />
 

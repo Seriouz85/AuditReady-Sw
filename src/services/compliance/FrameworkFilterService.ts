@@ -52,6 +52,9 @@ export class FrameworkFilterService {
       .map(subReq => this.filterSubRequirement(subReq, selectedFrameworks))
       .filter(subReq => subReq.length > 0); // Remove empty requirements after filtering
     
+    // Add incident management guidance if needed
+    filteredSubRequirements = this.enhanceIncidentManagement(filteredSubRequirements, selectedFrameworks, unifiedRequirement.title);
+    
     // Prioritize foundational requirements for ISO 27001
     filteredSubRequirements = this.prioritizeFoundationalRequirements(filteredSubRequirements, selectedFrameworks);
     
@@ -62,6 +65,96 @@ export class FrameworkFilterService {
     };
   }
   
+  /**
+   * Enhance incident management requirements with comprehensive guidance
+   */
+  private static enhanceIncidentManagement(
+    subRequirements: string[], 
+    selectedFrameworks: FrameworkSelection, 
+    title: string
+  ): string[] {
+    // Only enhance incident management related requirements
+    if (!title.toLowerCase().includes('incident')) {
+      return subRequirements;
+    }
+    
+    // Check if we need to add comprehensive incident reporting guidance
+    const needsIncidentGuidance = (selectedFrameworks.gdpr || selectedFrameworks.nis2) && 
+      !subRequirements.some(req => req.includes('reporting obligations') && req.includes('authority'));
+    
+    if (needsIncidentGuidance) {
+      let guidanceText = '';
+      
+      if (selectedFrameworks.gdpr && selectedFrameworks.nis2) {
+        // Both GDPR and NIS2 selected - comprehensive guidance
+        guidanceText = `REGULATORY INCIDENT REPORTING REQUIREMENTS: When security incidents occur, especially those involving personal data or critical services, you have specific obligations to contact relevant authorities. This may seem overwhelming at first, but with proper preparation and understanding, these requirements become manageable. 
+
+The key is to understand that different types of incidents may require reporting to different authorities depending on your sector and the nature of the incident:
+
+🏛️ **Authority Reporting Process:**
+You are required to report significant cybersecurity incidents to the CSIRT (Computer Security Incident Response Team) authority or supervisory authority responsible for your sector. Additionally, if personal data is involved, you must also notify your national data protection authority.
+
+📋 **Three-Step Reporting Timeline:**
+• **Early warning within 24 hours** (NIS2 requirement) - Initial notification of significant incidents
+• **Incident report within 72 hours** (Both NIS2 detailed report and GDPR breach notification) - Comprehensive incident details
+• **Final report within 1 month** (NIS2 requirement) - Complete analysis and remediation steps
+
+💡 **Important Dual Obligations:** If an incident affects both critical services AND personal data, you'll need to report to both your sector's supervisory authority (for NIS2 compliance) and your national data protection authority (for GDPR compliance). The good news is that many authorities coordinate with each other, and having a single, well-documented incident response plan can help you meet both obligations efficiently.
+
+🛠️ **Practical Preparation Tips:** 
+- Maintain an updated contact list of relevant authorities for your sector
+- Prepare incident report templates that cover both NIS2 and GDPR requirements
+- Establish clear internal escalation procedures to meet tight deadlines
+- Consider appointing a Data Protection Officer (DPO) who can help coordinate reporting obligations`;
+      
+      } else if (selectedFrameworks.gdpr) {
+        // Only GDPR selected
+        guidanceText = `GDPR INCIDENT REPORTING REQUIREMENTS: When incidents involve personal data breaches, you have specific obligations under GDPR Article 33 to notify your national data protection authority. Don't worry - while the 72-hour deadline may seem daunting, with proper preparation it becomes quite manageable.
+
+🏛️ **Authority Notification:**
+You must report personal data breaches to your national data protection authority (such as the Swedish Authority for Privacy Protection - IMY in Sweden) when the breach is likely to result in a risk to individuals' rights and freedoms.
+
+📋 **GDPR Reporting Timeline:**
+• **Breach notification within 72 hours** of becoming aware of the breach
+• **Individual notification without undue delay** if high risk to rights and freedoms
+
+💡 **What Constitutes a Reportable Breach:** Not every incident requires reporting - only those likely to result in risk to individuals. This includes unauthorized access, accidental disclosure, or loss of personal data that could harm individuals.
+
+🛠️ **Practical Preparation:**
+- Keep contact details for your data protection authority readily available
+- Prepare breach notification templates following GDPR requirements
+- Train your team to recognize and escalate potential data breaches quickly
+- Consider appointing a Data Protection Officer (DPO) to help manage compliance`;
+      
+      } else if (selectedFrameworks.nis2) {
+        // Only NIS2 selected
+        guidanceText = `NIS2 INCIDENT REPORTING REQUIREMENTS: As an entity covered by NIS2, you have obligations to report significant cybersecurity incidents to your national CSIRT or sectoral authority. The process is designed to help improve overall cybersecurity resilience, and with proper preparation, meeting these requirements becomes routine.
+
+🏛️ **Authority Reporting:**
+You are required to report significant cybersecurity incidents to the CSIRT authority or supervisory authority responsible for your sector. Each EU member state has designated authorities for different sectors.
+
+📋 **NIS2 Reporting Timeline:**
+• **Early warning within 24 hours** - Initial notification of significant incidents
+• **Incident report within 72 hours** - Detailed incident information
+• **Final report within 1 month** - Complete analysis, impact assessment, and remediation measures
+
+💡 **What Requires Reporting:** Significant incidents that substantially impact your service provision, affect other EU countries, or could have broader implications for cybersecurity need to be reported.
+
+🛠️ **Practical Steps:**
+- Identify and maintain contact information for your sector's supervisory authority
+- Establish incident classification procedures to identify reportable incidents
+- Prepare incident reporting templates that include required NIS2 information
+- Implement monitoring systems to detect incidents early and meet tight deadlines`;
+      }
+      
+      if (guidanceText) {
+        subRequirements.push(guidanceText);
+      }
+    }
+    
+    return subRequirements;
+  }
+
   /**
    * Improve deadline explanations to be more user-friendly
    */

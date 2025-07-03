@@ -28,11 +28,18 @@ import { useComplianceMappingData } from '@/services/compliance/ComplianceUnific
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { proGradeEngine } from '@/services/compliance/ProGradeComplianceEngine';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
+import { useFrameworkCounts, useCISControlsCount } from '@/hooks/useFrameworkCounts';
+import { useQueryClient } from '@tanstack/react-query';
+import { FrameworkFilterService } from '@/services/compliance/FrameworkFilterService';
 // Removed xlsx import - will use CSV export instead for better compatibility
 
 export default function ComplianceSimplification() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedMapping, setSelectedMapping] = useState<string | null>(null);
+  
+  // Get dynamic framework counts from database
+  const { data: frameworkCounts, isLoading: isLoadingCounts } = useFrameworkCounts();
   const [activeTab, setActiveTab] = useState('overview');
   const [filterFramework, setFilterFramework] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
@@ -69,15 +76,28 @@ export default function ComplianceSimplification() {
   const frameworksForHook = {
     iso27001: selectedFrameworks.iso27001,
     iso27002: selectedFrameworks.iso27002,
-    cisControls: selectedFrameworks.cisControls !== null,
+    cisControls: selectedFrameworks.cisControls, // Pass the actual IG level ('ig1', 'ig2', 'ig3') or null
     gdpr: selectedFrameworks.gdpr,
     nis2: selectedFrameworks.nis2
   };
-  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook);
   
+  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook);
   
   // Use database data
   const complianceMappingData = fetchedComplianceMapping || [];
+  
+  // Fetch ALL frameworks data for maximum statistics calculation (overview tab)
+  const allFrameworksSelection = {
+    iso27001: true,
+    iso27002: true,
+    cisControls: 'ig3', // Maximum coverage with IG3
+    gdpr: true,
+    nis2: true
+  };
+  
+  const { data: maxComplianceMapping } = useComplianceMappingData(allFrameworksSelection);
+  
+  
   
   // Handle framework selection
   const handleFrameworkToggle = (framework: string, value: any) => {
@@ -86,15 +106,20 @@ export default function ComplianceSimplification() {
   
   // Handle generation button
   const handleGenerate = () => {
+    console.log('Generate button clicked', { frameworksSelected, selectedFrameworks });
     setIsGenerating(true);
     setShowGeneration(true);
     
-    // Immediately update the frameworks to trigger data refetch
-    setSelectedFrameworks(frameworksSelected);
+    // Force update the frameworks to trigger data refetch
+    setSelectedFrameworks({ ...frameworksSelected });
+    
+    // Force invalidate React Query cache to ensure fresh data
+    queryClient.invalidateQueries(['compliance-mapping-data']);
     
     // Simulate AI processing time
     setTimeout(() => {
       setIsGenerating(false);
+      console.log('Generation completed, staying on current tab');
       
       // Hide generation animation after showing results
       setTimeout(() => {
@@ -116,7 +141,7 @@ export default function ComplianceSimplification() {
       'Unified Description'
     ];
 
-    const rows = (complianceMappingData || []).flatMap(mapping => 
+    const rows = (filteredUnifiedMappings || []).flatMap(mapping => 
       (mapping.auditReadyUnified?.subRequirements || []).map((subReq) => [
         mapping.category,
         mapping.auditReadyUnified?.title || '',
@@ -149,56 +174,40 @@ export default function ComplianceSimplification() {
     document.body.removeChild(link);
   };
 
-  // Create numbered category options for the filter dropdown
-  const categoryOptions = useMemo(() => {
-    // Apply same dynamic numbering logic as filteredMappings
-    const nonGdprGroups = (complianceMappingData || []).filter(mapping => mapping.id !== 'gdpr-unified');
-    const gdprGroups = (complianceMappingData || []).filter(mapping => mapping.id === 'gdpr-unified');
-    
-    // Number non-GDPR groups sequentially
-    const numberedNonGdpr = nonGdprGroups.map((mapping, index) => {
-      const number = String(index + 1).padStart(2, '0');
-      return {
-        ...mapping,
-        category: mapping.category.startsWith(number + '.') ? mapping.category : `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
-      };
-    });
-    
-    // Number GDPR groups to come after non-GDPR groups
-    const numberedGdpr = gdprGroups.map((mapping) => {
-      const number = String(nonGdprGroups.length + 1).padStart(2, '0');
-      return {
-        ...mapping,
-        category: `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
-      };
-    });
-    
-    return [...numberedNonGdpr, ...numberedGdpr];
-  }, [complianceMappingData]);
-
   const filteredMappings = useMemo(() => {
     let filtered = complianceMappingData || [];
     
     // First, filter to show only GDPR group when GDPR is selected, or non-GDPR groups when other frameworks are selected
     if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls && !selectedFrameworks.nis2) {
       // GDPR only - show only the unified GDPR group
-      filtered = filtered.filter(mapping => mapping.id === 'gdpr-unified');
+      filtered = filtered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
     } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
       // Other frameworks without GDPR - show only non-GDPR groups
-      filtered = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
+      filtered = filtered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
     } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
       // Mixed selection - show all relevant groups
       filtered = complianceMappingData || [];
     } else {
       // Nothing selected - show non-GDPR groups by default
-      filtered = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
+      filtered = filtered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
     }
     
     // Filter by framework selection
     filtered = filtered.map(mapping => {
       // For GDPR group, only show GDPR frameworks
-      if (mapping.id === 'gdpr-unified') {
-        return selectedFrameworks.gdpr ? mapping : null;
+      if (mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948') {
+        if (!selectedFrameworks.gdpr) return null;
+        
+        return {
+          ...mapping,
+          frameworks: {
+            iso27001: [],
+            iso27002: [],
+            cisControls: [],
+            nis2: [],
+            gdpr: mapping.frameworks?.gdpr || []
+          }
+        };
       }
       
       // For non-GDPR groups, filter based on selected frameworks
@@ -271,8 +280,8 @@ export default function ComplianceSimplification() {
     }
     
     // Apply dynamic numbering: GDPR always comes last
-    const nonGdprGroups = filtered.filter(mapping => mapping.id !== 'gdpr-unified');
-    const gdprGroups = filtered.filter(mapping => mapping.id === 'gdpr-unified');
+    const nonGdprGroups = filtered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
+    const gdprGroups = filtered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
     
     // Number non-GDPR groups sequentially
     const numberedNonGdpr = nonGdprGroups.map((mapping, index) => {
@@ -294,6 +303,181 @@ export default function ComplianceSimplification() {
     
     return [...numberedNonGdpr, ...numberedGdpr];
   }, [selectedFrameworks, filterFramework, filterCategory, complianceMappingData]);
+
+  // Create category options that match exactly what's displayed in filteredMappings
+  const categoryOptions = useMemo(() => {
+    // Use the SAME data that's actually displayed, but without the category filter applied
+    let baseFiltered = complianceMappingData || [];
+    
+    // Apply the SAME framework filtering logic as filteredMappings
+    if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls && !selectedFrameworks.nis2) {
+      baseFiltered = baseFiltered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
+    } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
+      baseFiltered = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
+    } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
+      baseFiltered = complianceMappingData || [];
+    } else {
+      baseFiltered = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
+    }
+    
+    // Apply the SAME framework content filtering
+    baseFiltered = baseFiltered.map(mapping => {
+      if (mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948') {
+        if (!selectedFrameworks.gdpr) return null;
+        return {
+          ...mapping,
+          frameworks: {
+            iso27001: [],
+            iso27002: [],
+            cisControls: [],
+            nis2: [],
+            gdpr: mapping.frameworks?.gdpr || []
+          }
+        };
+      }
+      
+      const newMapping = {
+        ...mapping,
+        frameworks: {
+          iso27001: selectedFrameworks.iso27001 && mapping.frameworks?.iso27001 ? mapping.frameworks.iso27001 : [],
+          iso27002: selectedFrameworks.iso27002 && mapping.frameworks?.iso27002 ? mapping.frameworks.iso27002 : [],
+          nis2: selectedFrameworks.nis2 ? (mapping.frameworks?.nis2 || []) : [],
+          gdpr: [],
+          cisControls: selectedFrameworks.cisControls && mapping.frameworks?.cisControls ? 
+            mapping.frameworks.cisControls.filter(control => {
+              const ig3OnlyControls = [
+                '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
+                '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
+                '15.5', '15.6', '15.7', '16.12', '16.13', '16.14', 
+                '17.9', '18.4', '18.5'
+              ];
+              
+              if (selectedFrameworks.cisControls === 'ig1') {
+                return !ig3OnlyControls.includes(control.code) && 
+                       !control.code.startsWith('13.') && 
+                       !control.code.startsWith('16.') && 
+                       !control.code.startsWith('17.') && 
+                       !control.code.startsWith('18.');
+              } else if (selectedFrameworks.cisControls === 'ig2') {
+                return !ig3OnlyControls.includes(control.code);
+              } else if (selectedFrameworks.cisControls === 'ig3') {
+                return true;
+              }
+              return false;
+            }) : []
+        }
+      };
+      
+      const hasControls = (newMapping.frameworks?.iso27001?.length || 0) > 0 || 
+                         (newMapping.frameworks?.iso27002?.length || 0) > 0 || 
+                         (newMapping.frameworks?.cisControls?.length || 0) > 0 ||
+                         (newMapping.frameworks?.gdpr?.length || 0) > 0;
+      
+      return hasControls ? newMapping : null;
+    }).filter(mapping => mapping !== null);
+    
+    // Apply SAME framework filter
+    if (filterFramework !== 'all') {
+      baseFiltered = baseFiltered.filter(mapping => {
+        switch (filterFramework) {
+          case 'iso27001':
+            return (mapping.frameworks?.iso27001?.length || 0) > 0;
+          case 'iso27002':
+            return (mapping.frameworks?.iso27002?.length || 0) > 0;
+          case 'cis':
+            return (mapping.frameworks?.cisControls?.length || 0) > 0;
+          case 'gdpr':
+            return (mapping.frameworks.gdpr?.length || 0) > 0;
+          default:
+            return true;
+        }
+      });
+    }
+    
+    // Apply the SAME numbering logic as filteredMappings
+    const nonGdprGroups = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
+    const gdprGroups = baseFiltered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
+    
+    const numberedNonGdpr = nonGdprGroups.map((mapping, index) => {
+      const number = String(index + 1).padStart(2, '0');
+      return {
+        ...mapping,
+        category: mapping.category.startsWith(number + '.') ? mapping.category : `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
+      };
+    });
+    
+    const numberedGdpr = gdprGroups.map((mapping) => {
+      const number = String(nonGdprGroups.length + 1).padStart(2, '0');
+      return {
+        ...mapping,
+        category: `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
+      };
+    });
+    
+    return [...numberedNonGdpr, ...numberedGdpr];
+  }, [selectedFrameworks, filterFramework, complianceMappingData]); // Note: deliberately excluding filterCategory
+
+  // Create filtered unified requirements for the unified tab (removes unselected framework references)
+  const filteredUnifiedMappings = useMemo(() => {
+    return filteredMappings.map(mapping => ({
+      ...mapping,
+      auditReadyUnified: FrameworkFilterService.filterUnifiedRequirement(
+        mapping.auditReadyUnified,
+        selectedFrameworks
+      )
+    }));
+  }, [filteredMappings, selectedFrameworks]);
+
+  // Calculate MAXIMUM statistics for overview (ALL frameworks selected)
+  const maximumOverviewStats = useMemo(() => {
+    if (!maxComplianceMapping || maxComplianceMapping.length === 0) {
+      return {
+        maxRequirements: 310, // Actual maximum from database
+        unifiedGroups: 21,
+        reduction: 289,
+        reductionPercentage: '93.2',
+        efficiencyRatio: 15
+      };
+    }
+    
+    // Calculate with ALL frameworks selected
+    const allFrameworksData = maxComplianceMapping || [];
+    
+    // Filter to ensure we have all groups (including GDPR)
+    const processedData = allFrameworksData.filter(mapping => {
+      const hasAnyFramework = 
+        (mapping.frameworks?.iso27001?.length || 0) > 0 ||
+        (mapping.frameworks?.iso27002?.length || 0) > 0 ||
+        (mapping.frameworks?.cisControls?.length || 0) > 0 ||
+        (mapping.frameworks?.gdpr?.length || 0) > 0 ||
+        (mapping.frameworks?.nis2?.length || 0) > 0;
+      return hasAnyFramework;
+    });
+    
+    // Calculate total requirements across ALL frameworks
+    const totalRequirements = processedData.reduce((total, mapping) => {
+      const iso27001Count = mapping.frameworks?.iso27001?.length || 0;
+      const iso27002Count = mapping.frameworks?.iso27002?.length || 0;
+      const cisControlsCount = mapping.frameworks?.cisControls?.length || 0;
+      const gdprCount = mapping.frameworks?.gdpr?.length || 0;
+      const nis2Count = mapping.frameworks?.nis2?.length || 0;
+      
+      return total + iso27001Count + iso27002Count + cisControlsCount + gdprCount + nis2Count;
+    }, 0);
+    
+    const unifiedGroups = processedData.length;
+    const reduction = totalRequirements - unifiedGroups;
+    const reductionPercentage = totalRequirements > 0 ? ((reduction / totalRequirements) * 100).toFixed(1) : '0.0';
+    const efficiencyRatio = unifiedGroups > 0 ? Math.round(totalRequirements / unifiedGroups) : 0;
+    
+    return {
+      maxRequirements: totalRequirements,
+      unifiedGroups,
+      reduction,
+      reductionPercentage,
+      efficiencyRatio
+    };
+  }, [maxComplianceMapping]);
 
   // Calculate dynamic statistics based on selected frameworks
   const dynamicOverviewStats = useMemo(() => {
@@ -326,7 +510,7 @@ export default function ComplianceSimplification() {
   }, [filteredMappings]);
 
   // Show enhanced AI loading state while fetching data
-  if (isLoadingMappings) {
+  if (isLoadingMappings || isLoadingCounts) {
     return <AILoadingAnimation />;
   }
 
@@ -458,7 +642,7 @@ export default function ComplianceSimplification() {
                     </div>
                     <h3 className="text-lg font-semibold mb-2 h-14 flex items-center justify-center">Intelligent Unification</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 flex items-center justify-center px-2">
-                      Our AI transforms {dynamicOverviewStats.maxRequirements} scattered requirements from multiple frameworks into just {dynamicOverviewStats.unifiedGroups} comprehensive requirement groups, reducing complexity by {dynamicOverviewStats.reductionPercentage}%.
+                      Our AI transforms {maximumOverviewStats.maxRequirements} scattered requirements from multiple frameworks into just {maximumOverviewStats.unifiedGroups} comprehensive requirement groups, reducing complexity by {maximumOverviewStats.reductionPercentage}%.
                     </p>
                   </div>
                   <div className="text-center flex flex-col min-h-[200px]">
@@ -487,21 +671,21 @@ export default function ComplianceSimplification() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[
                 { 
-                  value: `${dynamicOverviewStats.maxRequirements}→${dynamicOverviewStats.unifiedGroups}`, 
+                  value: `${maximumOverviewStats.maxRequirements}→${maximumOverviewStats.unifiedGroups}`, 
                   label: "Requirements Simplified", 
-                  desc: `From ${dynamicOverviewStats.maxRequirements} scattered requirements to ${dynamicOverviewStats.unifiedGroups} unified groups`, 
+                  desc: `From ${maximumOverviewStats.maxRequirements} scattered requirements to ${maximumOverviewStats.unifiedGroups} unified groups`, 
                   color: "blue" 
                 },
                 { 
-                  value: `${dynamicOverviewStats.reductionPercentage}%`, 
+                  value: `${maximumOverviewStats.reductionPercentage}%`, 
                   label: "Complexity Reduction", 
-                  desc: `${dynamicOverviewStats.reduction} fewer requirements to manage`, 
+                  desc: `${maximumOverviewStats.reduction} fewer requirements to manage`, 
                   color: "green" 
                 },
                 { 
-                  value: `${dynamicOverviewStats.efficiencyRatio}:1`, 
+                  value: `${maximumOverviewStats.efficiencyRatio}:1`, 
                   label: "Efficiency Ratio", 
-                  desc: `${dynamicOverviewStats.efficiencyRatio} traditional requirements per 1 unified group`, 
+                  desc: `${maximumOverviewStats.efficiencyRatio} traditional requirements per 1 unified group`, 
                   color: "purple" 
                 },
                 { 
@@ -647,7 +831,7 @@ export default function ComplianceSimplification() {
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">ISO 27001</h3>
                           <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">Info Security Management</p>
                           <p className="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">
-                            {complianceMappingData.reduce((total, mapping) => total + (mapping.frameworks?.iso27001?.length || 0), 0)} requirements
+                            {frameworkCounts?.iso27001 || 24} requirements
                           </p>
                         </div>
                       </div>
@@ -675,8 +859,8 @@ export default function ComplianceSimplification() {
                     >
                       {/* Selected Badge at Top */}
                       {frameworksSelected.iso27002 && (
-                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
-                          <Badge className="bg-green-500 text-white px-2 py-1 text-xs">
+                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-green-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
                           </Badge>
                         </div>
@@ -690,7 +874,7 @@ export default function ComplianceSimplification() {
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">ISO 27002</h3>
                           <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">Information Security Controls</p>
                           <p className="text-xs text-green-600 dark:text-green-400 font-medium text-center">
-                            {complianceMappingData.reduce((total, mapping) => total + (mapping.frameworks?.iso27002?.length || 0), 0)} requirements
+                            {frameworkCounts?.iso27002 || 93} requirements
                           </p>
                         </div>
                       </div>
@@ -708,30 +892,45 @@ export default function ComplianceSimplification() {
                     {/* CIS Controls Card */}
                     <motion.div
                       whileHover={{ scale: 1.02 }}
-                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 min-h-[160px] flex flex-col ${
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
                         frameworksSelected.cisControls
                           ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg shadow-purple-500/20'
-                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-purple-300'
                       }`}
+                      onClick={(e) => {
+                        // If clicking on the card background (not on IG buttons), deselect CIS Controls
+                        if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.space-y-1') === null) {
+                          handleFrameworkToggle('cisControls', null);
+                        }
+                      }}
                     >
                       {/* Selected Badge at Top */}
                       {frameworksSelected.cisControls && (
-                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
-                          <Badge className="bg-purple-500 text-white px-2 py-1 text-xs">
+                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-purple-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
                           </Badge>
                         </div>
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-1 rounded-full ${frameworksSelected.cisControls ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Settings className={`w-3 h-3 ${frameworksSelected.cisControls ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected.cisControls ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Settings className={`w-5 h-5 ${frameworksSelected.cisControls ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
-                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">CIS Controls</h3>
-                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">Cybersecurity Best Practices</p>
-                          <p className="text-[9px] text-purple-600 dark:text-purple-400 font-medium text-center">
-                            {complianceMappingData.reduce((total, mapping) => total + (mapping.frameworks?.cisControls?.length || 0), 0)} requirements
+                          <h3 className="font-semibold text-sm h-5 flex items-center justify-center">CIS Controls</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">Cybersecurity Best Practices</p>
+                          <p className="text-xs text-purple-600 dark:text-purple-400 font-medium text-center">
+                            {(() => {
+                              const igLevel = frameworksSelected.cisControls;
+                              if (!frameworkCounts || isLoadingCounts) {
+                                return igLevel === 'ig1' ? 36 : igLevel === 'ig2' ? 82 : 155;
+                              }
+                              return igLevel === 'ig1' ? (frameworkCounts.cisIG1 || 36) : 
+                                     igLevel === 'ig2' ? (frameworkCounts.cisIG2 || 82) : 
+                                     (frameworkCounts.cisIG3 || 155);
+                            })()} requirements
                           </p>
                         </div>
                         
@@ -777,22 +976,22 @@ export default function ComplianceSimplification() {
                     >
                       {/* Selected Badge at Top */}
                       {frameworksSelected.gdpr && (
-                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
-                          <Badge className="bg-orange-500 text-white px-2 py-1 text-xs">
+                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-orange-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
                           </Badge>
                         </div>
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-1 rounded-full ${frameworksSelected.gdpr ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <BookOpen className={`w-3 h-3 ${frameworksSelected.gdpr ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected.gdpr ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <BookOpen className={`w-5 h-5 ${frameworksSelected.gdpr ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
-                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">GDPR</h3>
-                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">EU Data Protection Regulation</p>
-                          <p className="text-[9px] text-orange-600 dark:text-orange-400 font-medium text-center">
-                            {complianceMappingData.reduce((total, mapping) => total + (mapping.frameworks?.gdpr?.length || 0), 0)} requirements
+                          <h3 className="font-semibold text-sm h-5 flex items-center justify-center">GDPR</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">EU Data Protection Regulation</p>
+                          <p className="text-xs text-orange-600 dark:text-orange-400 font-medium text-center">
+                            {frameworkCounts?.gdpr || 25} requirements
                           </p>
                         </div>
                       </div>
@@ -820,22 +1019,22 @@ export default function ComplianceSimplification() {
                     >
                       {/* Selected Badge at Top */}
                       {frameworksSelected.nis2 && (
-                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
-                          <Badge className="bg-indigo-500 text-white px-2 py-1 text-xs">
+                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-indigo-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
                           </Badge>
                         </div>
                       )}
                       
-                      <div className="flex flex-col items-center text-center space-y-2 flex-1 pt-4">
-                        <div className={`p-1 rounded-full ${frameworksSelected.nis2 ? 'bg-indigo-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Shield className={`w-3 h-3 ${frameworksSelected.nis2 ? 'text-white' : 'text-gray-600'}`} />
+                      <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
+                        <div className={`p-2 rounded-full ${frameworksSelected.nis2 ? 'bg-indigo-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-5 h-5 ${frameworksSelected.nis2 ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
-                          <h3 className="font-semibold text-xs h-4 flex items-center justify-center">NIS2</h3>
-                          <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-tight h-4 flex items-center justify-center px-1">EU Cybersecurity Directive</p>
-                          <p className="text-[9px] text-indigo-600 dark:text-indigo-400 font-medium text-center">
-                            {complianceMappingData.reduce((total, mapping) => total + (mapping.frameworks?.nis2?.length || 0), 0)} requirements
+                          <h3 className="font-semibold text-sm h-5 flex items-center justify-center">NIS2</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">EU Cybersecurity Directive</p>
+                          <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium text-center">
+                            {frameworkCounts?.nis2 || 16} requirements
                           </p>
                         </div>
                       </div>
@@ -990,7 +1189,7 @@ export default function ComplianceSimplification() {
                       </CardHeader>
                       <CardContent className="p-0">
                         {/* Framework Grid - Different layout for GDPR vs other frameworks */}
-                        {mapping.id === 'gdpr-unified' ? (
+                        {mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948' ? (
                           /* GDPR-only layout */
                           <div className="border-b border-slate-200 dark:border-slate-700">
                             <div className="p-4 sm:p-6 bg-orange-50 dark:bg-orange-900/10">
@@ -1105,7 +1304,7 @@ export default function ComplianceSimplification() {
                               <div className="text-center bg-white/20 rounded-lg px-3 py-1">
                                 <span className="text-xs font-medium block">
                                   {(() => {
-                                    if (mapping.id === 'gdpr-unified') {
+                                    if (mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948') {
                                       // For GDPR groups, show GDPR articles count
                                       const totalGdprReqs = mapping.frameworks.gdpr?.length || 0;
                                       const unifiedReqs = mapping.auditReadyUnified.subRequirements.length;
@@ -1193,7 +1392,7 @@ export default function ComplianceSimplification() {
                     <div className="text-right">
                       <div className="text-xs text-gray-500 dark:text-gray-400">Generated Requirements</div>
                       <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {filteredMappings.length}
+                        {filteredUnifiedMappings.length}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">unified groups</div>
                     </div>
@@ -1238,20 +1437,54 @@ export default function ComplianceSimplification() {
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-                      <div className="text-2xl font-bold text-blue-600">{filteredMappings.length}</div>
+                      <div className="text-2xl font-bold text-blue-600">{filteredUnifiedMappings.length}</div>
                       <div className="text-gray-600 dark:text-gray-400">Total Groups</div>
                     </div>
                     <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
-                      <div className="text-2xl font-bold text-purple-600">{filteredMappings.reduce((total, group) => total + group.auditReadyUnified.subRequirements.length, 0)}</div>
+                      <div className="text-2xl font-bold text-purple-600">{filteredUnifiedMappings.reduce((total, group) => total + group.auditReadyUnified.subRequirements.length, 0)}</div>
                       <div className="text-gray-600 dark:text-gray-400">Total Sub-requirements</div>
                     </div>
                   </div>
                 </div>
                 
+                {/* Category Navigation Dropdown */}
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium">Jump to Category:</span>
+                  </div>
+                  <Select 
+                    value={selectedMapping || 'all'}
+                    onValueChange={(value) => {
+                      setSelectedMapping(value);
+                      // Scroll to the selected category
+                      if (value !== 'all') {
+                        const element = document.getElementById(`unified-${value}`);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full max-w-lg mt-2">
+                      <SelectValue placeholder="Select a category to jump to" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {filteredUnifiedMappings.map((mapping) => (
+                        <SelectItem key={mapping.id} value={mapping.id}>
+                          {mapping.category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 <div className="space-y-6">
-                  {filteredMappings.map((mapping, index) => (
+                  {filteredUnifiedMappings.map((mapping, index) => (
                     <motion.div
                       key={mapping.id}
+                      id={`unified-${mapping.id}`}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
