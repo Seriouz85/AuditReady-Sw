@@ -123,6 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (adminData) {
           setIsPlatformAdmin(true);
+          setLoading(false); // CRITICAL FIX: Clear loading state for platform admins
           return; // Platform admins don't need organization data
         }
         
@@ -182,12 +183,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.warn('Error loading user data:', error);
+      setLoading(false); // CRITICAL FIX: Always clear loading state on error
       // Don't show toast error for non-critical data loading failures
       // Only log for debugging purposes
     }
   };
 
   const loadDemoData = async () => {
+    setLoading(false); // Ensure loading state is cleared for demo users
     // Create demo organization structure
     const demoOrg: Organization = {
       id: 'demo-org',

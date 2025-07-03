@@ -114,7 +114,7 @@ class FrameworkCountService {
       cisIG2: 130,   // CIS IG2 safeguards in database
       cisIG3: 153,   // CIS IG3 safeguards in database
       gdpr: 40,      // GDPR articles in database
-      nis2: 39       // NIS2 articles in database
+      nis2: 51       // NIS2 articles + industry-specific requirements in database
     };
   }
 

@@ -17,14 +17,16 @@ import {
   Settings,
   Eye,
   Filter,
-  Loader2
+  Loader2,
+  Building2,
+  Factory
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
+import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { proGradeEngine } from '@/services/compliance/ProGradeComplianceEngine';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
@@ -44,6 +46,9 @@ export default function ComplianceSimplification() {
   const [filterFramework, setFilterFramework] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'heatmap' | '3d'>('heatmap');
+  
+  // Industry sector selection state
+  const [selectedIndustrySector, setSelectedIndustrySector] = useState<string | null>(null);
   
   // Framework selection state
   const [selectedFrameworks, setSelectedFrameworks] = useState<{
@@ -71,6 +76,9 @@ export default function ComplianceSimplification() {
     nis2: false
   });
 
+  // Fetch industry sectors
+  const { data: industrySectors, isLoading: isLoadingSectors } = useIndustrySectors();
+  
   // Fetch compliance mapping data from Supabase
   // Transform selectedFrameworks to match the expected format for the hook
   const frameworksForHook = {
@@ -81,7 +89,7 @@ export default function ComplianceSimplification() {
     nis2: selectedFrameworks.nis2
   };
   
-  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook);
+  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook, selectedIndustrySector);
   
   // Use database data
   const complianceMappingData = fetchedComplianceMapping || [];
@@ -800,6 +808,64 @@ export default function ComplianceSimplification() {
                 </CardHeader>
                 
                 <CardContent className="space-y-8">
+                  {/* Industry Sector Selection */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                      <Building2 className="w-5 h-5 text-blue-600" />
+                      Industry Sector
+                      <Badge variant="outline" className="ml-2 text-xs">
+                        Smart Filtering
+                      </Badge>
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Select your industry sector to get tailored requirements and sector-specific guidance
+                    </p>
+                    <div className="max-w-md">
+                      <Select value={selectedIndustrySector || 'none'} onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select your industry sector" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              General / All Industries
+                            </div>
+                          </SelectItem>
+                          {industrySectors?.map((sector) => (
+                            <SelectItem key={sector.id} value={sector.id}>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${
+                                  sector.nis2Essential ? 'bg-red-500' : 
+                                  sector.nis2Important ? 'bg-orange-500' : 
+                                  'bg-green-500'
+                                }`}></div>
+                                <span>{sector.name}</span>
+                                {sector.nis2Essential && (
+                                  <Badge variant="destructive" className="text-xs ml-1">
+                                    NIS2 Essential
+                                  </Badge>
+                                )}
+                                {sector.nis2Important && !sector.nis2Essential && (
+                                  <Badge variant="secondary" className="text-xs ml-1">
+                                    NIS2 Important
+                                  </Badge>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {selectedIndustrySector && industrySectors && (
+                        <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                          <p className="text-sm text-blue-800 dark:text-blue-200">
+                            {industrySectors.find(s => s.id === selectedIndustrySector)?.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
                   {/* Framework Cards Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
                     
@@ -1545,6 +1611,51 @@ export default function ComplianceSimplification() {
                             ));
                           })()}
                         </div>
+                        
+                        {/* Industry-Specific Requirements Section */}
+                        {selectedIndustrySector && mapping.industrySpecific && mapping.industrySpecific.length > 0 && (
+                          <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700">
+                            <h5 className="font-medium text-sm text-green-800 dark:text-green-200 mb-3 flex items-center">
+                              <Factory className="w-4 h-4 mr-2" />
+                              Industry-Specific Requirements
+                              <Badge variant="outline" className="ml-2 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                                {industrySectors?.find(s => s.id === selectedIndustrySector)?.name}
+                              </Badge>
+                            </h5>
+                            <div className="space-y-3">
+                              {mapping.industrySpecific.map((req, i) => (
+                                <div key={i} className="bg-white dark:bg-gray-800 rounded-md p-3 border border-green-200/50 dark:border-green-700/50">
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                                        {req.code}
+                                      </span>
+                                      <Badge variant={
+                                        req.relevanceLevel === 'critical' ? 'destructive' :
+                                        req.relevanceLevel === 'high' ? 'default' :
+                                        req.relevanceLevel === 'standard' ? 'secondary' :
+                                        'outline'
+                                      } className="text-xs">
+                                        {req.relevanceLevel}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <h6 className="font-medium text-sm text-gray-800 dark:text-gray-200 mb-2">
+                                    {req.title}
+                                  </h6>
+                                  <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    {req.description.split('•').filter(item => item.trim()).map((item, j) => (
+                                      <div key={j} className="flex items-start space-x-2 mb-1">
+                                        <ArrowRight className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />
+                                        <span>{item.trim()}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   ))}

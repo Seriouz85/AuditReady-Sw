@@ -39,6 +39,15 @@ export interface UnifiedRequirementMapping {
   };
 }
 
+export interface IndustrySector {
+  id: string;
+  name: string;
+  description: string;
+  nis2Essential: boolean;
+  nis2Important: boolean;
+  sortOrder: number;
+}
+
 export interface ComplianceMappingData {
   id: string;
   category: string;
@@ -54,6 +63,12 @@ export interface ComplianceMappingData {
       description: string;
     }>;
   };
+  industrySpecific?: Array<{
+    code: string;
+    title: string;
+    description: string;
+    relevanceLevel: 'critical' | 'high' | 'standard' | 'optional';
+  }>;
 }
 
 class ComplianceUnificationService {
@@ -185,23 +200,55 @@ class ComplianceUnificationService {
   }
 
   /**
-   * Get compliance mapping data in the format expected by ComplianceSimplification page
-   * Enhanced with AI-powered unification engine
+   * Get all industry sectors
    */
-  async getComplianceMappingData(selectedFrameworks: string[]): Promise<ComplianceMappingData[]> {
+  async getIndustrySectors(): Promise<IndustrySector[]> {
     try {
-      // Clear cache to ensure fresh data
+      const { data: sectors, error } = await supabase
+        .from('industry_sectors')
+        .select('*')
+        .order('sort_order');
+        
+      if (error) throw error;
+      
+      return (sectors || []).map(sector => ({
+        id: sector.id,
+        name: sector.name,
+        description: sector.description,
+        nis2Essential: sector.nis2_essential,
+        nis2Important: sector.nis2_important,
+        sortOrder: sector.sort_order
+      }));
+    } catch (error) {
+      console.error('Error fetching industry sectors:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get compliance mapping data in the format expected by ComplianceSimplification page
+   * Enhanced with AI-powered unification engine and industry-specific filtering
+   */
+  async getComplianceMappingData(
+    selectedFrameworks: string[], 
+    cisIGLevel?: 'ig1' | 'ig2' | 'ig3', 
+    industrySectorId?: string
+  ): Promise<ComplianceMappingData[]> {
+    try {
+      // Use cache for better performance
       const cacheKey = `compliance_mapping_${selectedFrameworks.sort().join('_')}`;
-      complianceCacheService.remove(cacheKey, 'memory');
-      complianceCacheService.remove('unified_categories', 'memory');
       
       // Get all unified categories with requirements
       const categories = await this.getUnifiedCategories();
       
       // Get framework requirements based on category keywords
-      const frameworkRequirements = await this.getFrameworkRequirementsByCategories(categories, selectedFrameworks);
+      const frameworkRequirements = await this.getFrameworkRequirementsByCategories(categories, selectedFrameworks, cisIGLevel);
       
       const result: ComplianceMappingData[] = [];
+      
+      // Get industry-specific requirements if sector is selected
+      const industryRequirements = industrySectorId ? 
+        await this.getIndustrySpecificRequirements(industrySectorId) : {};
       
       for (const category of categories) {
         // Create one entry per category (not per requirement) as the original design expected
@@ -209,6 +256,7 @@ class ComplianceUnificationService {
         
         // Get the first requirement for this category (the current design expects one requirement per category)
         const primaryRequirement = category.requirements?.[0];
+        
         
         if (primaryRequirement) {
           // Use only real framework requirements from database - no fallback fake data
@@ -228,13 +276,12 @@ class ComplianceUnificationService {
               description: primaryRequirement.description,
               subRequirements: primaryRequirement.subRequirements
             },
-            frameworks: realFrameworkRequirements
+            frameworks: realFrameworkRequirements,
+            industrySpecific: industryRequirements[category.name] || []
           });
         }
       }
       
-      
-      // Always return the basic result without caching for debugging
       return result;
     } catch (error) {
       console.error('Error fetching compliance mapping data:', error);
@@ -272,11 +319,74 @@ class ComplianceUnificationService {
   }
 
   /**
+   * Get industry-specific requirements organized by category
+   */
+  async getIndustrySpecificRequirements(
+    industrySectorId: string
+  ): Promise<Record<string, Array<{code: string, title: string, description: string, relevanceLevel: 'critical' | 'high' | 'standard' | 'optional'}>>> {
+    try {
+      const { data: mappings, error } = await supabase
+        .from('industry_requirement_mappings')
+        .select(`
+          relevance_level,
+          requirement:requirements_library(
+            control_id,
+            title,
+            audit_ready_guidance,
+            tags
+          )
+        `)
+        .eq('industry_sector_id', industrySectorId);
+        
+      if (error) throw error;
+      
+      const result: Record<string, Array<{code: string, title: string, description: string, relevanceLevel: 'critical' | 'high' | 'standard' | 'optional'}>> = {};
+      
+      for (const mapping of mappings || []) {
+        if (!mapping.requirement) continue;
+        
+        // Determine category based on requirement tags or default mapping
+        const tags = mapping.requirement.tags || [];
+        let categoryName = 'General Security';
+        
+        if (tags.includes('ot') || tags.includes('scada') || tags.includes('industrial')) {
+          categoryName = 'Industrial Control Systems';
+        } else if (tags.includes('network')) {
+          categoryName = 'Network Security';
+        } else if (tags.includes('incident-reporting')) {
+          categoryName = 'Incident Management';
+        } else if (tags.includes('supply-chain') || tags.includes('third-party')) {
+          categoryName = 'Supplier Risk';
+        } else if (tags.includes('critical-infrastructure')) {
+          categoryName = 'Physical Security';
+        }
+        
+        if (!result[categoryName]) {
+          result[categoryName] = [];
+        }
+        
+        result[categoryName].push({
+          code: mapping.requirement.control_id,
+          title: mapping.requirement.title,
+          description: mapping.requirement.audit_ready_guidance || '',
+          relevanceLevel: mapping.relevance_level
+        });
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching industry-specific requirements:', error);
+      return {};
+    }
+  }
+
+  /**
    * Get framework requirements organized by category using database mappings
    */
   async getFrameworkRequirementsByCategories(
     categories: UnifiedCategory[], 
-    selectedFrameworks: string[]
+    selectedFrameworks: string[],
+    cisIGLevel?: 'ig1' | 'ig2' | 'ig3'
   ): Promise<Record<string, Record<string, Array<{code: string, title: string, description: string}>>>> {
     try {
       
@@ -346,7 +456,16 @@ class ComplianceUnificationService {
           result[categoryName]?.iso27002.push(reqData);
         }
         if (selectedFrameworks.includes('cisControls') && standardName.includes('CIS Controls')) {
-          result[categoryName]?.cisControls.push(reqData);
+          // Filter CIS Controls by specific IG level if provided
+          if (cisIGLevel) {
+            const igLevelName = `CIS Controls Implementation Group ${cisIGLevel.toUpperCase().replace('IG', '')} (${cisIGLevel.toUpperCase()})`;
+            if (standardName === igLevelName) {
+              result[categoryName]?.cisControls.push(reqData);
+            }
+          } else {
+            // If no IG level specified, include all CIS controls
+            result[categoryName]?.cisControls.push(reqData);
+          }
         }
         if (selectedFrameworks.includes('gdpr') && standardName.includes('GDPR')) {
           result[categoryName]?.gdpr.push(reqData);
@@ -387,22 +506,38 @@ export function useUnifiedCategories() {
   });
 }
 
-export function useComplianceMappingData(selectedFrameworks: Record<string, boolean>) {
+export function useIndustrySectors() {
+  return useQuery({
+    queryKey: ['industry-sectors'],
+    queryFn: () => complianceUnificationService.getIndustrySectors(),
+    staleTime: 30 * 60 * 1000, // 30 minutes cache
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useComplianceMappingData(
+  selectedFrameworks: Record<string, boolean | string>,
+  industrySectorId?: string
+) {
   const frameworkCodes = Object.entries(selectedFrameworks)
-    .filter(([_, selected]) => selected)
+    .filter(([_, selected]) => selected !== false && selected !== null)
     .map(([code]) => code);
     
+  // Extract CIS IG level if present
+  const cisIGLevel = selectedFrameworks.cisControls && typeof selectedFrameworks.cisControls === 'string' 
+    ? selectedFrameworks.cisControls as 'ig1' | 'ig2' | 'ig3'
+    : undefined;
+    
   return useQuery({
-    queryKey: ['compliance-mapping-data', frameworkCodes.sort().join('-')],
+    queryKey: ['compliance-mapping-data', frameworkCodes.sort().join('-'), cisIGLevel, industrySectorId],
     queryFn: () => {
-      console.log('React Query: Executing query for frameworks:', frameworkCodes);
-      return complianceUnificationService.getComplianceMappingData(frameworkCodes);
+      return complianceUnificationService.getComplianceMappingData(frameworkCodes, cisIGLevel, industrySectorId);
     },
     enabled: true, // Always enabled to show all categories
-    staleTime: 0, // Always refetch for debugging
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    retry: 1,
+    refetchOnMount: false,
+    retry: 2,
   });
 }
 
