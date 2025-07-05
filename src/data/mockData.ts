@@ -116,6 +116,8 @@ export const tags: Tag[] = [
   }
 ];
 
+
+
 // Mock Standards
 export const standards: Standard[] = [
   {
@@ -308,7 +310,8 @@ export const requirements: Requirement[] = [
     notes: 'Determining these issues refers to establishing the external and internal context of the organization considered in Clause 5.4.1 of ISO 31000:2018.',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-governance', 'tag-risk'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Risk Management'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -325,7 +328,8 @@ export const requirements: Requirement[] = [
     notes: 'The requirements of interested parties can include legal and regulatory requirements and contractual obligations.',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-governance', 'tag-compliance'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -342,7 +346,8 @@ export const requirements: Requirement[] = [
     notes: 'The scope shall be available as documented information.',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-documentation', 'tag-governance'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -359,7 +364,8 @@ export const requirements: Requirement[] = [
     notes: '',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-governance', 'tag-high-priority'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Risk Management'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -376,7 +382,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-governance', 'tag-high-priority'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Risk Management'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -393,7 +400,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -410,7 +418,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -427,7 +436,8 @@ export const requirements: Requirement[] = [
     notes: 'NOTE: This is not an actual ISO 27001:2022 requirement. These are controls from ISO 27002 incorrectly assigned to ISO 27001.',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -444,7 +454,8 @@ export const requirements: Requirement[] = [
     notes: 'NOTE: This is not an actual ISO 27001:2022 requirement. These are controls from ISO 27002 incorrectly assigned to ISO 27001.',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -461,7 +472,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -478,7 +490,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -495,7 +508,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -512,7 +526,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-organization'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -529,7 +544,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-organization'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -546,7 +562,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'HR',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-organization'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -563,7 +580,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -580,7 +598,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -597,7 +616,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -614,7 +634,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -631,7 +652,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -648,7 +670,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -665,7 +688,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -682,7 +706,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Procurement',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -699,7 +724,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Procurement',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -716,7 +742,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Procurement',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -733,7 +760,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Procurement',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -750,7 +778,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Cloud Security',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-application'],
+    tags: [],
+    categories: ['Network Security', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -767,7 +796,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -784,7 +814,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-network'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Network Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -801,7 +832,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-network'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Network Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -818,7 +850,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -835,7 +868,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -852,7 +886,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Business Continuity',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-location'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -869,7 +904,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-device'],
+    tags: [],
+    categories: ['Network Security', 'Inventory and Control of Hardware Assets'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -886,7 +922,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Legal',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -903,7 +940,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Legal',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -920,7 +958,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Records Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -937,7 +976,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Privacy',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -954,7 +994,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Internal Audit',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -971,7 +1012,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Compliance',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -988,7 +1030,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-awareness', 'tag-organization'],
+    tags: [],
+    categories: ['Security Awareness', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1015,7 +1058,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-awareness', 'tag-organization'],
+    tags: [],
+    categories: ['Security Awareness', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1041,7 +1085,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1067,7 +1112,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1093,7 +1139,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1119,7 +1166,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1145,7 +1193,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1171,7 +1220,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1191,7 +1241,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Project Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1217,7 +1268,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'IT Asset Management',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-organization'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1243,7 +1295,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-organization'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1269,7 +1322,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'HR',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1295,7 +1349,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Information Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1321,7 +1376,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Information Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1347,7 +1403,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Information Security',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-organization'],
+    tags: [],
+    categories: ['Network Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1373,7 +1430,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Access Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1399,7 +1457,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Organizational Control',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1430,7 +1489,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'HR',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1456,7 +1516,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'HR',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1484,7 +1545,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-physical', 'tag-organization'],
+    tags: [],
+    categories: ['Physical Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1510,7 +1572,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1538,7 +1601,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Endpoint Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-device'],
+    tags: [],
+    categories: ['Access Control', 'Inventory and Control of Hardware Assets'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1564,7 +1628,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Access Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-location'],
+    tags: [],
+    categories: ['Access Control', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1585,7 +1650,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Application Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1605,7 +1671,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1625,7 +1692,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1645,7 +1713,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1671,7 +1740,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1691,7 +1761,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1717,7 +1788,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1743,7 +1815,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Information Management',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1769,7 +1842,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Data Security',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1795,7 +1869,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Data Security',
     lastAssessmentDate: null,
-    tags: ['tag-endpoint', 'tag-application'],
+    tags: [],
+    categories: ['Secure Configuration', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1821,7 +1896,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1847,7 +1923,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1873,7 +1950,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1899,7 +1977,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-application'],
+    tags: [],
+    categories: ['Network Security', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1925,7 +2004,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1951,7 +2031,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -1977,7 +2058,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2003,7 +2085,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-endpoint', 'tag-application'],
+    tags: [],
+    categories: ['Secure Configuration', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2029,7 +2112,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-organization'],
+    tags: [],
+    categories: ['Network Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2055,7 +2139,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2081,7 +2166,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-location'],
+    tags: [],
+    categories: ['Access Control', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2107,7 +2193,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Cryptography Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2133,7 +2220,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2159,7 +2247,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Application Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-application'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2185,7 +2274,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2211,7 +2301,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2237,7 +2328,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Application Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2257,7 +2349,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-application'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2277,7 +2370,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-physical', 'tag-organization'],
+    tags: [],
+    categories: ['Physical Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2297,7 +2391,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Change Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2317,7 +2412,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2337,7 +2433,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Testing',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2359,7 +2456,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2376,7 +2474,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2393,7 +2492,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2410,7 +2510,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-awareness', 'tag-organization'],
+    tags: [],
+    categories: ['Security Awareness', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2427,7 +2528,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2444,7 +2546,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-application'],
+    tags: [],
+    categories: ['Network Security', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2461,7 +2564,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2478,7 +2582,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2495,7 +2600,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2512,7 +2618,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2529,7 +2636,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2546,7 +2654,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2563,7 +2672,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2580,7 +2690,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Internal Audit',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2597,7 +2708,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Internal Audit',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2614,7 +2726,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2631,7 +2744,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2648,7 +2762,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2665,7 +2780,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2682,7 +2798,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2699,7 +2816,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2716,7 +2834,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2733,7 +2852,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27001:2022 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2759,7 +2879,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'Security Awareness',
     lastAssessmentDate: null,
-    tags: ['tag-awareness', 'tag-application'],
+    tags: [],
+    categories: ['Security Awareness', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2779,7 +2900,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'HR',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2799,7 +2921,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'HR',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2819,7 +2942,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'Legal',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2845,7 +2969,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-location'],
+    tags: [],
+    categories: ['Access Control', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2871,7 +2996,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 People Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2899,7 +3025,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-physical', 'tag-organization'],
+    tags: [],
+    categories: ['Physical Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2925,7 +3052,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2946,7 +3074,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-physical', 'tag-organization'],
+    tags: [],
+    categories: ['Physical Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2972,7 +3101,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -2992,7 +3122,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Facilities Management',
     lastAssessmentDate: null,
-    tags: ['tag-physical', 'tag-organization'],
+    tags: [],
+    categories: ['Physical Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3012,7 +3143,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Physical Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3032,7 +3164,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Security Awareness',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3052,7 +3185,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-device'],
+    tags: [],
+    categories: ['Access Control', 'Inventory and Control of Hardware Assets'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3078,7 +3212,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Asset Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-location'],
+    tags: [],
+    categories: ['Access Control', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3104,7 +3239,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Data Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3130,7 +3266,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Facilities Management',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3156,7 +3293,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'Facilities Management',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-organization'],
+    tags: [],
+    categories: ['Network Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3182,7 +3320,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3208,7 +3347,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Physical Control',
     responsibleParty: 'IT Asset Management',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3236,7 +3376,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Endpoint Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-device'],
+    tags: [],
+    categories: ['Access Control', 'Inventory and Control of Hardware Assets'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3262,7 +3403,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Access Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-location'],
+    tags: [],
+    categories: ['Access Control', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3283,7 +3425,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Application Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3303,7 +3446,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3323,7 +3467,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3343,7 +3488,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3369,7 +3515,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-organization'],
+    tags: [],
+    categories: ['Access Control', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3389,7 +3536,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3415,7 +3563,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3441,7 +3590,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Information Management',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3467,7 +3617,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Data Security',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3493,7 +3644,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Data Security',
     lastAssessmentDate: null,
-    tags: ['tag-endpoint', 'tag-application'],
+    tags: [],
+    categories: ['Secure Configuration', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3519,7 +3671,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3545,7 +3698,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3571,7 +3725,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3597,7 +3752,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-application'],
+    tags: [],
+    categories: ['Network Security', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3623,7 +3779,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3649,7 +3806,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3675,7 +3833,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3701,7 +3860,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-endpoint', 'tag-application'],
+    tags: [],
+    categories: ['Secure Configuration', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3727,7 +3887,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-network', 'tag-organization'],
+    tags: [],
+    categories: ['Network Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3753,7 +3914,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-application'],
+    tags: [],
+    categories: ['Access Control', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3779,7 +3941,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Network Security',
     lastAssessmentDate: null,
-    tags: ['tag-identity', 'tag-location'],
+    tags: [],
+    categories: ['Access Control', 'Physical Security'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3805,7 +3968,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Cryptography Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3831,7 +3995,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3857,7 +4022,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Application Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-application'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3883,7 +4049,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3909,7 +4076,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-assets', 'tag-application'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3935,7 +4103,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Application Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3955,7 +4124,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-organizational', 'tag-application'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3975,7 +4145,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-physical', 'tag-organization'],
+    tags: [],
+    categories: ['Physical Security', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -3995,7 +4166,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Change Management',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4015,7 +4187,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Development Security',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-organization'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4035,7 +4208,8 @@ export const requirements: Requirement[] = [
     notes: 'ISO 27002:2022 Technological Control',
     responsibleParty: 'Security Testing',
     lastAssessmentDate: null,
-    tags: ['tag-data-management', 'tag-application'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Development'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4052,7 +4226,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 5(1)(a) requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4069,7 +4244,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 5(1)(b) requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4086,7 +4262,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 5(1)(c) requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4103,7 +4280,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 5(1)(d) requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4120,7 +4298,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 5(1)(e) requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4137,7 +4316,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 5(1)(f) requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-security', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Configuration', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4154,7 +4334,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 6 requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4171,7 +4352,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 7 requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4188,7 +4370,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Articles 15-21 requirements',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4205,7 +4388,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 25 requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-data-protection', 'tag-security', 'tag-compliance'],
+    tags: [],
+    categories: ['Data Protection', 'Secure Configuration', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4222,7 +4406,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 30 requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-documentation', 'tag-compliance'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4239,7 +4424,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 32 requirement',
     responsibleParty: 'CISO and Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-security', 'tag-data-protection'],
+    tags: [],
+    categories: ['Secure Configuration', 'Data Protection'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4256,7 +4442,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 35 requirement',
     responsibleParty: 'Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-risk', 'tag-data-protection'],
+    tags: [],
+    categories: ['Risk Management', 'Data Protection'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4273,7 +4460,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Article 33 requirement',
     responsibleParty: 'CISO and Data Protection Officer',
     lastAssessmentDate: null,
-    tags: ['tag-incident', 'tag-data-protection'],
+    tags: [],
+    categories: ['Incident Response', 'Data Protection'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4290,7 +4478,8 @@ export const requirements: Requirement[] = [
     notes: 'GDPR Articles 37-39 requirements',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-governance', 'tag-data-protection'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Data Protection'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4309,7 +4498,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive Article 21 requirement',
     responsibleParty: 'CISO',
     lastAssessmentDate: null,
-    tags: ['tag-risk', 'tag-security'],
+    tags: [],
+    categories: ['Risk Management', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4326,7 +4516,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive Article 23 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-incident', 'tag-security'],
+    tags: [],
+    categories: ['Incident Response', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4343,7 +4534,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement',
     responsibleParty: 'Business Continuity Manager',
     lastAssessmentDate: null,
-    tags: ['tag-operational', 'tag-security'],
+    tags: [],
+    categories: ['Vulnerability Management', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4360,7 +4552,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive Article 21 requirement',
     responsibleParty: 'Vendor Management',
     lastAssessmentDate: null,
-    tags: ['tag-risk', 'tag-security'],
+    tags: [],
+    categories: ['Risk Management', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4377,7 +4570,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement',
     responsibleParty: 'IT Procurement',
     lastAssessmentDate: null,
-    tags: ['tag-security', 'tag-technical'],
+    tags: [],
+    categories: ['Secure Configuration', 'Vulnerability Management'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4394,7 +4588,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive Article 23 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-incident', 'tag-compliance'],
+    tags: [],
+    categories: ['Incident Response', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4411,7 +4606,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive Article 22 requirement',
     responsibleParty: 'Security Operations',
     lastAssessmentDate: null,
-    tags: ['tag-security', 'tag-technical'],
+    tags: [],
+    categories: ['Secure Configuration', 'Vulnerability Management'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4428,7 +4624,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement',
     responsibleParty: 'Security Architecture',
     lastAssessmentDate: null,
-    tags: ['tag-technical', 'tag-security'],
+    tags: [],
+    categories: ['Vulnerability Management', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4445,7 +4642,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement',
     responsibleParty: 'Identity Management',
     lastAssessmentDate: null,
-    tags: ['tag-access-control', 'tag-security'],
+    tags: [],
+    categories: ['Access Control', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4462,7 +4660,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement',
     responsibleParty: 'Security Training',
     lastAssessmentDate: null,
-    tags: ['tag-security', 'tag-operational'],
+    tags: [],
+    categories: ['Secure Configuration', 'Vulnerability Management'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4479,7 +4678,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement',
     responsibleParty: 'Executive Management',
     lastAssessmentDate: null,
-    tags: ['tag-governance', 'tag-security'],
+    tags: [],
+    categories: ['Governance & Leadership', 'Secure Configuration'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4496,7 +4696,8 @@ export const requirements: Requirement[] = [
     notes: 'NIS2 Directive requirement for relevant entities',
     responsibleParty: 'IT Operations',
     lastAssessmentDate: null,
-    tags: ['tag-operational', 'tag-compliance'],
+    tags: [],
+    categories: ['Vulnerability Management', 'Governance & Leadership'],
     createdAt: '2024-03-20T10:00:00Z',
     updatedAt: '2024-03-20T10:00:00Z',
   },
@@ -4510,7 +4711,8 @@ export const requirements: Requirement[] = [
     description: 'Establish the context for risk management, including organizational context, risk management context, and risk criteria.',
     guidance: 'Document the internal and external context for information security risk management and establish risk criteria.',
     status: 'not-fulfilled',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     evidence: '',
     notes: '',
     responsibleParty: 'Risk Management',
@@ -4527,7 +4729,8 @@ export const requirements: Requirement[] = [
     description: 'Identify, analyze, and evaluate information security risks.',
     guidance: 'Implement a structured risk assessment process including risk identification, analysis, and evaluation phases.',
     status: 'not-fulfilled',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     evidence: '',
     notes: '',
     responsibleParty: 'Risk Management',
@@ -4544,7 +4747,8 @@ export const requirements: Requirement[] = [
     description: 'Select and implement appropriate risk treatment options.',
     guidance: 'Develop and implement risk treatment plans based on selected risk treatment options (mitigate, accept, avoid, transfer).',
     status: 'not-fulfilled',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     evidence: '',
     notes: '',
     responsibleParty: 'Risk Management',
@@ -4561,7 +4765,8 @@ export const requirements: Requirement[] = [
     description: 'Decide whether to accept the risk based on the risk acceptance criteria.',
     guidance: 'Implement a formal risk acceptance process with appropriate management sign-off.',
     status: 'not-fulfilled',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     evidence: '',
     notes: '',
     responsibleParty: 'Executive Management',
@@ -4578,7 +4783,8 @@ export const requirements: Requirement[] = [
     description: 'Communicate and consult with stakeholders throughout the risk management process.',
     guidance: 'Establish communication channels and regular consultation with stakeholders at all stages of risk management.',
     status: 'not-fulfilled',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     evidence: '',
     notes: '',
     responsibleParty: 'Risk Management',
@@ -4595,7 +4801,8 @@ export const requirements: Requirement[] = [
     description: 'Monitor and review the risk management process and its outcomes.',
     guidance: 'Implement ongoing monitoring and scheduled reviews of the risk management process and identified risks.',
     status: 'not-fulfilled',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: [],
+    categories: ['Governance & Leadership'],
     evidence: '',
     notes: '',
     responsibleParty: 'Risk Management',
@@ -4624,7 +4831,8 @@ export const requirements: Requirement[] = [
 * Ensure both on-premises and cloud-based assets are included in the inventory
 * Review and update the inventory at least bi-annually
 * For unauthorized assets, establish a formal process for detection and remediation`,
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4644,7 +4852,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4664,7 +4873,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4684,7 +4894,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4704,7 +4915,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4724,7 +4936,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4744,7 +4957,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4764,7 +4978,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4784,7 +4999,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4804,7 +5020,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4824,7 +5041,8 @@ export const requirements: Requirement[] = [
 
 * s can include: Windows BitLocker®, Apple FileVault®, Linux® dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4844,7 +5062,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4864,7 +5083,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4884,7 +5104,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4904,7 +5125,8 @@ export const requirements: Requirement[] = [
 
 * s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4924,7 +5146,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4944,7 +5167,8 @@ export const requirements: Requirement[] = [
 
 * s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet (Teletype Network) and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4964,7 +5188,8 @@ export const requirements: Requirement[] = [
 
 * s can include: disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -4984,7 +5209,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5004,7 +5230,8 @@ export const requirements: Requirement[] = [
 
 * includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5024,7 +5251,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5044,7 +5272,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5064,7 +5293,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5084,7 +5314,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5104,7 +5335,8 @@ export const requirements: Requirement[] = [
 
 * of this Safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5124,7 +5356,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5144,7 +5377,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5164,7 +5398,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5184,7 +5419,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5204,7 +5440,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5224,7 +5461,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5244,7 +5482,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5264,7 +5503,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5284,7 +5524,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5304,7 +5545,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5324,7 +5566,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5344,7 +5587,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5364,7 +5608,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5384,7 +5629,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5404,7 +5650,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5424,7 +5671,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5444,7 +5692,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5464,7 +5713,8 @@ export const requirements: Requirement[] = [
 
 * s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5484,7 +5734,8 @@ export const requirements: Requirement[] = [
 
 * s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5504,7 +5755,8 @@ export const requirements: Requirement[] = [
 
 * requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5524,7 +5776,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5544,7 +5797,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5564,7 +5818,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5584,7 +5839,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5604,7 +5860,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5624,7 +5881,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5644,7 +5902,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5664,7 +5923,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5684,7 +5944,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5704,7 +5965,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5724,7 +5986,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5744,7 +6007,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5764,7 +6028,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5784,7 +6049,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5804,7 +6070,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5825,7 +6092,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5845,7 +6113,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5865,7 +6134,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5885,7 +6155,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business purpose, and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5905,7 +6176,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5925,7 +6197,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5945,7 +6218,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business purpose, and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5965,7 +6239,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business purpose, and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
-    tags: ['tag-application'],
+    tags: [],
+    categories: ['Secure Development'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5985,7 +6260,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6005,7 +6281,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6025,7 +6302,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6045,7 +6323,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6065,7 +6344,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6085,7 +6365,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6105,7 +6386,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6125,7 +6407,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6145,7 +6428,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6165,7 +6449,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6185,7 +6470,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6205,7 +6491,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
-    tags: ['tag-data-protection'],
+    tags: [],
+    categories: ['Data Protection'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6225,7 +6512,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6245,7 +6533,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6265,7 +6554,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6285,7 +6575,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6305,7 +6596,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6325,7 +6617,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6345,7 +6638,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6365,7 +6659,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6385,7 +6680,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6402,7 +6698,8 @@ export const requirements: Requirement[] = [
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6419,7 +6716,8 @@ export const requirements: Requirement[] = [
     notes: '',
     responsibleParty: '',
     lastAssessmentDate: null,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6439,7 +6737,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6459,7 +6758,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6479,7 +6779,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6499,7 +6800,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6519,7 +6821,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6539,7 +6842,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
-    tags: ['tag-identity'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6559,7 +6863,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6579,7 +6884,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6599,7 +6905,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6619,7 +6926,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6639,7 +6947,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6659,7 +6968,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6679,7 +6989,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
-    tags: ['tag-access-control'],
+    tags: [],
+    categories: ['Access Control'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6699,7 +7010,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6719,7 +7031,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6739,7 +7052,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6759,7 +7073,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6779,7 +7094,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6799,7 +7115,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6819,7 +7136,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6839,7 +7157,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6859,7 +7178,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6879,7 +7199,8 @@ export const requirements: Requirement[] = [
     auditReadyGuidance: `**Implementation**
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6899,7 +7220,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6919,7 +7241,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6939,7 +7262,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6959,7 +7283,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6979,7 +7304,8 @@ export const requirements: Requirement[] = [
 
 * s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -6999,7 +7325,8 @@ export const requirements: Requirement[] = [
 
 * s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7019,7 +7346,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7039,7 +7367,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7059,7 +7388,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7079,7 +7409,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7099,7 +7430,8 @@ export const requirements: Requirement[] = [
 
 * s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7119,7 +7451,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7139,7 +7472,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7159,7 +7493,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7179,7 +7514,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7199,7 +7535,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7219,7 +7556,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7239,7 +7577,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7259,7 +7598,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7279,7 +7619,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7299,7 +7640,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7319,7 +7661,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7339,7 +7682,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7359,7 +7703,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7379,7 +7724,8 @@ export const requirements: Requirement[] = [
 
 * s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7399,7 +7745,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7419,7 +7766,8 @@ export const requirements: Requirement[] = [
 
 * s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7439,7 +7787,8 @@ export const requirements: Requirement[] = [
 
 * s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7459,7 +7808,8 @@ export const requirements: Requirement[] = [
 
 * s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7479,7 +7829,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7499,7 +7850,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7519,7 +7871,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7539,7 +7892,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7559,7 +7913,8 @@ export const requirements: Requirement[] = [
 
 * requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7579,7 +7934,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7599,7 +7955,8 @@ export const requirements: Requirement[] = [
 
 * s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7619,7 +7976,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7639,7 +7997,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7659,7 +8018,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7679,7 +8039,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7699,7 +8060,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7719,7 +8081,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7739,7 +8102,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7759,7 +8123,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7779,7 +8144,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7799,7 +8165,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7819,7 +8186,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7839,7 +8207,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7859,7 +8228,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7879,7 +8249,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7899,7 +8270,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7919,7 +8291,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7939,7 +8312,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7959,7 +8333,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7979,7 +8354,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -7999,7 +8375,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8019,7 +8396,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8039,7 +8417,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8059,7 +8438,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8079,7 +8459,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8099,7 +8480,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8119,7 +8501,8 @@ export const requirements: Requirement[] = [
 
 * errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8139,7 +8522,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8159,7 +8543,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8179,7 +8564,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8199,7 +8585,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8219,7 +8606,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8239,7 +8627,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8259,7 +8648,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8279,7 +8669,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8299,7 +8690,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8319,7 +8711,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8340,7 +8733,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-    tags: ['tag-technical'],
+    tags: [],
+    categories: ['Vulnerability Management'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8361,7 +8755,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8381,7 +8776,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8401,7 +8797,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8421,7 +8818,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8441,7 +8839,8 @@ export const requirements: Requirement[] = [
 
 * \n- Implement automated asset discovery tools to maintain an up-to-date inventory\n- Include all enterprise assets: end-user devices, network devices, IoT devices, and servers\n- Record key information for each asset: network address, hardware address, machine name, owner, department\n- Ensure both on-premises and cloud-based assets are included in the inventory\n- Review and update the inventory at least bi-annually\n- For unauthorized assets, establish a formal process for detection and remediation`,
 
-    tags: ['tag-device'],
+    tags: [],
+    categories: ['Inventory and Control of Hardware Assets'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8461,7 +8860,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8481,7 +8881,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8501,7 +8902,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8521,7 +8923,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8541,7 +8944,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8561,7 +8965,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8581,7 +8986,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all authorized software\n- Document title, publisher, installation date, business , and license information\n- Use automated software inventory tools where possible\n- Include mobile applications, cloud-based software, and development tools\n- Review and update the inventory bi-annually\n- Verify that all authorized software is currently supported by the vendor`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8601,7 +9007,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8621,7 +9028,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8641,7 +9049,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8661,7 +9070,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8681,7 +9091,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8701,7 +9112,8 @@ export const requirements: Requirement[] = [
 
 * s can include Windows BitLocker, Apple FileVault, Linux dm-crypt.\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8721,7 +9133,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8741,7 +9154,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8761,7 +9175,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8781,7 +9196,8 @@ export const requirements: Requirement[] = [
 
 * s can include Transport Layer Security (TLS) and Open Secure Shell (OpenSSH).\n\n \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8801,7 +9217,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8821,7 +9238,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8841,7 +9259,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8861,7 +9280,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document a formal data management process covering the entire data lifecycle\n- Define data sensitivity levels and corresponding handling requirements\n- Create and maintain an inventory of all sensitive data\n- Configure data access control lists based on the principle of least privilege\n- Implement data retention policies with minimum and maximum timelines\n- Deploy full-disk encryption on all devices storing sensitive data`,
 
-  tags: ['tag-data-protection'],
+  tags: [],
+    categories: ['Data Protection'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8881,7 +9301,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8901,7 +9322,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8921,7 +9343,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8941,7 +9364,8 @@ export const requirements: Requirement[] = [
 
 * s include a virtual firewall, operating system firewall, or a third-party firewall agent.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8961,7 +9385,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -8981,7 +9406,8 @@ export const requirements: Requirement[] = [
 
 * s include managing configuration through version-controlled Infrastructure-as-Code (IaC) and accessing administrative interfaces over secure network protocols, such as Secure Shell (SSH) and Hypertext Transfer Protocol Secure (HTTPS). Do not use insecure management protocols, such as Telnet and HTTP, unless operationally essential.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9001,7 +9427,8 @@ export const requirements: Requirement[] = [
 
 * s can include disabling default accounts or making them unusable.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9021,7 +9448,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9041,7 +9469,8 @@ export const requirements: Requirement[] = [
 
 * s include configuring network devices to use enterprise-controlled DNS servers and/or reputable externally accessible DNS servers.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9061,7 +9490,8 @@ export const requirements: Requirement[] = [
 
 * s include Microsoft InTune Device Lock and Apple Configuration Profile maxFailedAttempts.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9081,7 +9511,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9101,7 +9532,8 @@ export const requirements: Requirement[] = [
 
 * s include using an Apple Configuration Profile or Android Work Profile to separate enterprise applications and data from personal applications and data.\n\n \n- Establish documented secure configuration standards for all asset types\n- Base configurations on industry-recognized standards (CIS Benchmarks, DISA STIGs)\n- Configure automatic session locking on all enterprise assets\n- Implement host-based firewalls on servers and end-user devices\n- Use secure protocols for management access (SSH, HTTPS)\n- Manage default accounts by disabling or reconfiguring them`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9121,7 +9553,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-  tags: ['tag-identity'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9141,7 +9574,8 @@ export const requirements: Requirement[] = [
 
 * includes, at a minimum, an 8-character password for accounts using Multi-Factor Authentication (MFA) and a 14-character password for accounts not using MFA.\n\n \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-  tags: ['tag-identity'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9161,7 +9595,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-  tags: ['tag-identity'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9181,7 +9616,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-  tags: ['tag-identity'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9201,7 +9637,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-  tags: ['tag-identity'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9221,7 +9658,8 @@ export const requirements: Requirement[] = [
 
 * \n- Create and maintain a comprehensive inventory of all accounts\n- Implement strong password policies (minimum 14 characters for non-MFA accounts)\n- Disable accounts after 45 days of inactivity\n- Separate administrative and regular user accounts\n- Review and audit account access quarterly\n- Implement account lockout after failed authentication attempts`,
 
-  tags: ['tag-identity'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9241,7 +9679,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9261,7 +9700,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9281,7 +9721,8 @@ export const requirements: Requirement[] = [
 
 * of this safeguard.\n\n \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9301,7 +9742,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9321,7 +9763,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9341,7 +9784,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9361,7 +9805,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9381,7 +9826,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal processes for granting and revoking access\n- Implement the principle of least privilege for access rights\n- Deploy multi-factor authentication for externally-exposed applications\n- Require MFA for remote network access and administrative accounts\n- Implement automated provisioning and deprovisioning\n- Conduct regular access reviews to validate continued business need`,
 
-  tags: ['tag-access-control'],
+  tags: [],
+    categories: ['Access Control'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9401,7 +9847,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9421,7 +9868,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9441,7 +9889,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9461,7 +9910,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9481,7 +9931,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9501,7 +9952,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9521,7 +9973,8 @@ export const requirements: Requirement[] = [
 
 * \n- Establish a documented vulnerability management process\n- Implement automated vulnerability scanning tools\n- Define risk-based remediation timelines based on severity\n- Deploy automated patch management for operating systems and applications\n- Verify remediation effectiveness after implementing fixes\n- Conduct regular penetration testing to validate security controls`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9542,7 +9995,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9562,7 +10016,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9582,7 +10037,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9602,7 +10058,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9622,7 +10079,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9642,7 +10100,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9662,7 +10121,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9682,7 +10142,8 @@ export const requirements: Requirement[] = [
 
 * s include collecting audit logs from PowerShell®, BASH™, and remote administrative terminals.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9702,7 +10163,8 @@ export const requirements: Requirement[] = [
 
 * s primarily include leveraging a SIEM tool to centralize multiple log sources.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9722,7 +10184,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9742,7 +10205,8 @@ export const requirements: Requirement[] = [
 
 * \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9762,7 +10226,8 @@ export const requirements: Requirement[] = [
 
 * s include collecting authentication and authorization events, data creation and disposal events, and user management events.\n\n \n- Configure comprehensive logging across all enterprise assets\n- Include authentication, authorization, and system configuration changes in logs\n- Implement secure centralized log collection\n- Protect log data from unauthorized access and modification\n- Establish log retention policies aligned with organizational requirements\n- Review logs regularly for suspicious activity`,
 
-  tags: ['tag-logging'],
+  tags: [],
+    categories: ['Audit Logging'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9784,7 +10249,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9804,7 +10270,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9824,7 +10291,8 @@ export const requirements: Requirement[] = [
 
 * s include category-based filtering, reputation-based filtering, or through the use of block lists. Enforce filters for all enterprise assets.\n\n \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9844,7 +10312,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9864,7 +10333,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9884,7 +10354,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9904,7 +10375,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy DNS filtering services to block access to known malicious domains\n- Implement email security controls (SPF, DKIM, DMARC)\n- Configure web content filtering to prevent access to malicious websites\n- Use only fully supported web browsers with security extensions\n- Disable unnecessary browser plugins and features\n- Implement automated updates for browsers and email clients`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9925,7 +10397,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9945,7 +10418,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9965,7 +10439,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -9985,7 +10460,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10005,7 +10481,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10025,7 +10502,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10045,7 +10523,8 @@ export const requirements: Requirement[] = [
 
 * \n- Deploy anti-malware software on all enterprise assets\n- Configure real-time scanning for files and applications\n- Implement centralized management of malware defenses\n- Regularly update malware definitions and engines\n- Scan removable media automatically\n- Implement application allowlisting to prevent unauthorized code execution`,
 
-  tags: ['tag-endpoint'],
+  tags: [],
+    categories: ['Secure Configuration'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10066,7 +10545,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-backup'],
+  tags: [],
+    categories: ['Business Continuity'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10086,7 +10566,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-backup'],
+  tags: [],
+    categories: ['Business Continuity'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10106,7 +10587,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-backup'],
+  tags: [],
+    categories: ['Business Continuity'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10126,7 +10608,8 @@ export const requirements: Requirement[] = [
 
 * s include, version controlling backup destinations through offline, cloud, or off-site systems or services.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-backup'],
+  tags: [],
+    categories: ['Business Continuity'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10146,7 +10629,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-backup'],
+  tags: [],
+    categories: ['Business Continuity'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10166,7 +10650,8 @@ export const requirements: Requirement[] = [
 
 * s include running the latest stable release of software and/or using currently supported network as a service (NaaS) offerings. Review software versions monthly, or more frequently, to verify software support.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10186,7 +10671,8 @@ export const requirements: Requirement[] = [
 
 * s may include documentation, policy, and design components.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10206,7 +10692,8 @@ export const requirements: Requirement[] = [
 
 * s include version-controlled Infrastructure-as-Code (IaC), and the use of secure network protocols, such as SSH and HTTPS.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10226,7 +10713,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10246,7 +10734,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10266,7 +10755,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10286,7 +10776,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10303,7 +10794,8 @@ export const requirements: Requirement[] = [
   notes: '',
   responsibleParty: '',
   lastAssessmentDate: null,
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10323,7 +10815,8 @@ export const requirements: Requirement[] = [
 
 * requires the use of a SIEM, which includes vendor-defined event correlation alerts. A log analytics platform configured with security-relevant correlation alerts also satisfies this Safeguard.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10343,7 +10836,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10363,7 +10857,8 @@ export const requirements: Requirement[] = [
 
 * s include the use of a Network Intrusion Detection System (NIDS) or equivalent cloud service provider (CSP) service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10383,7 +10878,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10403,7 +10899,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10423,7 +10920,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10444,7 +10942,8 @@ export const requirements: Requirement[] = [
 
 * s include use of an Endpoint Detection and Response (EDR) client or host-based IPS agent.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10464,7 +10963,8 @@ export const requirements: Requirement[] = [
 
 * s include the use of a Network Intrusion Prevention System (NIPS) or equivalent CSP service.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10484,7 +10984,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10504,7 +11005,8 @@ export const requirements: Requirement[] = [
 
 * s include a filtering proxy, application layer firewall, or gateway.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10524,7 +11026,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-network'],
+  tags: [],
+    categories: ['Network Security'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10544,7 +11047,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10564,7 +11068,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10584,7 +11089,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10604,7 +11110,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10624,7 +11131,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10644,7 +11152,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10664,7 +11173,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10684,7 +11194,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10704,7 +11215,8 @@ export const requirements: Requirement[] = [
 
 * s include secure system administration courses for IT professionals, OWASP® Top 10 vulnerability awareness and prevention training for web application developers, and advanced social engineering awareness training for high-profile roles.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-people'],
+  tags: [],
+    categories: ['Security Awareness'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10724,7 +11236,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10744,7 +11257,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10764,7 +11278,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10784,7 +11299,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10804,7 +11320,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10824,7 +11341,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10844,7 +11362,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-supplier'],
+  tags: [],
+    categories: ['Supplier Risk'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10864,7 +11383,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10884,7 +11404,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10904,7 +11425,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10924,7 +11446,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10944,7 +11467,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10964,7 +11488,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -10984,7 +11509,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11004,7 +11530,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11024,7 +11551,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11044,7 +11572,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11064,7 +11593,8 @@ export const requirements: Requirement[] = [
 
 * errors. Modern operating systems provide effective mechanisms for identification, authentication, and authorization and make those mechanisms available to applications. Use only standardized, currently accepted, and extensively reviewed encryption algorithms. Operating systems also provide mechanisms to create and maintain secure audit logs.\n\n \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11085,7 +11615,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11105,7 +11636,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11125,7 +11657,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-application'],
+  tags: [],
+    categories: ['Secure Development'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11145,7 +11678,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11165,7 +11699,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11185,7 +11720,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11205,7 +11741,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11225,7 +11762,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11245,7 +11783,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11265,7 +11804,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11285,7 +11825,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11305,7 +11846,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-incident'],
+  tags: [],
+    categories: ['Incident Response'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11325,7 +11867,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11345,7 +11888,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11365,7 +11909,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11385,7 +11930,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },
@@ -11405,7 +11951,8 @@ export const requirements: Requirement[] = [
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
-  tags: ['tag-technical'],
+  tags: [],
+    categories: ['Vulnerability Management'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 },

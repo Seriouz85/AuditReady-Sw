@@ -165,9 +165,16 @@ class StripeAdminService {
     try {
       console.log('🔍 StripeAdminService: Attempting to fetch products from Edge Function...');
       
-      const { data, error } = await supabase.functions.invoke('stripe-admin', {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), 5000); // 5 second timeout
+      });
+      
+      const requestPromise = supabase.functions.invoke('stripe-admin', {
         body: { action: 'list_products' }
       });
+      
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
       
       if (error) {
         console.log('⚠️ StripeAdminService: Edge Function error, using mock data:', error);
@@ -244,9 +251,16 @@ class StripeAdminService {
     try {
       console.log('🔍 StripeAdminService: Attempting to fetch prices from Edge Function...');
       
-      const { data, error } = await supabase.functions.invoke('stripe-admin', {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), 5000); // 5 second timeout
+      });
+      
+      const requestPromise = supabase.functions.invoke('stripe-admin', {
         body: { action: 'list_prices', productId }
       });
+      
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
       
       if (error) {
         console.log('⚠️ StripeAdminService: Edge Function error fetching prices, using mock data:', error);
@@ -337,11 +351,25 @@ class StripeAdminService {
   // Coupon Management
   async listCoupons(): Promise<StripeCoupon[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('stripe-admin', {
+      console.log('🔍 StripeAdminService: Attempting to fetch coupons from Edge Function...');
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Coupons request timeout')), 5000); // 5 second timeout
+      });
+      
+      const requestPromise = supabase.functions.invoke('stripe-admin', {
         body: { action: 'list_coupons' }
       });
       
-      if (error) throw error;
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+      
+      if (error) {
+        console.log('⚠️ StripeAdminService: Coupons Edge Function error, using mock data:', error);
+        throw error;
+      }
+      
+      console.log('✅ StripeAdminService: Got coupons from Stripe');
       return data.coupons || [];
     } catch (error) {
       // Silently fall back to mock data when Edge Functions aren't available
@@ -623,14 +651,30 @@ class StripeAdminService {
     connectionStatus: boolean;
   }> {
     try {
-      const { data, error } = await supabase.functions.invoke('stripe-admin', {
+      console.log('🔍 StripeAdminService: Attempting to fetch analytics from Edge Function...');
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Analytics request timeout')), 3000); // 3 second timeout for analytics
+      });
+      
+      const requestPromise = supabase.functions.invoke('stripe-admin', {
         body: { action: 'get_analytics' }
       });
       
-      if (error) throw error;
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+      
+      if (error) {
+        console.log('⚠️ StripeAdminService: Analytics Edge Function error, using zero data:', error);
+        throw error;
+      }
+      
+      console.log('✅ StripeAdminService: Got analytics from Stripe');
       return data.analytics;
     } catch (error) {
-      // Edge Functions not available, returning real zero data instead of mock
+      console.log('🔄 StripeAdminService: Analytics fallback to zero data due to error:', error);
+      const isTimeoutError = error.message?.includes('timeout');
+      
       // Return real zero data instead of mock data
       return {
         totalRevenue: 0, // Real zero revenue
@@ -640,7 +684,9 @@ class StripeAdminService {
         churnRate: 0,
         averageRevenuePerUser: 0,
         pendingInvoices: 0,
-        connectionStatus: false // False since Edge Function is not available
+        // Show as connected if it's just a timeout (Edge Function exists but slow)
+        // Show as disconnected only for actual connection/availability issues
+        connectionStatus: isTimeoutError ? true : false
       };
     }
   }

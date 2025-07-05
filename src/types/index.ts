@@ -49,7 +49,9 @@ export interface Requirement {
   notes?: string;
   responsibleParty?: string;
   lastAssessmentDate?: string;
-  tags?: string[]; // Array of tag IDs
+  tags?: string[]; // Array of tag IDs (old system: tag-organizational, tag-identity, etc.)
+  categories?: string[]; // Array of unified category names (21 categories)
+  appliesTo?: string[]; // Array of "applies to" targets
   createdAt: string;
   updatedAt: string;
 }

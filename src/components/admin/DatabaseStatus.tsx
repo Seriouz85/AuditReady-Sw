@@ -31,7 +31,7 @@ export const DatabaseStatus: React.FC = () => {
     try {
       const { error } = await supabaseAdmin
         .from(tableName)
-        .select('count')
+        .select('*')
         .limit(1);
       
       return {
@@ -53,10 +53,10 @@ export const DatabaseStatus: React.FC = () => {
     setConnectionStatus('checking');
     
     try {
-      // Test basic connection
+      // Test basic connection using a simple table that should always exist
       const { error: connectionError } = await supabaseAdmin
-        .from('information_schema.tables')
-        .select('table_name')
+        .from('platform_administrators')
+        .select('*')
         .limit(1);
       
       if (connectionError) {

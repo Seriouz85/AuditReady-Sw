@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cleanMarkdownFormatting } from '@/utils/textFormatting';
+import { cleanMarkdownFormatting, cleanComplianceSubRequirement } from '@/utils/textFormatting';
+import { SectorSpecificEnhancer } from '@/services/compliance/SectorSpecificEnhancer';
 import { 
   ArrowLeft, 
   Download, 
@@ -46,6 +47,7 @@ export default function ComplianceSimplification() {
   const [activeTab, setActiveTab] = useState('overview');
   const [filterFramework, setFilterFramework] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [unifiedCategoryFilter, setUnifiedCategoryFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'heatmap' | '3d'>('heatmap');
   
   // Industry sector selection state
@@ -235,7 +237,8 @@ export default function ComplianceSimplification() {
       const hasControls = (newMapping.frameworks?.iso27001?.length || 0) > 0 || 
                          (newMapping.frameworks?.iso27002?.length || 0) > 0 || 
                          (newMapping.frameworks?.cisControls?.length || 0) > 0 ||
-                         (newMapping.frameworks?.gdpr?.length || 0) > 0;
+                         (newMapping.frameworks?.gdpr?.length || 0) > 0 ||
+                         (newMapping.frameworks?.nis2?.length || 0) > 0;
       
       return hasControls ? newMapping : null;
     }).filter(mapping => mapping !== null);
@@ -355,7 +358,8 @@ export default function ComplianceSimplification() {
       const hasControls = (newMapping.frameworks?.iso27001?.length || 0) > 0 || 
                          (newMapping.frameworks?.iso27002?.length || 0) > 0 || 
                          (newMapping.frameworks?.cisControls?.length || 0) > 0 ||
-                         (newMapping.frameworks?.gdpr?.length || 0) > 0;
+                         (newMapping.frameworks?.gdpr?.length || 0) > 0 ||
+                         (newMapping.frameworks?.nis2?.length || 0) > 0;
       
       return hasControls ? newMapping : null;
     }).filter(mapping => mapping !== null);
@@ -1052,12 +1056,17 @@ export default function ComplianceSimplification() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col overflow-visible ${
                         frameworksSelected.nis2
                           ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 shadow-lg shadow-indigo-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-indigo-300'
                       }`}
-                      onClick={() => handleFrameworkToggle('nis2', !frameworksSelected.nis2)}
+                      onClick={(e) => {
+                        // Only toggle if clicking the card background, not the dropdown
+                        if (!(e.target as HTMLElement).closest('.industry-dropdown')) {
+                          handleFrameworkToggle('nis2', !frameworksSelected.nis2);
+                        }
+                      }}
                     >
                       {/* Selected Badge at Top */}
                       {frameworksSelected.nis2 && (
@@ -1076,9 +1085,101 @@ export default function ComplianceSimplification() {
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">NIS2</h3>
                           <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">EU Cybersecurity Directive</p>
                           <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium text-center">
-                            {frameworkCounts?.nis2 || 16} requirements
+                            {frameworkCounts?.nis2 || 17} requirements
                           </p>
                         </div>
+                        
+                        {/* Industry Sector Selection - Inside the card */}
+                        {frameworksSelected.nis2 && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="w-full mt-2 industry-dropdown"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="p-1 bg-indigo-50 dark:bg-indigo-900/30 rounded border border-indigo-200 dark:border-indigo-700">
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Building2 className="w-2 h-2 text-indigo-600" />
+                                <span className="text-[9px] font-medium text-indigo-700 dark:text-indigo-300">Sector</span>
+                                <Badge variant="outline" className="text-[7px] px-0.5 py-0 h-3 border-indigo-300 text-indigo-600">
+                                  NIS2
+                                </Badge>
+                              </div>
+                              <div className="relative">
+                                <Select value={selectedIndustrySector || 'none'} onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}>
+                                  <SelectTrigger className="w-full text-[9px] h-4 border-indigo-300 focus:border-indigo-500 px-1 py-0">
+                                    <SelectValue placeholder="All Industries" className="text-[9px] leading-none" />
+                                  </SelectTrigger>
+                                  <SelectContent 
+                                    className="max-h-32 w-full text-xs z-50 overflow-y-auto" 
+                                    position="popper"
+                                    sideOffset={4}
+                                    align="start"
+                                  >
+                                    <SelectItem value="none" className="text-xs py-1 px-2">
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                        <span className="text-xs">All Industries</span>
+                                      </div>
+                                    </SelectItem>
+                                    {industrySectors?.filter(sector => {
+                                      // Only show official NIS2 sectors according to directive
+                                      const officialNIS2Sectors = [
+                                        'Energy',
+                                        'Healthcare', 
+                                        'Health', // Alternative naming
+                                        'Transportation',
+                                        'Transport', // Alternative naming
+                                        'Banking & Finance',
+                                        'Water & Wastewater',
+                                        'Digital Infrastructure',
+                                        'Government & Public',
+                                        'Manufacturing',
+                                        'Food & Agriculture',
+                                        'ICT Service Management',
+                                        'Space',
+                                        'Postal and Courier Services',
+                                        'Waste Management',
+                                        'Digital Providers',
+                                        'Research'
+                                      ];
+                                      return officialNIS2Sectors.includes(sector.name);
+                                    }).map((sector) => (
+                                      <SelectItem key={sector.id} value={sector.id} className="text-xs py-1 px-2">
+                                        <div className="flex items-center gap-2 w-full">
+                                          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                                            sector.nis2Essential ? 'bg-red-500' : 
+                                            sector.nis2Important ? 'bg-orange-500' : 
+                                            'bg-green-500'
+                                          }`}></div>
+                                          <span className="text-xs truncate flex-1 min-w-0">{sector.name}</span>
+                                          {sector.nis2Essential && (
+                                            <Badge variant="destructive" className="text-[9px] px-1 py-0 h-3 flex-shrink-0">
+                                              Essential
+                                            </Badge>
+                                          )}
+                                          {sector.nis2Important && !sector.nis2Essential && (
+                                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3 flex-shrink-0">
+                                              Important
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              {selectedIndustrySector && industrySectors && (
+                                <div className="mt-0.5 p-0.5 bg-white dark:bg-indigo-800/50 rounded text-[7px] border border-indigo-200 dark:border-indigo-600">
+                                  <p className="text-indigo-800 dark:text-indigo-200 leading-tight">
+                                    {industrySectors.find(s => s.id === selectedIndustrySector)?.description}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
                       </div>
                       {frameworksSelected.nis2 && (
                         <motion.div
@@ -1087,69 +1188,6 @@ export default function ComplianceSimplification() {
                           className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
                         >
                           <CheckCircle className="w-4 h-4 text-white" />
-                        </motion.div>
-                      )}
-                      
-                      {/* Industry Sector Selection - Only show when NIS2 is selected */}
-                      {frameworksSelected.nis2 && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="mt-4 pt-4 border-t border-indigo-200 dark:border-indigo-700"
-                        >
-                          <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-indigo-700 dark:text-indigo-300">
-                            <Building2 className="w-4 h-4" />
-                            Industry Sector
-                            <Badge variant="outline" className="text-xs border-indigo-300 text-indigo-600">
-                              NIS2 Filtering
-                            </Badge>
-                          </h4>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-                            Select your sector for NIS2-specific requirements
-                          </p>
-                          <Select value={selectedIndustrySector || 'none'} onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}>
-                            <SelectTrigger className="w-full text-xs h-8">
-                              <SelectValue placeholder="Select industry sector" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                  General / All Industries
-                                </div>
-                              </SelectItem>
-                              {industrySectors?.map((sector) => (
-                                <SelectItem key={sector.id} value={sector.id}>
-                                  <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${
-                                      sector.nis2Essential ? 'bg-red-500' : 
-                                      sector.nis2Important ? 'bg-orange-500' : 
-                                      'bg-green-500'
-                                    }`}></div>
-                                    <span className="text-xs">{sector.name}</span>
-                                    {sector.nis2Essential && (
-                                      <Badge variant="destructive" className="text-xs ml-1 px-1 py-0">
-                                        Essential
-                                      </Badge>
-                                    )}
-                                    {sector.nis2Important && !sector.nis2Essential && (
-                                      <Badge variant="secondary" className="text-xs ml-1 px-1 py-0">
-                                        Important
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {selectedIndustrySector && industrySectors && (
-                            <div className="mt-2 p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded border border-indigo-200 dark:border-indigo-700">
-                              <p className="text-xs text-indigo-800 dark:text-indigo-200">
-                                {industrySectors.find(s => s.id === selectedIndustrySector)?.description}
-                              </p>
-                            </div>
-                          )}
                         </motion.div>
                       )}
                     </motion.div>
@@ -1304,75 +1342,90 @@ export default function ComplianceSimplification() {
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-orange-100 dark:scrollbar-thumb-orange-600 dark:scrollbar-track-orange-900">
                                 {(mapping.frameworks.gdpr || []).map((req, i) => (
-                                  <div key={i} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-orange-200 dark:border-orange-700">
+                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-orange-200 dark:border-orange-700">
                                     <div className="font-medium text-sm text-orange-900 dark:text-orange-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">{req.title}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">{cleanMarkdownFormatting(req.description)}</div>
                                   </div>
                                 ))}
                               </div>
                             </div>
                           </div>
                         ) : (
-                          /* Regular layout for ISO/CIS/NIS2 frameworks */
-                          <div className={`grid gap-0 border-b border-slate-200 dark:border-slate-700 ${
-                            selectedFrameworks.nis2 
-                              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' 
-                              : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                          /* Regular layout for ISO/CIS/NIS2 frameworks - Only show selected frameworks */
+                          <div className={`grid gap-0 border-b border-slate-200 dark:border-slate-700 grid-cols-1 ${
+                            // Calculate grid columns based on selected frameworks
+                            (() => {
+                              const selectedCount = 
+                                (selectedFrameworks.iso27001 ? 1 : 0) +
+                                (selectedFrameworks.iso27002 ? 1 : 0) +
+                                (selectedFrameworks.cisControls ? 1 : 0) +
+                                (selectedFrameworks.nis2 ? 1 : 0);
+                              
+                              if (selectedCount === 1) return 'lg:grid-cols-1';
+                              if (selectedCount === 2) return 'sm:grid-cols-2';
+                              if (selectedCount === 3) return 'sm:grid-cols-2 lg:grid-cols-3';
+                              if (selectedCount === 4) return 'sm:grid-cols-2 lg:grid-cols-4';
+                              return 'sm:grid-cols-2 lg:grid-cols-3'; // fallback
+                            })()
                           }`}>
-                          {/* ISO 27001 Column */}
-                          <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
-                            <div className="flex items-center space-x-2 mb-4">
-                              <Shield className="w-5 h-5 text-blue-600" />
-                              <h4 className="font-semibold text-blue-900 dark:text-blue-100">ISO 27001</h4>
+                          
+                          {/* ISO 27001 Column - Only show if selected */}
+                          {selectedFrameworks.iso27001 && (
+                            <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
+                              <div className="flex items-center space-x-2 mb-4">
+                                <Shield className="w-5 h-5 text-blue-600" />
+                                <h4 className="font-semibold text-blue-900 dark:text-blue-100">ISO 27001</h4>
+                              </div>
+                              <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100 dark:scrollbar-thumb-blue-600 dark:scrollbar-track-blue-900">
+                                {(mapping.frameworks?.iso27001 || []).map((req, i) => (
+                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-blue-200 dark:border-blue-700">
+                                    <div className="font-medium text-sm text-blue-900 dark:text-blue-100">{req.code}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100 dark:scrollbar-thumb-blue-600 dark:scrollbar-track-blue-900">
-                              {(mapping.frameworks?.iso27001 || []).map((req, i) => (
-                                <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-blue-200 dark:border-blue-700">
-                                  <div className="font-medium text-sm text-blue-900 dark:text-blue-100">{req.code}</div>
-                                  <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                          )}
 
-                          {/* ISO 27002 Column */}
-                          <div className="p-4 sm:p-6 border-b sm:border-b-0 lg:border-r border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-green-900/10">
-                            <div className="flex items-center space-x-2 mb-4">
-                              <Lock className="w-5 h-5 text-green-600" />
-                              <h4 className="font-semibold text-green-900 dark:text-green-100">ISO 27002</h4>
+                          {/* ISO 27002 Column - Only show if selected */}
+                          {selectedFrameworks.iso27002 && (
+                            <div className="p-4 sm:p-6 border-b sm:border-b-0 lg:border-r border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-green-900/10">
+                              <div className="flex items-center space-x-2 mb-4">
+                                <Lock className="w-5 h-5 text-green-600" />
+                                <h4 className="font-semibold text-green-900 dark:text-green-100">ISO 27002</h4>
+                              </div>
+                              <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-green-100 dark:scrollbar-thumb-green-600 dark:scrollbar-track-green-900">
+                                {(mapping.frameworks?.iso27002 || []).map((req, i) => (
+                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-green-200 dark:border-green-700">
+                                    <div className="font-medium text-sm text-green-900 dark:text-green-100">{req.code}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-green-100 dark:scrollbar-thumb-green-600 dark:scrollbar-track-green-900">
-                              {(mapping.frameworks?.iso27002 || []).map((req, i) => (
-                                <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-green-200 dark:border-green-700">
-                                  <div className="font-medium text-sm text-green-900 dark:text-green-100">{req.code}</div>
-                                  <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                          )}
 
-                          {/* CIS Controls Column */}
-                          <div className={`p-4 sm:p-6 border-b sm:border-b-0 border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10 ${
-                            selectedFrameworks.nis2 ? 'lg:border-r' : 'sm:border-r'
-                          }`}>
-                            <div className="flex items-center space-x-2 mb-4">
-                              <Settings className="w-5 h-5 text-purple-600" />
-                              <h4 className="font-semibold text-purple-900 dark:text-purple-100">
-                                CIS Controls {selectedFrameworks.cisControls ? selectedFrameworks.cisControls.toUpperCase() : 'IG3'}
-                              </h4>
+                          {/* CIS Controls Column - Only show if selected */}
+                          {selectedFrameworks.cisControls && (
+                            <div className="p-4 sm:p-6 border-b sm:border-b-0 border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10">
+                              <div className="flex items-center space-x-2 mb-4">
+                                <Settings className="w-5 h-5 text-purple-600" />
+                                <h4 className="font-semibold text-purple-900 dark:text-purple-100">
+                                  CIS Controls {selectedFrameworks.cisControls.toUpperCase()}
+                                </h4>
+                              </div>
+                              <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
+                                {(mapping.frameworks?.cisControls || []).map((req, i) => (
+                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700">
+                                    <div className="font-medium text-sm text-purple-900 dark:text-purple-100">{req.code}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
-                              {(mapping.frameworks?.cisControls || []).map((req, i) => (
-                                <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700">
-                                  <div className="font-medium text-sm text-purple-900 dark:text-purple-100">{req.code}</div>
-                                  <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                          )}
 
-                          {/* NIS2 Column - Only show if NIS2 is selected */}
+                          {/* NIS2 Column - Only show if selected */}
                           {selectedFrameworks.nis2 && (
                             <div className="p-4 sm:p-6 bg-indigo-50 dark:bg-indigo-900/10">
                               <div className="flex items-center space-x-2 mb-4">
@@ -1384,9 +1437,6 @@ export default function ComplianceSimplification() {
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-indigo-200 dark:border-indigo-700">
                                     <div className="font-medium text-sm text-indigo-900 dark:text-indigo-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
-                                    {req.description && (
-                                      <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">{cleanMarkdownFormatting(req.description)}</div>
-                                    )}
                                   </div>
                                 ))}
                               </div>
@@ -1419,13 +1469,14 @@ export default function ComplianceSimplification() {
                                       const reductionPercent = totalGdprReqs > 1 ? Math.round((1 - unifiedReqs / totalGdprReqs) * 100) : 0;
                                       return `Unifies ${totalGdprReqs} GDPR articles - ${reductionPercent}% simpler`;
                                     } else {
-                                      // For regular groups, show framework requirements
+                                      // For regular groups, show framework requirements from selected frameworks only
                                       const totalFrameworkReqs = 
-                                        (mapping.frameworks?.iso27001?.length || 0) + 
-                                        (mapping.frameworks?.iso27002?.length || 0) + 
-                                        (mapping.frameworks?.cisControls?.length || 0);
+                                        (selectedFrameworks.iso27001 ? (mapping.frameworks?.iso27001?.length || 0) : 0) + 
+                                        (selectedFrameworks.iso27002 ? (mapping.frameworks?.iso27002?.length || 0) : 0) + 
+                                        (selectedFrameworks.cisControls ? (mapping.frameworks?.cisControls?.length || 0) : 0) +
+                                        (selectedFrameworks.nis2 ? (mapping.frameworks?.nis2?.length || 0) : 0);
                                       const reductionPercent = totalFrameworkReqs > 1 ? Math.round((1 - 1 / totalFrameworkReqs) * 100) : 0;
-                                      return `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction`;
+                                      return totalFrameworkReqs > 0 ? `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction` : 'No requirements from selected frameworks';
                                     }
                                   })()}
                                 </span>
@@ -1459,7 +1510,7 @@ export default function ComplianceSimplification() {
                                 {mapping.auditReadyUnified.subRequirements.map((subReq, i) => (
                                   <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                                     <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                    <span className="text-sm text-gray-700 dark:text-gray-300">{subReq}</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">{cleanComplianceSubRequirement(subReq)}</span>
                                   </div>
                                 ))}
                               </div>
@@ -1506,8 +1557,21 @@ export default function ComplianceSimplification() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                    The following unified requirements have been generated by consolidating controls from your selected compliance frameworks:
+                    The following unified requirements have been generated by consolidating controls from your selected compliance frameworks{selectedFrameworks.nis2 && selectedIndustrySector ? ' with sector-specific enhancements for ' + (industrySectors?.find(s => s.id === selectedIndustrySector)?.name || 'selected sector') : ''}:
                   </p>
+                  {selectedFrameworks.nis2 && selectedIndustrySector && SectorSpecificEnhancer.hasSectorEnhancements(selectedIndustrySector) && (
+                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                      <div className="flex items-center space-x-2">
+                        <Factory className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                          Sector-Specific Enhancements Active
+                        </span>
+                      </div>
+                      <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                        {SectorSpecificEnhancer.getEnhancementSummary(selectedIndustrySector)} for {industrySectors?.find(s => s.id === selectedIndustrySector)?.name}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     {selectedFrameworks.iso27001 && (
                       <Badge className="bg-blue-500 text-white px-3 py-1">
@@ -1549,33 +1613,36 @@ export default function ComplianceSimplification() {
                       <div className="text-gray-600 dark:text-gray-400">Total Groups</div>
                     </div>
                     <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
-                      <div className="text-2xl font-bold text-purple-600">{filteredUnifiedMappings.reduce((total, group) => total + group.auditReadyUnified.subRequirements.length, 0)}</div>
-                      <div className="text-gray-600 dark:text-gray-400">Total Sub-requirements</div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {filteredUnifiedMappings.reduce((total, group) => {
+                          const enhancedSubReqs = SectorSpecificEnhancer.enhanceSubRequirements(
+                            group.auditReadyUnified.subRequirements || [],
+                            group.category,
+                            selectedIndustrySector,
+                            selectedFrameworks.nis2
+                          );
+                          return total + enhancedSubReqs.length;
+                        }, 0)}
+                      </div>
+                      <div className="text-gray-600 dark:text-gray-400">Total Sub-requirements{selectedFrameworks.nis2 && selectedIndustrySector ? ' (Enhanced)' : ''}</div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Category Navigation Dropdown */}
+                {/* Category Filter Dropdown */}
                 <div className="mb-6">
                   <div className="flex items-center space-x-2">
-                    <Target className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm font-medium">Jump to Category:</span>
+                    <Filter className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium">Filter Categories:</span>
                   </div>
                   <Select 
-                    value={selectedMapping || 'all'}
+                    value={unifiedCategoryFilter}
                     onValueChange={(value) => {
-                      setSelectedMapping(value);
-                      // Scroll to the selected category
-                      if (value !== 'all') {
-                        const element = document.getElementById(`unified-${value}`);
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }
+                      setUnifiedCategoryFilter(value);
                     }}
                   >
                     <SelectTrigger className="w-full max-w-lg mt-2">
-                      <SelectValue placeholder="Select a category to jump to" />
+                      <SelectValue placeholder="Filter requirement categories" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
@@ -1589,7 +1656,9 @@ export default function ComplianceSimplification() {
                 </div>
                 
                 <div className="space-y-6">
-                  {filteredUnifiedMappings.map((mapping, index) => (
+                  {filteredUnifiedMappings.filter(mapping => 
+                    unifiedCategoryFilter === 'all' || mapping.id === unifiedCategoryFilter
+                  ).map((mapping, index) => (
                     <motion.div
                       key={mapping.id}
                       id={`unified-${mapping.id}`}
@@ -1604,7 +1673,7 @@ export default function ComplianceSimplification() {
                             {mapping.category.replace(/^\d+\. /, '')}
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                            {mapping.auditReadyUnified.description}
+                            {cleanMarkdownFormatting(mapping.auditReadyUnified.description)}
                           </p>
                           <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
                             {mapping.category}
@@ -1617,7 +1686,15 @@ export default function ComplianceSimplification() {
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">requirements</div>
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {mapping.auditReadyUnified.subRequirements.length} sub-requirements
+                            {(() => {
+                              const enhancedSubReqs = SectorSpecificEnhancer.enhanceSubRequirements(
+                                mapping.auditReadyUnified.subRequirements || [],
+                                mapping.category,
+                                selectedIndustrySector,
+                                selectedFrameworks.nis2
+                              );
+                              return enhancedSubReqs.length;
+                            })()} sub-requirements{selectedFrameworks.nis2 && selectedIndustrySector && SectorSpecificEnhancer.hasSectorEnhancements(selectedIndustrySector) ? ' (enhanced)' : ''}
                           </div>
                         </div>
                       </div>
@@ -1626,11 +1703,19 @@ export default function ComplianceSimplification() {
                         <h4 className="font-medium text-gray-900 dark:text-white">Implementation Guidelines:</h4>
                         <div className="space-y-4">
                           {(() => {
-                            // Group sub-requirements for better organization
+                            // Apply sector-specific enhancements if NIS2 and sector are selected
+                            const enhancedSubReqs = SectorSpecificEnhancer.enhanceSubRequirements(
+                              mapping.auditReadyUnified.subRequirements || [],
+                              mapping.category,
+                              selectedIndustrySector,
+                              selectedFrameworks.nis2
+                            );
+                            
+                            // Group enhanced sub-requirements for better organization
                             const groupedSubReqs = {
-                              'Core Requirements': (mapping.auditReadyUnified.subRequirements || []).filter((_, i) => i < Math.ceil((mapping.auditReadyUnified.subRequirements || []).length / 3)),
-                              'Implementation Standards': (mapping.auditReadyUnified.subRequirements || []).filter((_, i) => i >= Math.ceil((mapping.auditReadyUnified.subRequirements || []).length / 3) && i < Math.ceil((mapping.auditReadyUnified.subRequirements || []).length * 2 / 3)),
-                              'Monitoring & Compliance': (mapping.auditReadyUnified.subRequirements || []).filter((_, i) => i >= Math.ceil((mapping.auditReadyUnified.subRequirements || []).length * 2 / 3))
+                              'Core Requirements': enhancedSubReqs.filter((_, i) => i < Math.ceil(enhancedSubReqs.length / 3)),
+                              'Implementation Standards': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length / 3) && i < Math.ceil(enhancedSubReqs.length * 2 / 3)),
+                              'Monitoring & Compliance': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length * 2 / 3))
                             };
                             
                             return Object.entries(groupedSubReqs).map(([groupName, requirements]) => (
@@ -1771,87 +1856,6 @@ export default function ComplianceSimplification() {
                   mappingData={filteredMappings}
                 />
                 
-                {/* Interactive Framework Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {filteredMappings.filter(mapping => {
-                      const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
-                        if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
-                        if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
-                        return selectedFrameworks[key] && value.length > 0;
-                      });
-                      return activeFrameworks.length > 1;
-                    }).map((mapping, index) => {
-                      const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
-                        if (key === 'gdpr' || key === 'nis2') return selectedFrameworks[key] && value && value.length > 0;
-                        if (key === 'cisControls') return selectedFrameworks.cisControls && value.length > 0;
-                        return selectedFrameworks[key] && value.length > 0;
-                      });
-                      
-                      const totalOriginalReqs = activeFrameworks.reduce((sum, [_, reqs]) => sum + reqs.length, 0);
-                      const unifiedReqs = mapping.auditReadyUnified.subRequirements.length;
-                      const efficiency = Math.round((1 - unifiedReqs / totalOriginalReqs) * 100);
-                      
-                      return (
-                        <motion.div
-                          key={mapping.id}
-                          id={`group-card-${mapping.id}`}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
-                        >
-                          <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-3">
-                            {mapping.category.replace(/^\d+\. /, '')}
-                          </h4>
-                          
-                          {/* Visual Overlap Representation */}
-                          <div className="mb-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs text-gray-600 dark:text-gray-400">Requirements</span>
-                              <span className="text-xs font-medium text-green-600">{efficiency}% reduction</span>
-                            </div>
-                            
-                            {/* Before/After Bars */}
-                            <div className="space-y-2">
-                              {/* Original Requirements Bar */}
-                              <div className="relative">
-                                <div className="text-xs text-gray-500 mb-1">Before: {totalOriginalReqs} requirements</div>
-                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                  <div className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full" style={{ width: '100%' }} />
-                                </div>
-                              </div>
-                              
-                              {/* Unified Requirements Bar */}
-                              <div className="relative">
-                                <div className="text-xs text-gray-500 mb-1">After: {unifiedReqs} unified requirements</div>
-                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                  <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full" style={{ width: `${(unifiedReqs / totalOriginalReqs) * 100}%` }} />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Framework Badges */}
-                          <div className="flex flex-wrap gap-1">
-                            {activeFrameworks.map(([framework, requirements]) => {
-                              const colors = {
-                                iso27001: 'bg-blue-100 text-blue-700 border-blue-200',
-                                iso27002: 'bg-green-100 text-green-700 border-green-200',
-                                cisControls: 'bg-purple-100 text-purple-700 border-purple-200',
-                                gdpr: 'bg-orange-100 text-orange-700 border-orange-200',
-                                nis2: 'bg-indigo-100 text-indigo-700 border-indigo-200'
-                              };
-                              return (
-                                <span key={framework} className={`text-xs px-2 py-1 rounded-full border ${colors[framework]}`}>
-                                  {framework.toUpperCase()}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
                 
                 {/* Framework Legend */}
                 <div className="border-t pt-6">

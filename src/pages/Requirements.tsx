@@ -6,10 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RequirementTable } from "@/components/requirements/RequirementTable";
 import { RequirementDetail } from "@/components/requirements/RequirementDetail";
 // Removed mock data import - using real data from service
-import { Requirement, RequirementStatus, TagCategory, RequirementPriority } from "@/types";
+import { Requirement, RequirementStatus, RequirementPriority } from "@/types";
 import { ArrowLeft, Filter, Plus, Search, Flag, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SaveIndicator } from "@/components/ui/save-indicator";
 import { useTranslation } from "@/lib/i18n";
 import { useRequirementsService, RequirementWithStatus } from "@/services/requirements/RequirementsService";
@@ -43,18 +42,52 @@ const Requirements = () => {
       : "all"
   );
   const [standardFilter, setStandardFilter] = useState<string>(standardIdFromUrl || "all");
-  const [typeTagFilter, setTypeTagFilter] = useState<string>("all");
-  const [appliesToTagFilter, setAppliesToTagFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [selectedRequirement, setSelectedRequirement] = useState<RequirementWithStatus | null>(null);
   const [localRequirements, setLocalRequirements] = useState<RequirementWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [realTimeStatus, setRealTimeStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
-  const [sortConfig, setSortConfig] = useState<{ key: keyof RequirementWithStatus; direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [standards, setStandards] = useState<any[]>([]);
-  const [tags, setTags] = useState<any[]>([]);
+  const [unifiedCategories, setUnifiedCategories] = useState<any[]>([]);
   const [conflictToResolve, setConflictToResolve] = useState<ConflictResolution | null>(null);
   const [collaborationSessionId, setCollaborationSessionId] = useState<string | null>(null);
+
+  // Color function for consistent category colors - matches RequirementTable logic
+  const getCategoryColor = (categoryName: string): string => {
+    // Same color array as RequirementTable for consistency
+    const colors = [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'bg-green-100 text-green-800 border-green-200', 
+      'bg-purple-100 text-purple-800 border-purple-200',
+      'bg-orange-100 text-orange-800 border-orange-200',
+      'bg-pink-100 text-pink-800 border-pink-200',
+      'bg-indigo-100 text-indigo-800 border-indigo-200',
+      'bg-teal-100 text-teal-800 border-teal-200',
+      'bg-red-100 text-red-800 border-red-200',
+      'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'bg-cyan-100 text-cyan-800 border-cyan-200',
+      'bg-emerald-100 text-emerald-800 border-emerald-200',
+      'bg-violet-100 text-violet-800 border-violet-200',
+      'bg-amber-100 text-amber-800 border-amber-200',
+      'bg-lime-100 text-lime-800 border-lime-200',
+      'bg-sky-100 text-sky-800 border-sky-200',
+      'bg-rose-100 text-rose-800 border-rose-200',
+      'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
+      'bg-slate-100 text-slate-800 border-slate-200',
+      'bg-stone-100 text-stone-800 border-stone-200',
+      'bg-zinc-100 text-zinc-800 border-zinc-200',
+      'bg-neutral-100 text-neutral-800 border-neutral-200'
+    ];
+    
+    // Use hash of category name for consistent color assignment (same logic as RequirementTable)
+    let hash = 0;
+    for (let i = 0; i < categoryName.length; i++) {
+      hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
   
   // Initialize real-time service
   const realTimeService = RequirementsRealTimeService.getInstance();
@@ -81,9 +114,9 @@ const Requirements = () => {
     loadRequirements();
   }, [standardFilter]);
 
-  // Load standards and tags
+  // Load standards and unified categories
   useEffect(() => {
-    loadStandardsAndTags();
+    loadStandardsAndCategories();
   }, []);
 
   // Handle URL params
@@ -158,38 +191,65 @@ const Requirements = () => {
     }
   };
 
-  const loadStandardsAndTags = async () => {
+  const loadStandardsAndCategories = async () => {
     try {
       if (isDemo) {
-        // Load demo standards and tags
-        const { standards: demoStandards, tags: demoTags } = await import('@/data/mockData');
+        // Load demo standards
+        const { standards: demoStandards } = await import('@/data/mockData');
         setStandards(demoStandards);
-        setTags(demoTags);
+        // Set demo unified categories
+        setUnifiedCategories([
+          { id: '1', name: 'Governance & Leadership', sort_order: 1 },
+          { id: '2', name: 'Risk Management', sort_order: 2 },
+          { id: '3', name: 'Inventory and Control of Software Assets', sort_order: 3 },
+          { id: '4', name: 'Inventory and Control of Hardware Assets', sort_order: 4 },
+          { id: '5', name: 'Identity & Access Management', sort_order: 5 },
+          { id: '6', name: 'Data Protection', sort_order: 6 },
+          { id: '7', name: 'Secure Configuration of Hardware and Software', sort_order: 7 },
+          { id: '8', name: 'Vulnerability Management', sort_order: 8 },
+          { id: '9', name: 'Physical & Environmental Security Controls', sort_order: 9 },
+          { id: '10', name: 'Network Infrastructure Management', sort_order: 10 },
+          { id: '11', name: 'Secure Software Development', sort_order: 11 },
+          { id: '12', name: 'Network Monitoring & Defense', sort_order: 12 },
+          { id: '13', name: 'Supplier & Third-Party Risk Management', sort_order: 13 },
+          { id: '14', name: 'Security Awareness & Skills Training', sort_order: 14 },
+          { id: '15', name: 'Business Continuity & Disaster Recovery Management', sort_order: 15 },
+          { id: '16', name: 'Incident Response Management', sort_order: 16 },
+          { id: '17', name: 'Malware Defenses', sort_order: 17 },
+          { id: '18', name: 'Email & Web Browser Protections', sort_order: 18 },
+          { id: '19', name: 'Penetration Testing', sort_order: 19 },
+          { id: '20', name: 'Audit Log Management', sort_order: 20 },
+          { id: '21', name: 'GDPR Unified Compliance', sort_order: 21 }
+        ]);
       } else {
         // Load from Supabase
-        const [standardsResponse, tagsResponse] = await Promise.all([
+        const [standardsResponse, categoriesResponse] = await Promise.all([
           supabase.from('standards').select('*').eq('is_active', true).order('name'),
-          supabase.from('tags').select('*').eq('is_active', true).order('name')
+          supabase.from('unified_compliance_categories').select('*').eq('is_active', true).order('sort_order')
         ]);
 
         if (standardsResponse.data) {
           setStandards(standardsResponse.data);
         }
-        if (tagsResponse.data) {
-          setTags(tagsResponse.data);
+        if (categoriesResponse.data) {
+          setUnifiedCategories(categoriesResponse.data);
         }
       }
     } catch (error) {
-      console.error('Error loading standards and tags:', error);
+      console.error('Error loading standards and categories:', error);
     }
   };
 
-  const handleSort = (key: keyof RequirementWithStatus) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+  const handleSort = (key: string) => {
+    setSortConfig(prevConfig => {
+      if (!prevConfig || prevConfig.key !== key) {
+        return { key, direction: 'asc' };
+      } else if (prevConfig.direction === 'asc') {
+        return { key, direction: 'desc' };
+      } else {
+        return null;
+      }
+    });
   };
 
   // Real-time collaboration handlers
@@ -328,49 +388,52 @@ const Requirements = () => {
       const matchesStandard = standardFilter === "all" || requirement.standardId === standardFilter;
       const matchesPriority = priorityFilter === "all" || requirement.priority === priorityFilter;
       
-      const matchesTypeTag = typeTagFilter === "all" || (requirement.tags && requirement.tags.includes(typeTagFilter));
-      const matchesAppliesToTag = appliesToTagFilter === "all" || (requirement.tags && requirement.tags.includes(appliesToTagFilter));
+      const matchesCategory = categoryFilter === "all" || 
+        (requirement.tags && requirement.tags.includes(categoryFilter)) ||
+        (requirement.categories && requirement.categories.includes(categoryFilter)) ||
+        (requirement.categories && requirement.categories.some(cat => {
+          // Check if category name matches the filter (for demo data)
+          const category = unifiedCategories.find(uc => uc.name === cat);
+          return category && category.id === categoryFilter;
+        }));
       
-      return matchesSearch && matchesStatus && matchesStandard && matchesPriority && matchesTypeTag && matchesAppliesToTag;
+      return matchesSearch && matchesStatus && matchesStandard && matchesPriority && matchesCategory;
     });
 
     // Apply sorting
     if (sortConfig) {
-      result.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
+      result = result.slice().sort((a, b) => {
+        const aValue = (a as any)[sortConfig.key];
+        const bValue = (b as any)[sortConfig.key];
 
         // Handle null/undefined values
         if (aValue === bValue) return 0;
-        if (aValue === null || aValue === undefined) return 1;
-        if (bValue === null || bValue === undefined) return -1;
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
 
+        let comparison = 0;
+        
         // Handle different data types with proper comparison
         if (sortConfig.key === 'lastAssessmentDate') {
-          // Date comparison
-          const aDate = aValue ? new Date(aValue) : new Date(0);
-          const bDate = bValue ? new Date(bValue) : new Date(0);
-          const comparison = aDate.getTime() - bDate.getTime();
-          return sortConfig.direction === 'asc' ? comparison : -comparison;
+          const aDate = new Date(aValue).getTime();
+          const bDate = new Date(bValue).getTime();
+          comparison = aDate - bDate;
         } else if (sortConfig.key === 'priority') {
-          // Priority comparison with proper ordering
           const priorityOrder = { 'default': 0, 'low': 1, 'medium': 2, 'high': 3 };
-          const aPriority = priorityOrder[aValue as string] ?? 0;
-          const bPriority = priorityOrder[bValue as string] ?? 0;
-          const comparison = aPriority - bPriority;
-          return sortConfig.direction === 'asc' ? comparison : -comparison;
+          const aPriority = priorityOrder[aValue as keyof typeof priorityOrder] ?? 0;
+          const bPriority = priorityOrder[bValue as keyof typeof priorityOrder] ?? 0;
+          comparison = aPriority - bPriority;
         } else {
           // String comparison (case insensitive)
-          const aStr = String(aValue).toLowerCase();
-          const bStr = String(bValue).toLowerCase();
-          const comparison = aStr.localeCompare(bStr);
-          return sortConfig.direction === 'asc' ? comparison : -comparison;
+          comparison = String(aValue).toLowerCase().localeCompare(String(bValue).toLowerCase());
         }
+        
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
     }
 
     return result;
-  }, [localRequirements, searchQuery, statusFilter, standardFilter, priorityFilter, typeTagFilter, appliesToTagFilter, sortConfig]);
+  }, [localRequirements, searchQuery, statusFilter, standardFilter, priorityFilter, categoryFilter, sortConfig]);
 
   const handleRequirementSelect = (requirement: Requirement) => {
     setSelectedRequirement(requirement);
@@ -443,13 +506,29 @@ const Requirements = () => {
       setSelectedRequirement({ ...selectedRequirement, tags: newTags, organizationTags: newTags });
     }
   };
+
+  const handleCategoriesChange = async (id: string, newCategories: string[]) => {
+    await handleUpdateRequirement(id, { categories: newCategories });
+    
+    if (selectedRequirement && selectedRequirement.id === id) {
+      setSelectedRequirement({ ...selectedRequirement, categories: newCategories });
+    }
+  };
+
+  const handleAppliesToChange = async (id: string, newAppliesTo: string[]) => {
+    await handleUpdateRequirement(id, { appliesTo: newAppliesTo });
+    
+    if (selectedRequirement && selectedRequirement.id === id) {
+      setSelectedRequirement({ ...selectedRequirement, appliesTo: newAppliesTo });
+    }
+  };
   
   const handleGuidanceChange = async (id: string, guidance: string) => {
     // Guidance might be stored as evidence or notes depending on the implementation
-    await handleUpdateRequirement(id, { evidence: guidance });
+    await handleUpdateRequirement(id, { guidance: guidance });
     
     if (selectedRequirement && selectedRequirement.id === id) {
-      setSelectedRequirement({ ...selectedRequirement, evidence: guidance });
+      setSelectedRequirement({ ...selectedRequirement, guidance: guidance });
     }
   };
 
@@ -458,12 +537,6 @@ const Requirements = () => {
     return standard ? t(`standard.${id}.name`, standard.name) : id;
   };
 
-  const getTagsByCategory = (category: TagCategory) => {
-    return tags.filter(tag => tag.category === category && !tag.parentId);
-  };
-
-  const typeTags = getTagsByCategory('type');
-  const appliesToTags = getTagsByCategory('applies-to');
 
   // Set sample priorities for demonstration
   useEffect(() => {
@@ -609,62 +682,31 @@ const Requirements = () => {
             </div>
           </div>
           
-          <Tabs defaultValue="type" className="mb-4">
-            <TabsList>
-              <TabsTrigger value="type">{t('requirements.tabs.type', 'Type')}</TabsTrigger>
-              <TabsTrigger value="applies-to">{t('requirements.tabs.applies_to', 'Applies To')}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="type" className="pt-4">
-              <div className="flex flex-wrap gap-2">
+          <div className="mb-4">
+            <h3 className="text-sm font-medium mb-3">{t('requirements.filter.category', 'Filter by Category')}</h3>
+            <div className="flex flex-wrap gap-2">
+              <Badge 
+                key="all" 
+                className={`cursor-pointer transition-colors ${categoryFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}
+                onClick={() => setCategoryFilter('all')}
+              >
+                All Categories
+              </Badge>
+              {unifiedCategories.map(category => (
                 <Badge 
-                  key="all" 
-                  className={`cursor-pointer ${typeTagFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}
-                  onClick={() => setTypeTagFilter('all')}
+                  key={category.id}
+                  className={`cursor-pointer transition-colors border ${
+                    categoryFilter === category.id 
+                      ? getCategoryColor(category.name) 
+                      : getCategoryColor(category.name) + ' opacity-60 hover:opacity-80'
+                  }`}
+                  onClick={() => setCategoryFilter(categoryFilter === category.id ? 'all' : category.id)}
                 >
-                  All Types
+                  {category.name}
                 </Badge>
-                {typeTags.map(tag => (
-                  <Badge 
-                    key={tag.id}
-                    style={{ 
-                      backgroundColor: typeTagFilter === tag.id ? tag.color : `${tag.color}20`,
-                      color: typeTagFilter === tag.id ? 'white' : tag.color,
-                      borderColor: `${tag.color}40`,
-                    }}
-                    className="cursor-pointer border hover:opacity-90"
-                    onClick={() => setTypeTagFilter(typeTagFilter === tag.id ? 'all' : tag.id)}
-                  >
-                    {tag.name}
-                  </Badge>
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="applies-to" className="pt-4">
-              <div className="flex flex-wrap gap-2">
-                <Badge 
-                  key="all" 
-                  className={`cursor-pointer ${appliesToTagFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}
-                  onClick={() => setAppliesToTagFilter('all')}
-                >
-                  All Targets
-                </Badge>
-                {appliesToTags.map(tag => (
-                  <Badge 
-                    key={tag.id}
-                    style={{ 
-                      backgroundColor: appliesToTagFilter === tag.id ? tag.color : `${tag.color}20`,
-                      color: appliesToTagFilter === tag.id ? 'white' : tag.color,
-                      borderColor: `${tag.color}40`,
-                    }}
-                    className="cursor-pointer border hover:opacity-90"
-                    onClick={() => setAppliesToTagFilter(appliesToTagFilter === tag.id ? 'all' : tag.id)}
-                  >
-                    {tag.name}
-                  </Badge>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+              ))}
+            </div>
+          </div>
           
           <RequirementTable 
             requirements={sortedAndFilteredRequirements} 
@@ -715,6 +757,8 @@ const Requirements = () => {
             onEvidenceChange={handleEvidenceChange}
             onNotesChange={handleNotesChange}
             onTagsChange={handleTagsChange}
+            onCategoriesChange={handleCategoriesChange}
+            onAppliesToChange={handleAppliesToChange}
             onGuidanceChange={handleGuidanceChange}
           />
         </>

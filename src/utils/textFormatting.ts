@@ -10,25 +10,118 @@
 export function cleanMarkdownFormatting(text: string): string {
   if (!text) return '';
   
+  // Remove all types of markdown formatting and special characters
+  let cleaned = text;
+  
   // Remove bold markdown formatting (** or __)
-  let cleaned = text.replace(/\*\*(.*?)\*\*/g, '$1');
+  cleaned = cleaned.replace(/\*\*(.*?)\*\*/g, '$1');
   cleaned = cleaned.replace(/__(.*?)__/g, '$1');
   
   // Remove italic markdown formatting (* or _)
   cleaned = cleaned.replace(/(?<!\*)\*(?!\*)([^*]+)\*(?!\*)/g, '$1');
   cleaned = cleaned.replace(/(?<!_)_(?!_)([^_]+)_(?!_)/g, '$1');
   
-  // Remove bullet point markers at the beginning of lines
-  cleaned = cleaned.replace(/^\s*[\*\-\+]\s+/gm, '');
+  // Remove all remaining stars and asterisks
+  cleaned = cleaned.replace(/\*/g, '');
   
-  // Replace multiple bullet points with proper separation
+  // Remove Unicode symbols and special characters
+  cleaned = cleaned.replace(/[⚡️🔥💡⭐️✨🎯🚀💪📋🔒⚠️📊📈📉🔍]/g, '');
+  cleaned = cleaned.replace(/[★☆✓✔️❌❗️❓⚙️🔧🛠️]/g, '');
+  
+  // Remove emoji modifiers and zero-width characters
+  cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  
+  // Remove bullet point markers and list formatting
+  cleaned = cleaned.replace(/^\s*[\*\-\+•]\s+/gm, '');
+  cleaned = cleaned.replace(/^[\s]*[\d]+[\.\)]\s+/gm, ''); // numbered lists
+  
+  // Replace multiple bullet points or dashes with periods
   cleaned = cleaned.replace(/•\s*/g, '. ');
+  cleaned = cleaned.replace(/\s*-\s*/g, '. ');
   
-  // Clean up extra whitespace
+  // Remove excessive technical jargon indicators
+  cleaned = cleaned.replace(/\b(REGULATORY|REQUIREMENTS?|OBLIGATIONS?|COMPLIANCE|DIRECTIVE)\b:?\s*/gi, '');
+  
+  // Simplify overly complex phrases
+  cleaned = cleaned.replace(/This may seem overwhelming at first, but with proper preparation and understanding,?\s*/gi, '');
+  cleaned = cleaned.replace(/The key is to understand that\s*/gi, '');
+  cleaned = cleaned.replace(/The good news is that\s*/gi, '');
+  cleaned = cleaned.replace(/\bAdditionally,?\s*/gi, 'Also, ');
+  cleaned = cleaned.replace(/\bFurthermore,?\s*/gi, 'Also, ');
+  cleaned = cleaned.replace(/\bMoreover,?\s*/gi, 'Also, ');
+  
+  // Shorten overly long sentences by breaking them
+  cleaned = cleaned.replace(/(\w+),\s*especially\s+([^,]+),\s*/gi, '$1. For $2, ');
+  cleaned = cleaned.replace(/(\w+),\s*depending\s+on\s+([^,]+),\s*/gi, '$1. This varies by $2. ');
+  
+  // Clean up excessive whitespace and normalize spacing
+  cleaned = cleaned.replace(/\s+/g, ' ');
+  cleaned = cleaned.replace(/\s*\.\s*\./g, '.');
+  cleaned = cleaned.replace(/\s*;\s*/g, '. ');
+  cleaned = cleaned.replace(/\s*,\s*,/g, ',');
+  
+  // Remove trailing punctuation duplicates
+  cleaned = cleaned.replace(/([.!?])+/g, '$1');
+  
+  // Trim 
+  cleaned = cleaned.trim();
+  
+  return cleaned;
+}
+
+/**
+ * Specialized cleaning for compliance sub-requirements to make them concise and gentle
+ * @param text - The sub-requirement text to clean
+ * @returns Clean, concise, and gentle compliance text
+ */
+export function cleanComplianceSubRequirement(text: string): string {
+  if (!text) return '';
+  
+  // Start with basic markdown cleaning
+  let cleaned = cleanMarkdownFormatting(text);
+  
+  // Remove overly formal compliance language
+  cleaned = cleaned.replace(/^REGULATORY\s+INCIDENT\s+REPORTING\s+REQUIREMENTS?:?\s*/gi, '');
+  cleaned = cleaned.replace(/^CRITICAL\s+TIMING:?\s*/gi, 'Timing: ');
+  cleaned = cleaned.replace(/^IMPORTANT\s+DUAL\s+OBLIGATIONS?:?\s*/gi, 'Note: ');
+  cleaned = cleaned.replace(/^PRACTICAL\s+PREPARATION\s+TIPS?:?\s*/gi, 'Preparation: ');
+  
+  // Simplify authority reporting language
+  cleaned = cleaned.replace(/You are required to report significant cybersecurity incidents to the CSIRT \(Computer Security Incident Response Team\) authority or supervisory authority responsible for your sector\./gi, 'Report cybersecurity incidents to your sector\'s CSIRT or supervisory authority.');
+  
+  // Simplify timing requirements
+  cleaned = cleaned.replace(/Three-Step Reporting Timeline:\s*/gi, 'Reporting timeline: ');
+  cleaned = cleaned.replace(/Early warning within 24 hours \(NIS2 requirement\) - Initial notification of significant incidents/gi, '24 hours: Initial notification (NIS2)');
+  cleaned = cleaned.replace(/Incident report within 72 hours \(Both NIS2 detailed report and GDPR breach notification\) - Comprehensive incident details/gi, '72 hours: Detailed report (NIS2 + GDPR if applicable)');
+  cleaned = cleaned.replace(/Final report within 1 month \(NIS2 requirement\) - Complete analysis and remediation steps/gi, '1 month: Final analysis report (NIS2)');
+  
+  // Simplify dual obligations
+  cleaned = cleaned.replace(/If an incident affects both critical services AND personal data, you'll need to report to both your sector's supervisory authority \(for NIS2 compliance\) and your national data protection authority \(for GDPR compliance\)\./gi, 'For incidents affecting both services and personal data, report to both NIS2 supervisory authority and data protection authority.');
+  
+  // Simplify preparation tips
+  cleaned = cleaned.replace(/Maintain an updated contact list of relevant authorities for your sector/gi, 'Keep updated authority contact lists');
+  cleaned = cleaned.replace(/Prepare incident report templates that cover both NIS2 and GDPR requirements/gi, 'Prepare report templates for NIS2 and GDPR');
+  cleaned = cleaned.replace(/Establish clear internal escalation procedures to meet tight deadlines/gi, 'Set up clear escalation procedures');
+  cleaned = cleaned.replace(/Consider appointing a Data Protection Officer \(DPO\) who can help coordinate reporting obligations/gi, 'Consider appointing a DPO for coordination');
+  
+  // Shorten overly long explanations
+  if (cleaned.length > 200) {
+    // Split long sentences and take the most important parts
+    const sentences = cleaned.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0);
+    
+    // Keep only the most essential sentences (first 2-3)
+    if (sentences.length > 3) {
+      cleaned = sentences.slice(0, 3).join('. ') + '.';
+    }
+  }
+  
+  // Final cleanup
   cleaned = cleaned.replace(/\s+/g, ' ').trim();
   
-  // Ensure sentences end with proper punctuation
-  cleaned = cleaned.replace(/\.\s*\./g, '.');
+  // Ensure it ends properly
+  if (cleaned && !cleaned.match(/[.!?]$/)) {
+    cleaned += '.';
+  }
   
   return cleaned;
 }

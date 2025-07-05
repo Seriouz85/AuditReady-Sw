@@ -145,18 +145,25 @@ interface StripePrice {
   nickname: string;
 }
 
-// Load Stripe data function
+// Load Stripe data function with timeout
 const loadStripeData = async () => {
   try {
     console.log('Loading Stripe data using secure StripeAdminService...');
     
+    // Add overall timeout for all Stripe operations
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Stripe data loading timeout')), 10000); // 10 second overall timeout
+    });
+    
     // Get Stripe data in parallel using secure stripeAdminService
-    const [products, prices, coupons, analytics] = await Promise.all([
+    const dataPromise = Promise.all([
       stripeAdminService.listProducts(),
       stripeAdminService.listPrices(),
       stripeAdminService.listCoupons(),
       stripeAdminService.getAnalytics()
     ]);
+    
+    const [products, prices, coupons, analytics] = await Promise.race([dataPromise, timeoutPromise]) as any;
     
     console.log('Loaded products:', products.length);
     console.log('Loaded prices:', prices.length);
@@ -178,6 +185,9 @@ const loadStripeData = async () => {
         monthlyRevenue: 0,
         activeSubscriptions: 0,
         customers: 0,
+        churnRate: 0,
+        averageRevenuePerUser: 0,
+        pendingInvoices: 0,
         connectionStatus: false
       },
       customers: [],

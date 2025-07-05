@@ -156,7 +156,10 @@ export class RequirementsService {
       notes?: string;
       responsibleParty?: string;
       tags?: string[];
+      categories?: string[];
+      appliesTo?: string[];
       riskLevel?: string;
+      guidance?: string;
     }
   ): Promise<{ success: boolean; error?: string }> {
     try {
@@ -172,7 +175,10 @@ export class RequirementsService {
           notes: updates.notes,
           responsible_party: updates.responsibleParty,
           tags: updates.tags,
+          categories: updates.categories,
+          applies_to: updates.appliesTo,
           risk_level: updates.riskLevel,
+          implementation_guidance: updates.guidance,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'organization_id,requirement_id'
@@ -200,7 +206,10 @@ export class RequirementsService {
       notes?: string;
       responsibleParty?: string;
       tags?: string[];
+      categories?: string[];
+      appliesTo?: string[];
       riskLevel?: string;
+      guidance?: string;
     }
   ): Promise<{ success: boolean; error?: string }> {
     try {
@@ -215,7 +224,10 @@ export class RequirementsService {
           notes: updates.notes || '',
           responsible_party: updates.responsibleParty || '',
           tags: updates.tags || [],
+          categories: updates.categories || [],
+          applies_to: updates.appliesTo || [],
           risk_level: updates.riskLevel || 'medium',
+          implementation_guidance: updates.guidance || '',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         });
@@ -312,7 +324,10 @@ export const useRequirementsService = () => {
       notes?: string;
       responsibleParty?: string;
       tags?: string[];
+      categories?: string[];
+      appliesTo?: string[];
       riskLevel?: string;
+      guidance?: string;
     }
   ): Promise<{ success: boolean; error?: string }> => {
     if (isDemo) {

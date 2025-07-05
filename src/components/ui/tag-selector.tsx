@@ -17,11 +17,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Tag, TagCategory } from "@/types";
-import { tags as allTags } from "@/data/mockData";
+import { supabase } from "@/lib/supabase";
 import { Input } from "./input";
 import { Label } from "./label";
 import { Separator } from "./separator";
+
+interface UnifiedCategory {
+  id: string;
+  name: string;
+  sort_order: number;
+}
 
 interface TagSelectorProps {
   selectedTags: string[];
@@ -37,246 +42,148 @@ export function TagSelector({
   showLabels = true,
 }: TagSelectorProps) {
   const [open, setOpen] = React.useState(false);
+  const [unifiedCategories, setUnifiedCategories] = React.useState<UnifiedCategory[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const handleSelect = (tagId: string) => {
-    // If this is a parent tag and it was just selected, also select all child tags
-    if (selectedTags.includes(tagId)) {
-      // If unselecting a parent, also unselect all its children
-      const childTags = allTags.filter(tag => tag.parentId === tagId).map(tag => tag.id);
-      onChange(selectedTags.filter(id => id !== tagId && !childTags.includes(id)));
+  // Load unified categories
+  React.useEffect(() => {
+    loadUnifiedCategories();
+  }, []);
+
+  const loadUnifiedCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('unified_compliance_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order');
+
+      if (error) throw error;
+
+      if (data) {
+        setUnifiedCategories(data);
+      }
+    } catch (error) {
+      console.error('Error loading unified categories:', error);
+      // Fallback to hardcoded categories
+      setUnifiedCategories([
+        { id: '1', name: 'Governance & Leadership', sort_order: 1 },
+        { id: '2', name: 'Risk Management', sort_order: 2 },
+        { id: '3', name: 'Inventory and Control of Software Assets', sort_order: 3 },
+        { id: '4', name: 'Inventory and Control of Hardware Assets', sort_order: 4 },
+        { id: '5', name: 'Identity & Access Management', sort_order: 5 },
+        { id: '6', name: 'Data Protection', sort_order: 6 },
+        { id: '7', name: 'Secure Configuration of Hardware and Software', sort_order: 7 },
+        { id: '8', name: 'Vulnerability Management', sort_order: 8 },
+        { id: '9', name: 'Physical & Environmental Security Controls', sort_order: 9 },
+        { id: '10', name: 'Network Infrastructure Management', sort_order: 10 },
+        { id: '11', name: 'Secure Software Development', sort_order: 11 },
+        { id: '12', name: 'Network Monitoring & Defense', sort_order: 12 },
+        { id: '13', name: 'Supplier & Third-Party Risk Management', sort_order: 13 },
+        { id: '14', name: 'Security Awareness & Skills Training', sort_order: 14 },
+        { id: '15', name: 'Business Continuity & Disaster Recovery Management', sort_order: 15 },
+        { id: '16', name: 'Incident Response Management', sort_order: 16 },
+        { id: '17', name: 'Malware Defenses', sort_order: 17 },
+        { id: '18', name: 'Email & Web Browser Protections', sort_order: 18 },
+        { id: '19', name: 'Penetration Testing', sort_order: 19 },
+        { id: '20', name: 'Audit Log Management', sort_order: 20 },
+        { id: '21', name: 'GDPR Unified Compliance', sort_order: 21 }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelect = (categoryId: string) => {
+    if (selectedTags.includes(categoryId)) {
+      onChange(selectedTags.filter(id => id !== categoryId));
     } else {
-      // When selecting a parent, don't auto-select children
-      onChange([...selectedTags, tagId]);
+      onChange([...selectedTags, categoryId]);
     }
   };
 
-  const handleRemove = (tagId: string) => {
-    onChange(selectedTags.filter((id) => id !== tagId));
+  const handleRemove = (categoryId: string) => {
+    onChange(selectedTags.filter((id) => id !== categoryId));
   };
 
-  // Find tag object by id
-  const getTag = (tagId: string): Tag | undefined => {
-    return allTags.find((tag) => tag.id === tagId);
-  };
-
-  // Group tags by category
-  const typeTagsSelected = selectedTags
-    .map(id => getTag(id))
-    .filter(tag => tag?.category === 'type');
-  
-  const appliesToTagsSelected = selectedTags
-    .map(id => getTag(id))
-    .filter(tag => tag?.category === 'applies-to');
-
-  // Filter tags by category
-  const getTagsByCategory = (category: TagCategory, parentId?: string) => {
-    return allTags.filter(tag => 
-      tag.category === category && 
-      (parentId ? tag.parentId === parentId : !tag.parentId)
-    );
-  };
-
-  const typeTags = getTagsByCategory('type');
-  const appliesToParentTags = getTagsByCategory('applies-to');
-  
-  // Get child tags for a parent
-  const getChildTags = (parentId: string) => {
-    return allTags.filter(tag => tag.parentId === parentId);
-  };
-
-  // Format category name for display
-  const formatCategoryName = (category: TagCategory): string => {
-    switch (category) {
-      case 'type': return 'Type';
-      case 'applies-to': return 'Applies to';
-      default: return category;
-    }
+  // Find category by id
+  const getCategory = (categoryId: string): UnifiedCategory | undefined => {
+    return unifiedCategories.find((cat) => cat.id === categoryId);
   };
 
   return (
     <div className={cn("space-y-3", className)}>
       {showLabels && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-          <div>
-            <Label className="text-sm mb-1.5 block">Type:</Label>
-            <div className="flex flex-wrap gap-2 min-h-9 bg-background border rounded-md p-1">
-              {typeTagsSelected.length > 0 ? (
-                typeTagsSelected.map((tag) => tag && (
-                  <Badge
-                    key={tag.id}
-                    style={{ 
-                      backgroundColor: `${tag.color}20`, // 20% opacity
-                      color: tag.color,
-                      borderColor: `${tag.color}40`, // 40% opacity
-                    }}
-                    className="px-2 py-0.5 border flex items-center gap-1 group"
-                  >
-                    <span>{tag.name}</span>
-                    <X
-                      size={14}
-                      className="cursor-pointer opacity-70 group-hover:opacity-100"
-                      onClick={() => handleRemove(tag.id)}
-                    />
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-sm text-muted-foreground py-1 px-2">No types selected</span>
-              )}
-            </div>
-          </div>
-          <div>
-            <Label className="text-sm mb-1.5 block">Applies to:</Label>
-            <div className="flex flex-wrap gap-2 min-h-9 bg-background border rounded-md p-1">
-              {appliesToTagsSelected.length > 0 ? (
-                appliesToTagsSelected.map((tag) => tag && (
-                  <Badge
-                    key={tag.id}
-                    style={{ 
-                      backgroundColor: `${tag.color}20`, // 20% opacity
-                      color: tag.color,
-                      borderColor: `${tag.color}40`, // 40% opacity
-                    }}
-                    className="px-2 py-0.5 border flex items-center gap-1 group"
-                  >
-                    <span>{tag.name}</span>
-                    <X
-                      size={14}
-                      className="cursor-pointer opacity-70 group-hover:opacity-100"
-                      onClick={() => handleRemove(tag.id)}
-                    />
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-sm text-muted-foreground py-1 px-2">No targets selected</span>
-              )}
-            </div>
-          </div>
+        <div className="mb-2">
+          <Label className="text-sm font-medium">Categories</Label>
+          <p className="text-xs text-muted-foreground mt-1">
+            Select categories that apply to this requirement
+          </p>
         </div>
       )}
       
-      {!showLabels && (
-        <div className="flex flex-wrap gap-2">
-          {selectedTags.map((tagId) => {
-            const tag = getTag(tagId);
-            if (!tag) return null;
-            
-            return (
-              <Badge
-                key={tagId}
-                style={{ 
-                  backgroundColor: `${tag.color}20`, // 20% opacity
-                  color: tag.color,
-                  borderColor: `${tag.color}40`, // 40% opacity
-                }}
-                className="px-2 py-0.5 border flex items-center gap-1 group"
+      <div className="flex flex-wrap gap-2">
+        {selectedTags.map((categoryId) => {
+          const category = getCategory(categoryId);
+          if (!category) return null;
+          
+          return (
+            <Badge
+              key={category.id}
+              variant="secondary"
+              className="pr-1"
+            >
+              {category.name}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
+                onClick={() => handleRemove(category.id)}
               >
-                <span>{tag.name}</span>
-                <X
-                  size={14}
-                  className="cursor-pointer opacity-70 group-hover:opacity-100"
-                  onClick={() => handleRemove(tagId)}
-                />
-              </Badge>
-            );
-          })}
-        </div>
-      )}
-      
+                <X className="h-3 w-3" />
+              </Button>
+            </Badge>
+          );
+        })}
+      </div>
+
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="h-8 gap-1 border-dashed"
+            className="w-full justify-start"
+            disabled={loading}
           >
-            <Plus size={14} />
-            Add Tags
+            <Plus className="mr-2 h-4 w-4" />
+            {loading ? "Loading categories..." : "Add categories"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-[300px]" align="start">
+        <PopoverContent className="w-[400px] p-0" align="start">
           <Command>
-            <CommandInput placeholder="Search tags..." />
-            <CommandList className="max-h-[300px]">
-              <CommandEmpty>No tags found.</CommandEmpty>
-              
-              {/* Type tags */}
-              <CommandGroup heading="Type">
-                {typeTags.map((tag) => {
-                  const isSelected = selectedTags.includes(tag.id);
-                  return (
-                    <CommandItem
-                      key={tag.id}
-                      onSelect={() => handleSelect(tag.id)}
-                      className="flex items-center gap-2"
-                    >
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: tag.color }}
-                      />
-                      <span>{tag.name}</span>
-                      {tag.description && (
-                        <span className="text-muted-foreground text-xs ml-1 truncate">
-                          — {tag.description}
-                        </span>
+            <CommandInput placeholder="Search categories..." />
+            <CommandList>
+              <CommandEmpty>No categories found.</CommandEmpty>
+              <CommandGroup>
+                {unifiedCategories.map((category) => (
+                  <CommandItem
+                    key={category.id}
+                    onSelect={() => {
+                      handleSelect(category.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedTags.includes(category.id)
+                          ? "opacity-100"
+                          : "opacity-0"
                       )}
-                      {isSelected && (
-                        <Check className="ml-auto h-4 w-4 text-green-500" />
-                      )}
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-              
-              <CommandSeparator />
-              
-              {/* Applies To tags */}
-              <CommandGroup heading="Applies To">
-                {appliesToParentTags.map((tag) => {
-                  const isSelected = selectedTags.includes(tag.id);
-                  const childTags = getChildTags(tag.id);
-                  
-                  return (
-                    <React.Fragment key={tag.id}>
-                      <CommandItem
-                        onSelect={() => handleSelect(tag.id)}
-                        className="flex items-center gap-2"
-                      >
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: tag.color }}
-                        />
-                        <span>{tag.name}</span>
-                        {isSelected && (
-                          <Check className="ml-auto h-4 w-4 text-green-500" />
-                        )}
-                      </CommandItem>
-                      
-                      {childTags.length > 0 && isSelected && (
-                        <div className="pl-6 border-l-2 ml-4 my-1 border-muted">
-                          {childTags.map(childTag => {
-                            const isChildSelected = selectedTags.includes(childTag.id);
-                            return (
-                              <CommandItem
-                                key={childTag.id}
-                                onSelect={() => handleSelect(childTag.id)}
-                                className="flex items-center gap-2"
-                              >
-                                <div
-                                  className="w-2 h-2 rounded-full"
-                                  style={{ backgroundColor: childTag.color }}
-                                />
-                                <span className="text-sm">{childTag.name}</span>
-                                {isChildSelected && (
-                                  <Check className="ml-auto h-3 w-3 text-green-500" />
-                                )}
-                              </CommandItem>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
+                    />
+                    {category.name}
+                  </CommandItem>
+                ))}
               </CommandGroup>
             </CommandList>
           </Command>
@@ -286,68 +193,3 @@ export function TagSelector({
   );
 }
 
-export function TagList({ tagIds }: { tagIds?: string[] }) {
-  if (!tagIds || tagIds.length === 0) return null;
-
-  // Group by category
-  const typeTagIds = tagIds.filter(id => {
-    const tag = allTags.find(t => t.id === id);
-    return tag?.category === 'type';
-  });
-  
-  const appliesToTagIds = tagIds.filter(id => {
-    const tag = allTags.find(t => t.id === id);
-    return tag?.category === 'applies-to';
-  });
-
-  return (
-    <div className="space-y-1">
-      {typeTagIds.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {typeTagIds.map((tagId) => {
-            const tag = allTags.find((t) => t.id === tagId);
-            if (!tag) return null;
-            
-            return (
-              <Badge
-                key={tagId}
-                style={{ 
-                  backgroundColor: `${tag.color}20`, // 20% opacity
-                  color: tag.color,
-                  borderColor: `${tag.color}40`, // 40% opacity
-                }}
-                className="px-1.5 py-0 text-xs border"
-              >
-                {tag.name}
-              </Badge>
-            );
-          })}
-        </div>
-      )}
-      
-      {appliesToTagIds.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {appliesToTagIds.map((tagId) => {
-            const tag = allTags.find((t) => t.id === tagId);
-            if (!tag) return null;
-            
-            return (
-              <Badge
-                key={tagId}
-                style={{ 
-                  backgroundColor: `${tag.color}20`, // 20% opacity
-                  color: tag.color,
-                  borderColor: `${tag.color}40`, // 40% opacity
-                }}
-                className="px-1.5 py-0 text-xs border"
-                variant="outline"
-              >
-                {tag.name}
-              </Badge>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-} 

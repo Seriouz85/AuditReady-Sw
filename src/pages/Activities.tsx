@@ -11,10 +11,12 @@ import { requirementAssignmentService } from "@/services/assignments/Requirement
 import { RequirementAssignment, UserActivity } from "@/types";
 import { 
   CheckCircle, Clock, AlertCircle, Calendar, Search, Filter,
-  FileText, User, Tag, ChevronRight, Target
+  FileText, User, Tag, ChevronRight, Target, ChevronDown,
+  Building, Laptop, MapPin, Server, Network, Monitor
 } from "lucide-react";
-import { TagList } from "@/components/ui/tag-selector";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
+// Fixed TagList import issue
 interface Assignment {
   id: string;
   requirementId: string;
@@ -43,8 +45,9 @@ interface Activity {
   metadata?: any;
 }
 
-// Demo data for demo accounts
+// Demo data for demo accounts - Enhanced to showcase grouping
 const demoAssignments: Assignment[] = [
+  // Organization Requirements (8 items)
   {
     id: 'demo-assignment-1',
     requirementId: 'iso-27001-A5.1',
@@ -59,27 +62,112 @@ const demoAssignments: Assignment[] = [
     dueDate: '2025-01-15',
     assignedBy: 'Demo CISO',
     assignedAt: '2025-01-06T10:00:00Z',
-    tags: ['tag-organizational', 'tag-organization'],
+    tags: ['organizations'],
     notes: 'Focus on implementing comprehensive information security policies aligned with organizational objectives.'
   },
   {
     id: 'demo-assignment-2',
     requirementId: 'iso-27001-A6.1',
     requirementCode: 'A.6.1',
-    requirementName: 'Screening',
-    requirementDescription: 'Background verification checks on all candidates for employment shall be carried out in accordance with relevant laws, regulations and ethics and shall be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.',
+    requirementName: 'Personnel screening',
+    requirementDescription: 'Background verification checks on all candidates for employment shall be carried out in accordance with relevant laws, regulations and ethics.',
     standardId: 'iso-27002-2022',
     standardName: 'ISO 27002:2022',
     status: 'in_progress',
     priority: 'medium',
     fulfillmentLevel: 'partially-fulfilled',
     dueDate: '2025-01-20',
-    assignedBy: 'Demo Admin',
+    assignedBy: 'HR Director',
     assignedAt: '2025-01-04T14:30:00Z',
-    tags: ['tag-awareness', 'tag-organization']
+    tags: ['organizations'],
+    notes: 'Coordinate with HR for background check procedures.'
   },
   {
     id: 'demo-assignment-3',
+    requirementId: 'iso-27001-A7.1',
+    requirementCode: 'A.7.1',
+    requirementName: 'Prior to employment',
+    requirementDescription: 'Security responsibilities and duties shall be defined and allocated to personnel.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'assigned',
+    priority: 'medium',
+    fulfillmentLevel: 'not-fulfilled',
+    dueDate: '2025-02-01',
+    assignedBy: 'CISO',
+    assignedAt: '2025-01-05T09:00:00Z',
+    tags: ['organizations']
+  },
+  {
+    id: 'demo-assignment-4',
+    requirementId: 'iso-27001-A12.1',
+    requirementCode: 'A.12.1',
+    requirementName: 'Event logging',
+    requirementDescription: 'Event logs recording user activities, exceptions and information security events shall be produced and kept.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'overdue',
+    priority: 'high',
+    fulfillmentLevel: 'not-fulfilled',
+    dueDate: '2025-01-05',
+    assignedBy: 'IT Manager',
+    assignedAt: '2025-01-02T11:00:00Z',
+    tags: ['organizations']
+  },
+
+  // Applications/Systems Requirements (5 items)
+  {
+    id: 'demo-assignment-5',
+    requirementId: 'iso-27001-A8.9',
+    requirementCode: 'A.8.9',
+    requirementName: 'Configuration management',
+    requirementDescription: 'Configurations, including security configurations, of hardware, software, services and networks shall be established.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'in_progress',
+    priority: 'high',
+    fulfillmentLevel: 'partially-fulfilled',
+    dueDate: '2025-01-18',
+    assignedBy: 'DevOps Lead',
+    assignedAt: '2025-01-03T08:30:00Z',
+    tags: ['applications_systems']
+  },
+  {
+    id: 'demo-assignment-6',
+    requirementId: 'iso-27001-A8.14',
+    requirementCode: 'A.8.14',
+    requirementName: 'Data transfer',
+    requirementDescription: 'Information transfer rules, procedures, or agreements shall be in place for all types of transfer facilities.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'assigned',
+    priority: 'medium',
+    fulfillmentLevel: 'not-fulfilled',
+    dueDate: '2025-02-05',
+    assignedBy: 'Data Officer',
+    assignedAt: '2025-01-06T15:00:00Z',
+    tags: ['applications_systems']
+  },
+  {
+    id: 'demo-assignment-7',
+    requirementId: 'iso-27001-A14.1',
+    requirementCode: 'A.14.1',
+    requirementName: 'Information security in development',
+    requirementDescription: 'Information security shall be implemented in development and support processes.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'completed',
+    priority: 'high',
+    fulfillmentLevel: 'fulfilled',
+    dueDate: '2025-01-12',
+    assignedBy: 'CTO',
+    assignedAt: '2025-01-01T12:00:00Z',
+    tags: ['applications_systems']
+  },
+
+  // Device Requirements (4 items)
+  {
+    id: 'demo-assignment-8',
     requirementId: 'iso-27001-A8.1',
     requirementCode: 'A.8.1',
     requirementName: 'User end point devices',
@@ -90,9 +178,75 @@ const demoAssignments: Assignment[] = [
     priority: 'high',
     fulfillmentLevel: 'fulfilled',
     dueDate: '2025-01-10',
-    assignedBy: 'Demo CISO',
+    assignedBy: 'IT Security',
     assignedAt: '2025-01-02T09:15:00Z',
-    tags: ['tag-endpoint', 'tag-device']
+    tags: ['devices_clients']
+  },
+  {
+    id: 'demo-assignment-9',
+    requirementId: 'iso-27001-A8.2',
+    requirementCode: 'A.8.2',
+    requirementName: 'Privileged access rights',
+    requirementDescription: 'The allocation and use of privileged access rights shall be restricted and controlled.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'in_progress',
+    priority: 'critical',
+    fulfillmentLevel: 'partially-fulfilled',
+    dueDate: '2025-01-25',
+    assignedBy: 'CISO',
+    assignedAt: '2025-01-05T10:00:00Z',
+    tags: ['devices_servers']
+  },
+  {
+    id: 'demo-assignment-10',
+    requirementId: 'iso-27001-A13.1',
+    requirementCode: 'A.13.1',
+    requirementName: 'Network controls',
+    requirementDescription: 'Networks shall be controlled and protected to protect information in systems and applications.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'assigned',
+    priority: 'high',
+    fulfillmentLevel: 'not-fulfilled',
+    dueDate: '2025-01-30',
+    assignedBy: 'Network Admin',
+    assignedAt: '2025-01-06T14:00:00Z',
+    tags: ['devices_networks']
+  },
+
+  // Location Requirements (2 items)
+  {
+    id: 'demo-assignment-11',
+    requirementId: 'iso-27001-A11.1',
+    requirementCode: 'A.11.1',
+    requirementName: 'Physical security perimeters',
+    requirementDescription: 'Physical security perimeters shall be defined and used to protect areas that contain information and other associated assets.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'assigned',
+    priority: 'medium',
+    fulfillmentLevel: 'not-fulfilled',
+    dueDate: '2025-02-10',
+    assignedBy: 'Facilities Manager',
+    assignedAt: '2025-01-07T08:00:00Z',
+    tags: ['locations']
+  },
+  {
+    id: 'demo-assignment-12',
+    requirementId: 'iso-27001-A11.2',
+    requirementCode: 'A.11.2',
+    requirementName: 'Physical entry',
+    requirementDescription: 'Secure areas shall be protected by appropriate entry controls to ensure that only authorized personnel are allowed access.',
+    standardId: 'iso-27002-2022',
+    standardName: 'ISO 27002:2022',
+    status: 'in_progress',
+    priority: 'medium',
+    fulfillmentLevel: 'partially-fulfilled',
+    dueDate: '2025-02-15',
+    assignedBy: 'Security Manager',
+    assignedAt: '2025-01-04T16:30:00Z',
+    tags: ['locations']
   }
 ];
 
@@ -135,6 +289,7 @@ const Activities = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // Load assignments and activities for the logged-in user
   useEffect(() => {
@@ -340,6 +495,90 @@ const Activities = () => {
     }
   };
 
+  // Grouping functions
+  const getGroupConfig = () => ({
+    organizations: {
+      label: 'Organization Requirements',
+      icon: <Building className="h-5 w-5" />,
+      description: 'Requirements that apply to your organization as a whole',
+      color: 'border-blue-200 bg-blue-50/30'
+    },
+    applications_systems: {
+      label: 'Applications/Systems Requirements',
+      icon: <Laptop className="h-5 w-5" />,
+      description: 'Requirements for software applications and systems',
+      color: 'border-green-200 bg-green-50/30'
+    },
+    locations: {
+      label: 'Location Requirements',
+      icon: <MapPin className="h-5 w-5" />,
+      description: 'Requirements for physical locations and facilities',
+      color: 'border-purple-200 bg-purple-50/30'
+    },
+    devices_servers: {
+      label: 'Server Requirements',
+      icon: <Server className="h-5 w-5" />,
+      description: 'Requirements for server infrastructure',
+      color: 'border-orange-200 bg-orange-50/30'
+    },
+    devices_networks: {
+      label: 'Network Requirements',
+      icon: <Network className="h-5 w-5" />,
+      description: 'Requirements for network infrastructure',
+      color: 'border-cyan-200 bg-cyan-50/30'
+    },
+    devices_clients: {
+      label: 'Client Device Requirements',
+      icon: <Monitor className="h-5 w-5" />,
+      description: 'Requirements for client devices and endpoints',
+      color: 'border-indigo-200 bg-indigo-50/30'
+    }
+  });
+
+  const groupAssignmentsByAppliesTo = (assignments: Assignment[]) => {
+    const groups: Record<string, Assignment[]> = {};
+    const groupConfig = getGroupConfig();
+    
+    // Initialize all groups
+    Object.keys(groupConfig).forEach(key => {
+      groups[key] = [];
+    });
+
+    // Group assignments by their first applies-to tag
+    assignments.forEach(assignment => {
+      if (assignment.tags && assignment.tags.length > 0) {
+        const appliesTo = assignment.tags[0]; // Use first tag as primary group
+        if (groups[appliesTo]) {
+          groups[appliesTo].push(assignment);
+        }
+      }
+    });
+
+    return groups;
+  };
+
+  const toggleGroup = (groupKey: string) => {
+    setExpandedGroups(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupKey)) {
+        newSet.delete(groupKey);
+      } else {
+        newSet.add(groupKey);
+      }
+      return newSet;
+    });
+  };
+
+  const getGroupStats = (assignments: Assignment[]) => {
+    const stats = {
+      total: assignments.length,
+      completed: assignments.filter(a => a.status === 'completed').length,
+      overdue: assignments.filter(a => isOverdue(a.dueDate) && a.status !== 'completed').length,
+      inProgress: assignments.filter(a => a.status === 'in_progress').length
+    };
+    return stats;
+  };
+
   const isOverdue = (dueDate?: string) => {
     if (!dueDate) return false;
     return new Date(dueDate) < new Date();
@@ -423,7 +662,7 @@ const Activities = () => {
 
           {/* Assignments List */}
           <div className="space-y-4">
-            {filteredAssignments.length === 0 ? (
+{filteredAssignments.length === 0 ? (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <Target className="h-12 w-12 text-muted-foreground mb-4" />
@@ -437,134 +676,197 @@ const Activities = () => {
                 </CardContent>
               </Card>
             ) : (
-              filteredAssignments.map((assignment) => (
-                <Card key={assignment.id} className={`transition-all hover:shadow-md ${
-                  isOverdue(assignment.dueDate) && assignment.status !== 'completed' 
-                    ? 'border-red-200 bg-red-50/30' 
-                    : ''
-                }`}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(assignment.status)}
-                          <CardTitle className="text-lg">
-                            {assignment.requirementCode} - {assignment.requirementName}
-                          </CardTitle>
-                        </div>
-                        <CardDescription className="flex items-center gap-2">
-                          <Badge variant="outline">{assignment.standardName}</Badge>
-                          <span>•</span>
-                          <span>Assigned by {assignment.assignedBy}</span>
-                        </CardDescription>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getPriorityColor(assignment.priority)}>
-                          {assignment.priority.charAt(0).toUpperCase() + assignment.priority.slice(1)}
-                        </Badge>
-                        {assignment.dueDate && (
-                          <Badge variant={isOverdue(assignment.dueDate) ? "destructive" : "secondary"}>
-                            <Calendar className="h-3 w-3 mr-1" />
-                            {new Date(assignment.dueDate).toLocaleDateString()}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      {assignment.requirementDescription}
-                    </p>
-                    
-                    {assignment.tags && assignment.tags.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-muted-foreground" />
-                        <TagList tagIds={assignment.tags} />
-                      </div>
-                    )}
-                    
-                    {assignment.notes && (
-                      <div className="bg-muted/50 p-3 rounded-md">
-                        <div className="flex items-center gap-2 mb-1">
-                          <FileText className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Assignment Notes:</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{assignment.notes}</p>
-                      </div>
-                    )}
-                    
-                    {/* Status and Fulfillment Section */}
-                    <div className="space-y-3 pt-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">Status:</span>
-                          <Badge variant={
-                            assignment.status === 'completed' ? 'default' :
-                            assignment.status === 'in_progress' ? 'secondary' :
-                            assignment.status === 'overdue' ? 'destructive' :
-                            'outline'
-                          }>
-                            {assignment.status.replace('_', ' ').charAt(0).toUpperCase() + assignment.status.slice(1).replace('_', ' ')}
-                          </Badge>
-                        </div>
-                        
-                        {assignment.status !== 'completed' && (
-                          <div className="flex gap-2">
-                            {assignment.status === 'assigned' && (
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => handleStatusUpdate(assignment.id, 'in_progress')}
-                              >
-                                Start Work
-                              </Button>
-                            )}
-                            {assignment.status === 'in_progress' && (
-                              <Button 
-                                size="sm"
-                                onClick={() => handleStatusUpdate(assignment.id, 'completed')}
-                              >
-                                Mark Complete
-                              </Button>
-                            )}
-                            <Button size="sm" variant="ghost">
-                              <ChevronRight className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+              (() => {
+                const groupedAssignments = groupAssignmentsByAppliesTo(filteredAssignments);
+                const groupConfig = getGroupConfig();
+                
+                return (
+                  <div className="space-y-4">
+                    {Object.entries(groupedAssignments).map(([groupKey, groupAssignments]) => {
+                      if (groupAssignments.length === 0) return null;
                       
-                      {/* Fulfillment Level Dropdown */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">Fulfillment Level:</span>
-                          <Badge className={getFulfillmentLevelColor(assignment.fulfillmentLevel || 'not-fulfilled')}>
-                            {getFulfillmentLevelLabel(assignment.fulfillmentLevel || 'not-fulfilled')}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">Update:</span>
-                          <Select
-                            value={assignment.fulfillmentLevel || 'not-fulfilled'}
-                            onValueChange={(value) => handleFulfillmentLevelUpdate(assignment.id, value)}
-                          >
-                            <SelectTrigger className="w-40 h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="not-fulfilled">Not Fulfilled</SelectItem>
-                              <SelectItem value="partially-fulfilled">Partially Fulfilled</SelectItem>
-                              <SelectItem value="fulfilled">Fulfilled</SelectItem>
-                              <SelectItem value="not-applicable">Not Applicable</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                      const config = groupConfig[groupKey];
+                      const stats = getGroupStats(groupAssignments);
+                      const isExpanded = expandedGroups.has(groupKey);
+                      
+                      return (
+                        <Card key={groupKey} className={`transition-all ${config.color}`}>
+                          <Collapsible open={isExpanded} onOpenChange={() => toggleGroup(groupKey)}>
+                            <CollapsibleTrigger asChild>
+                              <CardHeader className="cursor-pointer hover:bg-gray-50/50 transition-colors">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-white/60 border">
+                                      {config.icon}
+                                    </div>
+                                    <div>
+                                      <CardTitle className="text-lg flex items-center gap-2">
+                                        {config.label}
+                                        <Badge variant="secondary">{stats.total}</Badge>
+                                      </CardTitle>
+                                      <CardDescription>
+                                        {config.description}
+                                        {stats.overdue > 0 && (
+                                          <span className="text-red-600 ml-2">
+                                            • {stats.overdue} overdue
+                                          </span>
+                                        )}
+                                      </CardDescription>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-4">
+                                    <div className="text-right text-sm">
+                                      <div className="font-medium">
+                                        {stats.completed}/{stats.total} completed
+                                      </div>
+                                      <div className="text-muted-foreground text-xs">
+                                        {stats.inProgress} in progress
+                                      </div>
+                                    </div>
+                                    {isExpanded ? (
+                                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                    ) : (
+                                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                    )}
+                                  </div>
+                                </div>
+                              </CardHeader>
+                            </CollapsibleTrigger>
+                            
+                            <CollapsibleContent>
+                              <CardContent className="pt-0">
+                                <div className="space-y-3">
+                                  {groupAssignments.map((assignment) => (
+                                    <Card key={assignment.id} className={`transition-all hover:shadow-sm ${
+                                      isOverdue(assignment.dueDate) && assignment.status !== 'completed' 
+                                        ? 'border-red-200 bg-red-50/30' 
+                                        : 'bg-white/50'
+                                    }`}>
+                                      <CardHeader className="pb-3">
+                                        <div className="flex items-start justify-between">
+                                          <div className="space-y-1">
+                                            <div className="flex items-center gap-2">
+                                              {getStatusIcon(assignment.status)}
+                                              <CardTitle className="text-base">
+                                                {assignment.requirementCode} - {assignment.requirementName}
+                                              </CardTitle>
+                                            </div>
+                                            <CardDescription className="flex items-center gap-2">
+                                              <Badge variant="outline">{assignment.standardName}</Badge>
+                                              <span>•</span>
+                                              <span>Assigned by {assignment.assignedBy}</span>
+                                            </CardDescription>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <Badge className={getPriorityColor(assignment.priority)}>
+                                              {assignment.priority.charAt(0).toUpperCase() + assignment.priority.slice(1)}
+                                            </Badge>
+                                            {assignment.dueDate && (
+                                              <Badge variant={isOverdue(assignment.dueDate) ? "destructive" : "secondary"}>
+                                                <Calendar className="h-3 w-3 mr-1" />
+                                                {new Date(assignment.dueDate).toLocaleDateString()}
+                                              </Badge>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </CardHeader>
+                                      <CardContent className="space-y-4">
+                                        <p className="text-sm text-muted-foreground">
+                                          {assignment.requirementDescription}
+                                        </p>
+                                        
+                                        {assignment.notes && (
+                                          <div className="bg-muted/50 p-3 rounded-md">
+                                            <div className="flex items-center gap-2 mb-1">
+                                              <FileText className="h-4 w-4 text-muted-foreground" />
+                                              <span className="text-sm font-medium">Assignment Notes:</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">{assignment.notes}</p>
+                                          </div>
+                                        )}
+                                        
+                                        {/* Status and Fulfillment Section */}
+                                        <div className="space-y-3 pt-2">
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-sm text-muted-foreground">Status:</span>
+                                              <Badge variant={
+                                                assignment.status === 'completed' ? 'default' :
+                                                assignment.status === 'in_progress' ? 'secondary' :
+                                                assignment.status === 'overdue' ? 'destructive' :
+                                                'outline'
+                                              }>
+                                                {assignment.status.replace('_', ' ').charAt(0).toUpperCase() + assignment.status.slice(1).replace('_', ' ')}
+                                              </Badge>
+                                            </div>
+                                            
+                                            {assignment.status !== 'completed' && (
+                                              <div className="flex gap-2">
+                                                {assignment.status === 'assigned' && (
+                                                  <Button 
+                                                    size="sm" 
+                                                    variant="outline"
+                                                    onClick={() => handleStatusUpdate(assignment.id, 'in_progress')}
+                                                  >
+                                                    Start Work
+                                                  </Button>
+                                                )}
+                                                {assignment.status === 'in_progress' && (
+                                                  <Button 
+                                                    size="sm"
+                                                    onClick={() => handleStatusUpdate(assignment.id, 'completed')}
+                                                  >
+                                                    Mark Complete
+                                                  </Button>
+                                                )}
+                                                <Button size="sm" variant="ghost">
+                                                  <ChevronRight className="h-4 w-4" />
+                                                </Button>
+                                              </div>
+                                            )}
+                                          </div>
+                                          
+                                          {/* Fulfillment Level Dropdown */}
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-sm text-muted-foreground">Fulfillment Level:</span>
+                                              <Badge className={getFulfillmentLevelColor(assignment.fulfillmentLevel || 'not-fulfilled')}>
+                                                {getFulfillmentLevelLabel(assignment.fulfillmentLevel || 'not-fulfilled')}
+                                              </Badge>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-xs text-muted-foreground">Update:</span>
+                                              <Select
+                                                value={assignment.fulfillmentLevel || 'not-fulfilled'}
+                                                onValueChange={(value) => handleFulfillmentLevelUpdate(assignment.id, value)}
+                                              >
+                                                <SelectTrigger className="w-40 h-8 text-xs">
+                                                  <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  <SelectItem value="not-fulfilled">Not Fulfilled</SelectItem>
+                                                  <SelectItem value="partially-fulfilled">Partially Fulfilled</SelectItem>
+                                                  <SelectItem value="fulfilled">Fulfilled</SelectItem>
+                                                  <SelectItem value="not-applicable">Not Applicable</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                );
+              })()
             )}
           </div>
         </TabsContent>

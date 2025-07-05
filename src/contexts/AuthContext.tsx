@@ -114,14 +114,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // First check if user is platform admin
       if (user?.email) {
+        console.log('Checking platform admin status for email:', user.email);
         const { data: adminData, error: adminError } = await supabase
           .from('platform_administrators')
           .select('*')
-          .eq('email', user.email)
+          .ilike('email', user.email) // Use case-insensitive matching
           .eq('is_active', true)
           .single();
         
         if (adminData) {
+          console.log('Platform admin access confirmed:', adminData);
           setIsPlatformAdmin(true);
           setLoading(false); // CRITICAL FIX: Clear loading state for platform admins
           return; // Platform admins don't need organization data
@@ -129,6 +131,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (adminError && adminError.code !== 'PGRST116') {
           console.warn('Platform admin check failed:', adminError);
+        } else if (adminError && adminError.code === 'PGRST116') {
+          console.log('No platform admin record found for:', user.email);
         }
       }
       

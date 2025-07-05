@@ -8,11 +8,14 @@ import { Requirement, RequirementStatus, RequirementPriority } from "@/types";
 import { useState, useEffect } from "react";
 import { toast } from "@/utils/toast";
 import { TagSelector } from "@/components/ui/tag-selector";
+import { UnifiedCategorySelector } from "@/components/ui/unified-category-selector";
+import { AppliesToSelector } from "@/components/ui/applies-to-selector";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { FileText, Link, Save, Plus, X, Flag, Info } from "lucide-react";
+import { FileText, Link, Save, Plus, X, Flag, Info, Target, Tags } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@/components/ui/dropdown-menu";
 
 interface RequirementDetailProps {
   requirement: Requirement;
@@ -21,6 +24,8 @@ interface RequirementDetailProps {
   onEvidenceChange?: (id: string, evidence: string, evidenceLinks?: string[]) => void;
   onNotesChange?: (id: string, notes: string) => void;
   onTagsChange?: (id: string, tags: string[]) => void;
+  onCategoriesChange?: (id: string, categories: string[]) => void;
+  onAppliesToChange?: (id: string, appliesTo: string[]) => void;
   onGuidanceChange?: (id: string, guidance: string) => void;
 }
 
@@ -44,6 +49,8 @@ export function RequirementDetail({
   onEvidenceChange,
   onNotesChange,
   onTagsChange,
+  onCategoriesChange,
+  onAppliesToChange,
   onGuidanceChange
 }: RequirementDetailProps) {
   const req = requirement as RequirementWithLegend;
@@ -53,6 +60,7 @@ export function RequirementDetail({
   const [status, setStatus] = useState<RequirementStatus>(req.status);
   const [priority, setPriority] = useState<RequirementPriority>(req.priority || 'default');
   const [tags, setTags] = useState<string[]>(req.tags || []);
+  const [categories, setCategories] = useState<string[]>(req.categories || []);
   const [evidenceLinks, setEvidenceLinks] = useState<EvidenceLink[]>([
     { url: '', description: '' }
   ]);
@@ -64,6 +72,7 @@ export function RequirementDetail({
   const [justification, setJustification] = useState(requirement.justification || '');
   const [guidance, setGuidance] = useState(req.guidance || '');
   const [showAuditReady, setShowAuditReady] = useState(false);
+  const [appliesTo, setAppliesTo] = useState<string[]>(req.appliesTo || []);
   
   // Effect to update guidance state if requirement prop changes
   useEffect(() => {
@@ -101,6 +110,24 @@ export function RequirementDetail({
   const handleTagsChange = (newTags: string[]) => {
     setTags(newTags);
     setHasChanges(true);
+  };
+
+  const handleCategoriesChange = (newCategories: string[]) => {
+    setCategories(newCategories);
+    setHasChanges(true);
+    // Also trigger parent callback for immediate save
+    if (onCategoriesChange) {
+      onCategoriesChange(requirement.id, newCategories);
+    }
+  };
+
+  const handleAppliesToChange = (newAppliesTo: string[]) => {
+    setAppliesTo(newAppliesTo);
+    setHasChanges(true);
+    // Also trigger parent callback for immediate save
+    if (onAppliesToChange) {
+      onAppliesToChange(requirement.id, newAppliesTo);
+    }
   };
 
   const handleEvidenceLinkChange = (index: number, field: 'url' | 'description', value: string) => {
@@ -171,6 +198,8 @@ export function RequirementDetail({
       req.justification = justification;
     }
     req.guidance = guidance;
+    req.categories = categories;
+    req.appliesTo = appliesTo;
     setHasChanges(false);
     toast.success(t('requirement.toast.updated', "Requirement updated successfully"));
   };
@@ -368,12 +397,55 @@ export function RequirementDetail({
 
         <Separator />
 
+        {/* Dual Tag System - Side by Side Layout */}
         <div className="space-y-4">
-          <TagSelector
-            selectedTags={tags}
-            onChange={handleTagsChange}
-            className="min-h-[40px]"
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Categories (21 compliance categories) */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Tags size={16} className="text-muted-foreground" />
+                <span className="text-sm font-medium">Categories</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info size={14} className="text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Select compliance framework categories that apply to this requirement</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <UnifiedCategorySelector
+                selectedCategories={categories}
+                onChange={handleCategoriesChange}
+                className="min-h-[40px]"
+              />
+            </div>
+
+            {/* Applies To Tags */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Target size={16} className="text-muted-foreground" />
+                <span className="text-sm font-medium">Applies To</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info size={14} className="text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Select what this requirement applies to (people, systems, data, etc.)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <AppliesToSelector
+                selectedItems={appliesTo}
+                onChange={handleAppliesToChange}
+                className="min-h-[40px]"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -69,8 +69,8 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       switch (key) {
         case 'iso27001': // Governance + Operational
           return [0, 3]; // Governance, Operational
-        case 'iso27002': // Physical + Technical + Operational (full coverage)
-          return [1, 2, 3]; // Physical, Technical, Operational
+        case 'iso27002': // Governance + Physical + Technical + Operational (broad coverage)
+          return [0, 1, 2, 3]; // Governance, Physical, Technical, Operational
         case 'cisControls': // Technical + Operational
           return [2, 3]; // Technical, Operational
         case 'gdpr': // Privacy + Governance

@@ -49,7 +49,7 @@ export class AdminService {
     try {
       const { error } = await supabaseAdmin
         .from(tableName)
-        .select('count')
+        .select('*')
         .limit(1);
       
       return !error;
