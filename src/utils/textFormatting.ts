@@ -77,8 +77,15 @@ export function cleanMarkdownFormatting(text: string): string {
 export function cleanComplianceSubRequirement(text: string): string {
   if (!text) return '';
   
+  // Clean HTML tags first if present
+  let cleaned = text;
+  
+  // Remove HTML tags but preserve the text content
+  cleaned = cleaned.replace(/<strong>(.*?)<\/strong>/g, '**$1**'); // Convert to markdown for later processing
+  cleaned = cleaned.replace(/<sup>(.*?)<\/sup>/g, '($1)'); // Convert superscript to parentheses
+  
   // Start with basic markdown cleaning
-  let cleaned = cleanMarkdownFormatting(text);
+  cleaned = cleanMarkdownFormatting(cleaned);
   
   // Remove overly formal compliance language
   cleaned = cleaned.replace(/^REGULATORY\s+INCIDENT\s+REPORTING\s+REQUIREMENTS?:?\s*/gi, '');

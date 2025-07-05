@@ -7,7 +7,8 @@ const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
 
 // Create main Supabase client (singleton pattern to avoid multiple instances)
 let supabaseInstance: ReturnType<typeof createClient> | null = null;
-export const supabase = (() => {
+
+function createSupabaseClient() {
   if (!supabaseInstance) {
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -25,41 +26,41 @@ export const supabase = (() => {
     });
   }
   return supabaseInstance;
-})();
+}
+
+export const supabase = createSupabaseClient();
 
 // Create admin client for platform admin operations (only if service role key is available)
 // This bypasses RLS for admin operations
 let supabaseAdminInstance: ReturnType<typeof createClient> | null = null;
 
-const createAdminClient = () => {
-  if (supabaseServiceRoleKey) {
-    // Create proper admin client with service role key
-    return createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        storageKey: 'auditready_service_role', // Unique key for service role
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-      db: {
-        schema: 'public',
-      },
-      global: {
-        headers: { 'x-client-info': 'auditready-service-role' },
-      },
-    });
-  } else {
-    // For demo purposes, return the same client to avoid multiple instances
-    // In production, this should throw an error or redirect to setup
-    return supabaseInstance;
-  }
-};
-
-export const supabaseAdmin = (() => {
+function createAdminClient() {
   if (!supabaseAdminInstance) {
-    supabaseAdminInstance = createAdminClient();
+    if (supabaseServiceRoleKey) {
+      // Create proper admin client with service role key
+      supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: {
+          storageKey: 'auditready_service_role', // Unique key for service role
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+        db: {
+          schema: 'public',
+        },
+        global: {
+          headers: { 'x-client-info': 'auditready-service-role' },
+        },
+      });
+    } else {
+      // Return the same instance reference to avoid creating multiple clients
+      // This ensures we don't create a new client instance
+      return createSupabaseClient(); // Return existing singleton
+    }
   }
   return supabaseAdminInstance;
-})();
+}
+
+export const supabaseAdmin = createAdminClient();
 
 // Demo credentials for showcase purposes
 export const DEMO_EMAIL = "demo@auditready.com";

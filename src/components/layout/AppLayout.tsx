@@ -254,8 +254,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </Button>
 
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20" style={{ borderLeft: 'none', marginLeft: '0' }}>
-        <div className="flex items-center justify-between border-b border-border/50 min-h-[65px] h-[65px] px-6 flex-shrink-0">
+      <aside className="hidden md:flex w-64 flex-col bg-sidebar overflow-y-auto border-r border-border z-20" style={{ borderLeft: 'none', marginLeft: '0', borderTop: 'none', borderBottom: 'none' }}>
+        <div className="flex items-center justify-between min-h-[65px] h-[65px] px-6 flex-shrink-0">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -266,7 +266,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           {renderNav()}
         </div>
         
-        <div className="p-6 border-t border-border/50 flex-shrink-0">
+        <div className="p-6 flex-shrink-0">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>
@@ -280,9 +280,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           "fixed inset-0 z-40 w-full bg-sidebar transform transition-transform duration-300 ease-in-out md:hidden border-r border-border",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
-        style={{ borderLeft: 'none' }}
+        style={{ borderLeft: 'none', borderTop: 'none', borderBottom: 'none' }}
       >
-        <div className="flex items-center justify-between border-b border-border/50 min-h-[65px] h-[65px] px-6 flex-shrink-0">
+        <div className="flex items-center justify-between min-h-[65px] h-[65px] px-6 flex-shrink-0">
           <div className="flex items-center">
             <Shield className="text-accent mr-2" size={24} />
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
@@ -293,7 +293,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           {renderNav()}
         </div>
         
-        <div className="p-6 border-t border-border/50 flex-shrink-0">
+        <div className="p-6 flex-shrink-0">
           <div className="text-sidebar-foreground/80 text-sm">
             <p>Cybersecurity Compliance</p>
             <p className="text-xs mt-1">v1.0.0</p>

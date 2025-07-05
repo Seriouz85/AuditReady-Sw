@@ -75,6 +75,22 @@ class UserManagementService {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
+    // CRITICAL SECURITY: Return demo organization for demo accounts
+    if (user.email === 'demo@auditready.com') {
+      console.log('Demo mode detected - returning demo organization');
+      return {
+        id: 'demo-org-1',
+        name: 'Demo Company',
+        slug: 'demo-company',
+        industry: 'Technology',
+        company_size: '50-200',
+        subscription_tier: 'professional',
+        settings: {},
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: new Date().toISOString()
+      };
+    }
+
     const { data, error } = await supabase
       .from('organization_users')
       .select(`

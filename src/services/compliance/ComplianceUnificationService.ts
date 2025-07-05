@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { complianceEngine } from './ComplianceUnificationEngine';
 import { complianceCacheService } from './ComplianceCacheService';
 import { cleanMarkdownFormatting } from '@/utils/textFormatting';
+import { SectorSpecificEnhancer } from './SectorSpecificEnhancer';
 
 export interface UnifiedRequirement {
   id: string;
@@ -269,13 +270,29 @@ class ComplianceUnificationService {
             gdpr: selectedFrameworks.includes('gdpr') ? (categoryFrameworks.gdpr || []) : []
           };
 
+          // Apply sector-specific enhancements if NIS2 is selected and sector is provided
+          let enhancedSubRequirements = primaryRequirement.subRequirements;
+          if (selectedFrameworks.includes('nis2') && industrySectorId) {
+            try {
+              enhancedSubRequirements = SectorSpecificEnhancer.enhanceSubRequirements(
+                primaryRequirement.subRequirements,
+                primaryRequirement.title,
+                industrySectorId,
+                true // nis2Selected
+              );
+            } catch (error) {
+              console.warn('Error applying sector-specific enhancements:', error);
+              // Fall back to original requirements if enhancement fails
+            }
+          }
+
           result.push({
             id: category.id,
             category: category.name,
             auditReadyUnified: {
               title: primaryRequirement.title,
               description: primaryRequirement.description,
-              subRequirements: primaryRequirement.subRequirements
+              subRequirements: enhancedSubRequirements
             },
             frameworks: realFrameworkRequirements,
             industrySpecific: industryRequirements[category.name] || []

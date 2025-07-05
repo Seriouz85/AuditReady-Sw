@@ -238,7 +238,7 @@ You are required to report significant cybersecurity incidents to the CSIRT auth
     if (text.includes('PROJECT MANAGEMENT')) {
       text = text.replace(
         'PROJECT MANAGEMENT',
-        'PROJECT MANAGEMENT & CHANGE CONTROL (ISO 27001 Requirement: Security must be integrated into all projects and change processes)'
+        'PROJECT MANAGEMENT (ISO 27001 Requirement: Security must be integrated into all project processes including planning, development, and deployment)'
       );
     }
     

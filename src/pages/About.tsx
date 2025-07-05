@@ -142,7 +142,14 @@ export default function About() {
               WebkitMaskImage: theme === 'light'
                 ? 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%)'
                 : 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.2) 90%, rgba(0,0,0,0) 100%)',
-              filter: theme === 'light' ? 'contrast(1.05)' : 'none'
+              filter: theme === 'light' ? 'contrast(1.05)' : 'none',
+              imageRendering: 'high-quality',
+              WebkitImageRendering: 'high-quality',
+              imageInterpolation: 'high-quality',
+              msInterpolationMode: 'bicubic',
+              transformOrigin: 'center',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
             }}
           />
         </motion.div>

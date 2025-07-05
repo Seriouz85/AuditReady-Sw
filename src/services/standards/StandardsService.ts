@@ -27,18 +27,31 @@ export interface StandardWithRequirements extends Standard {
 }
 
 export class StandardsService {
+  // Cache for standards to improve performance
+  private static standardsCache: { data: Standard[]; timestamp: number } | null = null;
+  private static readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
   // Get all available standards from the library (admin-managed)
   async getAvailableStandards(): Promise<Standard[]> {
     try {
+      // Check cache first for performance
+      const now = Date.now();
+      if (StandardsService.standardsCache && 
+          now - StandardsService.standardsCache.timestamp < StandardsService.CACHE_DURATION) {
+        console.log('Returning cached standards data');
+        return StandardsService.standardsCache.data;
+      }
+
+      console.log('Fetching fresh standards data from database');
       const { data, error } = await supabase
         .from('standards_library')
-        .select('*')
+        .select('id, name, version, type, description, category, created_at, updated_at')
         .eq('is_active', true)
         .order('name');
 
       if (error) throw error;
 
-      return data?.map(std => ({
+      const standards = data?.map(std => ({
         id: std.id,
         name: std.name,
         version: std.version,
@@ -49,10 +62,23 @@ export class StandardsService {
         createdAt: std.created_at,
         updatedAt: std.updated_at
       })) || [];
+
+      // Cache the results for future use
+      StandardsService.standardsCache = {
+        data: standards,
+        timestamp: now
+      };
+
+      return standards;
     } catch (error) {
       console.error('Error fetching available standards:', error);
       return [];
     }
+  }
+
+  // Clear cache method for when standards are updated
+  static clearCache(): void {
+    StandardsService.standardsCache = null;
   }
 
   // Get organization's selected standards with applicability status

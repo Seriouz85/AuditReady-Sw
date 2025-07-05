@@ -39,6 +39,11 @@ export const UserProfileDropdown: React.FC = () => {
   };
 
   const getUserInitials = () => {
+    // CRITICAL SECURITY: Use demo data for demo accounts
+    if (isDemo) {
+      return 'DU'; // Demo User
+    }
+    
     if (user?.user_metadata?.name) {
       return user.user_metadata.name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
     }
@@ -49,6 +54,11 @@ export const UserProfileDropdown: React.FC = () => {
   };
 
   const getUserDisplayName = () => {
+    // CRITICAL SECURITY: Use demo data for demo accounts
+    if (isDemo) {
+      return 'Demo User';
+    }
+    
     return user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
   };
 
@@ -106,7 +116,9 @@ export const UserProfileDropdown: React.FC = () => {
               </Avatar>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{getUserDisplayName()}</p>
-                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {isDemo ? 'demo@auditready.com' : user.email}
+                </p>
               </div>
             </div>
             

@@ -29,10 +29,16 @@ export const DatabaseStatus: React.FC = () => {
 
   const checkTableAccess = async (tableName: string): Promise<TableStatus> => {
     try {
-      const { error } = await supabaseAdmin
-        .from(tableName)
-        .select('*')
-        .limit(1);
+      // Use a more efficient query with timeout
+      const { error } = await Promise.race([
+        supabaseAdmin
+          .from(tableName)
+          .select('id', { count: 'exact', head: true })
+          .limit(1),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Query timeout')), 2000)
+        )
+      ]);
       
       return {
         name: tableName,

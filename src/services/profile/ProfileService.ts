@@ -108,7 +108,43 @@ class ProfileService {
         return null;
       }
 
-      // Return profile data from auth metadata
+      // CRITICAL SECURITY FIX: Check if this is a demo account
+      // Demo accounts should NEVER show real user data
+      console.log('ProfileService.getProfile() - User email:', user.email);
+      
+      if (user.email === 'demo@auditready.com') {
+        console.log('🛡️ SECURITY: Demo mode detected - returning demo profile data');
+        console.log('🛡️ SECURITY: Blocking access to real user data for demo account');
+        
+        const demoProfile = {
+          id: 'demo-user-id',
+          email: 'demo@auditready.com',
+          first_name: 'Demo',
+          last_name: 'User',
+          name: 'Demo User',
+          phone: '+1 (555) 123-4567',
+          bio: 'Cybersecurity professional focused on compliance and risk management.',
+          avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo User',
+          job_title: 'Security Analyst',
+          department: 'Information Security',
+          timezone: 'America/New_York',
+          language: 'en',
+          email_notifications: true,
+          push_notifications: true,
+          two_factor_enabled: false,
+          preferences: {
+            theme: 'light',
+            onboarding_completed: true
+          },
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('🛡️ SECURITY: Returning demo profile:', demoProfile);
+        return demoProfile;
+      }
+
+      // Return profile data from auth metadata for real users
       const profile: UserProfile = {
         id: user.id,
         email: user.email!,
@@ -143,6 +179,35 @@ class ProfileService {
       
       if (authError || !user) {
         throw new Error('User not authenticated');
+      }
+
+      // CRITICAL SECURITY: Block all profile updates for demo accounts
+      if (user.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - profile updates are not allowed');
+        // Return current demo profile without making changes
+        return {
+          id: 'demo-user-id',
+          email: 'demo@auditready.com',
+          first_name: 'Demo',
+          last_name: 'User',
+          name: 'Demo User',
+          phone: '+1 (555) 123-4567',
+          bio: 'Cybersecurity professional focused on compliance and risk management.',
+          avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo User',
+          job_title: 'Security Analyst',
+          department: 'Information Security',
+          timezone: 'America/New_York',
+          language: 'en',
+          email_notifications: true,
+          push_notifications: true,
+          two_factor_enabled: false,
+          preferences: {
+            theme: 'light',
+            onboarding_completed: true
+          },
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: new Date().toISOString()
+        };
       }
 
       // Merge current metadata with updates
@@ -190,6 +255,12 @@ class ProfileService {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      // CRITICAL SECURITY: Block organization profile updates for demo accounts
+      if (user.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - organization profile updates are blocked');
+        return;
+      }
 
       // Find the user in organization_users table
       const { data: orgUser, error: fetchError } = await supabase
@@ -242,6 +313,13 @@ class ProfileService {
    */
   async updatePassword(newPassword: string): Promise<void> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block password changes for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        throw new Error('Password changes are not allowed for demo accounts');
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -260,6 +338,13 @@ class ProfileService {
    */
   async updateEmail(newEmail: string): Promise<void> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block email changes for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        throw new Error('Email changes are not allowed for demo accounts');
+      }
+
       const { error } = await supabase.auth.updateUser({
         email: newEmail
       });
@@ -280,6 +365,12 @@ class ProfileService {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
+
+      // CRITICAL SECURITY: Block profile picture uploads for demo accounts
+      if (user.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - returning demo avatar URL');
+        return 'https://api.dicebear.com/7.x/initials/svg?seed=Demo User';
+      }
 
       // Create unique filename
       const fileExt = file.name.split('.').pop();
@@ -317,6 +408,22 @@ class ProfileService {
    */
   async getLoginActivity(): Promise<any[]> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Return safe demo data for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        return [
+          {
+            id: 'demo-1',
+            timestamp: new Date().toISOString(),
+            type: 'current_session',
+            ip_address: '192.168.1.100',
+            user_agent: 'Chrome/120.0.0.0',
+            location: 'Demo Location'
+          }
+        ];
+      }
+
       // This would typically come from audit logs or session tracking
       // For now, return mock data for demo purposes
       return [
@@ -340,6 +447,19 @@ class ProfileService {
    */
   async updateTwoFactorAuth(enabled: boolean): Promise<void> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block 2FA changes for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - 2FA changes not allowed');
+        if (enabled) {
+          toast.success('Two-factor authentication enabled (demo mode)');
+        } else {
+          toast.success('Two-factor authentication disabled (demo mode)');
+        }
+        return;
+      }
+
       await this.updateProfile({ 
         preferences: { 
           two_factor_enabled: enabled 
@@ -374,6 +494,15 @@ class ProfileService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         return { success: false, error: 'User not authenticated' };
+      }
+
+      // CRITICAL SECURITY: Block avatar uploads for demo accounts
+      if (user.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - returning demo avatar');
+        return { 
+          success: true, 
+          avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo User' 
+        };
       }
 
       // Generate unique filename
@@ -411,6 +540,14 @@ class ProfileService {
    */
   async removeAvatar(): Promise<{ success: boolean; error?: string }> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block avatar removal for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - avatar removal not allowed');
+        return { success: false, error: 'Avatar changes are not allowed for demo accounts' };
+      }
+
       await this.updateProfile({ avatar_url: undefined });
       return { success: true };
     } catch (error) {
@@ -429,6 +566,14 @@ class ProfileService {
     marketing_emails?: boolean;
   }): Promise<{ success: boolean; error?: string }> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block notification preference changes for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - notification preferences cannot be changed');
+        return { success: true }; // Return success but don't actually change anything
+      }
+
       await this.updateProfile(preferences);
       return { success: true };
     } catch (error) {
@@ -444,6 +589,28 @@ class ProfileService {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
+
+      // Return safe demo activity for demo accounts
+      if (user.email === 'demo@auditready.com') {
+        return [
+          {
+            id: 'demo-1',
+            action: 'demo_login',
+            details: { demo_session: true },
+            ip_address: '192.168.1.100',
+            user_agent: 'Demo Browser',
+            created_at: new Date().toISOString()
+          },
+          {
+            id: 'demo-2',
+            action: 'demo_navigation',
+            details: { page: 'profile_settings' },
+            ip_address: '192.168.1.100',
+            user_agent: 'Demo Browser',
+            created_at: new Date(Date.now() - 86400000).toISOString()
+          }
+        ];
+      }
 
       // This would query actual activity logs in production
       // For demo, return mock data
@@ -549,6 +716,14 @@ class ProfileService {
    */
   async updateLastActive(): Promise<void> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block last active updates for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - last active timestamp not updated');
+        return;
+      }
+
       await this.updateProfile({
         preferences: {
           last_active: new Date().toISOString()
@@ -565,6 +740,14 @@ class ProfileService {
    */
   async acceptTermsAndPrivacy(): Promise<{ success: boolean; error?: string }> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block terms acceptance for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - terms acceptance simulated');
+        return { success: true }; // Simulate success but don't actually update
+      }
+
       const now = new Date().toISOString();
       await this.updateProfile({
         preferences: {
@@ -584,6 +767,14 @@ class ProfileService {
    */
   async completeOnboarding(): Promise<{ success: boolean; error?: string }> {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // CRITICAL SECURITY: Block onboarding completion for demo accounts
+      if (user?.email === 'demo@auditready.com') {
+        console.log('Demo mode detected - onboarding completion simulated');
+        return { success: true }; // Simulate success but don't actually update
+      }
+
       await this.updateProfile({
         preferences: {
           onboarding_completed: true

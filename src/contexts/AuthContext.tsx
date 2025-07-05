@@ -111,28 +111,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const loadUserData = async (userId: string) => {
     try {
-      
+      // CRITICAL SECURITY FIX: Check if this is a demo account FIRST
+      // Demo accounts should NEVER access real database data
+      if (user?.email === 'demo@auditready.com') {
+        console.log('🛡️ SECURITY: Demo account detected in loadUserData - loading demo data instead');
+        await loadDemoData();
+        return;
+      }
+
       // First check if user is platform admin
       if (user?.email) {
         console.log('Checking platform admin status for email:', user.email);
-        const { data: adminData, error: adminError } = await supabase
-          .from('platform_administrators')
-          .select('*')
-          .ilike('email', user.email) // Use case-insensitive matching
-          .eq('is_active', true)
-          .single();
         
-        if (adminData) {
-          console.log('Platform admin access confirmed:', adminData);
-          setIsPlatformAdmin(true);
-          setLoading(false); // CRITICAL FIX: Clear loading state for platform admins
-          return; // Platform admins don't need organization data
-        }
-        
-        if (adminError && adminError.code !== 'PGRST116') {
-          console.warn('Platform admin check failed:', adminError);
-        } else if (adminError && adminError.code === 'PGRST116') {
-          console.log('No platform admin record found for:', user.email);
+        // Use a more efficient query with timeout
+        try {
+          const { data: adminData, error: adminError } = await Promise.race([
+            supabase
+              .from('platform_administrators')
+              .select('*')
+              .ilike('email', user.email)
+              .eq('is_active', true)
+              .single(),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Platform admin check timeout')), 3000)
+            )
+          ]) as any;
+          
+          if (adminData) {
+            console.log('Platform admin access confirmed:', adminData);
+            setIsPlatformAdmin(true);
+            setLoading(false); // CRITICAL FIX: Clear loading state for platform admins
+            return; // Platform admins don't need organization data
+          }
+          
+          if (adminError) {
+            if (adminError.code !== 'PGRST116') {
+              console.warn('Platform admin check failed:', adminError);
+            } else {
+              console.log('No platform admin record found for:', user.email);
+            }
+          }
+        } catch (timeoutError) {
+          console.warn('Platform admin check timed out, proceeding as regular user');
+          // Don't set loading to false here, let it continue to check organization data
         }
       }
       
@@ -260,22 +281,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Check for demo credentials first
       if (email === 'demo@auditready.com' && password === 'AuditReady@Demo2025!') {
+        // CRITICAL SECURITY: Clear any existing Supabase session first
+        console.log('🛡️ SECURITY: Clearing contaminated session for demo login');
+        try {
+          await supabase.auth.signOut();
+        } catch (signOutError) {
+          console.warn('Could not clear existing session:', signOutError);
+        }
+        
         // Use mock authentication for demo
         const { mockSignIn } = await import('@/lib/mockAuth');
         const mockUser = await mockSignIn(email, password);
         
         if (mockUser) {
-          // Convert mock user to Supabase User format
+          // Convert mock user to Supabase User format with demo-specific data
           const demoUser: User = {
             id: 'demo-user-id',
             email: 'demo@auditready.com',
             aud: 'authenticated',
             created_at: new Date().toISOString(),
-            user_metadata: { name: 'Demo User' },
+            user_metadata: { 
+              name: 'Demo User',
+              first_name: 'Demo',
+              last_name: 'User',
+              avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=Demo User'
+            },
             app_metadata: {},
             role: 'authenticated'
           };
           
+          console.log('🛡️ SECURITY: Setting clean demo user:', demoUser);
           setUser(demoUser);
           await loadDemoData();
           // Ensure loading is false so ProtectedRoute doesn't redirect
@@ -298,8 +333,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('Platform admin successfully authenticated with Supabase');
             setUser(data.user);
             setIsPlatformAdmin(true);
-            // Ensure loading is false so ProtectedRoute doesn't redirect
-            setLoading(false);
+            setLoading(false); // Immediately set loading to false for platform admin
+            
+            // Skip loading user data for platform admin to improve performance
             return {};
           } else {
             console.log('Platform admin Supabase auth failed, error:', error?.message);
@@ -367,6 +403,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (session?.user) {
           setUser(session.user);
+          
+          // CRITICAL SECURITY: Skip data loading for demo accounts during initialization
+          if (session.user.email === 'demo@auditready.com') {
+            console.log('🛡️ SECURITY: Demo account detected in initialization - loading demo data only');
+            await loadDemoData();
+            return;
+          }
+          
           // Only load user data if we're not on public pages
           const isPublicPage = window.location.pathname === '/' || 
                               window.location.pathname === '/login' || 
@@ -389,6 +433,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           async (event, session) => {
             if (event === 'SIGNED_IN' && session?.user) {
               setUser(session.user);
+              
+              // CRITICAL SECURITY: Skip data loading for demo accounts
+              if (session.user.email === 'demo@auditready.com') {
+                console.log('🛡️ SECURITY: Demo account detected in auth state change - skipping database access');
+                await loadDemoData();
+                return;
+              }
+              
               // Only load user data after sign in if we're not on public pages
               const isPublicPage = window.location.pathname === '/' || 
                                   window.location.pathname === '/login' || 

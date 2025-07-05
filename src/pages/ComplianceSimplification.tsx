@@ -1112,7 +1112,7 @@ export default function ComplianceSimplification() {
                                     <SelectValue placeholder="All Industries" className="text-[9px] leading-none" />
                                   </SelectTrigger>
                                   <SelectContent 
-                                    className="max-h-32 w-full text-xs z-50 overflow-y-auto" 
+                                    className="max-h-48 w-full text-xs z-50 overflow-y-auto" 
                                     position="popper"
                                     sideOffset={4}
                                     align="start"
