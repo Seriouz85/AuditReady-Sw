@@ -375,7 +375,17 @@ const Requirements = () => {
   };
 
   const sortedAndFilteredRequirements = useMemo(() => {
-    let result = [...localRequirements];
+    // First deduplicate by ID to prevent React key errors
+    const seen = new Set();
+    const deduplicatedRequirements = localRequirements.filter(req => {
+      if (seen.has(req.id)) {
+        return false;
+      }
+      seen.add(req.id);
+      return true;
+    });
+    
+    let result = [...deduplicatedRequirements];
 
     // Apply filters
     result = result.filter((requirement) => {
@@ -540,25 +550,27 @@ const Requirements = () => {
 
   // Set sample priorities for demonstration
   useEffect(() => {
-    // Only set priorities if not already set
-    const needsPriorities = localRequirements.some(req => !req.priority);
-    
-    if (needsPriorities) {
-      const prioritizedRequirements = localRequirements.map((req, index) => {
-        if (req.priority) return req;
-        
-        // Set some sample priorities for demonstration
-        let priority: RequirementPriority = 'default';
-        if (index % 10 === 0) priority = 'high';
-        else if (index % 5 === 0) priority = 'medium';
-        else if (index % 3 === 0) priority = 'low';
-        
-        return { ...req, priority };
-      });
+    // Only set priorities if requirements exist and not already set
+    if (localRequirements.length > 0) {
+      const needsPriorities = localRequirements.some(req => !req.priority);
       
-      setLocalRequirements(prioritizedRequirements);
+      if (needsPriorities) {
+        const prioritizedRequirements = localRequirements.map((req, index) => {
+          if (req.priority) return req;
+          
+          // Set some sample priorities for demonstration
+          let priority: RequirementPriority = 'default';
+          if (index % 10 === 0) priority = 'high';
+          else if (index % 5 === 0) priority = 'medium';
+          else if (index % 3 === 0) priority = 'low';
+          
+          return { ...req, priority };
+        });
+        
+        setLocalRequirements(prioritizedRequirements);
+      }
     }
-  }, []);
+  }, [localRequirements.length]);
 
   if (loading) {
     return (
