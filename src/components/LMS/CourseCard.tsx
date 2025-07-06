@@ -105,7 +105,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   };
 
   return (
-    <Card className={`group overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1 flex flex-col h-full ${className}`}>
+    <Card className={`group overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1 ${className}`}>
       {/* Thumbnail */}
       <div className="relative h-48 overflow-hidden">
         {thumbnailUrl ? (
@@ -227,9 +227,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0 px-4 pb-4 flex flex-col flex-1">
+      <CardContent className="pt-0 px-4 pb-4">
         {/* Course metadata */}
-        <div className="space-y-2 flex-1">
+        <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <Badge className={difficultyStyle.color}>
