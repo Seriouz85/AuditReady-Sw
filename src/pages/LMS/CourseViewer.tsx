@@ -5,6 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { VideoPlayer } from '@/components/lms/VideoPlayer';
+import { InteractiveQuiz } from '@/components/lms/InteractiveQuiz';
+import { AssignmentSubmission } from '@/components/lms/AssignmentSubmission';
+import { BookmarkNotes } from '@/components/lms/BookmarkNotes';
 import { 
   ArrowLeft, 
   Play, 
@@ -29,7 +33,8 @@ import {
   Video,
   FileQuestion,
   Trophy,
-  Target
+  Target,
+  StickyNote
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -192,6 +197,8 @@ const CourseViewer: React.FC = () => {
   const [currentModule, setCurrentModule] = useState<CourseModule>(course.sections[1].modules[1]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [sectionsState, setSectionsState] = useState(course.sections);
+  const [showBookmarks, setShowBookmarks] = useState(false);
+  const [currentVideoTime, setCurrentVideoTime] = useState(0);
 
   const toggleSection = (sectionId: string) => {
     setSectionsState(prev => 
@@ -379,7 +386,8 @@ const CourseViewer: React.FC = () => {
       </div>
 
       {/* Right Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex">
+        <div className="flex-1 flex flex-col">
         {/* Content Header */}
         <div className="bg-white border-b p-4">
           <div className="flex items-center justify-between">
@@ -412,6 +420,14 @@ const CourseViewer: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-2">
+              <Button 
+                variant={showBookmarks ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setShowBookmarks(!showBookmarks)}
+              >
+                <StickyNote className="h-4 w-4 mr-2" />
+                Notes
+              </Button>
               <Button variant="outline" size="sm">
                 <Bookmark className="h-4 w-4 mr-2" />
                 Save
@@ -432,46 +448,24 @@ const CourseViewer: React.FC = () => {
         <div className="flex-1 p-6 overflow-y-auto">
           {currentModule.type === 'video' ? (
             <div className="space-y-6">
-              {/* Video Player */}
-              <Card className="aspect-video bg-black rounded-lg overflow-hidden">
-                <div className="w-full h-full flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900"></div>
-                  <div className="relative z-10 text-center text-white">
-                    <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mb-4 mx-auto">
-                      {isPlaying ? (
-                        <Pause className="h-10 w-10" />
-                      ) : (
-                        <Play className="h-10 w-10 ml-1" />
-                      )}
-                    </div>
-                    <h3 className="text-lg font-medium mb-2">Video: {currentModule.title}</h3>
-                    <p className="text-sm text-gray-300">{currentModule.description}</p>
-                    <Button 
-                      className="mt-4"
-                      onClick={() => setIsPlaying(!isPlaying)}
-                    >
-                      {isPlaying ? 'Pause' : 'Play'} Video
-                    </Button>
-                  </div>
-                  
-                  {/* Video Controls */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center gap-4 text-white">
-                    <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                      <Volume2 className="h-4 w-4" />
-                    </Button>
-                    <div className="flex-1 bg-white/20 rounded-full h-1">
-                      <div className="bg-white rounded-full h-1 w-1/3"></div>
-                    </div>
-                    <span className="text-sm">8:30 / 15:45</span>
-                    <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                      <Maximize className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+              {/* Advanced Video Player */}
+              <div className="aspect-video">
+                <VideoPlayer
+                  src={currentModule.videoUrl || 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4'}
+                  title={currentModule.title}
+                  description={currentModule.description}
+                  onProgress={(progress, currentTime) => {
+                    // Track video progress for analytics
+                    setCurrentVideoTime(currentTime);
+                    console.log(`Video progress: ${progress}% at ${currentTime}s`);
+                  }}
+                  onComplete={() => {
+                    console.log('Video completed');
+                    markModuleComplete();
+                  }}
+                  className="w-full h-full"
+                />
+              </div>
               
               {/* Video Description */}
               {currentModule.description && (
@@ -491,31 +485,41 @@ const CourseViewer: React.FC = () => {
               />
             </Card>
           ) : currentModule.type === 'quiz' ? (
-            <Card className="p-8">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                  <FileQuestion className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Knowledge Check</h3>
-                <p className="text-gray-600 mb-6">Test your understanding of the concepts covered in this section.</p>
-                <Button size="lg">
-                  Start Quiz
-                </Button>
-              </div>
-            </Card>
+            <InteractiveQuiz
+              title={currentModule.title}
+              description="Test your understanding of the concepts covered in this section."
+              passingScore={70}
+              allowRetries={true}
+              showExplanations={true}
+              timeLimit={10} // 10 minutes
+              onComplete={(score, attempts) => {
+                console.log(`Quiz completed with score: ${score}%`, attempts);
+                if (score >= 70) {
+                  markModuleComplete();
+                }
+              }}
+              onProgress={(current, total) => {
+                console.log(`Quiz progress: ${current}/${total}`);
+              }}
+            />
           ) : (
-            <Card className="p-8">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
-                  <Target className="h-8 w-8 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Assignment</h3>
-                <p className="text-gray-600 mb-6">Complete the practical assignment to apply what you've learned.</p>
-                <Button size="lg">
-                  Start Assignment
-                </Button>
-              </div>
-            </Card>
+            <AssignmentSubmission
+              title={currentModule.title}
+              description="Complete this practical assignment to apply what you've learned in this module."
+              instructions="Analyze a real-world cybersecurity compliance scenario and provide recommendations based on the frameworks covered in this course."
+              dueDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)} // Due in 7 days
+              maxPoints={50}
+              allowedFileTypes={['.pdf', '.doc', '.docx', '.txt']}
+              maxFileSize={10}
+              maxFiles={3}
+              onSubmit={(content, files) => {
+                console.log('Assignment submitted:', { content, files });
+                markModuleComplete();
+              }}
+              onSaveDraft={(content, files) => {
+                console.log('Draft saved:', { content, files });
+              }}
+            />
           )}
         </div>
 
@@ -551,6 +555,28 @@ const CourseViewer: React.FC = () => {
             </div>
           </div>
         </div>
+        </div>
+
+        {/* BookmarkNotes Sidebar */}
+        {showBookmarks && (
+          <div className="w-80 border-l bg-white">
+            <div className="h-full overflow-y-auto p-4">
+              <BookmarkNotes
+                moduleId={currentModule.id}
+                moduleName={currentModule.title}
+                moduleType={currentModule.type}
+                currentPosition={currentModule.type === 'video' ? currentVideoTime : 0}
+                onJumpTo={(position) => {
+                  if (currentModule.type === 'video') {
+                    // In a real implementation, this would seek the video to the position
+                    setCurrentVideoTime(position);
+                    console.log(`Jumping to ${position}s in video`);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
