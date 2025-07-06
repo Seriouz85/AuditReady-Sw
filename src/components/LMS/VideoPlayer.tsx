@@ -532,5 +532,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
         </div>
       )}
+    </div>
   );
 };
