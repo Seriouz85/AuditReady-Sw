@@ -228,8 +228,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       </CardHeader>
 
       <CardContent className="pt-0 px-4 pb-4 flex flex-col flex-1">
-        {/* Course metadata */}
-        <div className="space-y-2 flex-1">
+        {/* Course metadata - Fixed section */}
+        <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <Badge className={difficultyStyle.color}>
@@ -257,8 +257,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               </div>
             )}
           </div>
+        </div>
 
-          {/* Progress section */}
+        {/* Flexible content section */}
+        <div className="flex-1 flex flex-col justify-end space-y-2 mt-2">
+          {/* Progress section - Always same position from bottom */}
           {typeof progress === 'number' && (
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
@@ -269,7 +272,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             </div>
           )}
 
-          {/* Instructor */}
+          {/* Instructor - Always same position from bottom */}
           {instructor && (
             <div className="flex items-center gap-2 text-sm">
               <Avatar className="h-6 w-6">
