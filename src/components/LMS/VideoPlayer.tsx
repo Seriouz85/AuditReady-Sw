@@ -84,6 +84,25 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Auto-hide controls timer
   const hideControlsTimeout = useRef<NodeJS.Timeout>();
 
+  // YouTube URL detection and conversion
+  const isYouTubeUrl = (url: string): boolean => {
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  };
+
+  const getYouTubeVideoId = (url: string): string | null => {
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const getYouTubeEmbedUrl = (url: string): string => {
+    const videoId = getYouTubeVideoId(url);
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${window.location.origin}`;
+    }
+    return url;
+  };
+
   // Format time helper
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -298,18 +317,29 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       onMouseEnter={() => setShowControls(true)}
     >
       {/* Video Element */}
-      <video
-        ref={videoRef}
-        src={src}
-        className="w-full h-full object-contain"
-        onLoadedMetadata={handleLoadedMetadata}
-        onTimeUpdate={handleTimeUpdate}
-        onEnded={handleEnded}
-        onWaiting={handleWaiting}
-        onCanPlay={handleCanPlay}
-        onClick={togglePlay}
-        preload="metadata"
-      />
+      {isYouTubeUrl(src) ? (
+        <iframe
+          src={getYouTubeEmbedUrl(src)}
+          className="w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title={title}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          src={src}
+          className="w-full h-full object-contain"
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={handleEnded}
+          onWaiting={handleWaiting}
+          onCanPlay={handleCanPlay}
+          onClick={togglePlay}
+          preload="metadata"
+        />
+      )}
 
       {/* Loading/Buffering Overlay */}
       {(isBuffering || !isLoaded) && (
@@ -332,13 +362,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
       )}
 
-      {/* Controls Overlay */}
-      <div 
-        className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300",
-          showControls ? "opacity-100" : "opacity-0"
-        )}
-      >
+      {/* Controls Overlay - Hide for YouTube videos as they have their own controls */}
+      {!isYouTubeUrl(src) && (
+        <div 
+          className={cn(
+            "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300",
+            showControls ? "opacity-100" : "opacity-0"
+          )}
+        >
         {/* Top Controls */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
           <div className="text-white">
@@ -499,7 +530,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        </div>
+      )}
   );
 };
