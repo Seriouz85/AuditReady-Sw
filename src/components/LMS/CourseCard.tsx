@@ -205,7 +205,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             )}
           </div>
 
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-gray-600 line-clamp-1">
             {description}
           </p>
 
@@ -227,9 +227,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0 px-4 pb-4 flex flex-col h-full">
+      <CardContent className="pt-0 px-4 pb-3 flex flex-col">
         {/* Course metadata */}
-        <div className="space-y-1.5 flex-1">
+        <div className="space-y-1">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <Badge className={difficultyStyle.color}>
@@ -260,7 +260,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
           {/* Progress section */}
           {typeof progress === 'number' && (
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Progress</span>
                 <span className="font-medium">{progress}%</span>
@@ -271,7 +271,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
           {/* Instructor */}
           {instructor && (
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2 text-sm -mt-0.5">
               <Avatar className="h-6 w-6">
                 <AvatarImage src={instructor.avatar} />
                 <AvatarFallback className="text-xs">
@@ -284,7 +284,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
 
         {/* Action button - Always at bottom */}
-        <div className="mt-2">
+        <div className="mt-1">
           {typeof progress === 'number' && progress > 0 ? (
             <Button 
               onClick={() => navigate(`/lms/viewer/${id}`)}
