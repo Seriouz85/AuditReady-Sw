@@ -107,7 +107,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <Card className={`group overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1 flex flex-col h-full ${className}`}>
       {/* Thumbnail */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-40 overflow-hidden">
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
@@ -191,8 +191,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         )}
       </div>
 
-      <CardHeader className="pb-2 pt-4 px-4">
-        <div className="space-y-1.5">
+      <CardHeader className="pb-1 pt-3 px-4">
+        <div className="space-y-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-semibold text-lg leading-tight text-gray-900 line-clamp-2">
               {title}
@@ -227,74 +227,68 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0 px-4 pb-4 flex flex-col flex-1">
-        {/* Fixed metadata section */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-4">
-              <Badge className={difficultyStyle.color}>
-                {difficultyStyle.label}
-              </Badge>
-              <Badge className={categoryColor}>
-                {category.replace('-', ' ')}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{formatDuration(duration)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              <span>{totalModules} module{totalModules !== 1 ? 's' : ''}</span>
-            </div>
-            {enrolledStudents !== undefined && (
-              <div className="flex items-center gap-1">
-                <Users className="h-4 w-4" />
-                <span>{enrolledStudents}</span>
-              </div>
-            )}
-          </div>
+      <CardContent className="pt-0 px-4 pb-3 flex flex-col flex-1">
+        {/* Badges section */}
+        <div className="flex items-center gap-2 mb-2">
+          <Badge className={difficultyStyle.color}>
+            {difficultyStyle.label}
+          </Badge>
+          <Badge className={categoryColor}>
+            {category.replace('-', ' ')}
+          </Badge>
         </div>
 
-        {/* Spacer to push content to bottom */}
+        {/* Metadata section */}
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <span>{formatDuration(duration)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <BookOpen className="h-4 w-4" />
+            <span>{totalModules} module{totalModules !== 1 ? 's' : ''}</span>
+          </div>
+          {enrolledStudents !== undefined && (
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              <span>{enrolledStudents}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Spacer */}
         <div className="flex-1"></div>
 
-        {/* Bottom aligned content */}
-        <div className="space-y-3">
-          {/* Progress section - Fixed position */}
-          <div className="min-h-[60px] flex flex-col justify-end">
-            {typeof progress === 'number' && (
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Progress</span>
-                  <span className="font-medium">{progress}%</span>
-                </div>
-                <Progress value={progress} className="h-2" />
+        {/* Progress section - compact */}
+        <div className="mb-2">
+          {typeof progress === 'number' && (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Progress</span>
+                <span className="font-medium">{progress}%</span>
               </div>
-            )}
-          </div>
-
-          {/* Instructor section - Fixed position */}
-          <div className="min-h-[32px] flex items-end">
-            {instructor && (
-              <div className="flex items-center gap-2 text-sm">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={instructor.avatar} />
-                  <AvatarFallback className="text-xs">
-                    {instructor.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-gray-600">by {instructor.name}</span>
-              </div>
-            )}
-          </div>
+              <Progress value={progress} className="h-2" />
+            </div>
+          )}
         </div>
 
-        {/* Action button - Always at bottom */}
-        <div className="mt-4">
+        {/* Instructor section - compact */}
+        <div className="mb-3">
+          {instructor && (
+            <div className="flex items-center gap-2 text-sm">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={instructor.avatar} />
+                <AvatarFallback className="text-xs">
+                  {instructor.name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-gray-600">by {instructor.name}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Action button */}
+        <div>
           {typeof progress === 'number' && progress > 0 ? (
             <Button 
               onClick={() => navigate(`/lms/viewer/${id}`)}
