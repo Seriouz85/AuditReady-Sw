@@ -100,7 +100,7 @@ const demoCoursePart: Course = {
           type: 'video',
           duration: '8:30',
           completed: true,
-          videoUrl: 'https://example.com/video1',
+          videoUrl: 'https://www.youtube.com/watch?v=jPA6gbsT2IQ',
           description: 'Introduction to the course structure and learning objectives'
         },
         {
