@@ -228,8 +228,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       </CardHeader>
 
       <CardContent className="pt-0 px-4 pb-4 flex flex-col flex-1">
-        {/* Course metadata - Fixed section */}
-        <div className="space-y-2">
+        {/* Fixed metadata section */}
+        <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <Badge className={difficultyStyle.color}>
@@ -259,35 +259,42 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           </div>
         </div>
 
-        {/* Flexible content section */}
-        <div className="flex-1 flex flex-col justify-end space-y-2 mt-2">
-          {/* Progress section - Always same position from bottom */}
-          {typeof progress === 'number' && (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Progress</span>
-                <span className="font-medium">{progress}%</span>
-              </div>
-              <Progress value={progress} className="h-2" />
-            </div>
-          )}
+        {/* Spacer to push content to bottom */}
+        <div className="flex-1"></div>
 
-          {/* Instructor - Always same position from bottom */}
-          {instructor && (
-            <div className="flex items-center gap-2 text-sm">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={instructor.avatar} />
-                <AvatarFallback className="text-xs">
-                  {instructor.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-gray-600">by {instructor.name}</span>
-            </div>
-          )}
+        {/* Bottom aligned content */}
+        <div className="space-y-3">
+          {/* Progress section - Fixed position */}
+          <div className="min-h-[60px] flex flex-col justify-end">
+            {typeof progress === 'number' && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Progress</span>
+                  <span className="font-medium">{progress}%</span>
+                </div>
+                <Progress value={progress} className="h-2" />
+              </div>
+            )}
+          </div>
+
+          {/* Instructor section - Fixed position */}
+          <div className="min-h-[32px] flex items-end">
+            {instructor && (
+              <div className="flex items-center gap-2 text-sm">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={instructor.avatar} />
+                  <AvatarFallback className="text-xs">
+                    {instructor.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-gray-600">by {instructor.name}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Action button - Always at bottom */}
-        <div className="mt-3">
+        <div className="mt-4">
           {typeof progress === 'number' && progress > 0 ? (
             <Button 
               onClick={() => navigate(`/lms/viewer/${id}`)}
