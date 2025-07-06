@@ -227,9 +227,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0 px-4 pb-4 flex flex-col">
+      <CardContent className="pt-0 px-4 pb-4 flex flex-col flex-1">
         {/* Course metadata */}
-        <div className="space-y-2">
+        <div className="space-y-2 flex-1">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <Badge className={difficultyStyle.color}>
