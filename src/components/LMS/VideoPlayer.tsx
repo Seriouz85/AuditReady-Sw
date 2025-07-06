@@ -98,7 +98,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const getYouTubeEmbedUrl = (url: string): string => {
     const videoId = getYouTubeVideoId(url);
     if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${window.location.origin}`;
+      return `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${window.location.origin}&autoplay=0&controls=1&modestbranding=1&rel=0`;
     }
     return url;
   };
@@ -322,9 +322,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           src={getYouTubeEmbedUrl(src)}
           className="w-full h-full"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           title={title}
+          loading="lazy"
         />
       ) : (
         <video
@@ -341,15 +342,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         />
       )}
 
-      {/* Loading/Buffering Overlay */}
-      {(isBuffering || !isLoaded) && (
+      {/* Loading/Buffering Overlay - Only for non-YouTube videos */}
+      {!isYouTubeUrl(src) && (isBuffering || !isLoaded) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
         </div>
       )}
 
-      {/* Play/Pause Overlay */}
-      {!isPlaying && isLoaded && !isBuffering && (
+      {/* Play/Pause Overlay - Only for non-YouTube videos */}
+      {!isYouTubeUrl(src) && !isPlaying && isLoaded && !isBuffering && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Button
             variant="ghost"
