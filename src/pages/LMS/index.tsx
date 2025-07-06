@@ -221,9 +221,9 @@ const notifications: Notification[] = [
   }
 ];
 
-import { CourseCard } from '@/components/lms/CourseCard';
-import { ProgressWidget } from '@/components/lms/ProgressWidget';
-import { RecommendationsWidget } from '@/components/lms/RecommendationsWidget';
+import { CourseCard } from '@/components/LMS/CourseCard';
+import { ProgressWidget } from '@/components/LMS/ProgressWidget';
+import { RecommendationsWidget } from '@/components/LMS/RecommendationsWidget';
 
 const TrenningLMS: React.FC = () => {
   const { theme, setTheme } = useTheme();

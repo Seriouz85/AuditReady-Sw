@@ -28,8 +28,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
-import { MediaBrowserPanel } from '@/components/lms/MediaBrowserPanel';
-import { SectionCard } from '@/components/lms/SectionCard';
+import { MediaBrowserPanel } from '@/components/LMS/MediaBrowserPanel';
+import { SectionCard } from '@/components/LMS/SectionCard';
 import { toast } from '@/utils/toast';
 
 // Define types for content modules

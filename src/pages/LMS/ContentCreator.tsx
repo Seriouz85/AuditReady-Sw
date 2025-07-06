@@ -37,7 +37,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useOrganization } from '@/hooks/useOrganization';
 import { toast } from '@/utils/toast';
 import { LearningPath } from '@/types/lms';
-import { MediaBrowserPanel } from '@/components/lms/MediaBrowserPanel';
+import { MediaBrowserPanel } from '@/components/LMS/MediaBrowserPanel';
 
 // Content type interfaces
 interface ContentType {

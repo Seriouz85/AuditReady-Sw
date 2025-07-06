@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { EnrollmentManager } from '@/components/lms/EnrollmentManager';
+import { EnrollmentManager } from '@/components/LMS/EnrollmentManager';
 import { getTimeBasedGreeting } from '@/lib/tracking';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/contexts/AuthContext';

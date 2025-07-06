@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { VideoPlayer } from '@/components/lms/VideoPlayer';
-import { InteractiveQuiz } from '@/components/lms/InteractiveQuiz';
-import { AssignmentSubmission } from '@/components/lms/AssignmentSubmission';
-import { BookmarkNotes } from '@/components/lms/BookmarkNotes';
+import { VideoPlayer } from '@/components/LMS/VideoPlayer';
+import { InteractiveQuiz } from '@/components/LMS/InteractiveQuiz';
+import { AssignmentSubmission } from '@/components/LMS/AssignmentSubmission';
+import { BookmarkNotes } from '@/components/LMS/BookmarkNotes';
 import { 
   ArrowLeft, 
   Play, 
