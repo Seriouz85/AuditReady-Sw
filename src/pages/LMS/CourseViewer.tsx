@@ -139,10 +139,11 @@ const demoCoursePart: Course = {
         {
           id: 'mod-2-2',
           title: 'GDPR Implementation Guide',
-          type: 'text',
-          duration: '20 min read',
+          type: 'video',
+          duration: '18:45',
           completed: false,
-          content: '<h3>Implementing GDPR in Your Organization</h3><p>The General Data Protection Regulation (GDPR) is a comprehensive data protection law that affects how organizations collect, store, and process personal data of EU residents.</p>'
+          videoUrl: 'https://www.youtube.com/watch?v=aEnwF1Iut4s',
+          description: 'Comprehensive guide to implementing GDPR compliance in your organization'
         },
         {
           id: 'mod-2-3',
@@ -251,31 +252,47 @@ const CourseViewer: React.FC = () => {
       {/* Left Sidebar - Course Navigation */}
       <div className="w-80 bg-white border-r shadow-sm flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/lms')}
-            className="text-white hover:bg-white/20 mb-3"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
+        <div className="p-6 border-b bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-700 text-white relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+          </div>
           
-          <h1 className="font-bold text-lg leading-tight mb-2">{course.title}</h1>
-          
-          <div className="flex items-center gap-3 text-sm text-blue-100">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              {course.duration}
+          <div className="relative z-10">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/lms')}
+              className="text-white hover:bg-white/20 mb-4 backdrop-blur-sm"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Book className="h-6 w-6 text-yellow-300" />
+              </div>
+              <div>
+                <h1 className="font-bold text-xl leading-tight">{course.title}</h1>
+                <p className="text-blue-100 text-sm mt-1">Interactive Learning Experience</p>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              {course.students.toLocaleString()}
-            </div>
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-current text-yellow-300" />
-              {course.rating}
+            
+            <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <Clock className="h-4 w-4 text-blue-200" />
+                <span className="text-blue-100">{course.duration}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <Users className="h-4 w-4 text-green-200" />
+                <span className="text-blue-100">{course.students.toLocaleString()} students</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <Star className="h-4 w-4 fill-current text-yellow-300" />
+                <span className="text-blue-100">{course.rating}/5</span>
+              </div>
             </div>
           </div>
         </div>
@@ -297,23 +314,25 @@ const CourseViewer: React.FC = () => {
                 {/* Section Header */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start p-2 h-auto text-left"
+                  className="w-full justify-start p-3 h-auto text-left hover:bg-blue-50 rounded-lg transition-colors"
                   onClick={() => toggleSection(section.id)}
                 >
-                  <div className="flex items-center gap-2 w-full">
+                  <div className="flex items-center gap-3 w-full">
                     {section.expanded ? (
-                      <ChevronDown className="h-4 w-4 text-gray-500" />
+                      <ChevronDown className="h-4 w-4 text-blue-600" />
                     ) : (
                       <ChevronRight className="h-4 w-4 text-gray-500" />
                     )}
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500">Section {sectionIndex + 1}</span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                          Section {sectionIndex + 1}
+                        </span>
                         {section.completed && (
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         )}
                       </div>
-                      <h3 className="font-medium text-sm">{section.title}</h3>
+                      <h3 className="font-semibold text-sm text-gray-900">{section.title}</h3>
                     </div>
                   </div>
                 </Button>
@@ -389,57 +408,62 @@ const CourseViewer: React.FC = () => {
       <div className="flex-1 flex">
         <div className="flex-1 flex flex-col">
         {/* Content Header */}
-        <div className="bg-white border-b p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                currentModule.type === 'video' ? 'bg-red-100' :
-                currentModule.type === 'text' ? 'bg-blue-100' :
-                currentModule.type === 'quiz' ? 'bg-green-100' : 'bg-orange-100'
-              }`}>
-                {React.createElement(getModuleIcon(currentModule.type), {
-                  className: `h-4 w-4 ${
-                    currentModule.type === 'video' ? 'text-red-600' :
-                    currentModule.type === 'text' ? 'text-blue-600' :
-                    currentModule.type === 'quiz' ? 'text-green-600' : 'text-orange-600'
-                  }`
-                })}
-              </div>
-              <div>
-                <h1 className="font-bold text-lg">{currentModule.title}</h1>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {currentModule.duration}
-                  </span>
-                  <Badge variant="outline">
-                    {currentModule.type.charAt(0).toUpperCase() + currentModule.type.slice(1)}
-                  </Badge>
+        <div className="bg-white border-b shadow-sm">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+                  currentModule.type === 'video' ? 'bg-gradient-to-br from-red-500 to-red-600' :
+                  currentModule.type === 'text' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                  currentModule.type === 'quiz' ? 'bg-gradient-to-br from-green-500 to-green-600' : 'bg-gradient-to-br from-orange-500 to-orange-600'
+                }`}>
+                  {React.createElement(getModuleIcon(currentModule.type), {
+                    className: 'h-6 w-6 text-white'
+                  })}
+                </div>
+                <div>
+                  <h1 className="font-bold text-2xl text-gray-900 mb-1">{currentModule.title}</h1>
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <span className="flex items-center gap-1.5 bg-gray-100 rounded-full px-3 py-1">
+                      <Clock className="h-4 w-4" />
+                      {currentModule.duration}
+                    </span>
+                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+                      {currentModule.type.charAt(0).toUpperCase() + currentModule.type.slice(1)}
+                    </Badge>
+                    {currentModule.completed && (
+                      <Badge className="bg-green-50 text-green-700 border-green-200">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Completed
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button 
-                variant={showBookmarks ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setShowBookmarks(!showBookmarks)}
-              >
-                <StickyNote className="h-4 w-4 mr-2" />
-                Notes
-              </Button>
-              <Button variant="outline" size="sm">
-                <Bookmark className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-              <Button variant="outline" size="sm">
-                <Share className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
+              
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant={showBookmarks ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setShowBookmarks(!showBookmarks)}
+                  className={showBookmarks ? "bg-blue-600 hover:bg-blue-700" : "hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"}
+                >
+                  <StickyNote className="h-4 w-4 mr-2" />
+                  {showBookmarks ? 'Hide Notes' : 'Take Notes'}
+                </Button>
+                <Button variant="outline" size="sm" className="hover:bg-gray-50">
+                  <Bookmark className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <Button variant="outline" size="sm" className="hover:bg-gray-50">
+                  <Share className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+                <Button variant="outline" size="sm" className="hover:bg-gray-50">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -557,23 +581,44 @@ const CourseViewer: React.FC = () => {
         </div>
         </div>
 
-        {/* BookmarkNotes Sidebar */}
+        {/* Enhanced BookmarkNotes Sidebar */}
         {showBookmarks && (
-          <div className="w-80 border-l bg-white">
-            <div className="h-full overflow-y-auto p-4">
-              <BookmarkNotes
-                moduleId={currentModule.id}
-                moduleName={currentModule.title}
-                moduleType={currentModule.type}
-                currentPosition={currentModule.type === 'video' ? currentVideoTime : 0}
-                onJumpTo={(position) => {
-                  if (currentModule.type === 'video') {
-                    // In a real implementation, this would seek the video to the position
-                    setCurrentVideoTime(position);
-                    console.log(`Jumping to ${position}s in video`);
-                  }
-                }}
-              />
+          <div className="w-96 border-l bg-gradient-to-b from-blue-50 to-white shadow-lg">
+            <div className="h-full flex flex-col">
+              {/* Notes Header */}
+              <div className="p-6 border-b bg-white shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-lg text-gray-900">Study Notes</h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setShowBookmarks(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Notes for: <span className="font-medium text-blue-700">{currentModule.title}</span>
+                </p>
+              </div>
+              
+              {/* Notes Content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <BookmarkNotes
+                  moduleId={currentModule.id}
+                  moduleName={currentModule.title}
+                  moduleType={currentModule.type}
+                  currentPosition={currentModule.type === 'video' ? currentVideoTime : 0}
+                  onJumpTo={(position) => {
+                    if (currentModule.type === 'video') {
+                      // In a real implementation, this would seek the video to the position
+                      setCurrentVideoTime(position);
+                      console.log(`Jumping to ${position}s in video`);
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}
