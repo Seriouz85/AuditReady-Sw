@@ -107,7 +107,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <Card className={`group overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1 flex flex-col h-full ${className}`}>
       {/* Thumbnail */}
-      <div className="relative h-80 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
@@ -191,10 +191,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         )}
       </div>
 
-      <CardHeader className="pb-1 pt-3 px-4">
-        <div className="space-y-1">
+      <CardHeader className="pb-2 pt-4 px-4">
+        <div className="space-y-1.5">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-base leading-tight text-gray-900 line-clamp-2">
+            <h3 className="font-semibold text-lg leading-tight text-gray-900 line-clamp-2">
               {title}
             </h3>
             {rating && (
@@ -205,7 +205,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             )}
           </div>
 
-          <p className="text-sm text-gray-600 line-clamp-1">
+          <p className="text-sm text-gray-600 line-clamp-2">
             {description}
           </p>
 
@@ -227,9 +227,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0 px-4 pb-3 flex flex-col">
+      <CardContent className="pt-0 px-4 pb-4 flex flex-col">
         {/* Course metadata */}
-        <div className="space-y-1">
+        <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <Badge className={difficultyStyle.color}>
@@ -260,7 +260,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
           {/* Progress section */}
           {typeof progress === 'number' && (
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Progress</span>
                 <span className="font-medium">{progress}%</span>
@@ -271,7 +271,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
           {/* Instructor */}
           {instructor && (
-            <div className="flex items-center gap-2 text-sm -mt-0.5">
+            <div className="flex items-center gap-2 text-sm">
               <Avatar className="h-6 w-6">
                 <AvatarImage src={instructor.avatar} />
                 <AvatarFallback className="text-xs">
@@ -284,7 +284,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
 
         {/* Action button - Always at bottom */}
-        <div className="mt-1">
+        <div className="mt-3">
           {typeof progress === 'number' && progress > 0 ? (
             <Button 
               onClick={() => navigate(`/lms/viewer/${id}`)}
