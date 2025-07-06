@@ -107,7 +107,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <Card className={`group overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1 flex flex-col h-full ${className}`}>
       {/* Thumbnail */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-56 overflow-hidden">
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
