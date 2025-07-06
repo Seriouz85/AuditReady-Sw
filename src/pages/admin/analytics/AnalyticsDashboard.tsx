@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { adminService } from '@/services/admin/AdminService';
 import { stripeService } from '@/services/billing/StripeService';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,16 +28,91 @@ import {
 
 export const AnalyticsDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user, currentOrganization } = useAuth();
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<any>(null);
+  
+  // Check if user is in demo mode
+  const isDemoMode = currentOrganization?.metadata?.is_demo === true;
 
   useEffect(() => {
     loadAnalytics();
-  }, []);
+  }, [isDemoMode]);
 
   const loadAnalytics = async () => {
     try {
       setLoading(true);
+      
+      if (isDemoMode) {
+        // Return comprehensive demo data for analytics
+        setAnalytics({
+          platformOverview: {
+            totalOrganizations: 47,
+            totalUsers: 1247,
+            totalStandards: 12,
+            totalRequirements: 2483,
+            averageCompliance: 82.4,
+            monthlyGrowth: 15.7,
+            activeThisWeek: 892
+          },
+          complianceMetrics: {
+            averageCompliance: 82.4,
+            byStandard: [
+              { name: 'ISO 27001', compliance: 89.2, trend: 'up' },
+              { name: 'GDPR', compliance: 95.1, trend: 'up' },
+              { name: 'SOC 2', compliance: 78.3, trend: 'stable' },
+              { name: 'NIST CSF', compliance: 84.7, trend: 'up' },
+              { name: 'PCI DSS', compliance: 72.8, trend: 'down' }
+            ],
+            riskDistribution: {
+              low: 68,
+              medium: 24,
+              high: 8
+            }
+          },
+          organizationMetrics: {
+            byTier: [
+              { tier: 'Enterprise', count: 12, avgCompliance: 91.3 },
+              { tier: 'Professional', count: 23, avgCompliance: 84.1 },
+              { tier: 'Starter', count: 12, avgCompliance: 76.2 }
+            ],
+            topPerformers: [
+              { name: 'TechCorp Solutions', compliance: 96.8, tier: 'Enterprise' },
+              { name: 'SecureBank Inc', compliance: 94.2, tier: 'Enterprise' },
+              { name: 'DataFlow Systems', compliance: 91.7, tier: 'Professional' }
+            ],
+            recentActivity: [
+              { organization: 'CloudTech Ltd', action: 'Completed ISO 27001 assessment', time: '2 hours ago' },
+              { organization: 'FinanceFirst', action: 'Updated GDPR compliance', time: '4 hours ago' },
+              { organization: 'MedSecure', action: 'Added new security controls', time: '6 hours ago' }
+            ]
+          },
+          usageMetrics: {
+            monthlyGrowth: 15.7,
+            activeThisWeek: 892,
+            featuresUsed: {
+              assessments: 1847,
+              documents: 2194,
+              reports: 892,
+              integrations: 234
+            },
+            sessionsThisMonth: 4821,
+            avgSessionDuration: 24.7
+          },
+          performanceMetrics: {
+            systemUptime: 99.97,
+            avgResponseTime: 156,
+            errorRate: 0.02,
+            healthScore: 98.5,
+            incidents: [
+              { type: 'Minor', count: 2, resolved: 2 },
+              { type: 'Major', count: 0, resolved: 0 }
+            ]
+          }
+        });
+        setLoading(false);
+        return;
+      }
       
       // Fetch real platform statistics
       const realStats = await adminService.getPlatformStatistics();

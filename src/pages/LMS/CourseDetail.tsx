@@ -44,7 +44,7 @@ const coursesData = [
     instructor: {
       name: 'Jennifer Wilson',
       role: 'Senior Audit Manager',
-      avatar: 'https://api.dicebear.com/6.x/avataaars/svg?seed=instructor1'
+      avatar: 'https://api.dicebear.com/6.x/initials/svg?seed=instructor1&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444'
     },
     rating: 4.8,
     enrolled: 342,
@@ -121,7 +121,7 @@ const coursesData = [
     instructor: {
       name: 'Michael Chen',
       role: 'Financial Reporting Expert',
-      avatar: 'https://api.dicebear.com/6.x/avataaars/svg?seed=instructor2'
+      avatar: 'https://api.dicebear.com/6.x/initials/svg?seed=instructor2&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444'
     },
     rating: 4.6,
     enrolled: 215,
@@ -783,7 +783,7 @@ const CourseDetail: React.FC = () => {
                 <Card className="p-4 rounded-xl">
                   <div className="flex items-start gap-3">
                     <Avatar>
-                      <AvatarImage src="https://api.dicebear.com/6.x/avataaars/svg?seed=user1" />
+                      <AvatarImage src="https://api.dicebear.com/6.x/initials/svg?seed=user1&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444" />
                       <AvatarFallback>U1</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
@@ -814,7 +814,7 @@ const CourseDetail: React.FC = () => {
                 <Card className="p-4 rounded-xl">
                   <div className="flex items-start gap-3">
                     <Avatar>
-                      <AvatarImage src="https://api.dicebear.com/6.x/avataaars/svg?seed=user2" />
+                      <AvatarImage src="https://api.dicebear.com/6.x/initials/svg?seed=user2&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444" />
                       <AvatarFallback>U2</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">

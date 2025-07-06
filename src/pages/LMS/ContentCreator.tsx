@@ -28,9 +28,16 @@ import {
   Users,
   ChevronRight,
   Brain,
-  Bot
+  Bot,
+  FolderOpen
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { learningService } from '@/services/lms/LearningService';
+import { useAuth } from '@/contexts/AuthContext';
+import { useOrganization } from '@/hooks/useOrganization';
+import { toast } from '@/utils/toast';
+import { LearningPath } from '@/types/lms';
+import { MediaBrowserPanel } from '@/components/lms/MediaBrowserPanel';
 
 // Content type interfaces
 interface ContentType {
@@ -136,6 +143,10 @@ const ContentCreator: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [newCategory, setNewCategory] = useState('');
   const [animateCard, setAnimateCard] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [showMediaBrowser, setShowMediaBrowser] = useState(false);
+  const { user, isDemo } = useAuth();
+  const { organization } = useOrganization();
   
   // Get current content type
   const currentType = contentTypes.find(type => type.id === selectedType);
@@ -179,33 +190,78 @@ const ContentCreator: React.FC = () => {
   };
   
   // Handler for submitting the content
-  const handleSubmit = () => {
-    // Combine all data and send to API
-    const finalData = {
-      ...contentData,
-      type: selectedType,
-      categories: selectedCategories,
-      created: new Date().toISOString()
-    };
-    
-    console.log('Submitting content:', finalData);
-    // In a real app, you would save this data to your backend
-    
-    // Set step 2 as active before navigating
-    setActiveTab('content');
+  const handleSubmit = async () => {
+    if (!contentData.title || !contentData.description) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
 
-    // Navigate based on content type
-    if (selectedType === 'course') {
-      // For courses, go to the course builder to create content
-      navigate('/lms/create/course-builder', { 
-        state: { courseData: finalData } 
-      });
-    } else if (selectedType === 'learning-path') {
-      // For learning paths, go to the learning path builder to create content
-      navigate('/lms/create/learning-path-builder', { state: { learningPathData: finalData } });
-    } else {
-      // For other content types, go back to the LMS page
-      navigate('/lms');
+    if (!user || !organization) {
+      toast.error('You must be logged in to create content');
+      return;
+    }
+
+    try {
+      setCreating(true);
+
+      // Prepare data for database
+      const courseData: Partial<LearningPath> = {
+        organization_id: organization.id,
+        title: contentData.title,
+        description: contentData.description,
+        category: selectedType === 'course' ? 'custom' : selectedType as any,
+        difficulty_level: contentData.difficultyLevel.toLowerCase() as any,
+        estimated_duration: parseInt(contentData.estimatedDuration.replace(/[^0-9]/g, '')) || 90,
+        total_modules: 0,
+        is_published: false,
+        is_mandatory: contentData.isPrivate,
+        tags: selectedCategories
+      };
+
+      if (isDemo) {
+        // For demo, just navigate with the data
+        const finalData = {
+          ...contentData,
+          type: selectedType,
+          categories: selectedCategories,
+          created: new Date().toISOString(),
+          id: 'demo-' + Date.now()
+        };
+
+        if (selectedType === 'course') {
+          navigate('/lms/create/course-builder', { state: { courseData: finalData } });
+        } else if (selectedType === 'learning-path') {
+          navigate('/lms/create/learning-path-builder', { state: { learningPathData: finalData } });
+        } else {
+          navigate('/lms');
+        }
+      } else {
+        // Create course in database
+        const createdCourse = await learningService.createCourse(courseData);
+
+        if (createdCourse) {
+          // Navigate to course builder with the created course
+          if (selectedType === 'course') {
+            navigate('/lms/create/course-builder', { 
+              state: { courseData: { ...contentData, ...createdCourse } } 
+            });
+          } else if (selectedType === 'learning-path') {
+            navigate('/lms/create/learning-path-builder', { 
+              state: { learningPathData: { ...contentData, ...createdCourse } } 
+            });
+          } else {
+            // For other content types, navigate to the appropriate editor
+            navigate(`/lms/${selectedType}/create`, { 
+              state: { contentData: { ...contentData, ...createdCourse } } 
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error creating content:', error);
+      toast.error('Failed to create content');
+    } finally {
+      setCreating(false);
     }
   };
   
@@ -288,12 +344,29 @@ const ContentCreator: React.FC = () => {
           
           {activeTab !== 'type' && (
             <div className="flex items-center gap-2">
-              <Button variant="outline" className="rounded-full">
+              <Button 
+                variant="outline" 
+                className="rounded-full"
+                disabled={creating}
+              >
                 Save as Draft
               </Button>
-              <Button onClick={handleSubmit} className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-md hover:shadow-lg transition-all">
-                <Save className="mr-2 h-4 w-4" />
-                Publish
+              <Button 
+                onClick={handleSubmit} 
+                className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-md hover:shadow-lg transition-all"
+                disabled={creating || !contentData.title || !contentData.description}
+              >
+                {creating ? (
+                  <>
+                    <Brain className="mr-2 h-4 w-4 animate-pulse" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    {selectedType === 'course' ? 'Continue to Builder' : 'Create Content'}
+                  </>
+                )}
               </Button>
             </div>
           )}
@@ -452,24 +525,26 @@ const ContentCreator: React.FC = () => {
                 
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="title">Title</Label>
+                    <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
                     <Input 
                       id="title" 
                       placeholder="Enter a title for your content" 
                       className="mt-1 rounded-xl"
                       value={contentData.title}
                       onChange={(e) => setContentData({...contentData, title: e.target.value})}
+                      required
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
                     <Textarea 
                       id="description" 
                       placeholder="Describe what learners will gain from this content" 
                       className="mt-1 min-h-[100px] rounded-xl"
                       value={contentData.description}
                       onChange={(e) => setContentData({...contentData, description: e.target.value})}
+                      required
                     />
                   </div>
                   
@@ -551,55 +626,6 @@ const ContentCreator: React.FC = () => {
                 </div>
               </Card>
               
-              {/* Theme Options */}
-              <Card className="p-6 rounded-2xl border-0 shadow-md">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold">Appearance</h2>
-                  <Palette className="h-5 w-5 text-muted-foreground" />
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label>Theme Color</Label>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-2">
-                      {themeColors.map((color) => (
-                        <div 
-                          key={color.value}
-                          className={`h-12 rounded-xl cursor-pointer bg-gradient-to-r ${color.value} relative
-                            ${contentData.themeColor === color.value ? 'ring-2 ring-primary' : ''}
-                          `}
-                          onClick={() => setContentData({...contentData, themeColor: color.value})}
-                        >
-                          {contentData.themeColor === color.value && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="bg-white rounded-full p-1">
-                                <Check className="h-4 w-4 text-primary" />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4">
-                    <Label>Cover Image</Label>
-                    <div className="mt-2 border-2 border-dashed rounded-xl p-8 text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                      <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Click to upload or drag and drop
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        SVG, PNG, JPG or GIF (max. 2MB)
-                      </p>
-                      <Button variant="outline" className="mt-4 rounded-full">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Choose File
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
               
               {/* AI Content Generation (if applicable) */}
               {currentType?.aiPowered && (
@@ -637,7 +663,13 @@ const ContentCreator: React.FC = () => {
                           value={contentData.aiPrompt}
                           onChange={(e) => setContentData({...contentData, aiPrompt: e.target.value})}
                         />
-                        <Button className="mt-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-md hover:shadow-lg transition-all">
+                        <Button 
+                          className="mt-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-md hover:shadow-lg transition-all"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toast.info('AI content generation will be available in the course builder');
+                          }}
+                        >
                           <Bot className="mr-2 h-4 w-4" />
                           Generate Content
                         </Button>
@@ -721,15 +753,68 @@ const ContentCreator: React.FC = () => {
                     Upload File
                   </Button>
                   
-                  <Button className="w-full flex justify-start rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 text-purple-700 border border-purple-200">
-                    <Library className="mr-2 h-4 w-4" />
-                    From Content Library
+                  <Button 
+                    className="w-full flex justify-start rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 text-purple-700 border border-purple-200"
+                    onClick={() => setShowMediaBrowser(true)}
+                  >
+                    <FolderOpen className="mr-2 h-4 w-4" />
+                    Browse Media Library
                   </Button>
                   
                   <Button className="w-full flex justify-start rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-700 border border-amber-200">
                     <BookMarked className="mr-2 h-4 w-4" />
                     From Templates
                   </Button>
+                </div>
+              </Card>
+              
+              {/* Appearance Section */}
+              <Card className="p-6 rounded-2xl border-0 shadow-md">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold">Appearance</h2>
+                  <Palette className="h-5 w-5 text-muted-foreground" />
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label>Theme Color</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                      {themeColors.map((color) => (
+                        <div 
+                          key={color.value}
+                          className={`h-10 rounded-lg cursor-pointer bg-gradient-to-r ${color.value} relative
+                            ${contentData.themeColor === color.value ? 'ring-2 ring-primary' : ''}
+                          `}
+                          onClick={() => setContentData({...contentData, themeColor: color.value})}
+                        >
+                          {contentData.themeColor === color.value && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="bg-white rounded-full p-1">
+                                <Check className="h-3 w-3 text-primary" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <Label>Cover Image</Label>
+                    <div className="mt-2 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                      <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Click to upload or drag and drop
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        SVG, PNG, JPG or GIF (max. 2MB)
+                      </p>
+                      <Button variant="outline" size="sm" className="mt-2 rounded-full">
+                        <Upload className="h-3 w-3 mr-1" />
+                        Choose File
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </Card>
               
@@ -798,33 +883,26 @@ const ContentCreator: React.FC = () => {
               </Card>
             </div>
             
-            <div className="col-span-12 flex justify-between items-start mt-6 gap-6">
-              <div className="bg-blue-50 rounded-2xl border border-blue-100 p-4 max-w-sm">
-                <div className="flex items-start gap-3">
-                  <div className="bg-blue-100 p-2 rounded-full mt-1">
-                    <Sparkles className="h-4 w-4 text-blue-700" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-blue-900">Need help?</h3>
-                    <p className="text-sm text-blue-700 mt-1">
-                      Our AI assistant can help you create engaging content quickly.
-                      Try using the AI generation feature!
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={handleSubmit}
-                className="rounded-full px-8 py-3 h-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md hover:shadow-lg transition-all font-medium"
-              >
-                {selectedType === 'course' ? 'Continue to Course Builder' : 'Create Content'}
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
           </div>
         )}
       </div>
+
+      {/* Media Browser Panel */}
+      <MediaBrowserPanel
+        isOpen={showMediaBrowser}
+        onClose={() => setShowMediaBrowser(false)}
+        onSelect={(file) => {
+          // Update content data with selected media
+          setContentData(prev => ({
+            ...prev,
+            description: prev.description + `\n\n[Media: ${file.originalName}]`,
+            tags: [...new Set([...prev.tags, ...file.tags])]
+          }));
+          
+          toast.success(`Selected ${file.originalName}`);
+          setShowMediaBrowser(false);
+        }}
+      />
     </div>
   );
 };

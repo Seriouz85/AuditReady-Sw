@@ -38,6 +38,9 @@ import Reports from "./pages/LMS/Reports";
 import CourseDetail from "./pages/LMS/CourseDetail";
 import LMSAdmin from "./pages/LMS/Admin";
 import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
+import MediaLibrary from "./pages/LMS/MediaLibrary";
+import LMSAnalytics from "./pages/LMS/Analytics";
+import CourseViewer from "./pages/LMS/CourseViewer";
 import GraphicalEditor from "./pages/documents/GraphicalEditor";
 // Lazy load admin components for code splitting
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
@@ -246,10 +249,34 @@ const App = () => (
                     } 
                   />
                   <Route 
+                    path="/lms/viewer/:courseId" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <CourseViewer />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
                     path="/lms/phishing-simulation-manager" 
                     element={
                       <ProtectedRoute requiredPermission="admin_lms">
                         <PhishingSimulationManager />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/media-library" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <MediaLibrary />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/analytics" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <LMSAnalytics />
                       </ProtectedRoute>
                     } 
                   />

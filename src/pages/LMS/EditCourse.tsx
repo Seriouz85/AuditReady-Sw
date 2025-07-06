@@ -73,7 +73,7 @@ const EditCourse: React.FC = () => {
       enrolled: 142,
       instructor: {
         name: 'Sarah Johnson',
-        avatar: 'https://api.dicebear.com/6.x/avataaars/svg?seed=instructor1'
+        avatar: 'https://api.dicebear.com/6.x/initials/svg?seed=instructor1&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444'
       }
     },
     {
@@ -91,7 +91,7 @@ const EditCourse: React.FC = () => {
       enrolled: 97,
       instructor: {
         name: 'Michael Chen',
-        avatar: 'https://api.dicebear.com/6.x/avataaars/svg?seed=instructor2'
+        avatar: 'https://api.dicebear.com/6.x/initials/svg?seed=instructor2&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444'
       }
     },
     {
@@ -109,7 +109,7 @@ const EditCourse: React.FC = () => {
       enrolled: 110,
       instructor: {
         name: 'Alex Rodriguez',
-        avatar: 'https://api.dicebear.com/6.x/avataaars/svg?seed=instructor3'
+        avatar: 'https://api.dicebear.com/6.x/initials/svg?seed=instructor3&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444'
       }
     },
     {
@@ -127,7 +127,7 @@ const EditCourse: React.FC = () => {
       enrolled: 156,
       instructor: {
         name: 'Emily Wilson',
-        avatar: 'https://api.dicebear.com/6.x/avataaars/svg?seed=instructor4'
+        avatar: 'https://api.dicebear.com/6.x/initials/svg?seed=instructor4&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444'
       }
     }
   ];
@@ -160,8 +160,11 @@ const EditCourse: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-8">
-        <div className="container max-w-7xl mx-auto">
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 text-white p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3"></div>
+        <div className="container max-w-7xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-6">
             <Link to="/lms">
               <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 rounded-full">

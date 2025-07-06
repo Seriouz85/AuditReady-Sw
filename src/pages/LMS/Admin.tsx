@@ -16,23 +16,64 @@ import {
   BarChart,
   AlertCircle,
   ChevronRight,
-  Plus
+  Plus,
+  UserPlus
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { EnrollmentManager } from '@/components/lms/EnrollmentManager';
 import { getTimeBasedGreeting } from '@/lib/tracking';
 import { useTheme } from 'next-themes';
+import { useAuth } from '@/contexts/AuthContext';
+import { useOrganization } from '@/hooks/useOrganization';
+import { learningService } from '@/services/lms/LearningService';
+import { enrollmentService } from '@/services/lms/EnrollmentService';
 
 const LMSAdmin: React.FC = () => {
   const { setTheme } = useTheme();
+  const { user, isDemo } = useAuth();
+  const { organization } = useOrganization();
+  
   useEffect(() => { setTheme('light'); }, [setTheme]);
   
   const [greeting] = useState(getTimeBasedGreeting());
+  const [courses, setCourses] = useState([]);
+  const [stats, setStats] = useState({
+    activeCourses: 8,
+    activeUsers: 124,
+    completionRate: 78
+  });
+  
+  useEffect(() => {
+    if (organization && !isDemo) {
+      loadAdminData();
+    }
+  }, [organization, isDemo]);
+  
+  const loadAdminData = async () => {
+    try {
+      if (organization) {
+        const [coursesData, enrollmentStats] = await Promise.all([
+          learningService.getOrganizationCourses(organization.id),
+          enrollmentService.getEnrollmentStats(organization.id)
+        ]);
+        
+        setCourses(coursesData);
+        setStats({
+          activeCourses: enrollmentStats.totalCourses,
+          activeUsers: enrollmentStats.activeUsers,
+          completionRate: Math.round(enrollmentStats.completionRate)
+        });
+      }
+    } catch (error) {
+      console.error('Error loading admin data:', error);
+    }
+  };
   
   const currentUser = {
-    name: 'Admin',
+    name: user?.name || 'Admin',
     role: 'Training Manager',
-    organization: 'Audit Readiness Hub'
+    organization: organization?.name || 'Audit Readiness Hub'
   };
 
   return (
@@ -59,7 +100,7 @@ const LMSAdmin: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-white/70">Active Courses</p>
-                    <p className="text-xl font-semibold">8</p>
+                    <p className="text-xl font-semibold">{stats.activeCourses}</p>
                   </div>
                 </div>
                 
@@ -69,7 +110,7 @@ const LMSAdmin: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-white/70">Active Users</p>
-                    <p className="text-xl font-semibold">124</p>
+                    <p className="text-xl font-semibold">{stats.activeUsers}</p>
                   </div>
                 </div>
                 
@@ -79,14 +120,14 @@ const LMSAdmin: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-white/70">Completion Rate</p>
-                    <p className="text-xl font-semibold">78%</p>
+                    <p className="text-xl font-semibold">{stats.completionRate}%</p>
                   </div>
                 </div>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 inline-flex items-center">
                 <Avatar className="h-12 w-12 border-2 border-white mr-4">
-                  <AvatarImage src={`https://api.dicebear.com/6.x/avataaars/svg?seed=admin1`} alt={currentUser.name} />
+                  <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=admin1&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444`} alt={currentUser.name} />
                   <AvatarFallback>{currentUser.name.substring(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -109,17 +150,26 @@ const LMSAdmin: React.FC = () => {
                 <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
                 
                 <div className="space-y-3">
-                  <Button className="w-full justify-start text-left bg-white/10 hover:bg-white/20 text-white border-0">
+                  <Button 
+                    className="w-full justify-start text-left bg-white/10 hover:bg-white/20 text-white border-0"
+                    onClick={() => document.getElementById('users-tab')?.click()}
+                  >
                     <Users className="mr-2 h-4 w-4" />
                     Manage Users
                   </Button>
                   
-                  <Button className="w-full justify-start text-left bg-white/10 hover:bg-white/20 text-white border-0">
+                  <Button 
+                    className="w-full justify-start text-left bg-white/10 hover:bg-white/20 text-white border-0"
+                    onClick={() => document.getElementById('users-tab')?.click()}
+                  >
                     <Mail className="mr-2 h-4 w-4" />
                     Send Invitations
                   </Button>
                   
-                  <Button className="w-full justify-start text-left bg-white/10 hover:bg-white/20 text-white border-0">
+                  <Button 
+                    className="w-full justify-start text-left bg-white/10 hover:bg-white/20 text-white border-0"
+                    onClick={() => document.getElementById('reports-tab')?.click()}
+                  >
                     <BarChart className="mr-2 h-4 w-4" />
                     View Reports
                   </Button>
@@ -145,15 +195,19 @@ const LMSAdmin: React.FC = () => {
               <BookOpen className="mr-2 h-4 w-4" />
               Courses
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex-1 md:flex-none">
+            <TabsTrigger value="users" className="flex-1 md:flex-none" id="users-tab">
               <Users className="mr-2 h-4 w-4" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="enrollment" className="flex-1 md:flex-none">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Enrollment
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex-1 md:flex-none">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </TabsTrigger>
-            <TabsTrigger value="reports" className="flex-1 md:flex-none">
+            <TabsTrigger value="reports" className="flex-1 md:flex-none" id="reports-tab">
               <BarChart className="mr-2 h-4 w-4" />
               Reports
             </TabsTrigger>
@@ -209,25 +263,57 @@ const LMSAdmin: React.FC = () => {
               </div>
               
               <div className="mt-6">
-                <h4 className="font-medium mb-3">Active Course Links</h4>
+                <h4 className="font-medium mb-3">Active Courses</h4>
                 <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-white">
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-lg bg-blue-100 p-2">
-                          <FileText className="h-4 w-4 text-blue-700" />
+                  {isDemo ? (
+                    // Demo courses
+                    [{title: 'Security Awareness Training', users: 24}, {title: 'Compliance Fundamentals', users: 18}, {title: 'Data Privacy Course', users: 32}].map((course, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-white">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-blue-100 p-2">
+                            <FileText className="h-4 w-4 text-blue-700" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{course.title}</p>
+                            <p className="text-xs text-muted-foreground">Created 2 days ago • {course.users} active users</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-sm">Security Awareness Training {i}</p>
-                          <p className="text-xs text-muted-foreground">Created 2 days ago • 24 active users</p>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm">Copy Link</Button>
+                          <Button variant="outline" size="sm">Edit</Button>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">Copy Link</Button>
-                        <Button variant="outline" size="sm">Edit</Button>
+                    ))
+                  ) : (
+                    // Real courses
+                    courses.length > 0 ? courses.map((course: any) => (
+                      <div key={course.id} className="flex items-center justify-between p-3 rounded-lg border bg-white">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-blue-100 p-2">
+                            <FileText className="h-4 w-4 text-blue-700" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{course.title}</p>
+                            <p className="text-xs text-muted-foreground">Created {new Date(course.created_at).toLocaleDateString()} • {course.total_modules} modules</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm">Copy Link</Button>
+                          <Link to={`/lms/course/${course.id}`}>
+                            <Button variant="outline" size="sm">Edit</Button>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <BookOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p>No courses created yet</p>
+                        <Link to="/lms/create/content">
+                          <Button className="mt-2" size="sm">Create Your First Course</Button>
+                        </Link>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
             </Card>
@@ -247,28 +333,46 @@ const LMSAdmin: React.FC = () => {
               <h3 className="text-lg font-medium mb-4">Organization Users</h3>
               
               <div className="space-y-4">
-                {Array.from({length: 5}).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-lg border hover:bg-slate-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={`https://api.dicebear.com/6.x/avataaars/svg?seed=user${i+10}`} />
-                        <AvatarFallback>U{i}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">User Name {i+1}</p>
-                        <p className="text-xs text-muted-foreground">user{i+1}@example.com</p>
+                {isDemo ? (
+                  // Demo users
+                  Array.from({length: 5}).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 rounded-lg border hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=user${i+10}&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444`} />
+                          <AvatarFallback>U{i}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">User Name {i+1}</p>
+                          <p className="text-xs text-muted-foreground">user{i+1}@democorp.com</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge className={i % 3 === 0 ? "bg-green-100 text-green-800" : i % 3 === 1 ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}>
+                          {i % 3 === 0 ? "Admin" : i % 3 === 1 ? "Instructor" : "Learner"}
+                        </Badge>
+                        <Button variant="ghost" size="sm">Edit</Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Badge className={i % 3 === 0 ? "bg-green-100 text-green-800" : i % 3 === 1 ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}>
-                        {i % 3 === 0 ? "Admin" : i % 3 === 1 ? "Instructor" : "Learner"}
-                      </Badge>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>User management will show organization members</p>
+                    <p className="text-sm">Connect to Entra ID for automatic user sync</p>
                   </div>
-                ))}
+                )}
               </div>
             </Card>
+          </TabsContent>
+          
+          {/* Enrollment Tab */}
+          <TabsContent value="enrollment" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Course Enrollment Management</h2>
+            </div>
+            
+            <EnrollmentManager showCourseSelection={true} />
           </TabsContent>
           
           {/* Settings Tab */}
@@ -377,12 +481,12 @@ const LMSAdmin: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="p-4 border bg-slate-50">
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Average Completion Rate</h4>
-                  <p className="text-2xl font-bold">78%</p>
+                  <p className="text-2xl font-bold">{stats.completionRate}%</p>
                 </Card>
                 
                 <Card className="p-4 border bg-slate-50">
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Active Learners</h4>
-                  <p className="text-2xl font-bold">124</p>
+                  <p className="text-2xl font-bold">{stats.activeUsers}</p>
                 </Card>
                 
                 <Card className="p-4 border bg-slate-50">

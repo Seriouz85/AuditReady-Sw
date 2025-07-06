@@ -196,7 +196,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     { to: '/app/compliance-monitoring', icon: <Bell size={20} />, label: 'Monitoring & Alerts' },
     { to: '/app/activities', icon: <Activity size={20} />, label: t('nav.activities', 'Activities') },
     { to: '/app/applications', icon: <Laptop size={20} />, label: t('nav.applications') },
-    { to: '/lms', icon: <GraduationCap size={20} />, label: 'Learning' },
+    { to: '/lms', icon: <GraduationCap size={20} />, label: 'Training' },
     { 
       to: '/app/risk-management', 
       icon: <Shield size={20} />, 

@@ -15,7 +15,8 @@ import {
   Eye,
   Settings,
   Sparkles,
-  ChevronUp
+  ChevronUp,
+  FolderOpen
 } from 'lucide-react';
 import { DragVertical } from '@/components/ui/drag-vertical';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
+import { MediaBrowserPanel } from '@/components/lms/MediaBrowserPanel';
+import { SectionCard } from '@/components/lms/SectionCard';
+import { toast } from '@/utils/toast';
 
 // Define types for content modules
 interface Module {
@@ -69,6 +75,11 @@ const CourseBuilder: React.FC = () => {
   
   // 1. Add loading state for AI generation
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Media browser states
+  const [showMediaBrowser, setShowMediaBrowser] = useState(false);
+  const [activeMediaSection, setActiveMediaSection] = useState<string | null>(null);
+  const [activeMediaModule, setActiveMediaModule] = useState<string | null>(null);
   
   useEffect(() => { setTheme('light'); setActiveTab('course-builder'); }, [setTheme]);
   
@@ -222,15 +233,22 @@ const CourseBuilder: React.FC = () => {
   
   // Update handleModalSubmit to parse AI response and update courseSections
   const handleModalSubmit = async () => {
-    setShowGenerateModal(false);
-    if (!courseData) {
-      alert('Please ensure course details are filled in.');
+    if (!courseData || !courseData.title || !courseData.description) {
+      toast.error('Please ensure course title and description are filled in before generating content.');
       return;
     }
+    
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      toast.error('API key not configured. Please contact your administrator.');
+      return;
+    }
+    
+    setShowGenerateModal(false);
     setIsGenerating(true);
     // Ny, tydlig prompt för AI
-    const prompt = `Return ONLY valid JSON.
-Create a professional training course with the following details:
+    const prompt = `Create a comprehensive cybersecurity training course. Return ONLY valid JSON in the exact format specified.
+
+Course Requirements:
 - Type: ${courseData.type}
 - Title: ${courseData.title}
 - Target Audience: ${courseData.targetAudience}
@@ -238,27 +256,33 @@ Create a professional training course with the following details:
 - Description: ${courseData.description}
 - Number of sections: ${numSectionsToGenerate}
 
-For each section, provide:
-- title: string
-- content: string (the main text for the section)
-- quizzes: array of quiz questions (optional, each with question, options, answer)
+Content Guidelines:
+- Focus on practical cybersecurity applications
+- Include real-world scenarios and examples
+- Make content engaging and interactive
+- Ensure compliance training relevance
+- Use clear, professional language
+- Include actionable takeaways
 
-Example format:
+REQUIRED JSON FORMAT:
 {
   "sections": [
     {
-      "title": "Section 1 Title",
-      "content": "Section 1 main text...",
+      "title": "Clear, descriptive section title",
+      "content": "Comprehensive section content (300-500 words). Include practical examples, step-by-step guidance, and real-world applications. Focus on cybersecurity best practices, compliance requirements, and actionable insights.",
       "quizzes": [
         {
-          "question": "What is GDPR?",
-          "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-          "answer": "Option 2"
+          "question": "Practical question testing understanding",
+          "options": ["Correct answer", "Plausible distractor", "Another distractor", "Final distractor"],
+          "answer": "Correct answer",
+          "explanation": "Brief explanation of why this is correct"
         }
       ]
     }
   ]
 }
+
+Generate ${numSectionsToGenerate} sections with progressive difficulty. Each section should build upon previous knowledge and include 1-2 quiz questions that test practical application, not just memorization.
 Do NOT include any introduction or explanation text before or after the JSON.`;
 
     try {
@@ -288,19 +312,19 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
             parsed = JSON.parse(match[0]);
           } catch (e) {
             setIsGenerating(false);
-            alert('Kunde inte tolka AI-svaret som JSON. Försök igen.');
+            toast.error('Could not parse AI response as JSON. Please try again.');
             return;
           }
         } else {
           setIsGenerating(false);
-          alert('Kunde inte tolka AI-svaret som JSON. Försök igen.');
+          toast.error('Could not parse AI response as JSON. Please try again.');
           return;
         }
       }
 
       if (!parsed.sections || !Array.isArray(parsed.sections)) {
         setIsGenerating(false);
-        alert('AI-svaret innehåller inga sektioner. Försök igen.');
+        toast.error('AI response contains no sections. Please try again.');
         return;
       }
 
@@ -317,14 +341,15 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
             content: section.content || '',
             isExpanded: true
           },
-          ...(Array.isArray(section.quizzes) ? section.quizzes.map((quiz: { question?: string; options?: string[]; answer?: string }, qidx: number) => ({
+          ...(Array.isArray(section.quizzes) ? section.quizzes.map((quiz: { question?: string; options?: string[]; answer?: string; explanation?: string }, qidx: number) => ({
             id: Math.random().toString(36).substr(2, 9),
-            title: quiz.question ? `Quiz: ${quiz.question}` : `Quiz ${qidx + 1}`,
+            title: quiz.question ? `Quiz: ${quiz.question.substring(0, 50)}${quiz.question.length > 50 ? '...' : ''}` : `Quiz ${qidx + 1}`,
             type: 'quiz',
             content: JSON.stringify({
               question: quiz.question || '',
               options: quiz.options || [],
-              answer: quiz.answer || ''
+              answer: quiz.answer || '',
+              explanation: quiz.explanation || ''
             }),
             isExpanded: true
           })) : [])
@@ -332,15 +357,15 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
       }));
 
       setCourseSections([...courseSections, ...newSections]);
-      // Auto-scroll till första nya sektionen
+      // Auto-scroll to first new section
       if (newSections.length > 0) scrollToSection(newSections[0].id);
       setIsGenerating(false);
-      alert('Innehåll genererat och uppdelat i sektioner!');
-      setActiveTab('details');
+      toast.success(`Successfully generated ${newSections.length} sections with content and quizzes!`);
+      setShowGenerateModal(false);
     } catch (error) {
       setIsGenerating(false);
       console.error('Error generating content:', error);
-      alert('Misslyckades med att generera innehåll. Försök igen.');
+      toast.error('Failed to generate content. Please check your API key and try again.');
     }
   };
 
@@ -471,260 +496,44 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
                 </Button>
               </div>
               
-              <div className="p-0">
-                {courseSections.map((section) => (
-                  <div key={section.id} id={section.id} className="border-b last:border-0">
-                    {/* Section header */}
-                    <div 
-                      className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
-                      onClick={() => toggleSectionExpand(section.id)}
-                    >
-                      <div className="flex items-center">
-                        <DragVertical className="h-5 w-5 text-gray-400 mr-2 cursor-move" />
-                        <div className="font-medium">
-                          <Input 
-                            value={section.title} 
-                            onChange={(e) => updateSectionTitle(section.id, e.target.value)}
-                            className="border-0 p-0 h-auto text-base font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{section.modules.length} modules</Badge>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 rounded-full hover:bg-gray-200"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteSection(section.id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                        {section.isExpanded ? (
-                          <ChevronDown className="h-5 w-5" />
-                        ) : null}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-full hover:bg-gray-200"
-                          onClick={e => { e.stopPropagation(); moveSection(section.id, 'up'); }}
-                          disabled={courseSections.findIndex(s => s.id === section.id) === 0}
-                        >
-                          <ChevronUp className="h-4 w-4 text-gray-500" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-full hover:bg-gray-200"
-                          onClick={e => { e.stopPropagation(); moveSection(section.id, 'down'); }}
-                          disabled={courseSections.findIndex(s => s.id === section.id) === courseSections.length - 1}
-                        >
-                          <ChevronDown className="h-4 w-4 text-gray-500" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Section content */}
-                    {section.isExpanded && (
-                      <div className="px-4 pb-4 ml-8">
-                        {/* Module list */}
-                        {section.modules.map((module) => (
-                          <div key={module.id} className="mb-3 bg-white rounded-lg shadow-sm border">
-                            {/* Module header */}
-                            <div 
-                              className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors rounded-t-lg"
-                              onClick={() => toggleModuleExpand(section.id, module.id)}
-                            >
-                              <div className="flex items-center">
-                                <DragVertical className="h-4 w-4 text-gray-400 mr-2 cursor-move" />
-                                {module.type === 'text' && <FileText className="h-4 w-4 text-blue-500 mr-2" />}
-                                {module.type === 'video' && <Video className="h-4 w-4 text-pink-500 mr-2" />}
-                                {module.type === 'quiz' && <FileQuestion className="h-4 w-4 text-green-500 mr-2" />}
-                                {module.type === 'link' && <LinkIcon className="h-4 w-4 text-purple-500 mr-2" />}
-                                <div className="font-medium">
-                                  <Input 
-                                    value={module.title} 
-                                    onChange={(e) => updateModule(section.id, module.id, { title: e.target.value })}
-                                    className="border-0 p-0 h-auto text-sm font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
-                                    onClick={(e) => e.stopPropagation()}
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center gap-2">
-                                {module.duration && (
-                                  <span className="text-xs text-gray-500">{module.duration}</span>
-                                )}
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-7 w-7 rounded-full hover:bg-gray-200"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteModule(section.id, module.id);
-                                  }}
-                                >
-                                  <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                                </Button>
-                                {module.isExpanded ? (
-                                  <ChevronDown className="h-4 w-4" />
-                                ) : (
-                                  <ChevronRight className="h-4 w-4" />
-                                )}
-                              </div>
-                            </div>
-                            
-                            {/* Module content editor */}
-                            {module.isExpanded && (
-                              <div className="p-3 border-t">
-                                {module.type === 'text' && (
-                                  <div className="prose prose-lg font-serif text-gray-800 bg-white p-6 rounded-lg shadow-inner min-h-[150px]">
-                                    {module.content}
-                                  </div>
-                                )}
-                                
-                                {module.type === 'video' && (
-                                  <div className="space-y-3">
-                                    <Input 
-                                      placeholder="Enter video URL (YouTube, Vimeo, etc.)"
-                                      className="rounded-lg"
-                                      value={module.content}
-                                      onChange={(e) => updateModule(section.id, module.id, { content: e.target.value })}
-                                    />
-                                    <Input 
-                                      placeholder="Estimated duration (e.g., 10:30)"
-                                      className="rounded-lg"
-                                      value={module.duration || ''}
-                                      onChange={(e) => updateModule(section.id, module.id, { duration: e.target.value })}
-                                    />
-                                  </div>
-                                )}
-                                
-                                {module.type === 'link' && (
-                                  <div className="space-y-3">
-                                    <Input 
-                                      placeholder="Enter URL"
-                                      className="rounded-lg"
-                                      value={module.content}
-                                      onChange={(e) => updateModule(section.id, module.id, { content: e.target.value })}
-                                    />
-                                    <Textarea 
-                                      placeholder="Description (optional)"
-                                      className="rounded-lg min-h-[80px]"
-                                    />
-                                  </div>
-                                )}
-                                
-                                {module.type === 'quiz' && (
-                                  (() => {
-                                    let quizData: { question: string; options: string[]; answer: string } = { question: '', options: [], answer: '' };
-                                    try {
-                                      quizData = JSON.parse(module.content);
-                                    } catch (error) {
-                                      console.error('Error parsing quiz data:', error);
-                                    }
-                                    return (
-                                      <div className="space-y-3">
-                                        <Input
-                                          placeholder="Quizfråga"
-                                          className="rounded-lg"
-                                          value={quizData.question}
-                                          onChange={e => {
-                                            const updated = { ...quizData, question: e.target.value };
-                                            updateModule(section.id, module.id, { content: JSON.stringify(updated) });
-                                          }}
-                                        />
-                                        {quizData.options && quizData.options.map((opt, i) => (
-                                          <div key={i} className="flex items-center gap-2">
-                                            <Input
-                                              placeholder={`Alternativ ${i + 1}`}
-                                              className="rounded-lg"
-                                              value={opt}
-                                              onChange={e => {
-                                                const newOptions = [...quizData.options];
-                                                newOptions[i] = e.target.value;
-                                                const updated = { ...quizData, options: newOptions };
-                                                updateModule(section.id, module.id, { content: JSON.stringify(updated) });
-                                              }}
-                                            />
-                                            <input
-                                              type="radio"
-                                              checked={quizData.answer === opt}
-                                              onChange={() => {
-                                                const updated = { ...quizData, answer: opt };
-                                                updateModule(section.id, module.id, { content: JSON.stringify(updated) });
-                                              }}
-                                              name={`quiz-answer-${module.id}`}
-                                            />
-                                            <span className="text-xs text-gray-500">Correct answer</span>
-                                          </div>
-                                        ))}
-                                        <Button
-                                          size="sm"
-                                          variant="outline"
-                                          className="rounded-full"
-                                          onClick={() => {
-                                            const updated = { ...quizData, options: [...(quizData.options || []), ''] };
-                                            updateModule(section.id, module.id, { content: JSON.stringify(updated) });
-                                          }}
-                                        >
-                                          Lägg till alternativ
-                                        </Button>
-                                      </div>
-                                    );
-                                  })()
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                        
-                        {/* Add module buttons */}
-                        <div className="flex flex-wrap gap-2 mt-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="rounded-full"
-                            onClick={() => addModule(section.id, 'text')}
-                          >
-                            <FileText className="mr-1 h-3.5 w-3.5 text-blue-500" />
-                            Text
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="rounded-full"
-                            onClick={() => addModule(section.id, 'video')}
-                          >
-                            <Video className="mr-1 h-3.5 w-3.5 text-pink-500" />
-                            Video
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="rounded-full"
-                            onClick={() => addModule(section.id, 'quiz')}
-                          >
-                            <FileQuestion className="mr-1 h-3.5 w-3.5 text-green-500" />
-                            Quiz
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="rounded-full"
-                            onClick={() => addModule(section.id, 'link')}
-                          >
-                            <LinkIcon className="mr-1 h-3.5 w-3.5 text-purple-500" />
-                            Link
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+              <div className="p-4 space-y-4">
+                {courseSections.map((section, index) => (
+                  <SectionCard
+                    key={section.id}
+                    id={section.id}
+                    title={section.title}
+                    modules={section.modules}
+                    isExpanded={section.isExpanded}
+                    isFirst={index === 0}
+                    isLast={index === courseSections.length - 1}
+                    onToggleExpand={() => toggleSectionExpand(section.id)}
+                    onUpdateTitle={(newTitle) => updateSectionTitle(section.id, newTitle)}
+                    onAddModule={(type) => {
+                      const newModule = {
+                        id: Math.random().toString(36).substr(2, 9),
+                        title: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Module`,
+                        type,
+                        content: '',
+                        isExpanded: true
+                      };
+                      addModule(section.id, type, newModule);
+                    }}
+                    onUpdateModule={(moduleId, updates) => updateModule(section.id, moduleId, updates)}
+                    onDeleteModule={(moduleId) => deleteModule(section.id, moduleId)}
+                    onDuplicateModule={(moduleId) => {
+                      const module = section.modules.find(m => m.id === moduleId);
+                      if (module) {
+                        const newModule = {
+                          ...module,
+                          id: Math.random().toString(36).substr(2, 9),
+                          title: `${module.title} (Copy)`
+                        };
+                        addModule(section.id, module.type, newModule);
+                      }
+                    }}
+                    onMoveSection={(direction) => moveSection(section.id, direction)}
+                    onDeleteSection={() => deleteSection(section.id)}
+                  />
                 ))}
                 
                 {courseSections.length === 0 && (
@@ -769,62 +578,25 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
                   <span>Modules</span>
                   <Badge variant="outline">{courseSections.reduce((total, section) => total + section.modules.length, 0)}</Badge>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>Estimated Duration</span>
-                  <Badge variant="outline">{courseData?.estimatedDuration || '0:00'}</Badge>
-                </div>
               </div>
-              
-              <Separator className="my-3" />
-              
-              <Button variant="outline" className="w-full rounded-full" onClick={() => window.scrollTo(0, 0)}>
-                <Settings className="mr-2 h-4 w-4" />
-                Course Settings
-              </Button>
             </Card>
             
             <Card className="rounded-xl border-0 shadow-md p-4">
-              <h3 className="font-semibold mb-3">Templates</h3>
+              <h3 className="font-semibold mb-3">Quick Actions</h3>
               <div className="space-y-2">
-                <Button variant="outline" className="w-full justify-start rounded-lg text-left">
-                  <LayoutGrid className="mr-2 h-4 w-4 text-blue-500" />
-                  <div>
-                    <div className="font-medium">Security Awareness</div>
-                    <div className="text-xs text-gray-500">5 sections, 15 modules</div>
-                  </div>
+                <Button variant="outline" size="sm" className="w-full rounded-full">
+                  <Eye className="mr-2 h-3 w-3" />
+                  Preview Course
                 </Button>
-                <Button variant="outline" className="w-full justify-start rounded-lg text-left">
-                  <LayoutGrid className="mr-2 h-4 w-4 text-green-500" />
-                  <div>
-                    <div className="font-medium">Compliance Basics</div>
-                    <div className="text-xs text-gray-500">3 sections, 10 modules</div>
-                  </div>
+                <Button variant="outline" size="sm" className="w-full rounded-full">
+                  <Settings className="mr-2 h-3 w-3" />
+                  Course Settings
                 </Button>
               </div>
             </Card>
           </div>
         </div>
       </div>
-
-      {/* Add the modal dialog */}
-      {showGenerateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Generate Content</h3>
-            <p className="mb-4">How many sections would you like to generate?</p>
-            <Input
-              type="number"
-              value={numSectionsToGenerate}
-              onChange={(e) => setNumSectionsToGenerate(Number(e.target.value))}
-              className="mb-4"
-            />
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowGenerateModal(false)}>Cancel</Button>
-              <Button onClick={handleModalSubmit}>Generate</Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Loader overlay when isGenerating */}
       {isGenerating && (
@@ -838,8 +610,101 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
           </div>
         </div>
       )}
+
+      {/* Media Browser Panel */}
+      <MediaBrowserPanel
+        isOpen={showMediaBrowser}
+        onClose={() => setShowMediaBrowser(false)}
+        onSelect={(file) => {
+          if (activeMediaSection) {
+            // Add media module with the selected file
+            const newModule: Module = {
+              id: Math.random().toString(36).substr(2, 9),
+              title: file.originalName,
+              type: file.mimeType.startsWith('video/') ? 'video' : 
+                    file.mimeType.startsWith('image/') ? 'text' : 
+                    file.mimeType.includes('pdf') ? 'link' : 'text',
+              content: file.url,
+              duration: file.mimeType.startsWith('video/') ? '5m' : undefined,
+              isExpanded: true
+            };
+            
+            setCourseSections(prev => 
+              prev.map(section => 
+                section.id === activeMediaSection 
+                  ? { 
+                      ...section, 
+                      modules: [...section.modules, newModule],
+                      isExpanded: true
+                    } 
+                  : section
+              )
+            );
+            
+            setActiveMediaSection(null);
+            toast.success(`Added ${file.originalName} to the course`);
+          }
+        }}
+      />
+
+      {/* AI Generation Modal */}
+      <Dialog open={showGenerateModal} onOpenChange={setShowGenerateModal}>
+        <DialogContent className="max-w-md sm:max-w-lg fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-500" />
+              Generate Course Content
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="numSections">Number of sections to generate</Label>
+              <Input
+                id="numSections"
+                type="number"
+                min="1"
+                max="10"
+                value={numSectionsToGenerate}
+                onChange={(e) => setNumSectionsToGenerate(parseInt(e.target.value) || 3)}
+                className="mt-1"
+              />
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                AI will generate comprehensive sections with content and quiz questions based on your course details.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowGenerateModal(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleModalSubmit}
+                disabled={isGenerating}
+                className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500"
+              >
+                {isGenerating ? (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4 animate-pulse" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-export default CourseBuilder; 
+export default CourseBuilder;

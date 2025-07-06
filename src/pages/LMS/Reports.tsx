@@ -39,11 +39,11 @@ const courseCompletionData = [
 ];
 
 const topPerformers = [
-  { id: 1, name: 'Alex Johnson', score: 96, completedCourses: 8, department: 'Design', image: 'https://api.dicebear.com/6.x/avataaars/svg?seed=performer1' },
-  { id: 2, name: 'Maria Rodriguez', score: 94, completedCourses: 7, department: 'Engineering', image: 'https://api.dicebear.com/6.x/avataaars/svg?seed=performer2' },
-  { id: 3, name: 'Sam Lee', score: 91, completedCourses: 6, department: 'Product', image: 'https://api.dicebear.com/6.x/avataaars/svg?seed=performer3' },
-  { id: 4, name: 'Taylor Patel', score: 89, completedCourses: 8, department: 'Marketing', image: 'https://api.dicebear.com/6.x/avataaars/svg?seed=performer4' },
-  { id: 5, name: 'Jordan Smith', score: 87, completedCourses: 5, department: 'Finance', image: 'https://api.dicebear.com/6.x/avataaars/svg?seed=performer5' },
+  { id: 1, name: 'Alex Johnson', score: 96, completedCourses: 8, department: 'Design', image: 'https://api.dicebear.com/6.x/initials/svg?seed=performer1&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444' },
+  { id: 2, name: 'Maria Rodriguez', score: 94, completedCourses: 7, department: 'Engineering', image: 'https://api.dicebear.com/6.x/initials/svg?seed=performer2&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444' },
+  { id: 3, name: 'Sam Lee', score: 91, completedCourses: 6, department: 'Product', image: 'https://api.dicebear.com/6.x/initials/svg?seed=performer3&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444' },
+  { id: 4, name: 'Taylor Patel', score: 89, completedCourses: 8, department: 'Marketing', image: 'https://api.dicebear.com/6.x/initials/svg?seed=performer4&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444' },
+  { id: 5, name: 'Jordan Smith', score: 87, completedCourses: 5, department: 'Finance', image: 'https://api.dicebear.com/6.x/initials/svg?seed=performer5&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444' },
 ];
 
 // Sample data for trend charts
