@@ -259,8 +259,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         {/* Spacer */}
         <div className="flex-1"></div>
 
-        {/* Progress section - compact */}
-        <div className="mb-2">
+        {/* Progress section - always same height */}
+        <div className="h-14 flex flex-col justify-center mb-2">
           {typeof progress === 'number' && (
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
@@ -272,8 +272,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           )}
         </div>
 
-        {/* Instructor section - compact */}
-        <div className="mb-3">
+        {/* Instructor section - always same height */}
+        <div className="h-8 flex items-center mb-3">
           {instructor && (
             <div className="flex items-center gap-2 text-sm">
               <Avatar className="h-6 w-6">
