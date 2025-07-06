@@ -41,6 +41,7 @@ import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
 import MediaLibrary from "./pages/LMS/MediaLibrary";
 import LMSAnalytics from "./pages/LMS/Analytics";
 import CourseViewer from "./pages/LMS/CourseViewer";
+import CourseLibrary from "./pages/LMS/CourseLibrary";
 import GraphicalEditor from "./pages/documents/GraphicalEditor";
 // Lazy load admin components for code splitting
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
@@ -213,6 +214,14 @@ const App = () => (
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
                         <EditCourse />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/library" 
+                    element={
+                      <ProtectedRoute requiredPermission="access_lms">
+                        <CourseLibrary />
                       </ProtectedRoute>
                     } 
                   />

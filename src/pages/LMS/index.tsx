@@ -46,170 +46,7 @@ interface Notification {
   date: string;
 }
 
-// Demo data for demo accounts - Comprehensive training programs
-const demoCoursesData: LearningPath[] = [
-  {
-    id: 'demo-1',
-    organization_id: 'demo-org',
-    title: 'Introduction to Cybersecurity Compliance',
-    description: 'Learn the fundamentals of cybersecurity compliance frameworks including GDPR, ISO 27001, and industry best practices',
-    category: 'compliance',
-    difficulty_level: 'beginner',
-    estimated_duration: 150,
-    total_modules: 5,
-    is_published: true,
-    is_mandatory: true,
-    thumbnail_url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    tags: ['compliance', 'security', 'fundamentals', 'GDPR'],
-    created_by: 'demo-user',
-    updated_by: 'demo-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'demo-2',
-    organization_id: 'demo-org',
-    title: 'Advanced Phishing Detection & Response',
-    description: 'Master advanced techniques for identifying, reporting, and responding to sophisticated phishing attacks',
-    category: 'security-awareness',
-    difficulty_level: 'intermediate',
-    estimated_duration: 180,
-    total_modules: 7,
-    is_published: true,
-    is_mandatory: true,
-    thumbnail_url: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    tags: ['phishing', 'security', 'awareness', 'incident-response'],
-    created_by: 'demo-user',
-    updated_by: 'demo-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'demo-3',
-    organization_id: 'demo-org',
-    title: 'ISO 27001 Implementation Guide',
-    description: 'Complete step-by-step guide to implementing ISO 27001 information security management systems',
-    category: 'compliance',
-    difficulty_level: 'advanced',
-    estimated_duration: 300,
-    total_modules: 12,
-    is_published: true,
-    is_mandatory: false,
-    thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    tags: ['ISO27001', 'security', 'implementation', 'ISMS'],
-    created_by: 'demo-user',
-    updated_by: 'demo-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'demo-4',
-    organization_id: 'demo-org',
-    title: 'Data Privacy & GDPR Essentials',
-    description: 'Essential training on data protection, privacy rights, and GDPR compliance for all employees',
-    category: 'privacy',
-    difficulty_level: 'beginner',
-    estimated_duration: 120,
-    total_modules: 6,
-    is_published: true,
-    is_mandatory: true,
-    thumbnail_url: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    tags: ['GDPR', 'privacy', 'data-protection', 'compliance'],
-    created_by: 'demo-user',
-    updated_by: 'demo-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'demo-5',
-    organization_id: 'demo-org',
-    title: 'Secure Remote Work Practices',
-    description: 'Learn essential security practices for remote work including VPN usage, device security, and secure communications',
-    category: 'security-awareness',
-    difficulty_level: 'beginner',
-    estimated_duration: 90,
-    total_modules: 4,
-    is_published: true,
-    is_mandatory: true,
-    thumbnail_url: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    tags: ['remote-work', 'VPN', 'device-security', 'communications'],
-    created_by: 'demo-user',
-    updated_by: 'demo-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'demo-6',
-    organization_id: 'demo-org',
-    title: 'Incident Response & Crisis Management',
-    description: 'Comprehensive training on cybersecurity incident response procedures and crisis management protocols',
-    category: 'incident-response',
-    difficulty_level: 'intermediate',
-    estimated_duration: 240,
-    total_modules: 10,
-    is_published: true,
-    is_mandatory: false,
-    thumbnail_url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    tags: ['incident-response', 'crisis-management', 'security', 'procedures'],
-    created_by: 'demo-user',
-    updated_by: 'demo-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
-
-const demoProgressData: UserLearningProgress[] = [
-  {
-    id: 'prog-1',
-    user_id: 'demo-user',
-    learning_path_id: 'demo-1',
-    progress_percentage: 75,
-    time_spent_minutes: 120,
-    last_accessed_at: new Date().toISOString(),
-    completed_at: null,
-    certificate_issued: false
-  },
-  {
-    id: 'prog-2',
-    user_id: 'demo-user',
-    learning_path_id: 'demo-2',
-    progress_percentage: 45,
-    time_spent_minutes: 85,
-    last_accessed_at: new Date(Date.now() - 86400000).toISOString(),
-    completed_at: null,
-    certificate_issued: false
-  },
-  {
-    id: 'prog-3',
-    user_id: 'demo-user',
-    learning_path_id: 'demo-4',
-    progress_percentage: 100,
-    time_spent_minutes: 120,
-    last_accessed_at: new Date(Date.now() - 172800000).toISOString(),
-    completed_at: new Date(Date.now() - 172800000).toISOString(),
-    certificate_issued: true
-  },
-  {
-    id: 'prog-4',
-    user_id: 'demo-user',
-    learning_path_id: 'demo-5',
-    progress_percentage: 100,
-    time_spent_minutes: 90,
-    last_accessed_at: new Date(Date.now() - 259200000).toISOString(),
-    completed_at: new Date(Date.now() - 259200000).toISOString(),
-    certificate_issued: true
-  },
-  {
-    id: 'prog-5',
-    user_id: 'demo-user',
-    learning_path_id: 'demo-3',
-    progress_percentage: 15,
-    time_spent_minutes: 45,
-    last_accessed_at: new Date(Date.now() - 432000000).toISOString(),
-    completed_at: null,
-    certificate_issued: false
-  }
-];
+import { demoCoursesData, demoProgressData, demoInstructors } from '@/data/lms/demoCourses';
 
 const notifications: Notification[] = [
   {
@@ -414,7 +251,7 @@ const TrenningLMS: React.FC = () => {
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
                     {greeting}, {currentUser.name}
                   </h1>
-                  <p className="text-white/80 text-sm">Your personalized learning continues</p>
+                  <p className="text-white text-sm font-medium">Your personalized learning continues</p>
                 </div>
               </div>
               
@@ -424,7 +261,7 @@ const TrenningLMS: React.FC = () => {
                   <Sparkles className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-white font-medium mb-1">AI Insight</p>
-                    <p className="text-white/90 text-sm">
+                    <p className="text-white text-sm font-medium">
                       {analytics?.inProgressCourses > 0 
                         ? `You're making great progress! Complete your ${analytics.inProgressCourses} active course${analytics.inProgressCourses > 1 ? 's' : ''} to unlock advanced cybersecurity topics.`
                         : analytics?.completedCourses > 0
@@ -436,14 +273,30 @@ const TrenningLMS: React.FC = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-3 sm:py-4 flex items-center">
-                  <div className="rounded-full bg-white/20 p-2 mr-3">
-                    <Target className="text-yellow-300 h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 flex items-center">
+                  <Avatar className="h-12 w-12 border-2 border-white mr-4">
+                    <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${currentUser.name}&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444&radius=50`} alt={currentUser.name} />
+                    <AvatarFallback>{currentUser.name.substring(0, 2)}</AvatarFallback>
+                  </Avatar>
                   <div>
-                    <p className="text-xs sm:text-sm text-white/70">Learning Points</p>
-                    <p className="text-lg sm:text-xl font-semibold">{currentUser.points}</p>
+                    <div className="flex items-center">
+                      <p className="font-semibold">{currentUser.role}</p>
+                      <Badge className="ml-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0">
+                        Pro Learner
+                      </Badge>
+                    </div>
+                    <div className="flex items-center mt-1">
+                      <div className="h-2 w-24 bg-white/20 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-yellow-400 to-amber-500" 
+                          style={{ width: `${(currentUser.dailyGoal.current / currentUser.dailyGoal.total) * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs ml-2 text-white/70">
+                        {currentUser.dailyGoal.current}/{currentUser.dailyGoal.total} activities today
+                      </span>
+                    </div>
                   </div>
                 </div>
                 
@@ -452,7 +305,7 @@ const TrenningLMS: React.FC = () => {
                     <Trophy className="text-indigo-300 h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-white/70">Badges Earned</p>
+                    <p className="text-xs sm:text-sm text-white font-medium">Badges Earned</p>
                     <p className="text-lg sm:text-xl font-semibold">{currentUser.badges}</p>
                   </div>
                 </div>
@@ -462,34 +315,8 @@ const TrenningLMS: React.FC = () => {
                     <Star className="text-amber-300 h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-white/70">Day Streak</p>
+                    <p className="text-xs sm:text-sm text-white font-medium">Day Streak</p>
                     <p className="text-lg sm:text-xl font-semibold">{currentUser.streak.days}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 inline-flex items-center">
-                <Avatar className="h-12 w-12 border-2 border-white mr-4">
-                  <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${currentUser.name}&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444&radius=50`} alt={currentUser.name} />
-                  <AvatarFallback>{currentUser.name.substring(0, 2)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="flex items-center">
-                    <p className="font-semibold">{currentUser.role}</p>
-                    <Badge className="ml-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0">
-                      Pro Learner
-                    </Badge>
-                  </div>
-                  <div className="flex items-center mt-1">
-                    <div className="h-2 w-24 bg-white/20 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-yellow-400 to-amber-500" 
-                        style={{ width: `${(currentUser.dailyGoal.current / currentUser.dailyGoal.total) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs ml-2 text-white/70">
-                      {currentUser.dailyGoal.current}/{currentUser.dailyGoal.total} activities today
-                    </span>
                   </div>
                 </div>
               </div>
@@ -750,7 +577,7 @@ const TrenningLMS: React.FC = () => {
                   <p className="text-sm text-gray-600">Continue your cybersecurity training journey</p>
                 </div>
               </div>
-              <Button variant="ghost" className="text-primary hover:text-blue-600">
+              <Button variant="ghost" className="text-primary hover:text-blue-600" onClick={() => navigate('/lms/library')}>
                 View all <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
@@ -785,6 +612,7 @@ const TrenningLMS: React.FC = () => {
                 thumbnailUrl={course.thumbnail_url}
                 isPublished={course.is_published}
                 isMandatory={course.is_mandatory}
+                instructor={demoInstructors[course.created_by as keyof typeof demoInstructors]}
                 tags={course.tags}
                 onView={() => navigate(`/lms/course/${course.id}`)}
                 onEdit={() => navigate(`/lms/course/${course.id}/edit`)}
@@ -824,12 +652,12 @@ const TrenningLMS: React.FC = () => {
                   <p className="text-sm text-gray-600">Explore new training programs</p>
                 </div>
               </div>
-              <Button variant="ghost" className="text-primary hover:text-purple-600">
+              <Button variant="ghost" className="text-primary hover:text-purple-600" onClick={() => navigate('/lms/library')}>
                 View all <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {loading ? (
             // Loading skeletons
             [...Array(3)].map((_, i) => (
@@ -855,6 +683,7 @@ const TrenningLMS: React.FC = () => {
                 thumbnailUrl={course.thumbnail_url}
                 isPublished={course.is_published}
                 isMandatory={course.is_mandatory}
+                instructor={demoInstructors[course.created_by as keyof typeof demoInstructors]}
                 tags={course.tags}
                 onView={() => handleEnroll(course.id)}
               />
@@ -898,45 +727,6 @@ const TrenningLMS: React.FC = () => {
         </div>
       </div>
       
-      {/* Leaderboard Preview - Fixed container width */}
-      <div className="container max-w-7xl mx-auto p-4 md:p-8 mb-16">
-        <div className="flex items-center gap-4 mb-4">
-          <h2 className="text-xl font-semibold flex items-center">Leaderboard</h2>
-          <Button variant="ghost" size="icon" className="h-6 w-6">
-            <Bell className="h-4 w-4 text-muted-foreground" />
-          </Button>
-        </div>
-        
-        <Card className="p-6 rounded-2xl border-0 shadow-sm hover:shadow-md transition-all">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-medium">Top Learners This Week</h3>
-            <Button variant="outline" className="rounded-full">See All</Button>
-          </div>
-          
-          <div className="space-y-4">
-            {[1, 2, 3].map((position) => (
-              <div key={position} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white flex items-center justify-center font-medium shadow-sm">
-                    {position}
-                  </div>
-                  <Avatar className="border-2 border-white shadow-sm">
-                    <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=user${position}&backgroundColor=b6bbc0,6366f1,8b5cf6,06b6d4,10b981,f59e0b,ef4444&radius=50`} />
-                    <AvatarFallback>U{position}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">User {position}</p>
-                    <p className="text-xs text-muted-foreground">120 points</p>
-                  </div>
-                </div>
-                <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-full px-3">
-                  +{30 - position * 5} pts
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
       
       {/* Quick Actions */}
       <div className="fixed bottom-6 right-6 flex flex-col items-end space-y-4">

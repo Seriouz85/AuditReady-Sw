@@ -809,14 +809,14 @@ const CourseViewer: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Left Sidebar - Course Navigation */}
-      <div className="w-80 bg-white border-r shadow-sm flex flex-col">
-        {/* Header */}
-        <div className="p-6 border-b bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-700 text-white relative overflow-hidden">
+      {/* Left Sidebar - Course Navigation - Fixed */}
+      <div className="w-80 bg-white border-r shadow-sm flex flex-col fixed left-0 top-0 h-screen z-20">
+        {/* Header - Compact Design */}
+        <div className="p-4 border-b bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-700 text-white relative overflow-hidden">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full -translate-y-12 translate-x-12"></div>
+            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white rounded-full translate-y-8 -translate-x-8"></div>
           </div>
           
           <div className="relative z-10">
@@ -824,46 +824,57 @@ const CourseViewer: React.FC = () => {
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/lms')}
-              className="text-white hover:bg-white/20 mb-4 backdrop-blur-sm"
+              className="text-white hover:bg-white/20 mb-3 backdrop-blur-sm"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
             
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                <Book className="h-6 w-6 text-yellow-300" />
+            {/* Course Title Section - Better Structure */}
+            <div className="mb-3">
+              <div className="flex items-start gap-3 mb-2">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Book className="h-5 w-5 text-yellow-300" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h1 className="font-bold text-lg leading-tight line-clamp-2">{course.title}</h1>
+                  <p className="text-blue-100 text-xs mt-1 font-medium">Interactive Learning Experience</p>
+                </div>
               </div>
-              <div>
-                <h1 className="font-bold text-xl leading-tight">{course.title}</h1>
-                <p className="text-blue-100 text-sm mt-1">Interactive Learning Experience</p>
+              
+              {/* Course Description */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 mb-3">
+                <p className="text-white/90 text-xs leading-relaxed line-clamp-3">
+                  {course.description}
+                </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                <Clock className="h-4 w-4 text-blue-200" />
-                <span className="text-blue-100">{course.duration}</span>
+            {/* Course Metrics - Compact Grid */}
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-md px-2 py-1.5">
+                <Clock className="h-3 w-3 text-blue-200" />
+                <span className="text-blue-100 font-medium">{course.duration}</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                <Users className="h-4 w-4 text-green-200" />
-                <span className="text-blue-100">{course.students.toLocaleString()} students</span>
+              <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-md px-2 py-1.5">
+                <Users className="h-3 w-3 text-green-200" />
+                <span className="text-blue-100 font-medium">{Math.round(course.students/1000)}K</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                <Star className="h-4 w-4 fill-current text-yellow-300" />
-                <span className="text-blue-100">{course.rating}/5</span>
+              <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-md px-2 py-1.5">
+                <Star className="h-3 w-3 fill-current text-yellow-300" />
+                <span className="text-blue-100 font-medium">{course.rating}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Progress */}
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Course Progress</span>
-            <span className="text-sm text-gray-600">{course.progress}%</span>
+        {/* Progress - Compact */}
+        <div className="p-3 border-b bg-gray-50">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold text-gray-700">Course Progress</span>
+            <span className="text-xs font-bold text-blue-600">{course.progress}%</span>
           </div>
-          <Progress value={course.progress} className="h-2" />
+          <Progress value={course.progress} className="h-1.5" />
         </div>
 
         {/* Course Content Navigation */}
@@ -871,25 +882,31 @@ const CourseViewer: React.FC = () => {
           <div className="p-4 space-y-2">
             {sectionsState.map((section, sectionIndex) => (
               <div key={section.id} className="space-y-1">
-                {/* Section Header */}
+                {/* Section Header - Enhanced Design */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start p-3 h-auto text-left hover:bg-blue-50 rounded-lg transition-colors"
+                  className="w-full justify-start p-2.5 h-auto text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-lg transition-all duration-200"
                   onClick={() => toggleSection(section.id)}
                 >
                   <div className="flex items-center gap-3 w-full">
-                    {section.expanded ? (
-                      <ChevronDown className="h-4 w-4 text-blue-600" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-gray-500" />
-                    )}
+                    <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
+                      section.expanded ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gray-200'
+                    }`}>
+                      {section.expanded ? (
+                        <ChevronDown className="h-3 w-3 text-white" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3 text-gray-600" />
+                      )}
+                    </div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 px-2 py-0.5 rounded-md shadow-sm">
                           Section {sectionIndex + 1}
                         </span>
                         {section.completed && (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <div className="w-4 h-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                            <CheckCircle className="h-2.5 w-2.5 text-white" />
+                          </div>
                         )}
                       </div>
                       <h3 className="font-semibold text-sm text-gray-900">{section.title}</h3>
@@ -916,20 +933,24 @@ const CourseViewer: React.FC = () => {
                           <div className="flex items-center gap-3 w-full">
                             <div className="flex items-center gap-2">
                               {module.completed ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <div className="w-4 h-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                                  <CheckCircle className="h-3 w-3 text-white" />
+                                </div>
                               ) : (
                                 <Circle className="h-4 w-4 text-gray-400" />
                               )}
-                              <div className={`w-6 h-6 rounded flex items-center justify-center ${
-                                module.type === 'video' ? 'bg-red-100' :
-                                module.type === 'text' ? 'bg-blue-100' :
-                                module.type === 'quiz' ? 'bg-green-100' : 'bg-orange-100'
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center relative overflow-hidden shadow-sm ${
+                                module.type === 'video' 
+                                  ? 'bg-gradient-to-br from-red-500 to-rose-600' :
+                                module.type === 'text' 
+                                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
+                                module.type === 'quiz' 
+                                  ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
+                                  : 'bg-gradient-to-br from-orange-500 to-amber-600'
                               }`}>
-                                <Icon className={`h-3 w-3 ${
-                                  module.type === 'video' ? 'text-red-600' :
-                                  module.type === 'text' ? 'text-blue-600' :
-                                  module.type === 'quiz' ? 'text-green-600' : 'text-orange-600'
-                                }`} />
+                                {/* Background pattern for sophistication */}
+                                <div className="absolute inset-0 bg-white/10"></div>
+                                <Icon className="h-3.5 w-3.5 text-white relative z-10" />
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -964,36 +985,36 @@ const CourseViewer: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Content Area */}
-      <div className="flex-1 flex">
+      {/* Right Content Area - Add margin for fixed sidebar */}
+      <div className={`flex-1 flex ml-80 ${showBookmarks ? 'mr-96' : ''}`}>
         <div className="flex-1 flex flex-col">
-        {/* Content Header */}
-        <div className="bg-white border-b shadow-sm">
-          <div className="p-6">
+        {/* Content Header - Compact Design - Sticky */}
+        <div className="bg-white border-b sticky top-0 z-10">
+          <div className="px-6 py-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
                   currentModule.type === 'video' ? 'bg-gradient-to-br from-red-500 to-red-600' :
                   currentModule.type === 'text' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
                   currentModule.type === 'quiz' ? 'bg-gradient-to-br from-green-500 to-green-600' : 'bg-gradient-to-br from-orange-500 to-orange-600'
                 }`}>
                   {React.createElement(getModuleIcon(currentModule.type), {
-                    className: 'h-6 w-6 text-white'
+                    className: 'h-5 w-5 text-white'
                   })}
                 </div>
                 <div>
-                  <h1 className="font-bold text-2xl text-gray-900 mb-1">{currentModule.title}</h1>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="flex items-center gap-1.5 bg-gray-100 rounded-full px-3 py-1">
-                      <Clock className="h-4 w-4" />
+                  <h1 className="font-bold text-lg text-gray-900">{currentModule.title}</h1>
+                  <div className="flex items-center gap-3 text-xs text-gray-600 mt-0.5">
+                    <span className="flex items-center gap-1 bg-gray-100 rounded-md px-2 py-0.5">
+                      <Clock className="h-3 w-3" />
                       {currentModule.duration}
                     </span>
-                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 text-xs px-2 py-0">
                       {currentModule.type.charAt(0).toUpperCase() + currentModule.type.slice(1)}
                     </Badge>
                     {currentModule.completed && (
-                      <Badge className="bg-green-50 text-green-700 border-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
+                      <Badge className="bg-green-50 text-green-700 border-green-200 text-xs px-2 py-0">
+                        <CheckCircle className="h-2.5 w-2.5 mr-0.5" />
                         Completed
                       </Badge>
                     )}
@@ -1001,26 +1022,26 @@ const CourseViewer: React.FC = () => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Button 
                   variant={showBookmarks ? "default" : "outline"} 
                   size="sm"
                   onClick={() => setShowBookmarks(!showBookmarks)}
-                  className={showBookmarks ? "bg-blue-600 hover:bg-blue-700" : "hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"}
+                  className={`h-8 text-xs ${showBookmarks ? "bg-blue-600 hover:bg-blue-700" : "hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"}`}
                 >
-                  <StickyNote className="h-4 w-4 mr-2" />
+                  <StickyNote className="h-3.5 w-3.5 mr-1.5" />
                   {showBookmarks ? 'Hide Notes' : 'Take Notes'}
                 </Button>
-                <Button variant="outline" size="sm" className="hover:bg-gray-50">
-                  <Bookmark className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="hover:bg-gray-50 h-8 text-xs">
+                  <Bookmark className="h-3.5 w-3.5 mr-1.5" />
                   Save
                 </Button>
-                <Button variant="outline" size="sm" className="hover:bg-gray-50">
-                  <Share className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="hover:bg-gray-50 h-8 text-xs">
+                  <Share className="h-3.5 w-3.5 mr-1.5" />
                   Share
                 </Button>
-                <Button variant="outline" size="sm" className="hover:bg-gray-50">
-                  <Download className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="hover:bg-gray-50 h-8 text-xs">
+                  <Download className="h-3.5 w-3.5 mr-1.5" />
                   Download
                 </Button>
               </div>
@@ -1107,8 +1128,8 @@ const CourseViewer: React.FC = () => {
           )}
         </div>
 
-        {/* Bottom Navigation */}
-        <div className="bg-white border-t p-4">
+        {/* Bottom Navigation - Sticky */}
+        <div className="bg-white border-t p-4 sticky bottom-0 z-10">
           <div className="flex items-center justify-between">
             <Button 
               variant="outline" 
@@ -1141,14 +1162,14 @@ const CourseViewer: React.FC = () => {
         </div>
         </div>
 
-        {/* Enhanced BookmarkNotes Sidebar */}
+        {/* Enhanced BookmarkNotes Sidebar - Fixed */}
         {showBookmarks && (
-          <div className="w-96 border-l bg-gradient-to-b from-blue-50 to-white shadow-lg">
+          <div className="w-96 border-l bg-gradient-to-b from-blue-50 to-white shadow-lg fixed right-0 top-0 h-screen z-10">
             <div className="h-full flex flex-col">
-              {/* Notes Header */}
-              <div className="p-6 border-b bg-white shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-lg text-gray-900">Study Notes</h3>
+              {/* Notes Header - Sticky */}
+              <div className="p-4 border-b bg-white shadow-sm sticky top-0">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="font-bold text-base text-gray-900">Study Notes</h3>
                   <Button 
                     variant="ghost" 
                     size="sm"

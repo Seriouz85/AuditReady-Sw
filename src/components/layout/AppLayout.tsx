@@ -261,15 +261,19 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
           </div>
         </div>
+        <div className="h-px bg-border/30 w-full"></div>
         
         <div className="flex-1 overflow-y-auto">
           {renderNav()}
         </div>
         
         <div className="p-6 flex-shrink-0">
+          <div className="h-px bg-border/30 w-full mb-4"></div>
           <div className="text-sidebar-foreground/80 text-sm">
-            <p>Cybersecurity Compliance</p>
-            <p className="text-xs mt-1">v1.0.0</p>
+            <Link to="/roadmap" className="hover:text-sidebar-foreground transition-colors">
+              <p>Cybersecurity Compliance</p>
+              <p className="text-xs mt-1">v1.4</p>
+            </Link>
           </div>
         </div>
       </aside>
@@ -288,15 +292,19 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <h1 className="text-sidebar-foreground text-xl font-bold">AuditReady</h1>
           </div>
         </div>
+        <div className="h-px bg-border/30 w-full"></div>
         
         <div className="flex-1 overflow-y-auto">
           {renderNav()}
         </div>
         
         <div className="p-6 flex-shrink-0">
+          <div className="h-px bg-border/30 w-full mb-4"></div>
           <div className="text-sidebar-foreground/80 text-sm">
-            <p>Cybersecurity Compliance</p>
-            <p className="text-xs mt-1">v1.0.0</p>
+            <Link to="/roadmap" className="hover:text-sidebar-foreground transition-colors">
+              <p>Cybersecurity Compliance</p>
+              <p className="text-xs mt-1">v1.4</p>
+            </Link>
           </div>
         </div>
       </aside>

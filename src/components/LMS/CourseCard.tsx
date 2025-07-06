@@ -192,8 +192,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       </div>
 
       <CardHeader className="pb-1 pt-3 px-4">
-        <div className="space-y-1">
-          <div className="flex items-start justify-between gap-2">
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-2 h-12">
             <h3 className="font-semibold text-lg leading-tight text-gray-900 line-clamp-2">
               {title}
             </h3>
@@ -205,9 +205,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             )}
           </div>
 
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {description}
-          </p>
+          <div className="h-10 flex items-start">
+            <p className="text-sm text-gray-600 line-clamp-2">
+              {description}
+            </p>
+          </div>
 
           {/* Tags */}
           {tags.length > 0 && (
@@ -227,9 +229,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0 px-4 pb-3 flex flex-col flex-1">
-        {/* Badges section */}
-        <div className="flex items-center gap-2 mb-2">
+      <CardContent className="pt-0 px-4 pb-3 flex-1 flex flex-col">
+        {/* Badges */}
+        <div className="flex items-center gap-2 mb-3">
           <Badge className={difficultyStyle.color}>
             {difficultyStyle.label}
           </Badge>
@@ -238,8 +240,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           </Badge>
         </div>
 
-        {/* Metadata section */}
-        <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+        {/* Metadata */}
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
             <span>{formatDuration(duration)}</span>
@@ -256,25 +258,23 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           )}
         </div>
 
-        {/* Spacer */}
+        {/* Spacer to push progress and instructor to bottom */}
         <div className="flex-1"></div>
 
-        {/* Progress section - always same height */}
-        <div className="h-14 flex flex-col justify-center mb-2">
-          {typeof progress === 'number' && (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Progress</span>
-                <span className="font-medium">{progress}%</span>
-              </div>
-              <Progress value={progress} className="h-2" />
+        {/* Progress section */}
+        {typeof progress === 'number' && (
+          <div className="space-y-1 mb-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Progress</span>
+              <span className="font-medium">{progress}%</span>
             </div>
-          )}
-        </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+        )}
 
-        {/* Instructor section - always same height */}
+        {/* Instructor section - Fixed height for consistency */}
         <div className="h-8 flex items-center mb-3">
-          {instructor && (
+          {instructor ? (
             <div className="flex items-center gap-2 text-sm">
               <Avatar className="h-6 w-6">
                 <AvatarImage src={instructor.avatar} />
@@ -284,6 +284,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               </Avatar>
               <span className="text-gray-600">by {instructor.name}</span>
             </div>
+          ) : (
+            <div className="h-6"></div>
           )}
         </div>
 

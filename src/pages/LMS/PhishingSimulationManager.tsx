@@ -828,51 +828,111 @@ The subject and content fields are the most important elements, make sure they'r
   
   return (
     <div className="min-h-screen bg-background">
-      {/* Enhanced Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-cyan-500 p-6 shadow-lg relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.2)_0%,rgba(0,0,0,0.1)_100%)]"></div>
-          <div className="absolute -bottom-8 -right-8 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -top-8 -left-8 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-        </div>
-        <div className="max-w-7xl mx-auto flex justify-between items-center relative z-10">
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/lms')} className="rounded-full hover:bg-white/20 text-white mr-3">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <div className="flex items-center">
-                <Fish className="h-8 w-8 text-white mr-3" />
-                <h1 className="text-2xl font-bold text-white">Phishing Simulation Manager</h1>
+      {/* Enhanced Header - Sophisticated Design */}
+      <header className="bg-gradient-to-br from-orange-600 via-red-600 to-pink-700 p-6 md:p-8 shadow-xl relative overflow-hidden">
+        {/* Background Pattern - Sophisticated */}
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/10 rounded-full translate-x-1/3 translate-y-1/3"></div>
+        <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-yellow-300/20 rounded-full blur-xl"></div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Left Section - Title and Navigation */}
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => navigate('/lms')} 
+                className="rounded-full hover:bg-white/20 text-white backdrop-blur-sm"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <Fish className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight">
+                    Phishing Simulation Manager
+                  </h1>
+                  <p className="text-white/90 text-sm font-medium mt-1">
+                    Create and manage security awareness campaigns
+                  </p>
+                </div>
               </div>
-              <p className="text-white/80 text-sm mt-1 ml-11">Create and manage phishing campaigns to enhance security awareness</p>
+            </div>
+            
+            {/* Right Section - Action Buttons */}
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="ghost" 
+                className="text-white hover:bg-white/20 backdrop-blur-sm rounded-xl"
+                onClick={() => setShowReports(true)}
+              >
+                <BarChart2 className="h-4 w-4 mr-2" />
+                View Reports
+              </Button>
+              <Button 
+                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30 rounded-xl shadow-lg"
+                onClick={() => {
+                  console.log('Settings button clicked, changing to settings tab');
+                  // Close any open dialogs or detailed views to avoid interference
+                  setShowNewCampaign(false);
+                  setShowCampaignDetails(false);
+                  setShowTemplateEditor(false);
+                  setShowReports(false);
+                  // Set the active tab to settings
+                  setActiveTab('settings');
+                }}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              className="text-white hover:bg-white/20"
-              onClick={() => setShowReports(true)}
-            >
-              <BarChart2 className="h-4 w-4 mr-2" />
-              View Reports
-            </Button>
-            <Button 
-              className="bg-white text-blue-600 hover:bg-white/90"
-              onClick={() => {
-                console.log('Settings button clicked, changing to settings tab');
-                // Close any open dialogs or detailed views to avoid interference
-                setShowNewCampaign(false);
-                setShowCampaignDetails(false);
-                setShowTemplateEditor(false);
-                setShowReports(false);
-                // Set the active tab to settings
-                setActiveTab('settings');
-              }}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
+          
+          {/* Quick Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <Target className="h-8 w-8 text-orange-200" />
+                <div>
+                  <p className="text-2xl font-bold text-white">{campaigns.filter(c => c.status === 'active').length}</p>
+                  <p className="text-white/80 text-sm">Active Campaigns</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <Mail className="h-8 w-8 text-red-200" />
+                <div>
+                  <p className="text-2xl font-bold text-white">{templates.length}</p>
+                  <p className="text-white/80 text-sm">Email Templates</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <Users className="h-8 w-8 text-pink-200" />
+                <div>
+                  <p className="text-2xl font-bold text-white">{sampleUsers.length}</p>
+                  <p className="text-white/80 text-sm">Target Users</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <BarChart className="h-8 w-8 text-yellow-200" />
+                <div>
+                  <p className="text-2xl font-bold text-white">
+                    {Math.round(campaigns.reduce((acc, c) => acc + (c.stats?.reportRate || 0), 0) / campaigns.length) || 0}%
+                  </p>
+                  <p className="text-white/80 text-sm">Avg Report Rate</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
