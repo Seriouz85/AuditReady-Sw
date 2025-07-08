@@ -1,1 +1,479 @@
-import React, { useState, useEffect } from 'react';\nimport { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport { Button } from '@/components/ui/button';\nimport { Progress } from '@/components/ui/progress';\nimport { Badge } from '@/components/ui/badge';\nimport { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';\nimport { Label } from '@/components/ui/label';\nimport { Input } from '@/components/ui/input';\nimport { Textarea } from '@/components/ui/textarea';\nimport { \n  Clock, \n  CheckCircle, \n  XCircle, \n  AlertCircle,\n  ArrowLeft,\n  ArrowRight,\n  RotateCcw,\n  Trophy,\n  Target\n} from 'lucide-react';\nimport { Quiz, QuizQuestion, UserQuizAttempt } from '@/types/lms';\nimport { quizService } from '@/services/lms/QuizService';\nimport { useAuth } from '@/contexts/AuthContext';\nimport { toast } from '@/utils/toast';\n\ninterface QuizTakerProps {\n  quizId: string;\n  onComplete?: (result: { score: number; passed: boolean }) => void;\n  onBack?: () => void;\n}\n\ninterface QuizState {\n  currentQuestionIndex: number;\n  answers: Record<string, any>;\n  timeRemaining: number;\n  startTime: number;\n  submitted: boolean;\n  result: { score: number; passed: boolean; attemptId: string } | null;\n}\n\nexport const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack }) => {\n  const { user } = useAuth();\n  const [quiz, setQuiz] = useState<Quiz | null>(null);\n  const [questions, setQuestions] = useState<QuizQuestion[]>([]);\n  const [loading, setLoading] = useState(true);\n  const [submitting, setSubmitting] = useState(false);\n  const [canRetake, setCanRetake] = useState(true);\n  const [bestAttempt, setBestAttempt] = useState<UserQuizAttempt | null>(null);\n  \n  const [quizState, setQuizState] = useState<QuizState>({\n    currentQuestionIndex: 0,\n    answers: {},\n    timeRemaining: 0,\n    startTime: Date.now(),\n    submitted: false,\n    result: null\n  });\n\n  useEffect(() => {\n    loadQuiz();\n  }, [quizId]);\n\n  useEffect(() => {\n    // Timer for time-limited quizzes\n    if (quiz?.timeLimit && quizState.timeRemaining > 0 && !quizState.submitted) {\n      const timer = setInterval(() => {\n        setQuizState(prev => {\n          const newTime = prev.timeRemaining - 1;\n          if (newTime <= 0) {\n            submitQuiz();\n            return { ...prev, timeRemaining: 0 };\n          }\n          return { ...prev, timeRemaining: newTime };\n        });\n      }, 1000);\n\n      return () => clearInterval(timer);\n    }\n  }, [quiz?.timeLimit, quizState.timeRemaining, quizState.submitted]);\n\n  const loadQuiz = async () => {\n    try {\n      setLoading(true);\n      \n      const [quizData, retakeEligible, bestAttemptData] = await Promise.all([\n        quizService.getQuiz(quizId),\n        user ? quizService.canRetakeQuiz(user.id, quizId) : true,\n        user ? quizService.getBestAttempt(user.id, quizId) : null\n      ]);\n\n      if (quizData) {\n        setQuiz(quizData);\n        \n        // Shuffle questions if required\n        const questionsToShow = quizData.shuffleQuestions \n          ? quizService.shuffleQuestions(quizData.questions)\n          : quizData.questions;\n          \n        // Shuffle options for multiple choice questions\n        const processedQuestions = questionsToShow.map(q => \n          q.type === 'multiple-choice' ? quizService.shuffleOptions(q) : q\n        );\n        \n        setQuestions(processedQuestions);\n        setCanRetake(retakeEligible);\n        setBestAttempt(bestAttemptData);\n        \n        // Initialize timer\n        if (quizData.timeLimit) {\n          setQuizState(prev => ({\n            ...prev,\n            timeRemaining: quizData.timeLimit! * 60 // Convert minutes to seconds\n          }));\n        }\n      }\n    } catch (error) {\n      console.error('Error loading quiz:', error);\n      toast.error('Failed to load quiz');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleAnswerChange = (questionId: string, answer: any) => {\n    setQuizState(prev => ({\n      ...prev,\n      answers: {\n        ...prev.answers,\n        [questionId]: answer\n      }\n    }));\n  };\n\n  const nextQuestion = () => {\n    if (quizState.currentQuestionIndex < questions.length - 1) {\n      setQuizState(prev => ({\n        ...prev,\n        currentQuestionIndex: prev.currentQuestionIndex + 1\n      }));\n    }\n  };\n\n  const previousQuestion = () => {\n    if (quizState.currentQuestionIndex > 0) {\n      setQuizState(prev => ({\n        ...prev,\n        currentQuestionIndex: prev.currentQuestionIndex - 1\n      }));\n    }\n  };\n\n  const submitQuiz = async () => {\n    if (!user || !quiz) return;\n\n    try {\n      setSubmitting(true);\n      \n      const timeSpent = Math.round((Date.now() - quizState.startTime) / 60000); // Convert to minutes\n      \n      const result = await quizService.submitQuizAttempt({\n        userId: user.id,\n        quizId,\n        answers: quizState.answers,\n        timeSpent\n      });\n\n      if (result) {\n        setQuizState(prev => ({\n          ...prev,\n          submitted: true,\n          result\n        }));\n        \n        if (onComplete) {\n          onComplete(result);\n        }\n        \n        toast.success('Quiz submitted successfully!');\n      }\n    } catch (error) {\n      console.error('Error submitting quiz:', error);\n      toast.error('Failed to submit quiz');\n    } finally {\n      setSubmitting(false);\n    }\n  };\n\n  const retakeQuiz = () => {\n    setQuizState({\n      currentQuestionIndex: 0,\n      answers: {},\n      timeRemaining: quiz?.timeLimit ? quiz.timeLimit * 60 : 0,\n      startTime: Date.now(),\n      submitted: false,\n      result: null\n    });\n  };\n\n  const formatTime = (seconds: number): string => {\n    const mins = Math.floor(seconds / 60);\n    const secs = seconds % 60;\n    return `${mins}:${secs.toString().padStart(2, '0')}`;\n  };\n\n  const renderQuestion = (question: QuizQuestion) => {\n    const currentAnswer = quizState.answers[question.id];\n\n    switch (question.type) {\n      case 'multiple-choice':\n        return (\n          <RadioGroup\n            value={currentAnswer?.toString()}\n            onValueChange={(value) => handleAnswerChange(question.id, parseInt(value))}\n            className=\"space-y-3\"\n          >\n            {question.options?.map((option, index) => (\n              <div key={index} className=\"flex items-center space-x-2\">\n                <RadioGroupItem value={index.toString()} id={`${question.id}-${index}`} />\n                <Label htmlFor={`${question.id}-${index}`} className=\"cursor-pointer\">\n                  {option}\n                </Label>\n              </div>\n            ))}\n          </RadioGroup>\n        );\n\n      case 'true-false':\n        return (\n          <RadioGroup\n            value={currentAnswer?.toString()}\n            onValueChange={(value) => handleAnswerChange(question.id, value === 'true')}\n            className=\"space-y-3\"\n          >\n            <div className=\"flex items-center space-x-2\">\n              <RadioGroupItem value=\"true\" id={`${question.id}-true`} />\n              <Label htmlFor={`${question.id}-true`} className=\"cursor-pointer\">True</Label>\n            </div>\n            <div className=\"flex items-center space-x-2\">\n              <RadioGroupItem value=\"false\" id={`${question.id}-false`} />\n              <Label htmlFor={`${question.id}-false`} className=\"cursor-pointer\">False</Label>\n            </div>\n          </RadioGroup>\n        );\n\n      case 'text':\n        return (\n          <Textarea\n            value={currentAnswer || ''}\n            onChange={(e) => handleAnswerChange(question.id, e.target.value)}\n            placeholder=\"Enter your answer...\"\n            className=\"min-h-[100px]\"\n          />\n        );\n\n      default:\n        return <div>Unsupported question type</div>;\n    }\n  };\n\n  if (loading) {\n    return (\n      <div className=\"flex items-center justify-center p-8\">\n        <div className=\"text-center\">\n          <div className=\"animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4\"></div>\n          <p>Loading quiz...</p>\n        </div>\n      </div>\n    );\n  }\n\n  if (!quiz) {\n    return (\n      <div className=\"text-center p-8\">\n        <AlertCircle className=\"h-12 w-12 text-red-500 mx-auto mb-4\" />\n        <h3 className=\"text-lg font-semibold mb-2\">Quiz Not Found</h3>\n        <p className=\"text-muted-foreground\">The requested quiz could not be loaded.</p>\n        {onBack && (\n          <Button onClick={onBack} className=\"mt-4\">\n            <ArrowLeft className=\"h-4 w-4 mr-2\" />\n            Go Back\n          </Button>\n        )}\n      </div>\n    );\n  }\n\n  // Show result screen after submission\n  if (quizState.submitted && quizState.result) {\n    const { score, passed } = quizState.result;\n    \n    return (\n      <Card className=\"max-w-2xl mx-auto\">\n        <CardHeader className=\"text-center\">\n          <div className=\"mx-auto mb-4\">\n            {passed ? (\n              <div className=\"w-16 h-16 bg-green-100 rounded-full flex items-center justify-center\">\n                <Trophy className=\"h-8 w-8 text-green-600\" />\n              </div>\n            ) : (\n              <div className=\"w-16 h-16 bg-red-100 rounded-full flex items-center justify-center\">\n                <Target className=\"h-8 w-8 text-red-600\" />\n              </div>\n            )}\n          </div>\n          <CardTitle className=\"text-2xl\">\n            {passed ? 'Congratulations!' : 'Quiz Complete'}\n          </CardTitle>\n          <p className=\"text-muted-foreground\">\n            You scored {score}% on this quiz\n          </p>\n        </CardHeader>\n        <CardContent className=\"space-y-6\">\n          <div className=\"text-center\">\n            <div className=\"flex justify-center space-x-8 mb-6\">\n              <div className=\"text-center\">\n                <div className=\"text-3xl font-bold text-primary\">{score}%</div>\n                <div className=\"text-sm text-muted-foreground\">Your Score</div>\n              </div>\n              <div className=\"text-center\">\n                <div className=\"text-3xl font-bold text-muted-foreground\">{quiz.passingScore}%</div>\n                <div className=\"text-sm text-muted-foreground\">Passing Score</div>\n              </div>\n            </div>\n            \n            <Badge \n              variant={passed ? \"default\" : \"destructive\"} \n              className=\"mb-4\"\n            >\n              {passed ? (\n                <><CheckCircle className=\"h-4 w-4 mr-1\" /> Passed</>\n              ) : (\n                <><XCircle className=\"h-4 w-4 mr-1\" /> Not Passed</>\n              )}\n            </Badge>\n            \n            {bestAttempt && bestAttempt.score > score && (\n              <p className=\"text-sm text-muted-foreground mb-4\">\n                Your best score: {bestAttempt.score}%\n              </p>\n            )}\n          </div>\n          \n          <div className=\"flex justify-center space-x-3\">\n            {onBack && (\n              <Button variant=\"outline\" onClick={onBack}>\n                <ArrowLeft className=\"h-4 w-4 mr-2\" />\n                Back to Course\n              </Button>\n            )}\n            \n            {!passed && canRetake && quiz.allowRetakes && (\n              <Button onClick={retakeQuiz}>\n                <RotateCcw className=\"h-4 w-4 mr-2\" />\n                Retake Quiz\n              </Button>\n            )}\n          </div>\n        </CardContent>\n      </Card>\n    );\n  }\n\n  // Show quiz taking interface\n  const currentQuestion = questions[quizState.currentQuestionIndex];\n  const progress = ((quizState.currentQuestionIndex + 1) / questions.length) * 100;\n  const answeredQuestions = Object.keys(quizState.answers).length;\n\n  return (\n    <div className=\"max-w-4xl mx-auto space-y-6\">\n      {/* Quiz Header */}\n      <Card>\n        <CardHeader>\n          <div className=\"flex justify-between items-start\">\n            <div>\n              <CardTitle>{quiz.title}</CardTitle>\n              <p className=\"text-muted-foreground mt-1\">\n                Question {quizState.currentQuestionIndex + 1} of {questions.length}\n              </p>\n            </div>\n            <div className=\"text-right space-y-2\">\n              {quiz.timeLimit && (\n                <div className=\"flex items-center text-sm\">\n                  <Clock className=\"h-4 w-4 mr-1\" />\n                  <span className={quizState.timeRemaining < 300 ? 'text-red-600 font-semibold' : ''}>\n                    {formatTime(quizState.timeRemaining)}\n                  </span>\n                </div>\n              )}\n              <div className=\"text-sm text-muted-foreground\">\n                {answeredQuestions} of {questions.length} answered\n              </div>\n            </div>\n          </div>\n          \n          <Progress value={progress} className=\"mt-4\" />\n        </CardHeader>\n      </Card>\n\n      {/* Current Question */}\n      {currentQuestion && (\n        <Card>\n          <CardHeader>\n            <CardTitle className=\"text-lg\">\n              {currentQuestion.question}\n            </CardTitle>\n            {currentQuestion.points && (\n              <Badge variant=\"outline\">{currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}</Badge>\n            )}\n          </CardHeader>\n          <CardContent>\n            {renderQuestion(currentQuestion)}\n          </CardContent>\n        </Card>\n      )}\n\n      {/* Navigation */}\n      <div className=\"flex justify-between items-center\">\n        <Button \n          variant=\"outline\" \n          onClick={previousQuestion}\n          disabled={quizState.currentQuestionIndex === 0}\n        >\n          <ArrowLeft className=\"h-4 w-4 mr-2\" />\n          Previous\n        </Button>\n        \n        <div className=\"text-sm text-muted-foreground\">\n          {answeredQuestions} of {questions.length} questions answered\n        </div>\n        \n        {quizState.currentQuestionIndex === questions.length - 1 ? (\n          <Button \n            onClick={submitQuiz}\n            disabled={submitting || answeredQuestions === 0}\n            className=\"bg-green-600 hover:bg-green-700\"\n          >\n            {submitting ? 'Submitting...' : 'Submit Quiz'}\n          </Button>\n        ) : (\n          <Button onClick={nextQuestion}>\n            Next\n            <ArrowRight className=\"h-4 w-4 ml-2\" />\n          </Button>\n        )}\n      </div>\n\n      {/* Question Overview */}\n      <Card>\n        <CardHeader>\n          <CardTitle className=\"text-base\">Question Overview</CardTitle>\n        </CardHeader>\n        <CardContent>\n          <div className=\"grid grid-cols-10 gap-2\">\n            {questions.map((_, index) => {\n              const isAnswered = Object.keys(quizState.answers).includes(questions[index].id);\n              const isCurrent = index === quizState.currentQuestionIndex;\n              \n              return (\n                <button\n                  key={index}\n                  onClick={() => setQuizState(prev => ({ ...prev, currentQuestionIndex: index }))}\n                  className={`w-8 h-8 rounded text-xs font-medium ${\n                    isCurrent \n                      ? 'bg-primary text-primary-foreground' \n                      : isAnswered \n                      ? 'bg-green-100 text-green-700 border border-green-200' \n                      : 'bg-gray-100 text-gray-600 border'\n                  }`}\n                >\n                  {index + 1}\n                </button>\n              );\n            })}\n          </div>\n        </CardContent>\n      </Card>\n    </div>\n  );\n};
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  RotateCcw,
+  Trophy,
+  Target
+} from 'lucide-react';
+import { Quiz, QuizQuestion, UserQuizAttempt } from '@/types/lms';
+import { quizService } from '@/services/lms/QuizService';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/utils/toast';
+
+interface QuizTakerProps {
+  quizId: string;
+  onComplete?: (result: { score: number; passed: boolean }) => void;
+  onBack?: () => void;
+}
+
+interface QuizState {
+  currentQuestionIndex: number;
+  answers: Record<string, any>;
+  timeRemaining: number;
+  startTime: number;
+  submitted: boolean;
+  result: { score: number; passed: boolean; attemptId: string } | null;
+}
+
+export const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack }) => {
+  const { user } = useAuth();
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [canRetake, setCanRetake] = useState(true);
+  const [bestAttempt, setBestAttempt] = useState<UserQuizAttempt | null>(null);
+  
+  const [quizState, setQuizState] = useState<QuizState>({
+    currentQuestionIndex: 0,
+    answers: {},
+    timeRemaining: 0,
+    startTime: Date.now(),
+    submitted: false,
+    result: null
+  });
+
+  useEffect(() => {
+    loadQuiz();
+  }, [quizId]);
+
+  useEffect(() => {
+    // Timer for time-limited quizzes
+    if (quiz?.timeLimit && quizState.timeRemaining > 0 && !quizState.submitted) {
+      const timer = setInterval(() => {
+        setQuizState(prev => {
+          const newTime = prev.timeRemaining - 1;
+          if (newTime <= 0) {
+            submitQuiz();
+            return { ...prev, timeRemaining: 0 };
+          }
+          return { ...prev, timeRemaining: newTime };
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [quiz?.timeLimit, quizState.timeRemaining, quizState.submitted]);
+
+  const loadQuiz = async () => {
+    try {
+      setLoading(true);
+      
+      const [quizData, retakeEligible, bestAttemptData] = await Promise.all([
+        quizService.getQuiz(quizId),
+        user ? quizService.canRetakeQuiz(user.id, quizId) : true,
+        user ? quizService.getBestAttempt(user.id, quizId) : null
+      ]);
+
+      if (quizData) {
+        setQuiz(quizData);
+        
+        // Shuffle questions if required
+        const questionsToShow = quizData.shuffleQuestions 
+          ? quizService.shuffleQuestions(quizData.questions)
+          : quizData.questions;
+          
+        // Shuffle options for multiple choice questions
+        const processedQuestions = questionsToShow.map(q => 
+          q.type === 'multiple-choice' ? quizService.shuffleOptions(q) : q
+        );
+        
+        setQuestions(processedQuestions);
+        setCanRetake(retakeEligible);
+        setBestAttempt(bestAttemptData);
+        
+        // Initialize timer
+        if (quizData.timeLimit) {
+          setQuizState(prev => ({
+            ...prev,
+            timeRemaining: quizData.timeLimit! * 60 // Convert minutes to seconds
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error loading quiz:', error);
+      toast.error('Failed to load quiz');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAnswerChange = (questionId: string, answer: any) => {
+    setQuizState(prev => ({
+      ...prev,
+      answers: {
+        ...prev.answers,
+        [questionId]: answer
+      }
+    }));
+  };
+
+  const nextQuestion = () => {
+    if (quizState.currentQuestionIndex < questions.length - 1) {
+      setQuizState(prev => ({
+        ...prev,
+        currentQuestionIndex: prev.currentQuestionIndex + 1
+      }));
+    }
+  };
+
+  const previousQuestion = () => {
+    if (quizState.currentQuestionIndex > 0) {
+      setQuizState(prev => ({
+        ...prev,
+        currentQuestionIndex: prev.currentQuestionIndex - 1
+      }));
+    }
+  };
+
+  const submitQuiz = async () => {
+    if (!user || !quiz) return;
+
+    try {
+      setSubmitting(true);
+      
+      const timeSpent = Math.round((Date.now() - quizState.startTime) / 60000); // Convert to minutes
+      
+      const result = await quizService.submitQuizAttempt({
+        userId: user.id,
+        quizId,
+        answers: quizState.answers,
+        timeSpent
+      });
+
+      if (result) {
+        setQuizState(prev => ({
+          ...prev,
+          submitted: true,
+          result
+        }));
+        
+        if (onComplete) {
+          onComplete(result);
+        }
+        
+        toast.success('Quiz submitted successfully!');
+      }
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      toast.error('Failed to submit quiz');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const retakeQuiz = () => {
+    setQuizState({
+      currentQuestionIndex: 0,
+      answers: {},
+      timeRemaining: quiz?.timeLimit ? quiz.timeLimit * 60 : 0,
+      startTime: Date.now(),
+      submitted: false,
+      result: null
+    });
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const renderQuestion = (question: QuizQuestion) => {
+    const currentAnswer = quizState.answers[question.id];
+
+    switch (question.type) {
+      case 'multiple-choice':
+        return (
+          <RadioGroup
+            value={currentAnswer?.toString()}
+            onValueChange={(value) => handleAnswerChange(question.id, parseInt(value))}
+            className="space-y-3"
+          >
+            {question.options?.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <RadioGroupItem value={index.toString()} id={`${question.id}-${index}`} />
+                <Label htmlFor={`${question.id}-${index}`} className="cursor-pointer">
+                  {option}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        );
+
+      case 'true-false':
+        return (
+          <RadioGroup
+            value={currentAnswer?.toString()}
+            onValueChange={(value) => handleAnswerChange(question.id, value === 'true')}
+            className="space-y-3"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="true" id={`${question.id}-true`} />
+              <Label htmlFor={`${question.id}-true`} className="cursor-pointer">True</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="false" id={`${question.id}-false`} />
+              <Label htmlFor={`${question.id}-false`} className="cursor-pointer">False</Label>
+            </div>
+          </RadioGroup>
+        );
+
+      case 'text':
+        return (
+          <Textarea
+            value={currentAnswer || ''}
+            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+            placeholder="Enter your answer..."
+            className="min-h-[100px]"
+          />
+        );
+
+      default:
+        return <div>Unsupported question type</div>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading quiz...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!quiz) {
+    return (
+      <div className="text-center p-8">
+        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Quiz Not Found</h3>
+        <p className="text-muted-foreground">The requested quiz could not be loaded.</p>
+        {onBack && (
+          <Button onClick={onBack} className="mt-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  // Show result screen after submission
+  if (quizState.submitted && quizState.result) {
+    const { score, passed } = quizState.result;
+    
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4">
+            {passed ? (
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <Trophy className="h-8 w-8 text-green-600" />
+              </div>
+            ) : (
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <Target className="h-8 w-8 text-red-600" />
+              </div>
+            )}
+          </div>
+          <CardTitle className="text-2xl">
+            {passed ? 'Congratulations!' : 'Quiz Complete'}
+          </CardTitle>
+          <p className="text-muted-foreground">
+            You scored {score}% on this quiz
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="text-center">
+            <div className="flex justify-center space-x-8 mb-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary">{score}%</div>
+                <div className="text-sm text-muted-foreground">Your Score</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-muted-foreground">{quiz.passingScore}%</div>
+                <div className="text-sm text-muted-foreground">Passing Score</div>
+              </div>
+            </div>
+            
+            <Badge 
+              variant={passed ? "default" : "destructive"} 
+              className="mb-4"
+            >
+              {passed ? (
+                <><CheckCircle className="h-4 w-4 mr-1" /> Passed</>
+              ) : (
+                <><XCircle className="h-4 w-4 mr-1" /> Not Passed</>
+              )}
+            </Badge>
+            
+            {bestAttempt && bestAttempt.score > score && (
+              <p className="text-sm text-muted-foreground mb-4">
+                Your best score: {bestAttempt.score}%
+              </p>
+            )}
+          </div>
+          
+          <div className="flex justify-center space-x-3">
+            {onBack && (
+              <Button variant="outline" onClick={onBack}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Course
+              </Button>
+            )}
+            
+            {!passed && canRetake && quiz.allowRetakes && (
+              <Button onClick={retakeQuiz}>
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Retake Quiz
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show quiz taking interface
+  const currentQuestion = questions[quizState.currentQuestionIndex];
+  const progress = ((quizState.currentQuestionIndex + 1) / questions.length) * 100;
+  const answeredQuestions = Object.keys(quizState.answers).length;
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Quiz Header */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>{quiz.title}</CardTitle>
+              <p className="text-muted-foreground mt-1">
+                Question {quizState.currentQuestionIndex + 1} of {questions.length}
+              </p>
+            </div>
+            <div className="text-right space-y-2">
+              {quiz.timeLimit && (
+                <div className="flex items-center text-sm">
+                  <Clock className="h-4 w-4 mr-1" />
+                  <span className={quizState.timeRemaining < 300 ? 'text-red-600 font-semibold' : ''}>
+                    {formatTime(quizState.timeRemaining)}
+                  </span>
+                </div>
+              )}
+              <div className="text-sm text-muted-foreground">
+                {answeredQuestions} of {questions.length} answered
+              </div>
+            </div>
+          </div>
+          
+          <Progress value={progress} className="mt-4" />
+        </CardHeader>
+      </Card>
+
+      {/* Current Question */}
+      {currentQuestion && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">
+              {currentQuestion.question}
+            </CardTitle>
+            {currentQuestion.points && (
+              <Badge variant="outline">{currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}</Badge>
+            )}
+          </CardHeader>
+          <CardContent>
+            {renderQuestion(currentQuestion)}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Navigation */}
+      <div className="flex justify-between items-center">
+        <Button 
+          variant="outline" 
+          onClick={previousQuestion}
+          disabled={quizState.currentQuestionIndex === 0}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Previous
+        </Button>
+        
+        <div className="text-sm text-muted-foreground">
+          {answeredQuestions} of {questions.length} questions answered
+        </div>
+        
+        {quizState.currentQuestionIndex === questions.length - 1 ? (
+          <Button 
+            onClick={submitQuiz}
+            disabled={submitting || answeredQuestions === 0}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {submitting ? 'Submitting...' : 'Submit Quiz'}
+          </Button>
+        ) : (
+          <Button onClick={nextQuestion}>
+            Next
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        )}
+      </div>
+
+      {/* Question Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Question Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-10 gap-2">
+            {questions.map((_, index) => {
+              const isAnswered = Object.keys(quizState.answers).includes(questions[index].id);
+              const isCurrent = index === quizState.currentQuestionIndex;
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => setQuizState(prev => ({ ...prev, currentQuestionIndex: index }))}
+                  className={`w-8 h-8 rounded text-xs font-medium ${
+                    isCurrent 
+                      ? 'bg-primary text-primary-foreground' 
+                      : isAnswered 
+                      ? 'bg-green-100 text-green-700 border border-green-200' 
+                      : 'bg-gray-100 text-gray-600 border'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};

@@ -1,66 +1,30 @@
-import React, { memo, forwardRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { memo } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-/**
- * Optimized versions of frequently used components
- */
+// Memoized Card component for heavy lists
+export const MemoizedCard = memo(Card);
+export const MemoizedCardHeader = memo(CardHeader);
+export const MemoizedCardTitle = memo(CardTitle);
+export const MemoizedCardDescription = memo(CardDescription);
+export const MemoizedCardContent = memo(CardContent);
 
-// Optimized Card component
-export const OptimizedCard = memo(forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<typeof Card>
->(({ children, className, ...props }, ref) => (
-  <Card ref={ref} className={className} {...props}>
-    {children}
-  </Card>
-)));
+// Memoized Button component
+export const MemoizedButton = memo(Button);
 
-OptimizedCard.displayName = 'OptimizedCard';
+// Memoized Badge component
+export const MemoizedBadge = memo(Badge);
 
-// Optimized Button component
-export const OptimizedButton = memo(forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof Button>
->(({ children, onClick, disabled, variant, size, className, ...props }, ref) => (
-  <Button
-    ref={ref}
-    onClick={onClick}
-    disabled={disabled}
-    variant={variant}
-    size={size}
-    className={className}
-    {...props}
-  >
-    {children}
-  </Button>
-)));
-
-OptimizedButton.displayName = 'OptimizedButton';
-
-// Optimized Badge component
-export const OptimizedBadge = memo<React.ComponentProps<typeof Badge>>(({ 
-  children, 
-  variant, 
-  className,
-  ...props 
-}) => (
-  <Badge variant={variant} className={className} {...props}>
-    {children}
-  </Badge>
-));
-
-OptimizedBadge.displayName = 'OptimizedBadge';
-
-// Optimized List Item component
+// Memoized list item component
 interface OptimizedListItemProps {
-  id: string | number;
+  id: string;
   title: string;
   description?: string;
   status?: string;
-  onClick?: (id: string | number) => void;
+  onClick?: () => void;
   className?: string;
+  children?: React.ReactNode;
 }
 
 export const OptimizedListItem = memo<OptimizedListItemProps>(({ 
@@ -68,93 +32,83 @@ export const OptimizedListItem = memo<OptimizedListItemProps>(({
   title, 
   description, 
   status, 
-  onClick,
-  className = ''
-}) => (
-  <div 
-    className={`p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer ${className}`}
-    onClick={() => onClick?.(id)}
-  >
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="font-medium">{title}</h3>
+  onClick, 
+  className = "",
+  children 
+}) => {
+  return (
+    <MemoizedCard 
+      key={id}
+      className={`cursor-pointer hover:shadow-md transition-shadow ${className}`}
+      onClick={onClick}
+    >
+      <MemoizedCardHeader>
+        <div className="flex items-center justify-between">
+          <MemoizedCardTitle className="text-lg">{title}</MemoizedCardTitle>
+          {status && <MemoizedBadge variant="outline">{status}</MemoizedBadge>}
+        </div>
         {description && (
-          <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+          <MemoizedCardDescription>{description}</MemoizedCardDescription>
         )}
-      </div>
-      {status && (
-        <OptimizedBadge variant="secondary">{status}</OptimizedBadge>
-      )}
-    </div>
-  </div>
-));
+      </MemoizedCardHeader>
+      {children && <MemoizedCardContent>{children}</MemoizedCardContent>}
+    </MemoizedCard>
+  );
+});
 
 OptimizedListItem.displayName = 'OptimizedListItem';
 
-// Optimized Table Row component
-interface OptimizedTableRowProps {
-  id: string | number;
-  cells: React.ReactNode[];
-  onClick?: (id: string | number) => void;
+// Memoized table component for large datasets
+interface OptimizedTableProps {
+  data: any[];
+  columns: Array<{
+    key: string;
+    header: string;
+    render?: (value: any, row: any) => React.ReactNode;
+  }>;
+  onRowClick?: (row: any) => void;
   className?: string;
 }
 
-export const OptimizedTableRow = memo<OptimizedTableRowProps>(({ 
-  id, 
-  cells, 
-  onClick,
-  className = ''
-}) => (
-  <tr 
-    className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${onClick ? 'cursor-pointer' : ''} ${className}`}
-    onClick={() => onClick?.(id)}
-  >
-    {cells.map((cell, index) => (
-      <td key={index} className="px-4 py-2">
-        {cell}
-      </td>
-    ))}
-  </tr>
-));
+export const OptimizedTable = memo<OptimizedTableProps>(({ 
+  data, 
+  columns, 
+  onRowClick, 
+  className = "" 
+}) => {
+  return (
+    <div className={`overflow-x-auto ${className}`}>
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            {columns.map((column) => (
+              <th
+                key={column.key}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                {column.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {data.map((row, index) => (
+            <tr
+              key={row.id || index}
+              className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
+              onClick={() => onRowClick?.(row)}
+            >
+              {columns.map((column) => (
+                <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {column.render ? column.render(row[column.key], row) : row[column.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+});
 
-OptimizedTableRow.displayName = 'OptimizedTableRow';
-
-// Optimized Status Card component
-interface OptimizedStatusCardProps {
-  title: string;
-  value: string | number;
-  description?: string;
-  trend?: 'up' | 'down' | 'stable';
-  className?: string;
-}
-
-export const OptimizedStatusCard = memo<OptimizedStatusCardProps>(({ 
-  title, 
-  value, 
-  description, 
-  trend,
-  className = ''
-}) => (
-  <OptimizedCard className={className}>
-    <CardHeader className="pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
-      {description && (
-        <p className="text-xs text-gray-600 dark:text-gray-400">{description}</p>
-      )}
-      {trend && (
-        <div className={`text-xs ${
-          trend === 'up' ? 'text-green-600' :
-          trend === 'down' ? 'text-red-600' :
-          'text-gray-600'
-        }`}>
-          {trend === 'up' ? '↗' : trend === 'down' ? '↘' : '→'} Trend
-        </div>
-      )}
-    </CardContent>
-  </OptimizedCard>
-));
-
-OptimizedStatusCard.displayName = 'OptimizedStatusCard';
+OptimizedTable.displayName = 'OptimizedTable';

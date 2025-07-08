@@ -37,7 +37,7 @@ export class VisualOverlayService {
   private overlayElement: HTMLElement | null = null;
   private nodes: Map<string, NodeInfo> = new Map();
   private edges: Map<string, EdgeInfo> = new Map();
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((event: OverlayEvent) => void)[]> = new Map();
 
   private constructor() {}
 
@@ -97,7 +97,7 @@ export class VisualOverlayService {
   /**
    * Remove event listener
    */
-  public removeEventListener(eventType: string, callback: Function): void {
+  public removeEventListener(eventType: string, callback: (event: OverlayEvent) => void): void {
     const listeners = this.eventListeners.get(eventType);
     if (listeners) {
       const index = listeners.indexOf(callback);

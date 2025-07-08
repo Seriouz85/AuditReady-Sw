@@ -24,9 +24,9 @@ export function cleanMarkdownFormatting(text: string): string {
   // Remove all remaining stars and asterisks
   cleaned = cleaned.replace(/\*/g, '');
   
-  // Remove Unicode symbols and special characters
-  cleaned = cleaned.replace(/[⚡️🔥💡⭐️✨🎯🚀💪📋🔒⚠️📊📈📉🔍]/g, '');
-  cleaned = cleaned.replace(/[★☆✓✔️❌❗️❓⚙️🔧🛠️]/g, '');
+  // Remove Unicode symbols and special characters (fixed with u flag)
+  cleaned = cleaned.replace(/[⚡️🔥💡⭐️✨🎯🚀💪📋🔒⚠️📊📈📉🔍]/gu, '');
+  cleaned = cleaned.replace(/[★☆✓✔️❌❗️❓⚙️🔧🛠️]/gu, '');
   
   // Remove emoji modifiers and zero-width characters
   cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');

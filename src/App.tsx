@@ -4,45 +4,55 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
+
+// Core pages that should load immediately
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import ResetPassword from "./pages/ResetPassword";
-import EmailVerification from "./pages/EmailVerification";
-import PricingAssessment from "./pages/PricingAssessment";
-import Onboarding from "./pages/Onboarding";
-import EnhancedOnboarding from "./pages/EnhancedOnboarding";
-import EnhancedOnboardingFlow from "./pages/EnhancedOnboardingFlow";
-import GuidedStandardImport from "./pages/GuidedStandardImport";
-import AcceptInvitation from "./pages/AcceptInvitation";
-import About from "./pages/About";
-import Documentation from "./pages/Documentation";
-import Privacy from "./pages/legal/Privacy";
-import Terms from "./pages/legal/Terms";
-import Security from "./pages/legal/Security";
-import Cookies from "./pages/legal/Cookies";
-import Features from "./pages/Features";
-import Roadmap from "./pages/Roadmap";
-import ComplianceSimplification from "./pages/ComplianceSimplification";
-import PublicOnboarding from "./pages/PublicOnboarding";
-import LMS from "./pages/LMS";
-import TrenningLMS from "./pages/LMS/index";
-import CreateLearningPath from "./pages/LMS/CreateLearningPath";
-import EditCourse from "./pages/LMS/EditCourse";
-import QuizEditor from "./pages/LMS/QuizEditor";
-import ContentCreator from "./pages/LMS/ContentCreator";
-import CourseBuilder from "./pages/LMS/CourseBuilder";
-import Reports from "./pages/LMS/Reports";
-import CourseDetail from "./pages/LMS/CourseDetail";
-import LMSAdmin from "./pages/LMS/Admin";
-import PhishingSimulationManager from "./pages/LMS/PhishingSimulationManager";
-import MediaLibrary from "./pages/LMS/MediaLibrary";
-import LMSAnalytics from "./pages/LMS/Analytics";
-import CourseViewer from "./pages/LMS/CourseViewer";
-import CourseLibrary from "./pages/LMS/CourseLibrary";
-import GraphicalEditor from "./pages/documents/GraphicalEditor";
+
+// Lazy load secondary pages
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const EmailVerification = lazy(() => import("./pages/EmailVerification"));
+const PricingAssessment = lazy(() => import("./pages/PricingAssessment"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const EnhancedOnboarding = lazy(() => import("./pages/EnhancedOnboarding"));
+const EnhancedOnboardingFlow = lazy(() => import("./pages/EnhancedOnboardingFlow"));
+const GuidedStandardImport = lazy(() => import("./pages/GuidedStandardImport"));
+const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
+
+// Lazy load informational pages
+const About = lazy(() => import("./pages/About"));
+const Documentation = lazy(() => import("./pages/Documentation"));
+const Privacy = lazy(() => import("./pages/legal/Privacy"));
+const Terms = lazy(() => import("./pages/legal/Terms"));
+const Security = lazy(() => import("./pages/legal/Security"));
+const Cookies = lazy(() => import("./pages/legal/Cookies"));
+const Features = lazy(() => import("./pages/Features"));
+const Roadmap = lazy(() => import("./pages/Roadmap"));
+const ComplianceSimplification = lazy(() => import("./pages/ComplianceSimplification"));
+const PublicOnboarding = lazy(() => import("./pages/PublicOnboarding"));
+
+// Lazy load LMS modules
+const LMS = lazy(() => import("./pages/LMS"));
+const TrenningLMS = lazy(() => import("./pages/LMS/index"));
+const CreateLearningPath = lazy(() => import("./pages/LMS/CreateLearningPath"));
+const EditCourse = lazy(() => import("./pages/LMS/EditCourse"));
+const QuizEditor = lazy(() => import("./pages/LMS/QuizEditor"));
+const ContentCreator = lazy(() => import("./pages/LMS/ContentCreator"));
+const CourseBuilder = lazy(() => import("./pages/LMS/CourseBuilder"));
+const Reports = lazy(() => import("./pages/LMS/Reports"));
+const CourseDetail = lazy(() => import("./pages/LMS/CourseDetail"));
+const LMSAdmin = lazy(() => import("./pages/LMS/Admin"));
+const PhishingSimulationManager = lazy(() => import("./pages/LMS/PhishingSimulationManager"));
+const MediaLibrary = lazy(() => import("./pages/LMS/MediaLibrary"));
+const LMSAnalytics = lazy(() => import("./pages/LMS/Analytics"));
+const CourseViewer = lazy(() => import("./pages/LMS/CourseViewer"));
+const CourseLibrary = lazy(() => import("./pages/LMS/CourseLibrary"));
+
+// Lazy load editor
+const GraphicalEditor = lazy(() => import("./pages/documents/GraphicalEditor"));
 // Lazy load admin components for code splitting
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const AnalyticsDashboard = lazy(() => import("./pages/admin/analytics/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
@@ -62,6 +72,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AdminLoadingSpinner } from "./components/AdminLoadingSpinner";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 
 const queryClient = new QueryClient();
 
@@ -98,21 +109,77 @@ const App = () => (
                   {/* Public pages */}
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/pricing" element={<PricingAssessment />} />
+                  <Route path="/pricing" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading pricing..." />}>
+                      <PricingAssessment />
+                    </Suspense>
+                  } />
                   <Route path="/signup" element={<SignUp />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/email-verification" element={<EmailVerification />} />
-                  <Route path="/invite/:token" element={<AcceptInvitation />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/documentation" element={<Documentation />} />
-                  <Route path="/features" element={<Features />} />
-                  <Route path="/roadmap" element={<Roadmap />} />
-                  <Route path="/compliance-simplification" element={<ComplianceSimplification />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/security" element={<Security />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/onboarding" element={<PublicOnboarding />} />
+                  <Route path="/reset-password" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <ResetPassword />
+                    </Suspense>
+                  } />
+                  <Route path="/email-verification" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <EmailVerification />
+                    </Suspense>
+                  } />
+                  <Route path="/invite/:token" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading invitation..." />}>
+                      <AcceptInvitation />
+                    </Suspense>
+                  } />
+                  <Route path="/about" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <About />
+                    </Suspense>
+                  } />
+                  <Route path="/documentation" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading documentation..." />}>
+                      <Documentation />
+                    </Suspense>
+                  } />
+                  <Route path="/features" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading features..." />}>
+                      <Features />
+                    </Suspense>
+                  } />
+                  <Route path="/roadmap" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading roadmap..." />}>
+                      <Roadmap />
+                    </Suspense>
+                  } />
+                  <Route path="/compliance-simplification" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <ComplianceSimplification />
+                    </Suspense>
+                  } />
+                  <Route path="/privacy" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <Privacy />
+                    </Suspense>
+                  } />
+                  <Route path="/terms" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <Terms />
+                    </Suspense>
+                  } />
+                  <Route path="/security" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <Security />
+                    </Suspense>
+                  } />
+                  <Route path="/cookies" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                      <Cookies />
+                    </Suspense>
+                  } />
+                  <Route path="/onboarding" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading onboarding..." />}>
+                      <PublicOnboarding />
+                    </Suspense>
+                  } />
                   <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
                   
                   {/* Protected pages requiring authentication */}
@@ -121,7 +188,9 @@ const App = () => (
                     path="/onboarding-auth" 
                     element={
                       <ProtectedRoute>
-                        <EnhancedOnboardingFlow />
+                        <Suspense fallback={<LoadingSpinner text="Loading onboarding..." />}>
+                          <EnhancedOnboardingFlow />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -129,7 +198,9 @@ const App = () => (
                     path="/onboarding-legacy" 
                     element={
                       <ProtectedRoute>
-                        <Onboarding />
+                        <Suspense fallback={<LoadingSpinner text="Loading onboarding..." />}>
+                          <Onboarding />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -137,7 +208,9 @@ const App = () => (
                     path="/guided-import" 
                     element={
                       <ProtectedRoute>
-                        <GuidedStandardImport />
+                        <Suspense fallback={<LoadingSpinner text="Loading import wizard..." />}>
+                          <GuidedStandardImport />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -155,7 +228,9 @@ const App = () => (
                     path="/editor" 
                     element={
                       <ProtectedRoute>
-                        <GraphicalEditor />
+                        <Suspense fallback={<LoadingSpinner text="Loading editor..." />}>
+                          <GraphicalEditor />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -165,7 +240,9 @@ const App = () => (
                     path="/lms-old" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <LMS />
+                        <Suspense fallback={<LoadingSpinner text="Loading LMS..." />}>
+                          <LMS />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -173,7 +250,9 @@ const App = () => (
                     path="/lms" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <TrenningLMS />
+                        <Suspense fallback={<LoadingSpinner text="Loading LMS..." />}>
+                          <TrenningLMS />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -181,7 +260,9 @@ const App = () => (
                     path="/lms/admin" 
                     element={
                       <ProtectedRoute requiredPermission="admin_lms">
-                        <LMSAdmin />
+                        <Suspense fallback={<LoadingSpinner text="Loading LMS Admin..." />}>
+                          <LMSAdmin />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -189,7 +270,9 @@ const App = () => (
                     path="/lms/create/learning-path" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <CreateLearningPath />
+                        <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                          <CreateLearningPath />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -197,7 +280,9 @@ const App = () => (
                     path="/lms/create/content" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <ContentCreator />
+                        <Suspense fallback={<LoadingSpinner text="Loading content creator..." />}>
+                          <ContentCreator />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -205,7 +290,9 @@ const App = () => (
                     path="/lms/create/course-builder" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <CourseBuilder />
+                        <Suspense fallback={<LoadingSpinner text="Loading course builder..." />}>
+                          <CourseBuilder />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -213,7 +300,9 @@ const App = () => (
                     path="/lms/courses/edit" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <EditCourse />
+                        <Suspense fallback={<LoadingSpinner text="Loading course editor..." />}>
+                          <EditCourse />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -221,7 +310,9 @@ const App = () => (
                     path="/lms/library" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <CourseLibrary />
+                        <Suspense fallback={<LoadingSpinner text="Loading course library..." />}>
+                          <CourseLibrary />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -229,7 +320,9 @@ const App = () => (
                     path="/lms/quizzes/create" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <QuizEditor />
+                        <Suspense fallback={<LoadingSpinner text="Loading quiz editor..." />}>
+                          <QuizEditor />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -237,7 +330,9 @@ const App = () => (
                     path="/lms/quizzes/edit/:id" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <QuizEditor />
+                        <Suspense fallback={<LoadingSpinner text="Loading quiz editor..." />}>
+                          <QuizEditor />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -245,7 +340,9 @@ const App = () => (
                     path="/lms/reports" 
                     element={
                       <ProtectedRoute requiredPermission="view_lms_reports">
-                        <Reports />
+                        <Suspense fallback={<LoadingSpinner text="Loading reports..." />}>
+                          <Reports />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -253,7 +350,9 @@ const App = () => (
                     path="/lms/course/:courseId" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <CourseDetail />
+                        <Suspense fallback={<LoadingSpinner text="Loading course details..." />}>
+                          <CourseDetail />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -261,7 +360,9 @@ const App = () => (
                     path="/lms/viewer/:courseId" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <CourseViewer />
+                        <Suspense fallback={<LoadingSpinner text="Loading course viewer..." />}>
+                          <CourseViewer />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -269,7 +370,9 @@ const App = () => (
                     path="/lms/phishing-simulation-manager" 
                     element={
                       <ProtectedRoute requiredPermission="admin_lms">
-                        <PhishingSimulationManager />
+                        <Suspense fallback={<LoadingSpinner text="Loading phishing simulation manager..." />}>
+                          <PhishingSimulationManager />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -277,7 +380,9 @@ const App = () => (
                     path="/lms/media-library" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <MediaLibrary />
+                        <Suspense fallback={<LoadingSpinner text="Loading media library..." />}>
+                          <MediaLibrary />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />
@@ -285,7 +390,9 @@ const App = () => (
                     path="/lms/analytics" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <LMSAnalytics />
+                        <Suspense fallback={<LoadingSpinner text="Loading analytics..." />}>
+                          <LMSAnalytics />
+                        </Suspense>
                       </ProtectedRoute>
                     } 
                   />

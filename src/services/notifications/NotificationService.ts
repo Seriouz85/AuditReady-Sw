@@ -94,7 +94,7 @@ export interface NotificationStats {
 
 class NotificationService {
   private static instance: NotificationService;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
 
   public static getInstance(): NotificationService {
     if (!NotificationService.instance) {
@@ -629,14 +629,14 @@ class NotificationService {
   }
 
   // Event system
-  public on(event: string, callback: Function): void {
+  public on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
     this.eventListeners.get(event)!.push(callback);
   }
 
-  public off(event: string, callback: Function): void {
+  public off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

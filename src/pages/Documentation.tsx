@@ -180,11 +180,14 @@ export default function Documentation() {
             <h3 className="text-xl font-semibold mb-4">Implementation Phases</h3>
             <div className="space-y-4">
               {[
-                { phase: 'Phase 1-6', title: 'Core Platform', status: 'Completed', color: 'green' },
-                { phase: 'Phase 7', title: 'Enterprise Integrations', status: 'Completed', color: 'green' },
-                { phase: 'Phase 8', title: 'Codebase Optimization', status: 'Completed', color: 'green' },
-                { phase: 'Phase 9', title: 'Tailwind CSS Migration', status: 'Completed', color: 'green' },
-                { phase: 'Phase 10', title: 'Testing & QA', status: 'In Progress', color: 'blue' }
+                { phase: 'Phase 1', title: 'Modern State Management', status: 'Completed', color: 'green' },
+                { phase: 'Phase 2', title: 'Unified API Architecture', status: 'Completed', color: 'green' },
+                { phase: 'Phase 3', title: 'Performance Optimization', status: 'Completed', color: 'green' },
+                { phase: 'Phase 4', title: 'Security Framework', status: 'Completed', color: 'green' },
+                { phase: 'Phase 5', title: 'Testing Infrastructure', status: 'Completed', color: 'green' },
+                { phase: 'Phase 6', title: 'Monitoring & Observability', status: 'Completed', color: 'green' },
+                { phase: 'Phase 7', title: 'Database Optimization', status: 'Planned', color: 'blue' },
+                { phase: 'Phase 8', title: 'DevOps & CI/CD', status: 'Planned', color: 'blue' }
               ].map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div>
@@ -201,43 +204,82 @@ export default function Documentation() {
 
           <div>
             <h3 className="text-xl font-semibold mb-4">Key Features</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span>Multi-tenant architecture with RLS</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span>Real-time collaboration features</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span>Enterprise SSO (Microsoft Entra ID)</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span>Multi-factor authentication</span>
-                </li>
-              </ul>
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <span>AI-powered compliance insights</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <span>Automated assessment workflows</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <span>Advanced reporting & exports</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <span>Multi-domain support</span>
-                </li>
-              </ul>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <h4 className="font-medium mb-2 text-blue-600">Core Platform</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>Zustand state management</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>Unified API client with retry logic</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>Code splitting & lazy loading</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>React.memo optimization</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>Redis caching layer</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2 text-green-600">Security & Infrastructure</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Content Security Policy (CSP)</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Advanced threat detection</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Input validation & sanitization</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Infrastructure as Code (Terraform)</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Automated backup & disaster recovery</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2 text-purple-600">DevOps & Monitoring</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                    <span>GitHub Actions CI/CD</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                    <span>Comprehensive testing infrastructure</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                    <span>Sentry error monitoring</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                    <span>Performance analytics</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                    <span>Legal compliance framework</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -272,31 +314,59 @@ npm run build`}
 {`src/
 ├── components/          # Reusable UI components
 │   ├── ui/             # Shadcn/ui components
-│   ├── optimized/      # Performance-optimized components
-│   └── security/       # Security-related components
+│   └── optimized/      # React.memo optimized components
 ├── pages/              # Route components
-├── services/           # Business logic services
-│   ├── security/       # MFA & conditional access
-│   └── domain/         # Multi-domain support
-├── hooks/              # Custom React hooks
+├── stores/             # Zustand state management
+│   ├── authStore.ts    # Authentication state
+│   ├── organizationStore.ts # Organization management
+│   ├── complianceStore.ts   # Compliance tracking
+│   └── assessmentStore.ts   # Assessment workflows
 ├── lib/                # Utilities and configurations
+│   ├── api/           # Unified API client
+│   ├── security/      # Validation, CSP & threat detection
+│   ├── monitoring/    # Analytics, Sentry & alerting
+│   ├── cache/         # Redis caching layer
+│   ├── backup/        # Backup & disaster recovery
+│   ├── support/       # Customer support infrastructure
+│   └── compliance/    # Legal compliance framework
+├── tests/              # Testing infrastructure
+│   ├── utils/         # Test utilities
+│   ├── mocks/         # API mocks
+│   └── __tests__/     # Component & integration tests
+├── infrastructure/     # Infrastructure as Code
+│   ├── terraform/     # Terraform configuration
+│   └── scripts/       # Deployment scripts
+├── .github/           # GitHub Actions workflows
+│   └── workflows/     # CI/CD pipelines
+└── supabase/          # Database migrations
+    └── migrations/    # SQL migration files
+│   └── fixtures/      # Test data
+├── hooks/              # Custom React hooks
 └── types/              # TypeScript type definitions`}
             </CodeBlock>
           </div>
 
           <div>
-            <h3 className="text-xl font-semibold mb-4">Environment Configuration</h3>
-            <CodeBlock language="bash">
-{`# Supabase
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+            <h3 className="text-xl font-semibold mb-4">Modern Architecture Overview</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              The platform now uses modern state management and API architecture for better performance and maintainability.
+            </p>
+            <CodeBlock>
+{`// State Management with Zustand
+import { useAuthStore } from '@/stores/authStore';
+import { useOrganizationStore } from '@/stores/organizationStore';
 
-# Stripe
-VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key
+// Unified API Client
+import { apiClient } from '@/lib/api/client';
+const data = await apiClient.get('/organizations');
 
-# Optional: Microsoft Entra ID
-VITE_ENTRA_CLIENT_ID=your-client-id
-VITE_ENTRA_TENANT_ID=your-tenant-id`}
+// Security Validation
+import { validateInput, sanitizeHtml } from '@/lib/security/validation';
+const clean = sanitizeHtml(userInput);
+
+// Performance Monitoring
+import { useAnalytics } from '@/lib/monitoring/analytics';
+const { trackFeatureUsage } = useAnalytics();`}
             </CodeBlock>
           </div>
         </div>

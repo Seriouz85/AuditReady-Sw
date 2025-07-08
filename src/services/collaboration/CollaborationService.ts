@@ -113,7 +113,7 @@ export class CollaborationService {
   private websocket: WebSocket | null = null;
   private currentSession: CollaborationSession | null = null;
   private currentUser: User | null = null;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
@@ -306,7 +306,7 @@ export class CollaborationService {
   /**
    * Add event listener
    */
-  public on(event: string, callback: Function): void {
+  public on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -316,7 +316,7 @@ export class CollaborationService {
   /**
    * Remove event listener
    */
-  public off(event: string, callback: Function): void {
+  public off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

@@ -34,7 +34,7 @@ export class DragDropHandler {
     gridSize: 20
   };
   private dropZones: Map<string, DropZone> = new Map();
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
   private ghostElement: HTMLElement | null = null;
 
   private constructor() {
@@ -373,7 +373,7 @@ export class DragDropHandler {
   /**
    * Add event listener
    */
-  public on(event: string, callback: Function): void {
+  public on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -383,7 +383,7 @@ export class DragDropHandler {
   /**
    * Remove event listener
    */
-  public off(event: string, callback: Function): void {
+  public off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

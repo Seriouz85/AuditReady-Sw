@@ -92,7 +92,7 @@ export interface ImportValidationResult {
 
 class BulkUserOperationsService {
   private static instance: BulkUserOperationsService;
-  private operationListeners: Map<string, Function[]> = new Map();
+  private operationListeners: Map<string, ((operation: BulkUserOperation) => void)[]> = new Map();
 
   public static getInstance(): BulkUserOperationsService {
     if (!BulkUserOperationsService.instance) {
@@ -519,14 +519,14 @@ class BulkUserOperationsService {
   }
 
   // Event system for real-time updates
-  public on(operationId: string, callback: Function): void {
+  public on(operationId: string, callback: (operation: BulkUserOperation) => void): void {
     if (!this.operationListeners.has(operationId)) {
       this.operationListeners.set(operationId, []);
     }
     this.operationListeners.get(operationId)!.push(callback);
   }
 
-  public off(operationId: string, callback: Function): void {
+  public off(operationId: string, callback: (operation: BulkUserOperation) => void): void {
     const listeners = this.operationListeners.get(operationId);
     if (listeners) {
       const index = listeners.indexOf(callback);
