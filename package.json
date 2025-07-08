@@ -64,9 +64,12 @@
     "@stripe/stripe-js": "^7.3.1",
     "@supabase/supabase-js": "^2.50.0",
     "@tanstack/react-query": "^5.56.2",
+    "@types/dompurify": "^3.0.5",
     "@types/fabric": "^5.3.10",
     "@types/react-router-dom": "^5.3.3",
     "@xyflow/react": "^12.6.4",
+    "axios": "^1.10.0",
+    "axios-retry": "^4.5.0",
     "canvg": "^4.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -78,6 +81,7 @@
     "dagre": "^0.8.5",
     "date-fns": "^3.6.0",
     "docx": "^9.5.0",
+    "dompurify": "^3.2.6",
     "dotenv": "^16.5.0",
     "echarts": "^5.6.0",
     "embla-carousel-react": "^8.0.0-rc11",
@@ -117,7 +121,8 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
     "xlsx": "^0.18.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
