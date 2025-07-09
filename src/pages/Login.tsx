@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Shield, Key, Fingerprint, AlertCircle, Mail } from "lucide-react";
+import { Shield, Key, Fingerprint, AlertCircle, Mail, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -48,8 +48,8 @@ const Login = () => {
     // Check if Supabase is properly configured
     const checkSupabase = async () => {
       try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        const supabaseUrl = import.meta.env['VITE_SUPABASE_URL'];
+        const supabaseKey = import.meta.env['VITE_SUPABASE_ANON_KEY'];
         
         if (supabaseUrl && supabaseKey && supabaseUrl !== 'your-supabase-url') {
           setIsSupabaseConfigured(true);
@@ -198,7 +198,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       if (isSupabaseConfigured) {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const { error } = await supabase.auth.signInWithOAuth({
           provider: provider === 'microsoft' ? 'azure' : provider,
           options: {
             redirectTo: `${window.location.origin}/app`,
@@ -313,6 +313,15 @@ const Login = () => {
               <span className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'}`}>AuditReady</span>
             </div>
             <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className={`flex items-center gap-2 ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
+                onClick={() => navigate("/")}
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Home</span>
+              </Button>
               <ZoomToggle />
               <ThemeToggle />
             </div>
@@ -480,8 +489,8 @@ const Login = () => {
                 Google
               </Button>
               <EntraIdLoginButton
-                tenantId={import.meta.env.VITE_ENTRA_TENANT_ID}
-                clientId={import.meta.env.VITE_ENTRA_CLIENT_ID}
+                tenantId={import.meta.env['VITE_ENTRA_TENANT_ID']}
+                clientId={import.meta.env['VITE_ENTRA_CLIENT_ID']}
                 redirectUri={`${window.location.origin}/auth/callback/entra`}
                 disabled={isLoading}
                 onLoginStart={() => setIsLoading(true)}

@@ -73,6 +73,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AdminLoadingSpinner } from "./components/AdminLoadingSpinner";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { isDocsSubdomain } from "./utils/subdomainRouter";
 
 const queryClient = new QueryClient();
 
@@ -87,7 +88,39 @@ const basename = import.meta.env.DEV
 
 // EmptyLayout removed as it was unused
 
-const App = () => (
+const App = () => {
+  // Handle subdomain routing for docs.auditready.xyz
+  if (isDocsSubdomain()) {
+    // If we're on docs subdomain, render Documentation directly
+    return (
+      <ErrorBoundary context="app-root">
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <ZoomProvider>
+              <LanguageProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter basename={basename}>
+                    <Routes>
+                      <Route path="*" element={
+                        <Suspense fallback={<LoadingSpinner text="Loading documentation..." />}>
+                          <Documentation />
+                        </Suspense>
+                      } />
+                    </Routes>
+                  </BrowserRouter>
+                </TooltipProvider>
+              </LanguageProvider>
+            </ZoomProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Regular app routing
+  return (
   <ErrorBoundary context="app-root">
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -519,6 +552,7 @@ const App = () => (
     </ThemeProvider>
   </QueryClientProvider>
   </ErrorBoundary>
-);
+  );
+};
 
 export default App;

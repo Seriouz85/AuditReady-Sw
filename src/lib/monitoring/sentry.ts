@@ -1,5 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import { BrowserTracing } from '@sentry/tracing';
+import React from 'react';
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 
 // Enhanced Sentry configuration
 export const initializeSentry = () => {
@@ -32,6 +34,18 @@ export const initializeSentry = () => {
           createRoutesFromChildren,
           matchRoutes
         ),
+      }),
+      ...Sentry.defaultIntegrations.filter((integration) => {
+        // Remove default integrations that might capture too much data
+        return integration.name !== 'Breadcrumbs';
+      }),
+      new Sentry.Integrations.Breadcrumbs({
+        console: false, // Don't capture console logs
+        dom: true,
+        fetch: true,
+        history: true,
+        sentry: true,
+        xhr: true,
       }),
     ],
     
@@ -156,22 +170,6 @@ export const initializeSentry = () => {
       /^chrome-extension:\/\//i,
       /^moz-extension:\/\//i,
     ],
-    
-    // PII scrubbing
-    integrations: [
-      ...Sentry.defaultIntegrations.filter((integration) => {
-        // Remove default integrations that might capture too much data
-        return integration.name !== 'Breadcrumbs';
-      }),
-      new Sentry.Integrations.Breadcrumbs({
-        console: false, // Don't capture console logs
-        dom: true,
-        fetch: true,
-        history: true,
-        sentry: true,
-        xhr: true,
-      }),
-    ],
   });
 
   // Set initial context
@@ -277,32 +275,9 @@ export const withSentryErrorBoundary = <P extends object>(
   errorBoundaryOptions?: Sentry.ErrorBoundaryProps
 ) => {
   return Sentry.withErrorBoundary(WrappedComponent, {
-    fallback: ({ error, resetError }) => (
-      <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-        <h2 className="text-xl font-semibold text-destructive mb-4">
-          Something went wrong
-        </h2>
-        <p className="text-muted-foreground mb-4 text-center max-w-md">
-          An unexpected error occurred. Our team has been notified and will look into it.
-        </p>
-        <button
-          onClick={resetError}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
-        >
-          Try again
-        </button>
-        {import.meta.env.DEV && (
-          <details className="mt-4 max-w-2xl">
-            <summary className="cursor-pointer text-sm text-muted-foreground">
-              Error details (dev only)
-            </summary>
-            <pre className="mt-2 p-4 bg-muted rounded text-xs overflow-auto">
-              {error.stack}
-            </pre>
-          </details>
-        )}
-      </div>
-    ),
+    fallback: () => React.createElement('div', {
+      style: { padding: '2rem', textAlign: 'center' }
+    }, 'Something went wrong. Please refresh the page.'),
     beforeCapture: (scope, error, errorInfo) => {
       scope.setContext('react', {
         componentStack: errorInfo.componentStack,

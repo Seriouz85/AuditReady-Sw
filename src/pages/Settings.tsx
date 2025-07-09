@@ -23,6 +23,7 @@ import {
   Key, Activity, Trash2, Edit, Eye, Clock, Building2, ExternalLink,
   CheckCircle, XCircle, Loader, ListChecks, Search, Filter, Tag, Mail
 } from "lucide-react";
+import { IntegrationIcon } from "@/components/ui/IntegrationIcon";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRequirementsService } from "@/services/requirements/RequirementsService";
@@ -2130,6 +2131,202 @@ const Settings = () => {
                 <p className="text-sm text-muted-foreground">
                   No webhook endpoints configured. Add endpoints to receive real-time notifications about compliance events.
                 </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Third-Party Integrations</CardTitle>
+              <CardDescription>
+                Connect with external security and compliance tools
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Popular Integrations */}
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="okta" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Okta</h4>
+                      <p className="text-xs text-muted-foreground">Identity Management</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Connect with Okta for identity and access management
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="aws" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">AWS</h4>
+                      <p className="text-xs text-muted-foreground">Cloud Security</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Import compliance data from AWS services
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="azure" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Microsoft Azure</h4>
+                      <p className="text-xs text-muted-foreground">Cloud Security</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Connect with Azure for security monitoring
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="teams" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Microsoft Teams</h4>
+                      <p className="text-xs text-muted-foreground">Communication</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Send compliance notifications to Teams channels
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="m365" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Microsoft 365</h4>
+                      <p className="text-xs text-muted-foreground">Office Suite & Collaboration</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Sync compliance documents with Microsoft 365
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="slack" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Slack</h4>
+                      <p className="text-xs text-muted-foreground">Communication</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Send notifications and alerts to Slack channels
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="jira" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Jira</h4>
+                      <p className="text-xs text-muted-foreground">Project Management</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Create and manage compliance issues in Jira
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="servicenow" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">ServiceNow</h4>
+                      <p className="text-xs text-muted-foreground">IT Service Management</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Integrate with ServiceNow for incident management
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="google" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">Google Workspace</h4>
+                      <p className="text-xs text-muted-foreground">Identity & Security</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Connect with Google Workspace for user management
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+
+                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-3 mb-2">
+                    <IntegrationIcon provider="github" size="medium" />
+                    <div>
+                      <h4 className="font-semibold">GitHub</h4>
+                      <p className="text-xs text-muted-foreground">Code Security</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Monitor code security and compliance in repos
+                  </p>
+                  <Button size="sm" variant="outline" className="w-full">
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="font-medium">Need a Custom Integration?</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Don't see your tool? We can help you build custom integrations using our API.
+                </p>
+                <Button size="sm" variant="outline">
+                  View API Documentation
+                </Button>
               </div>
             </CardContent>
           </Card>

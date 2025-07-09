@@ -175,7 +175,7 @@ export const UserProfileDropdown: React.FC = () => {
           </DropdownMenuItem>
         )}
         
-        <DropdownMenuItem onClick={() => window.open('https://docs.auditready.com', '_blank')}>
+        <DropdownMenuItem onClick={() => navigate('/documentation')}>
           <HelpCircle className="mr-2 h-4 w-4" />
           <span>Help & Documentation</span>
         </DropdownMenuItem>

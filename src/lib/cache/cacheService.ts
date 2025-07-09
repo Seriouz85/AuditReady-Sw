@@ -1,4 +1,3 @@
-import { cache } from './redis';
 import { analytics } from '@/lib/monitoring/analytics';
 
 interface CacheStrategy {
@@ -80,24 +79,7 @@ class CacheService {
       return memoryEntry.data;
     }
 
-    // Try Redis cache
-    try {
-      const redisEntry = await cache.get<CacheEntry<T>>(cacheKey);
-      if (redisEntry && (now - redisEntry.timestamp) < redisEntry.ttl * 1000) {
-        // Store in memory cache for faster access
-        this.memoryCache.set(cacheKey, redisEntry);
-        
-        analytics.trackPerformance({
-          route: 'cache_hit_redis',
-          loadTime: 1,
-          bundleSize: JSON.stringify(redisEntry.data).length
-        });
-        
-        return redisEntry.data;
-      }
-    } catch (error) {
-      console.warn('Redis cache error:', error);
-    }
+    // Redis not available in browser environment
 
     analytics.track('cache_miss', { namespace, key });
     return null;
@@ -123,26 +105,14 @@ class CacheService {
     // Store in memory cache
     this.memoryCache.set(cacheKey, entry);
 
-    // Store in Redis
-    try {
-      await cache.set(cacheKey, entry, ttl);
-      
-      // Store tags for invalidation
-      if (tags.length > 0) {
-        await this.storeTags(tags, cacheKey);
-      }
-      
-      analytics.track('cache_set', {
-        namespace,
-        key,
-        ttl,
-        size: JSON.stringify(data).length,
-        tags: tags.length
-      });
-      
-    } catch (error) {
-      console.warn('Redis cache set error:', error);
-    }
+    // Redis not available in browser environment
+    analytics.track('cache_set', {
+      namespace,
+      key,
+      ttl,
+      size: JSON.stringify(data).length,
+      tags: tags.length
+    });
   }
 
   async delete(namespace: string, key: string): Promise<void> {
@@ -151,49 +121,25 @@ class CacheService {
     // Remove from memory cache
     this.memoryCache.delete(cacheKey);
     
-    // Remove from Redis
-    try {
-      await cache.del(cacheKey);
-      analytics.track('cache_delete', { namespace, key });
-    } catch (error) {
-      console.warn('Redis cache delete error:', error);
-    }
+    // Redis not available in browser environment
+    analytics.track('cache_delete', { namespace, key });
   }
 
   async invalidateByTag(tag: string): Promise<number> {
     let invalidated = 0;
 
-    try {
-      // Get all cache keys with this tag
-      const tagKey = `tags:${tag}`;
-      const cacheKeys = await cache.get<string[]>(tagKey) || [];
-      
-      if (cacheKeys.length > 0) {
-        // Remove from memory cache
-        cacheKeys.forEach(key => {
-          this.memoryCache.delete(key);
-        });
-
-        // Remove from Redis
-        const pipeline = [];
-        for (const key of cacheKeys) {
-          pipeline.push(cache.del(key));
-        }
-        await Promise.all(pipeline);
-        
-        // Clean up tag reference
-        await cache.del(tagKey);
-        
-        invalidated = cacheKeys.length;
-        
-        analytics.track('cache_invalidate_tag', {
-          tag,
-          invalidated_keys: invalidated
-        });
+    // In memory-only mode, search through memory cache for tags
+    for (const [key, entry] of this.memoryCache.entries()) {
+      if (entry.tags.includes(tag)) {
+        this.memoryCache.delete(key);
+        invalidated++;
       }
-    } catch (error) {
-      console.warn('Cache invalidation error:', error);
     }
+    
+    analytics.track('cache_invalidate_tag', {
+      tag,
+      invalidated_keys: invalidated
+    });
 
     return invalidated;
   }
@@ -201,47 +147,25 @@ class CacheService {
   async invalidateNamespace(namespace: string): Promise<number> {
     let invalidated = 0;
 
-    try {
-      // Pattern to match all keys in namespace
-      const pattern = `${namespace}:*`;
-      const deletedCount = await cache.flushPattern(pattern);
-      
-      // Remove from memory cache
-      for (const [key] of this.memoryCache.entries()) {
-        if (key.startsWith(`${namespace}:`)) {
-          this.memoryCache.delete(key);
-          invalidated++;
-        }
+    // Remove from memory cache
+    for (const [key] of this.memoryCache.entries()) {
+      if (key.startsWith(`${namespace}:`)) {
+        this.memoryCache.delete(key);
+        invalidated++;
       }
-      
-      analytics.track('cache_invalidate_namespace', {
-        namespace,
-        redis_deleted: deletedCount,
-        memory_deleted: invalidated
-      });
-      
-      return deletedCount + invalidated;
-      
-    } catch (error) {
-      console.warn('Cache namespace invalidation error:', error);
-      return 0;
     }
+    
+    analytics.track('cache_invalidate_namespace', {
+      namespace,
+      memory_deleted: invalidated
+    });
+    
+    return invalidated;
   }
 
   private async storeTags(tags: string[], cacheKey: string): Promise<void> {
-    try {
-      for (const tag of tags) {
-        const tagKey = `tags:${tag}`;
-        const existingKeys = await cache.get<string[]>(tagKey) || [];
-        
-        if (!existingKeys.includes(cacheKey)) {
-          existingKeys.push(cacheKey);
-          await cache.set(tagKey, existingKeys, 86400); // Tags expire in 24 hours
-        }
-      }
-    } catch (error) {
-      console.warn('Error storing cache tags:', error);
-    }
+    // Tags are stored within cache entries in memory-only mode
+    // No separate tag storage needed
   }
 
   // Specialized methods for common cache patterns
@@ -301,33 +225,24 @@ class CacheService {
     if (keys.length === 0) return [];
 
     const cacheKeys = keys.map(key => this.getCacheKey(namespace, key));
+    const now = Date.now();
     
-    try {
-      const entries = await cache.mget<CacheEntry<T>>(cacheKeys);
-      const now = Date.now();
+    return cacheKeys.map((cacheKey, index) => {
+      const entry = this.memoryCache.get(cacheKey);
       
-      return entries.map((entry, index) => {
-        if (!entry || (now - entry.timestamp) >= entry.ttl * 1000) {
-          analytics.track('cache_miss', { namespace, key: keys[index] });
-          return null;
-        }
-        
-        // Store in memory cache
-        this.memoryCache.set(cacheKeys[index], entry);
-        
-        analytics.trackPerformance({
-          route: 'cache_hit_batch',
-          loadTime: 1,
-          bundleSize: JSON.stringify(entry.data).length
-        });
-        
-        return entry.data;
+      if (!entry || (now - entry.timestamp) >= entry.ttl * 1000) {
+        analytics.track('cache_miss', { namespace, key: keys[index] });
+        return null;
+      }
+      
+      analytics.trackPerformance({
+        route: 'cache_hit_batch',
+        loadTime: 0,
+        bundleSize: JSON.stringify(entry.data).length
       });
       
-    } catch (error) {
-      console.warn('Cache mget error:', error);
-      return keys.map(() => null);
-    }
+      return entry.data;
+    });
   }
 
   async mset<T>(
@@ -354,25 +269,13 @@ class CacheService {
       this.memoryCache.set(cacheKey, entry);
     });
 
-    try {
-      await cache.mset(cacheEntries, ttl);
-      
-      // Store tags
-      if (tags.length > 0) {
-        const cacheKeys = Object.keys(cacheEntries);
-        await Promise.all(tags.map(tag => this.storeTags([tag], cacheKeys.join(','))));
-      }
-      
-      analytics.track('cache_mset', {
-        namespace,
-        count: Object.keys(keyValues).length,
-        ttl,
-        tags: tags.length
-      });
-      
-    } catch (error) {
-      console.warn('Cache mset error:', error);
-    }
+    // Redis not available in browser environment
+    analytics.track('cache_mset', {
+      namespace,
+      count: Object.keys(keyValues).length,
+      ttl,
+      tags: tags.length
+    });
   }
 
   // Cache warming utilities
@@ -400,14 +303,12 @@ class CacheService {
 
   getStats(): {
     memory: { size: number; maxSize: number };
-    redis: any;
   } {
     return {
       memory: {
         size: this.memoryCache.size,
         maxSize: this.maxMemoryEntries
-      },
-      redis: cache.getMetrics()
+      }
     };
   }
 
@@ -415,18 +316,16 @@ class CacheService {
     status: 'healthy' | 'degraded' | 'unhealthy';
     details: any;
   }> {
-    const redisHealth = await cache.healthCheck();
     const memorySize = this.memoryCache.size;
     
     const status = 
-      redisHealth.status === 'unhealthy' && memorySize === 0 ? 'unhealthy' :
-      redisHealth.status === 'degraded' || memorySize > this.maxMemoryEntries * 0.9 ? 'degraded' :
+      memorySize === 0 ? 'healthy' :
+      memorySize > this.maxMemoryEntries * 0.9 ? 'degraded' :
       'healthy';
 
     return {
       status,
       details: {
-        redis: redisHealth,
         memory: {
           size: memorySize,
           maxSize: this.maxMemoryEntries,

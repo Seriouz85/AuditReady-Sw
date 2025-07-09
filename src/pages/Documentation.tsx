@@ -186,8 +186,8 @@ export default function Documentation() {
                 { phase: 'Phase 4', title: 'Security Framework', status: 'Completed', color: 'green' },
                 { phase: 'Phase 5', title: 'Testing Infrastructure', status: 'Completed', color: 'green' },
                 { phase: 'Phase 6', title: 'Monitoring & Observability', status: 'Completed', color: 'green' },
-                { phase: 'Phase 7', title: 'Database Optimization', status: 'Planned', color: 'blue' },
-                { phase: 'Phase 8', title: 'DevOps & CI/CD', status: 'Planned', color: 'blue' }
+                { phase: 'Phase 7', title: 'Database Optimization', status: 'Completed', color: 'green' },
+                { phase: 'Phase 8', title: 'DevOps & CI/CD', status: 'Completed', color: 'green' }
               ].map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div>

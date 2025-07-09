@@ -10,7 +10,6 @@ import {
   Shield, 
   Zap, 
   Lock, 
-  FileCheck, 
   Users, 
   Sparkles, 
   ArrowRight, 
@@ -28,15 +27,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ZoomToggle } from "@/components/ui/zoom-toggle";
+import { IntegrationIcon } from "@/components/ui/IntegrationIcon";
 import { useTheme } from "next-themes";
 
 export default function Landing() {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { theme } = useTheme();
-  const { plans: dynamicPlans, loading: pricingLoading, error: pricingError } = useDynamicPricing();
+  const { plans: dynamicPlans, loading: pricingLoading } = useDynamicPricing();
 
   const handlePricingClick = async (tier: 'free' | 'team' | 'business' | 'enterprise') => {
     if (tier === 'free') {
@@ -52,7 +51,7 @@ export default function Landing() {
     }
 
     // Check if Stripe is configured
-    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    const publishableKey = import.meta.env['VITE_STRIPE_PUBLISHABLE_KEY'];
     if (!publishableKey || publishableKey === 'your-stripe-publishable-key') {
       // If Stripe not configured, go to onboarding flow
       navigate('/onboarding');
@@ -85,7 +84,7 @@ export default function Landing() {
       // Create checkout session with user context
       const result = await createCheckoutSession({
         priceId: plan.stripePriceId,
-        customerEmail: user.email,
+        customerEmail: user.email || undefined,
         tier: tier
       });
 
@@ -593,6 +592,223 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Integrations Section */}
+      <section className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
+              Enterprise Integrations
+            </Badge>
+            <h2 className={`text-3xl md:text-4xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-4`}>
+              Connect Your Entire Security Stack
+            </h2>
+            <p className={`text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} max-w-3xl mx-auto`}>
+              AuditReady seamlessly integrates with your existing tools and workflows. 
+              Automate compliance data collection and reduce manual effort across your organization.
+            </p>
+          </div>
+
+          {/* Integration Categories */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="text-center">
+              <div className={`rounded-full ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'} p-4 mx-auto mb-4 w-fit`}>
+                <Shield className={`h-8 w-8 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+              </div>
+              <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>Security & Identity</h3>
+              <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                Connect with identity providers and security tools for automated user management and compliance monitoring.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className={`rounded-full ${theme === 'light' ? 'bg-green-100' : 'bg-green-500/20'} p-4 mx-auto mb-4 w-fit`}>
+                <Building2 className={`h-8 w-8 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+              </div>
+              <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>Cloud & Infrastructure</h3>
+              <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                Import security configurations and compliance data from your cloud infrastructure automatically.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className={`rounded-full ${theme === 'light' ? 'bg-purple-100' : 'bg-purple-500/20'} p-4 mx-auto mb-4 w-fit`}>
+                <Users className={`h-8 w-8 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+              </div>
+              <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>Team Collaboration</h3>
+              <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                Keep your team informed with real-time notifications and seamless workflow integration.
+              </p>
+            </div>
+          </div>
+
+          {/* Integration Logos Grid */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent rounded-2xl"></div>
+            <div className={`p-8 rounded-2xl ${theme === 'light' ? 'bg-white/80 border border-slate-200' : 'bg-slate-800/50 border border-slate-700'} backdrop-blur-sm`}>
+              <div className="text-center mb-8">
+                <h3 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>
+                  Popular Integrations
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} max-w-md mx-auto`}>
+                  Connect with the tools your team already uses
+                </p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 items-center">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="okta" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Okta</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="aws" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>AWS</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="azure" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Azure</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="slack" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Slack</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="teams" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Teams</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="google" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Google</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="jira" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Jira</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="servicenow" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>ServiceNow</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.9 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="m365" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Microsoft 365</span>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.0 }}
+                  viewport={{ once: true }}
+                  className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg' : 'border-slate-600 bg-slate-700/50 hover:border-blue-400 hover:shadow-xl'} transition-all duration-300 cursor-pointer group`}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="transform transition-all duration-300 group-hover:scale-110">
+                      <IntegrationIcon provider="github" size="large" />
+                    </div>
+                    <span className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>GitHub</span>
+                  </div>
+                </motion.div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* Testimonials Section */}
       <section className="py-16 sm:py-20 px-3 sm:px-4">
         <div className="container mx-auto max-w-7xl">
@@ -1045,16 +1261,3 @@ export default function Landing() {
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <Card className="bg-slate-800/50 border-border hover:border-blue-500/50 transition-colors">
-      <CardContent className="p-6">
-        <div className="rounded-full bg-blue-500/10 w-12 h-12 flex items-center justify-center mb-4">
-          {icon}
-        </div>
-        <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-        <p className="text-slate-400">{description}</p>
-      </CardContent>
-    </Card>
-  );
-} 

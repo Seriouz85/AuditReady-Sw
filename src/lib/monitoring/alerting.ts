@@ -193,8 +193,7 @@ class AlertingService {
       try {
         const { cacheService } = await import('@/lib/cache/cacheService');
         const stats = cacheService.getStats();
-        const missRate = (stats.redis.misses / (stats.redis.hits + stats.redis.misses)) * 100;
-        this.recordMetric('cache_miss_rate', missRate || 0);
+        this.recordMetric('cache_memory_usage', (stats.memory.size / stats.memory.maxSize) * 100);
       } catch (error) {
         // Cache service not available
       }
