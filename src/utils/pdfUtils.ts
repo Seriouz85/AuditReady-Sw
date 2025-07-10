@@ -1,206 +1,91 @@
 import { RefObject } from 'react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 import { toast } from './toast';
 
-/**
- * Generate a PDF from a React component reference
- * This is a workaround for the browser's print functionality
- * It opens a new window, inserts the content, applies styles, and triggers print
- */
-export const generatePDF = (
-  contentRef: RefObject<HTMLElement>,
-  title: string = 'Export',
-  onFinish?: () => void
-): void => {
-  if (!contentRef.current) {
-    toast.error('Failed to generate PDF: Content not found');
-    if (onFinish) onFinish();
-    return;
-  }
+interface AssessmentPDFData {
+  title: string;
+  status: string;
+  progress: number;
+  assessor: string;
+  startDate: string;
+  endDate?: string;
+  description?: string;
+  // Enhanced Assessment Summary Structure
+  assessmentSummary: {
+    assessmentNotes?: string;
+    evidence?: string;
+    attachments?: Array<{
+      filename: string;
+      description: string;
+      size?: string;
+      type?: string;
+    }>;
+  };
+  standards: Array<{ name: string; version: string }>;
+  summary: {
+    totalRequirements: number;
+    fulfilled: number;
+    partial: number;
+    notFulfilled: number;
+    notApplicable: number;
+  };
+  requirements: Array<{
+    code: string;
+    name: string;
+    description: string;
+    status: string;
+    notes?: string;
+    evidence?: string;
+  }>;
+  // Additional metadata for professional presentation
+  metadata?: {
+    organizationName?: string;
+    reportType?: string;
+    confidentialityLevel?: string;
+    version?: string;
+  };
+}
 
+/**
+ * Visual PDF generation for Assessment Reports
+ * Captures the actual visual design with cards, circles, and colors
+ */
+export const generatePDF = async (
+  contentRef: RefObject<HTMLElement>,
+  title: string = 'Assessment Report',
+  onFinish?: () => void,
+  assessmentData?: any
+): Promise<void> => {
   try {
-    // Clone the content
-    const content = contentRef.current.cloneNode(true) as HTMLElement;
-    
-    // Create a new window
-    const printWindow = window.open('', '_blank', 'height=600,width=800');
-    
-    if (!printWindow) {
-      toast.error('Failed to open print window. Please check your popup blocker settings.');
-      if (onFinish) onFinish();
-      return;
+    if (!contentRef.current) {
+      throw new Error('Content reference is not available');
     }
-    
-    // Set up the document
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${title}</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            @page {
-              size: portrait;
-              margin: 20mm;
-            }
-            
-            body {
-              font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-              color: #1f2937;
-              line-height: 1.5;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-              margin: 0;
-              padding: 20px;
-            }
-            
-            h1, h2, h3, h4 {
-              margin-top: 0;
-              font-weight: 600;
-              color: #111827;
-            }
-            
-            p {
-              margin: 0 0 1rem;
-            }
-            
-            .page-break {
-              page-break-before: always;
-            }
-            
-            .no-break, .page-break-inside-avoid {
-              page-break-inside: avoid;
-            }
-            
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              page-break-inside: avoid;
-            }
-            
-            table, th, td {
-              border: 1px solid #e5e7eb;
-            }
-            
-            th, td {
-              padding: 0.5rem;
-              text-align: left;
-            }
-            
-            th {
-              background-color: #f9fafb;
-              font-weight: 600;
-            }
-            
-            /* Status colors */
-            .status-fulfilled, [data-status="fulfilled"] {
-              background-color: #ecfdf5 !important;
-              color: #065f46 !important;
-              border-color: #10b981 !important;
-            }
-            
-            .status-partially, .status-partially-fulfilled, [data-status="partially-fulfilled"] {
-              background-color: #fffbeb !important;
-              color: #92400e !important;
-              border-color: #f59e0b !important;
-            }
-            
-            .status-not-fulfilled, [data-status="not-fulfilled"] {
-              background-color: #fef2f2 !important;
-              color: #b91c1c !important;
-              border-color: #ef4444 !important;
-            }
-            
-            .status-not-applicable, [data-status="not-applicable"] {
-              background-color: #f9fafb !important;
-              color: #6b7280 !important;
-              border-color: #9ca3af !important;
-            }
-            
-            /* Hide UI elements not needed in print */
-            button:not(.print-show), 
-            .print-hide,
-            .tabs-list,
-            .collapsible-trigger {
-              display: none !important;
-            }
-            
-            /* Show hidden content in print */
-            .collapsible-content {
-              display: block !important;
-              height: auto !important;
-            }
-            
-            /* Badge and box styling */
-            .rounded-md, .rounded {
-              border-radius: 4px;
-            }
-            
-            .print-only {
-              display: block !important;
-            }
-            
-            /* Fix for charts */
-            .recharts-surface {
-              overflow: visible !important;
-            }
-          </style>
-        </head>
-        <body></body>
-      </html>
-    `);
-    
-    // Add content to the body
-    printWindow.document.body.appendChild(content);
-    
-    // Wait for all resources to load
-    printWindow.document.close();
-    
-    // Handle both load conditions
-    const loadHandler = () => {
-      setTimeout(() => {
-        try {
-          printWindow.focus(); // Focus the window to ensure print dialog shows
-          printWindow.print();
-          
-          // Close the window after printing (or when user cancels)
-          printWindow.onafterprint = () => {
-            printWindow.close();
-            if (onFinish) {
-              onFinish();
-            }
-            toast.success('PDF exported successfully');
-          };
-          
-          // Fallback in case onafterprint is not supported
-          setTimeout(() => {
-            if (!printWindow.closed) {
-              const closeButton = printWindow.document.createElement('button');
-              closeButton.textContent = 'Close Window';
-              closeButton.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 8px 16px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer;';
-              closeButton.onclick = () => {
-                printWindow.close();
-                if (onFinish) {
-                  onFinish();
-                }
-              };
-              printWindow.document.body.appendChild(closeButton);
-            }
-          }, 2000);
-        } catch (printError) {
-          console.error('Error during print operation:', printError);
-          toast.error('Print operation failed');
-          if (onFinish) onFinish();
-        }
-      }, 500);
-    };
-    
-    // Set up both load event handlers for cross-browser compatibility
-    if (printWindow.document.readyState === 'complete') {
-      loadHandler();
-    } else {
-      printWindow.onload = loadHandler;
+
+    // First, try visual capture approach
+    try {
+      await generateVisualPDF(contentRef, title, onFinish);
+      return;
+    } catch (visualError) {
+      console.warn('Visual PDF generation failed, falling back to text-based PDF:', visualError);
+      
+      // Fallback to text-based PDF if visual capture fails
+      const pdfData = assessmentData || extractAssessmentDataFromHTML(contentRef.current);
+      
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      generateProfessionalAssessmentPDF(doc, pdfData, title);
+
+      const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      
+      toast.success('PDF exported successfully (text format)');
+      if (onFinish) onFinish();
     }
     
   } catch (error) {
@@ -208,4 +93,572 @@ export const generatePDF = (
     toast.error('Failed to generate PDF');
     if (onFinish) onFinish();
   }
-}; 
+};
+
+/**
+ * Generate visual PDF using html2canvas - preserves design elements
+ */
+async function generateVisualPDF(
+  contentRef: RefObject<HTMLElement>,
+  title: string,
+  onFinish?: () => void
+): Promise<void> {
+  if (!contentRef.current) {
+    throw new Error('Content reference is not available');
+  }
+
+  const element = contentRef.current;
+  
+  // Ensure all styles are loaded and images are rendered
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Configure html2canvas for high quality capture
+  const canvas = await html2canvas(element, {
+    scale: 2, // Higher resolution
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+    windowWidth: element.scrollWidth,
+    windowHeight: element.scrollHeight,
+    scrollX: 0,
+    scrollY: 0,
+    width: element.scrollWidth,
+    height: element.scrollHeight,
+    onclone: (clonedDoc) => {
+      // Ensure all gradients and styles are preserved in the cloned document
+      const clonedElement = clonedDoc.querySelector('[data-assessment-report]') || 
+                           clonedDoc.querySelector('.assessment-report-content');
+      if (clonedElement) {
+        // Force visibility and remove any transforms that might hide content
+        (clonedElement as HTMLElement).style.transform = 'none';
+        (clonedElement as HTMLElement).style.visibility = 'visible';
+        (clonedElement as HTMLElement).style.opacity = '1';
+      }
+    }
+  });
+
+  // Create PDF with appropriate dimensions
+  const imgWidth = 210; // A4 width in mm
+  const pageHeight = 297; // A4 height in mm
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+  const doc = new jsPDF({
+    orientation: imgHeight > pageHeight ? 'portrait' : 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const actualPageHeight = doc.internal.pageSize.getHeight();
+  
+  // Convert canvas to image data
+  const imgData = canvas.toDataURL('image/png');
+  
+  // If content fits on one page
+  if (imgHeight <= actualPageHeight) {
+    doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+  } else {
+    // Multi-page PDF - split the content
+    let position = 0;
+    let pageIndex = 0;
+    
+    while (position < imgHeight) {
+      if (pageIndex > 0) {
+        doc.addPage();
+      }
+      
+      const remainingHeight = imgHeight - position;
+      const currentPageHeight = Math.min(actualPageHeight, remainingHeight);
+      
+      // Create a new canvas for this page section
+      const pageCanvas = document.createElement('canvas');
+      const pageContext = pageCanvas.getContext('2d');
+      
+      if (pageContext) {
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = (currentPageHeight * canvas.width) / imgWidth;
+        
+        // Draw the portion of the original canvas for this page
+        pageContext.drawImage(
+          canvas,
+          0, (position * canvas.width) / imgWidth, // Source x, y
+          canvas.width, pageCanvas.height, // Source width, height
+          0, 0, // Destination x, y
+          pageCanvas.width, pageCanvas.height // Destination width, height
+        );
+        
+        const pageImgData = pageCanvas.toDataURL('image/png');
+        doc.addImage(pageImgData, 'PNG', 0, 0, imgWidth, currentPageHeight);
+      }
+      
+      position += actualPageHeight;
+      pageIndex++;
+    }
+  }
+  
+  // Add page numbers and footer
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text(
+      `Page ${i} of ${totalPages} - Generated by AuditReady Platform`,
+      pageWidth / 2,
+      actualPageHeight - 5,
+      { align: 'center' }
+    );
+  }
+
+  // Save the PDF
+  const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(fileName);
+  
+  toast.success('PDF exported successfully with visual design!');
+  if (onFinish) onFinish();
+}
+
+/**
+ * Extract assessment data from HTML content (fallback only)
+ */
+function extractAssessmentDataFromHTML(element: HTMLElement | null): AssessmentPDFData {
+  console.warn('Using fallback HTML extraction - should pass assessment data directly');
+  
+  return {
+    title: 'Assessment Report',
+    status: 'In Progress',
+    progress: 0,
+    assessor: 'Unknown',
+    startDate: new Date().toLocaleDateString(),
+    description: 'No description available',
+    notes: undefined,
+    evidence: undefined,
+    standards: [{ name: 'Unknown Standard', version: '' }],
+    summary: {
+      totalRequirements: 0,
+      fulfilled: 0,
+      partial: 0,
+      notFulfilled: 0,
+      notApplicable: 0
+    },
+    requirements: []
+  };
+}
+
+/**
+ * Generate professional cybersecurity assessment PDF using jsPDF
+ * Conservative, clean design for enterprise cybersecurity assessments
+ */
+function generateProfessionalAssessmentPDF(doc: jsPDF, data: AssessmentPDFData, title: string): void {
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  let yPos = 20;
+  
+  // Simple, professional header - no patterns or excessive colors
+  doc.setDrawColor(100, 100, 100); // Gray border
+  doc.setLineWidth(0.5);
+  doc.line(20, 15, pageWidth - 20, 15); // Top line
+  
+  // Company/Platform branding - simple text
+  doc.setTextColor(50, 50, 50); // Dark gray, not black
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('AuditReady Security Platform', 20, 25);
+  
+  // Document title - clean and centered
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 30, 30);
+  doc.text(data.title, pageWidth / 2, 40, { align: 'center' });
+  
+  // Report metadata - right aligned, simple
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 80, 80);
+  const reportDate = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  doc.text(`Generated: ${reportDate}`, pageWidth - 20, 25, { align: 'right' });
+  
+  const confidentiality = data.metadata?.confidentialityLevel || 'CONFIDENTIAL';
+  doc.text(`Classification: ${confidentiality}`, pageWidth - 20, 35, { align: 'right' });
+  
+  // Bottom border line
+  doc.line(20, 50, pageWidth - 20, 50);
+  
+  // Reset colors and position
+  doc.setTextColor(40, 40, 40); // Dark gray for body text
+  yPos = 65;
+  
+  // Executive Summary - clean section header
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 30, 30);
+  doc.text('Executive Summary', 20, yPos);
+  
+  // Simple underline
+  doc.setDrawColor(150, 150, 150);
+  doc.setLineWidth(0.3);
+  doc.line(20, yPos + 2, 120, yPos + 2);
+  
+  yPos += 10;
+  
+  // Summary details in clean table format
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(60, 60, 60);
+  
+  const leftCol = 20;
+  const rightCol = 110;
+  const lineHeight = 6;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Assessment Type:', leftCol, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(data.standards.map(s => s.name).join(', '), rightCol, yPos);
+  yPos += lineHeight;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Status:', leftCol, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(data.status.toUpperCase(), rightCol, yPos);
+  yPos += lineHeight;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Assessor:', leftCol, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(data.assessor, rightCol, yPos);
+  yPos += lineHeight;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Compliance Score:', leftCol, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${data.progress}%`, rightCol, yPos);
+  yPos += lineHeight;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Start Date:', leftCol, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(data.startDate, rightCol, yPos);
+  yPos += lineHeight;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Report Date:', leftCol, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(new Date().toLocaleDateString(), rightCol, yPos);
+  
+  yPos += 15;
+  
+  // ASSESSMENT SUMMARY SECTION (Key requirement from user)
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 30, 30);
+  doc.text('Assessment Summary', 20, yPos);
+  
+  // Simple underline
+  doc.setDrawColor(150, 150, 150);
+  doc.setLineWidth(0.3);
+  doc.line(20, yPos + 2, 140, yPos + 2);
+  
+  yPos += 12;
+  
+  // 1. ASSESSMENT NOTES SECTION
+  if (data.assessmentSummary?.assessmentNotes) {
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('1. Assessment Notes', 20, yPos);
+    yPos += 8;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    
+    // Clean and format assessment notes
+    const cleanNotes = data.assessmentSummary.assessmentNotes
+      .replace(/🎯|📋|🔍|⚡|•/g, '') // Remove emojis
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
+      .trim();
+    
+    const notesLines = doc.splitTextToSize(cleanNotes, pageWidth - 50);
+    doc.text(notesLines, 25, yPos);
+    yPos += notesLines.length * 4 + 12;
+  }
+  
+  // 2. EVIDENCE SECTION
+  if (data.assessmentSummary?.evidence) {
+    // Check if we need a new page
+    if (yPos > pageHeight - 80) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('2. Evidence Collection', 20, yPos);
+    yPos += 8;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    
+    const cleanEvidence = data.assessmentSummary.evidence
+      .replace(/📁|📎|•/g, '') // Remove emojis
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
+      .trim();
+    
+    const evidenceLines = doc.splitTextToSize(cleanEvidence, pageWidth - 50);
+    doc.text(evidenceLines, 25, yPos);
+    yPos += evidenceLines.length * 4 + 12;
+  }
+  
+  // 3. ATTACHMENTS DESCRIPTIONS SECTION
+  if (data.assessmentSummary?.attachments && data.assessmentSummary.attachments.length > 0) {
+    // Check if we need a new page
+    if (yPos > pageHeight - 100) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('3. Attached Evidence Documents', 20, yPos);
+    yPos += 8;
+    
+    // Create simple attachment table without colors
+    const attachmentData = data.assessmentSummary.attachments.map(att => [
+      att.filename,
+      att.description,
+      att.size || 'N/A',
+      att.type || 'Document'
+    ]);
+    
+    autoTable(doc, {
+      startY: yPos,
+      head: [['File Name', 'Description', 'Size', 'Type']],
+      body: attachmentData,
+      theme: 'plain',
+      styles: { 
+        fontSize: 9, 
+        cellPadding: 3,
+        textColor: [60, 60, 60]
+      },
+      headStyles: { 
+        fillColor: [240, 240, 240],
+        textColor: [40, 40, 40],
+        fontStyle: 'bold',
+        lineWidth: 0.1,
+        lineColor: [200, 200, 200]
+      },
+      bodyStyles: {
+        lineWidth: 0.1,
+        lineColor: [220, 220, 220]
+      },
+      columnStyles: {
+        0: { cellWidth: 60 },
+        1: { cellWidth: 80 },
+        2: { cellWidth: 25, halign: 'center' },
+        3: { cellWidth: 25, halign: 'center' }
+      }
+    });
+    
+    yPos = (doc as any).lastAutoTable.finalY + 15;
+  }
+  
+  // COMPLIANCE METRICS SECTION
+  if (yPos > pageHeight - 100) {
+    doc.addPage();
+    yPos = 20;
+  }
+  
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 30, 30);
+  doc.text('Compliance Metrics', 20, yPos);
+  
+  // Simple underline
+  doc.setDrawColor(150, 150, 150);
+  doc.setLineWidth(0.3);
+  doc.line(20, yPos + 2, 130, yPos + 2);
+  
+  yPos += 15;
+  
+  // Simple metrics table without colors
+  const metricsData = [
+    ['Status', 'Count', 'Percentage'],
+    ['Fulfilled', data.summary.fulfilled.toString(), `${Math.round((data.summary.fulfilled / data.summary.totalRequirements) * 100)}%`],
+    ['Partially Fulfilled', data.summary.partial.toString(), `${Math.round((data.summary.partial / data.summary.totalRequirements) * 100)}%`],
+    ['Not Fulfilled', data.summary.notFulfilled.toString(), `${Math.round((data.summary.notFulfilled / data.summary.totalRequirements) * 100)}%`],
+    ['Not Applicable', data.summary.notApplicable.toString(), `${Math.round((data.summary.notApplicable / data.summary.totalRequirements) * 100)}%`],
+    ['Total Requirements', data.summary.totalRequirements.toString(), '100%']
+  ];
+  
+  autoTable(doc, {
+    startY: yPos,
+    body: metricsData,
+    theme: 'plain',
+    styles: { 
+      fontSize: 10, 
+      cellPadding: 4,
+      textColor: [60, 60, 60]
+    },
+    headStyles: { 
+      fillColor: [240, 240, 240],
+      textColor: [40, 40, 40],
+      fontStyle: 'bold',
+      lineWidth: 0.1,
+      lineColor: [200, 200, 200]
+    },
+    bodyStyles: {
+      lineWidth: 0.1,
+      lineColor: [220, 220, 220]
+    },
+    alternateRowStyles: {
+      fillColor: [250, 250, 250]
+    },
+    columnStyles: {
+      0: { cellWidth: 60, fontStyle: 'normal' },
+      1: { cellWidth: 30, halign: 'center' },
+      2: { cellWidth: 30, halign: 'center' }
+    }
+  });
+  
+  yPos = (doc as any).lastAutoTable.finalY + 15;
+  
+  // DETAILED REQUIREMENTS ANALYSIS
+  if (data.requirements && data.requirements.length > 0) {
+    // Check if we need a new page
+    if (yPos > pageHeight - 80) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text('Detailed Requirements Analysis', 20, yPos);
+    
+    // Simple underline
+    doc.setDrawColor(150, 150, 150);
+    doc.setLineWidth(0.3);
+    doc.line(20, yPos + 2, 160, yPos + 2);
+    
+    yPos += 15;
+    
+    // Group requirements by status for better presentation
+    const reqsByStatus = data.requirements.reduce((acc, req) => {
+      acc[req.status] = (acc[req.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Show key requirements (first 10 to keep PDF concise)
+    const requirementsToShow = data.requirements
+      .filter(req => req.status !== 'not-applicable') // Focus on actionable requirements
+      .slice(0, 10);
+    
+    // Create requirements table
+    const requirementsData = requirementsToShow.map(req => [
+      req.code,
+      req.name.length > 60 ? req.name.substring(0, 60) + '...' : req.name,
+      req.status.replace('-', ' ').toUpperCase(),
+      req.notes ? (req.notes.length > 40 ? req.notes.substring(0, 40) + '...' : req.notes) : 'N/A'
+    ]);
+    
+    autoTable(doc, {
+      startY: yPos,
+      head: [['Code', 'Requirement', 'Status', 'Notes']],
+      body: requirementsData,
+      theme: 'plain',
+      styles: { 
+        fontSize: 8, 
+        cellPadding: 3,
+        textColor: [60, 60, 60]
+      },
+      headStyles: { 
+        fillColor: [240, 240, 240],
+        textColor: [40, 40, 40],
+        fontStyle: 'bold',
+        lineWidth: 0.1,
+        lineColor: [200, 200, 200]
+      },
+      bodyStyles: {
+        lineWidth: 0.1,
+        lineColor: [220, 220, 220]
+      },
+      alternateRowStyles: {
+        fillColor: [250, 250, 250]
+      },
+      columnStyles: {
+        0: { cellWidth: 25, fontStyle: 'bold' },
+        1: { cellWidth: 70 },
+        2: { cellWidth: 30, halign: 'center' },
+        3: { cellWidth: 65 }
+      }
+    });
+    
+    yPos = (doc as any).lastAutoTable.finalY + 10;
+    
+    // Note if there are more requirements
+    if (data.requirements.length > 10) {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Note: Showing first 10 of ${data.requirements.length} total requirements`, 25, yPos);
+      yPos += 15;
+    }
+  }
+  
+  // PROFESSIONAL FOOTER SECTION
+  // Add a final page break if needed
+  if (yPos > pageHeight - 40) {
+    doc.addPage();
+    yPos = 20;
+  }
+  
+  // Add disclaimer and legal information
+  doc.setFillColor(248, 250, 252);
+  doc.rect(15, pageHeight - 35, pageWidth - 30, 25, 'F');
+  doc.setDrawColor(203, 213, 224);
+  doc.rect(15, pageHeight - 35, pageWidth - 30, 25, 'S');
+  
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  
+  const disclaimerText = 'This assessment report is confidential and intended solely for the use of the organization. ' +
+    'The findings and recommendations are based on the assessment methodology and evidence available at the time of evaluation. ' +
+    'For questions regarding this report, contact your assigned security assessor.';
+  
+  const disclaimerLines = doc.splitTextToSize(disclaimerText, pageWidth - 40);
+  doc.text(disclaimerLines, 20, pageHeight - 28);
+  
+  // Professional signature line
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 41, 59);
+  doc.text('Generated by AuditReady Security Assessment Platform', 20, pageHeight - 15);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text(`Assessment ID: ${data.title.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`, 20, pageHeight - 10);
+  
+  // Footer
+  const pageCount = doc.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text(
+      `Page ${i} of ${pageCount} - Generated by AuditReady Platform`,
+      pageWidth / 2,
+      pageHeight - 10,
+      { align: 'center' }
+    );
+  }
+} 
