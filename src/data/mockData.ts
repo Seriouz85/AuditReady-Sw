@@ -305,9 +305,47 @@ export const requirements: Requirement[] = [
     name: 'Understanding the organization and its context',
     description: 'The organization shall determine external and internal issues that are relevant to its purpose and that affect its ability to achieve the intended outcome(s) of its information security management system.',
     guidance: 'Identify and document all relevant internal and external factors that impact information security.',
-    status: 'not-fulfilled',
-    evidence: '',
-    notes: 'Determining these issues refers to establishing the external and internal context of the organization considered in Clause 5.4.1 of ISO 31000:2018.',
+    status: 'fulfilled',
+    evidence: `✅ **Context Analysis Documentation:**
+• Organizational Context Analysis Report v2.1 (updated 2024-01-15)
+• Document location: ISMS-Docs/Context-Analysis-2024.pdf
+• Approved by: CISO and Risk Committee (2024-01-20)
+
+✅ **External Context Factors:**
+• Regulatory landscape analysis (GDPR, NIS2, SOX compliance)
+• Threat intelligence report from CyberSentinel (Q4 2023)
+• Industry benchmarking study (FinTech Security Index 2024)
+• Supplier risk assessment matrix (87 vendors evaluated)
+• Geopolitical risk assessment (Ukraine conflict impact)
+
+✅ **Internal Context Factors:**
+• Business impact analysis (updated December 2023)
+• Asset inventory and classification (2,847 assets catalogued)
+• Organizational structure analysis (post-merger integration)
+• Technology stack assessment (cloud migration impact)
+• Cultural assessment survey (92% participation rate)
+
+✅ **Stakeholder Engagement:**
+• Executive interviews conducted (8/8 C-level executives)
+• Business unit consultations (12 departments)
+• Employee survey results (487 responses, 73% response rate)
+• Customer advisory board feedback (Q1 2024)`,
+    notes: `🔍 **Implementation Approach:**
+We established a comprehensive context analysis framework based on ISO 31000:2018 guidelines. The process involved:
+
+• Quarterly context reviews with stakeholder feedback
+• Integration with enterprise risk management framework
+• Automated threat intelligence feeds and monitoring
+• Regular business impact assessments
+
+📊 **Key Findings:**
+• 23 external factors identified (regulatory, competitive, technological)
+• 18 internal factors catalogued (organizational, process, technical)
+• 4 critical risk areas requiring immediate attention
+• 12 opportunities for security improvement identified
+
+🔄 **Next Review:** Q2 2024 (quarterly review cycle)
+📋 **Related Documents:** Risk Register, Business Impact Analysis, Threat Assessment`,
     responsibleParty: 'CISO',
     tags: [],
     categories: ['Governance & Leadership', 'Risk Management'],
@@ -373,9 +411,48 @@ export const requirements: Requirement[] = [
     name: 'Leadership and commitment',
     description: 'Top management shall demonstrate leadership and commitment with respect to the information security management system by: a) ensuring that the information security policy and the information security objectives are established and are compatible with the strategic direction of the organization; b) ensuring the integration of the information security management system requirements into the organization\'s processes; c) ensuring that the resources needed for the information security management system are available; d) communicating the importance of effective information security management and of conforming to the information security management system requirements; e) ensuring that the information security management system achieves its intended outcome(s); f) directing and supporting persons to contribute to the effectiveness of the information security management system; g) promoting continual improvement; h) supporting other relevant management roles to demonstrate their leadership as it applies to their areas of responsibility.',
     guidance: 'Ensure top management actively supports and leads the ISMS.',
-    status: 'not-fulfilled',
-    evidence: '',
-    notes: 'ISO 27001:2022 requirement',
+    status: 'partially-fulfilled',
+    evidence: `✅ **Management Policy Leadership:**
+• CEO-signed Information Security Policy v3.2 (approved 2024-02-15)
+• Board resolution establishing ISMS objectives (Resolution 2024-007)
+• Executive leadership commitment letter (distributed company-wide)
+• Integration with corporate strategy document (Strategic Plan 2024-2026)
+
+✅ **Resource Allocation:**
+• ISMS budget approved: $2.4M for 2024 (15% increase from 2023)
+• Dedicated security team: 8 FTE staff members
+• Security training budget: $125K annually
+• Technology investments: $850K (SIEM, EDR, compliance tools)
+
+✅ **Communication & Engagement:**
+• Monthly executive security briefings (12/12 conducted in 2023)
+• Quarterly all-hands security updates (CEO-led presentations)
+• Security Champion program (47 volunteers across departments)
+• Executive security dashboard (real-time KPI monitoring)
+
+⚠️ **Areas for Improvement:**
+• Management review meetings irregular (3/4 quarterly meetings held)
+• Limited departmental integration of ISMS requirements
+• Continual improvement program needs formal structure`,
+    notes: `📋 **Leadership Commitment Evidence:**
+The executive team has demonstrated strong commitment to information security through:
+
+• Direct CEO involvement in security strategy development
+• Board-level security risk discussions (monthly agenda item)
+• Executive KPI targets include security metrics
+• Personal accountability framework for security breaches
+
+🎯 **Management Actions Taken:**
+• Established Information Security Steering Committee (Q1 2024)
+• Implemented executive security scorecards
+• Created cross-functional ISMS integration workgroup
+• Authorized additional security headcount (3 new hires approved)
+
+🔄 **Next Steps:**
+• Formalize continual improvement process (Q2 2024)
+• Enhance management review meeting structure
+• Develop department-specific ISMS integration plans
+• Implement automated leadership reporting dashboard`,
     responsibleParty: 'Executive Management',
     tags: [],
     categories: ['Governance & Leadership', 'Risk Management'],
@@ -765,8 +842,16 @@ export const requirements: Requirement[] = [
     description: 'The organization shall plan and prepare for managing information security incidents by defining, establishing and communicating information security incident management processes, roles and responsibilities.',
     guidance: 'Develop incident management plan.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'ISO 27001:2022 requirement',
+    evidence: `**Required Evidence Examples:**
+• Incident Response Plan v2.1 - Comprehensive 45-page document covering preparation, detection, analysis, containment, eradication, recovery, and post-incident activities
+• Incident Response Team Charter - Defining roles including Incident Commander, Technical Lead, Communications Lead, Legal Liaison, and Management Representative
+• Emergency Contact Directory - 24/7 contact information for all team members including primary and backup personnel
+• Incident Classification Matrix - Severity levels (Critical, High, Medium, Low) with clear escalation criteria and response timeframes
+• Communication Templates - Pre-approved templates for internal notifications, customer communications, and regulatory reporting
+• Tabletop Exercise Records - Quarterly exercise documentation showing team readiness and areas for improvement
+• Incident Response Toolkit - Technical resources including forensic software, network isolation procedures, and recovery scripts
+• Training Records - Evidence of annual incident response training for all team members with certification requirements`,
+    notes: 'ISO 27001:2022 requirement - Implementation should include formal incident response procedures, designated team members, regular training, and testing through tabletop exercises. Consider integration with business continuity plans and regulatory notification requirements.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Governance & Leadership'],
@@ -782,8 +867,16 @@ export const requirements: Requirement[] = [
     description: 'The organization shall assess information security events and decide if they are to be categorized as information security incidents.',
     guidance: 'Implement security event assessment process.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'ISO 27001:2022 requirement',
+    evidence: `**Required Evidence Examples:**
+• Security Event Assessment Procedure - Step-by-step process for evaluating security events including initial triage, impact assessment, and escalation criteria
+• Event Classification Framework - Clear definitions distinguishing security events from incidents with documented thresholds and decision trees
+• SIEM/SOAR Integration - Automated initial assessment capabilities with human review checkpoints for complex events
+• Assessment Decision Log - Records of all security event evaluations showing rationale for incident/non-incident determinations
+• Escalation Matrix - Defined criteria for when events become incidents including severity ratings and stakeholder notification requirements
+• False Positive Analysis - Regular review of event classifications to improve accuracy and reduce alert fatigue
+• Metrics Dashboard - Key performance indicators tracking event volume, classification accuracy, and response times
+• Training Materials - Documentation showing security analysts are trained on proper event assessment procedures`,
+    notes: 'ISO 27001:2022 requirement - Establish clear criteria for distinguishing security events from incidents. Include automated initial assessment where possible, but ensure human oversight for complex determinations. Regular review and tuning of classification criteria is essential.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Governance & Leadership', 'Network Security'],
@@ -799,8 +892,16 @@ export const requirements: Requirement[] = [
     description: 'Information security incidents shall be responded to in accordance with the documented procedures.',
     guidance: 'Implement incident response procedures.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'ISO 27001:2022 requirement',
+    evidence: `**Required Evidence Examples:**
+• Incident Response Playbooks - Specific procedures for different incident types (malware, data breach, DDoS, insider threat, etc.)
+• Response Time Metrics - Documentation showing adherence to defined response timeframes (15 min initial response, 1 hour containment for critical incidents)
+• Incident Tickets/Records - Complete documentation of actual incident responses showing procedure adherence
+• Containment Procedures - Technical steps for isolating affected systems including network segmentation and access controls
+• Evidence Preservation Protocol - Forensic procedures ensuring legal admissibility of collected evidence
+• Communication Plans - Internal and external communication procedures including customer notification and regulatory reporting
+• Recovery Procedures - Step-by-step restoration processes with validation checkpoints
+• Incident Response Team Activation Records - Documentation of team mobilization and role assignments during actual incidents`,
+    notes: 'ISO 27001:2022 requirement - Response procedures must be tested and validated through regular exercises. Ensure procedures cover all incident types relevant to your organization and include clear escalation paths. Consider integration with business continuity and disaster recovery plans.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Governance & Leadership', 'Network Security'],
@@ -816,8 +917,16 @@ export const requirements: Requirement[] = [
     description: 'Knowledge gained from information security incidents shall be used to strengthen and improve the information security controls.',
     guidance: 'Implement incident learning process.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'ISO 27001:2022 requirement',
+    evidence: `**Required Evidence Examples:**
+• Post-Incident Review Reports - Comprehensive analysis of major incidents including root cause analysis, timeline reconstruction, and lessons learned
+• Improvement Action Plans - Documented corrective actions with assigned owners, timelines, and success metrics
+• Control Enhancement Records - Evidence of security control improvements implemented based on incident learnings
+• Trend Analysis Reports - Monthly/quarterly analysis of incident patterns identifying systemic issues and improvement opportunities
+• Procedure Updates - Version-controlled updates to incident response procedures based on lessons learned
+• Training Material Updates - Incorporation of incident learnings into security awareness and incident response training programs
+• Vulnerability Remediation Tracking - Records showing how incident findings led to proactive vulnerability management improvements
+• Knowledge Base Updates - Documentation of new threat indicators, attack patterns, and response techniques learned from incidents`,
+    notes: 'ISO 27001:2022 requirement - Establish formal post-incident review process for all major incidents. Focus on systemic improvements rather than individual blame. Track implementation of improvement actions and measure effectiveness over time. Consider sharing anonymized learnings with industry peers.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Data Protection', 'Governance & Leadership'],
@@ -833,8 +942,16 @@ export const requirements: Requirement[] = [
     description: 'The organization shall establish and implement procedures for the identification, collection, acquisition and preservation of evidence related to information security events.',
     guidance: 'Implement evidence collection procedures.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'ISO 27001:2022 requirement',
+    evidence: `**Required Evidence Examples:**
+• Digital Forensics Procedures - Step-by-step evidence collection protocols ensuring legal admissibility and chain of custody
+• Evidence Collection Toolkit - Hardware and software tools for forensic imaging, log collection, and memory analysis
+• Chain of Custody Forms - Detailed tracking of evidence handling from collection through analysis and storage
+• Evidence Storage Facility - Secure, access-controlled storage for digital and physical evidence with environmental controls
+• Forensic Analysis Reports - Technical analysis documentation showing evidence examination methodology and findings
+• Legal Collaboration Records - Documentation of coordination with legal counsel and law enforcement when required
+• Evidence Retention Policy - Defined retention periods for different types of evidence based on legal and regulatory requirements
+• Training Certifications - Evidence that personnel performing evidence collection have appropriate forensic training and certifications`,
+    notes: 'ISO 27001:2022 requirement - Evidence collection procedures must maintain legal admissibility. Consider partnerships with external forensic specialists for complex cases. Ensure proper training for personnel and maintain detailed chain of custody documentation. Regular testing of evidence collection procedures is essential.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Data Protection', 'Governance & Leadership'],
@@ -4219,8 +4336,18 @@ export const requirements: Requirement[] = [
     description: 'In the case of a personal data breach, the controller shall without undue delay and, where feasible, not later than 72 hours after having become aware of it, notify the personal data breach to the supervisory authority.',
     guidance: 'Implement data breach detection, investigation and reporting procedures.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'GDPR Article 33 requirement',
+    evidence: `**Required Evidence Examples:**
+• Data Breach Response Plan - Comprehensive procedures for breach detection, assessment, containment, investigation, and notification within 72-hour deadline
+• Breach Assessment Matrix - Risk assessment framework for determining breach severity and notification requirements to supervisory authorities
+• Automated Breach Detection Systems - Technology solutions for identifying potential data breaches including DLP, SIEM alerts, and monitoring tools
+• Breach Notification Templates - Pre-approved notification formats for supervisory authorities meeting Article 33 requirements
+• Data Subject Notification Procedures - Clear process for notifying affected individuals when breach is likely to result in high risk (Article 34)
+• Breach Investigation Reports - Documentation of breach scope, affected data subjects, potential consequences, and remediation measures
+• Supervisory Authority Contact Registry - Current contact information and submission procedures for relevant data protection authorities
+• Breach Response Training Records - Evidence that staff are trained on breach identification, escalation, and notification procedures
+• 72-Hour Response Timeline Documentation - Detailed records showing ability to meet regulatory notification deadlines
+• Legal Counsel Coordination Procedures - Process for engaging DPO and legal counsel during breach response`,
+    notes: 'GDPR Article 33 requirement - Critical 72-hour notification deadline requires well-rehearsed procedures and clear escalation paths. Ensure comprehensive documentation of breach assessment rationale and coordination with Article 34 data subject notification requirements. Regular testing of notification procedures is essential.',
     responsibleParty: 'CISO and Data Protection Officer',
     tags: [],
     categories: ['Incident Response', 'Data Protection'],
@@ -4272,8 +4399,18 @@ export const requirements: Requirement[] = [
     description: 'Implement measures to prevent and minimise the impact of incidents affecting the security of the network and information systems.',
     guidance: 'Develop incident response procedures specifically for network and information security incidents.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'NIS2 Directive Article 23 requirement',
+    evidence: `**Required Evidence Examples:**
+• Network Incident Response Procedures - Specialized procedures for network-specific incidents including DDoS attacks, network intrusions, and infrastructure failures
+• Incident Prevention Measures - Proactive security controls including network monitoring, intrusion detection systems, and threat intelligence integration
+• Impact Minimization Protocols - Procedures for rapid containment and isolation of network incidents to prevent spread and minimize business disruption
+• Network Segmentation Plans - Technical documentation showing network architecture designed to contain and limit incident impact
+• Incident Escalation Matrix - Clear escalation procedures for different types of network and information system incidents
+• Recovery Time Objectives (RTO) - Defined target recovery times for critical network and information systems based on business impact
+• Incident Communication Procedures - Internal and external communication protocols specific to network and information system incidents
+• Business Continuity Integration - Coordination between incident response and business continuity procedures for network services
+• Vendor Coordination Procedures - Protocols for engaging third-party vendors during network and information system incidents
+• Incident Metrics and Reporting - KPIs for measuring incident response effectiveness and compliance with NIS2 requirements`,
+    notes: 'NIS2 Directive Article 23 requirement - Focus on network and information systems specifically. Emphasize prevention and impact minimization. Ensure coordination with business continuity plans and consider cross-border incident implications for essential services.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Incident Response', 'Secure Configuration'],
@@ -4340,8 +4477,18 @@ export const requirements: Requirement[] = [
     description: 'Notify the competent authority or the CSIRT of any incident having a significant impact on the provision of their services within 24 hours of becoming aware of the incident.',
     guidance: 'Implement procedures for timely notification of significant incidents to authorities.',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: 'NIS2 Directive Article 23 requirement',
+    evidence: `**Required Evidence Examples:**
+• Significant Impact Assessment Framework - Criteria for determining when incidents have significant impact on service provision requiring notification
+• Authority Contact Database - Current contact information for competent authorities and CSIRTs in all relevant jurisdictions
+• 24-Hour Notification Procedures - Step-by-step process ensuring regulatory notification within 24-hour deadline
+• Incident Notification Templates - Pre-approved notification formats meeting NIS2 reporting requirements
+• Escalation Decision Tree - Clear criteria for determining when incidents require authority notification
+• Cross-Border Notification Procedures - Process for notifying authorities when incidents affect services across multiple EU member states
+• CSIRT Collaboration Protocols - Procedures for coordinating with national and EU-level Computer Security Incident Response Teams
+• Service Impact Assessment Tools - Methods for quickly assessing and documenting impact on essential or important services
+• Notification Tracking System - Records of all authority notifications including timestamps and follow-up communications
+• Legal Review Procedures - Process for engaging legal counsel to review notification requirements and draft communications`,
+    notes: 'NIS2 Directive Article 23 requirement - Critical 24-hour notification deadline for significant incidents. Requires clear impact assessment criteria and coordination with multiple authorities. Consider cross-border implications for essential services and ensure regular testing of notification procedures.',
     responsibleParty: 'Security Operations',
     tags: [],
     categories: ['Incident Response', 'Governance & Leadership'],
@@ -5617,9 +5764,19 @@ export const requirements: Requirement[] = [
     description: 'Train workforce members to be able to recognize a potential incident and be able to report such an incident.',
     guidance: '',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: '',
-    responsibleParty: '',
+    evidence: `**Required Evidence Examples:**
+• Incident Recognition Training Materials - Comprehensive training content covering common incident indicators, attack vectors, and suspicious activities
+• Training Completion Records - Documentation showing all workforce members have completed incident recognition and reporting training
+• Incident Reporting Simulation Exercises - Hands-on training exercises where employees practice identifying and reporting simulated security incidents
+• Phishing and Social Engineering Awareness - Specialized training on recognizing and reporting phishing attempts and social engineering attacks
+• Training Assessment Results - Test scores and competency assessments demonstrating workforce understanding of incident identification
+• Incident Response Awareness Materials - Training content on proper incident response procedures and escalation paths
+• Role-Specific Training Documentation - Tailored training for different roles (IT staff, managers, general workforce) based on their incident response responsibilities
+• Annual Refresher Training Records - Evidence of ongoing training updates and refresher sessions to maintain workforce competency
+• Incident Reporting Metrics - Data showing workforce incident reporting rates and quality of reported incidents
+• Training Feedback and Improvement - Records of training effectiveness assessments and improvements based on workforce feedback`,
+    notes: 'CIS IG1 requirement - Training must be comprehensive and regularly updated. Focus on practical recognition skills and clear reporting procedures. Regular assessment and refresher training are essential.',
+    responsibleParty: 'Security Awareness Team',
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
@@ -5719,18 +5876,28 @@ export const requirements: Requirement[] = [
     section: '17',
     code: '17.1',
     name: 'Designate Personnel to Manage Incident Handling',
-    description: 'Designate one key person, and at least one backup, who will manage the enterprise’s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
+    description: 'Designate one key person, and at least one backup, who will manage the enterprise\'s incident handling process. Management personnel are responsible for the coordination and documentation of incident response and recovery efforts and can consist of employees internal to the enterprise, service providers, or a hybrid approach. If using a service provider, designate at least one person internal to the enterprise to oversee any third-party work. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
     guidance: '',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: '',
-    responsibleParty: '',
+    evidence: `**Required Evidence Examples:**
+• Incident Response Team Charter - Formal document designating primary and backup incident managers with clear roles and responsibilities
+• Role Assignment Matrix - Documentation showing specific incident management responsibilities for internal staff and any third-party providers
+• Contact Directory - 24/7 contact information for primary and backup incident managers including escalation procedures
+• Organizational Chart - Clear reporting structure showing incident management roles within the enterprise security organization
+• Job Descriptions - Detailed job descriptions for incident management positions including required skills and qualifications
+• Training Records - Evidence of incident management training and certifications for designated personnel
+• Annual Review Documentation - Records of annual reviews and updates to incident management role assignments
+• Third-Party Oversight Procedures - If using service providers, documentation of internal oversight responsibilities and coordination procedures
+• Succession Planning - Documented procedures for replacing incident management personnel during extended absences or role changes
+• Performance Metrics - KPIs for measuring incident management effectiveness and personnel performance`,
+    notes: 'CIS IG1 requirement - Ensure clear designation of incident management roles with appropriate backup coverage. Regular review and training are essential. If using third-party providers, maintain internal oversight responsibility.',
+    responsibleParty: 'Security Operations Manager',
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
     tags: [],
-    categories: ['Vulnerability Management'],
+    categories: ['Incident Response', 'Governance & Leadership'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5743,15 +5910,25 @@ export const requirements: Requirement[] = [
     description: 'Establish and maintain contact information for parties that need to be informed of security incidents. Contacts may include internal staff, service providers, law enforcement, cyber insurance providers, relevant government agencies, Information Sharing and Analysis Center (ISAC) partners, or other stakeholders. Verify contacts annually to ensure that information is up-to-date.',
     guidance: '',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: '',
-    responsibleParty: '',
+    evidence: `**Required Evidence Examples:**
+• Emergency Contact Directory - Comprehensive contact list including internal staff, service providers, law enforcement, cyber insurance, regulatory bodies, and ISAC partners
+• Contact Verification Schedule - Annual verification process with documented confirmation of contact accuracy and availability
+• Escalation Contact Matrix - Hierarchical contact structure showing primary, secondary, and tertiary contacts for different incident types
+• Service Provider Emergency Contacts - 24/7 contact information for security service providers including incident response firms
+• Law Enforcement Liaison Contacts - Established relationships with local FBI, Secret Service, and other relevant law enforcement agencies
+• Regulatory Authority Contacts - Current contact information for relevant government agencies and regulatory bodies
+• Cyber Insurance Provider Contacts - Direct contact information for cyber insurance claims and incident notification
+• ISAC Partnership Documentation - Active membership and contact information for relevant Information Sharing and Analysis Centers
+• Legal Counsel Contacts - Emergency contact information for legal counsel specializing in cybersecurity incidents
+• Media Relations Contacts - Designated spokesperson and communications team for incident-related media inquiries`,
+    notes: 'CIS IG1 requirement - Maintain comprehensive and current contact information for all stakeholders. Annual verification is mandatory. Ensure 24/7 availability for critical contacts and consider time zone differences for global organizations.',
+    responsibleParty: 'Security Operations Manager',
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
     tags: [],
-    categories: ['Vulnerability Management'],
+    categories: ['Incident Response', 'Governance & Leadership'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -5764,15 +5941,25 @@ export const requirements: Requirement[] = [
     description: 'Establish and maintain a documented enterprise process for the workforce to report security incidents. The process includes reporting timeframe, personnel to report to, mechanism for reporting, and the minimum information to be reported. Ensure the process is publicly available to all of the workforce. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
     guidance: '',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: '',
-    responsibleParty: '',
+    evidence: `**Required Evidence Examples:**
+• Incident Reporting Procedure - Documented process outlining step-by-step incident reporting requirements for all workforce members
+• Incident Reporting Portal - Web-based system or help desk ticketing system accessible to all employees for reporting security incidents
+• Reporting Timeline Requirements - Clear timeframes for different types of incident reporting (immediate, 1 hour, 24 hours, etc.)
+• Incident Reporting Training Materials - Training documentation and records showing workforce education on incident reporting procedures
+• Incident Classification Guide - Reference materials helping workforce identify and categorize different types of security incidents
+• Minimum Information Requirements - Standardized forms or checklists specifying required information for incident reports
+• Multi-Channel Reporting Options - Various reporting mechanisms including phone, email, web portal, and mobile app options
+• Anonymous Reporting Capabilities - Secure methods for workforce to report incidents anonymously when appropriate
+• Incident Report Templates - Standardized forms ensuring consistent and complete incident reporting information
+• Public Availability Documentation - Evidence that incident reporting procedures are easily accessible to all workforce members through intranet, handbooks, or other means`,
+    notes: 'CIS IG1 requirement - Incident reporting process must be well-documented, easily accessible, and regularly reviewed. Ensure workforce training on reporting procedures and provide multiple reporting channels. Annual review is mandatory.',
+    responsibleParty: 'Security Operations Manager',
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
     tags: [],
-    categories: ['Vulnerability Management'],
+    categories: ['Incident Response', 'Governance & Leadership'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -8269,15 +8456,25 @@ export const requirements: Requirement[] = [
     description: 'Establish and maintain a documented incident response process that addresses roles and responsibilities, compliance requirements, and a communication plan. Review annually, or when significant enterprise changes occur that could impact this Safeguard.',
     guidance: '',
     status: 'not-fulfilled',
-    evidence: '',
-    notes: '',
-    responsibleParty: '',
+    evidence: `**Required Evidence Examples:**
+• Incident Response Plan - Comprehensive documented process covering all phases of incident response from preparation through post-incident activities
+• Roles and Responsibilities Matrix - Clear definition of incident response team roles including Incident Commander, Technical Analyst, Communications Lead, and Legal Liaison
+• Compliance Requirements Documentation - Specific procedures for meeting regulatory notification requirements (GDPR, HIPAA, SOX, etc.)
+• Communication Plan - Internal and external communication procedures including stakeholder notification, media response, and customer communications
+• Incident Response Playbooks - Detailed response procedures for specific incident types (ransomware, data breach, DDoS, insider threat)
+• Escalation Procedures - Clear criteria and processes for escalating incidents to senior management and external parties
+• Annual Review Documentation - Records of annual incident response plan reviews and updates based on lessons learned
+• Compliance Mapping - Documentation showing how incident response procedures address specific regulatory requirements
+• Communication Templates - Pre-approved templates for different types of incident communications
+• Business Impact Assessment - Framework for assessing and documenting business impact of security incidents`,
+    notes: 'CIS IG2 requirement - Incident response process must be comprehensive and address compliance requirements. Regular review and testing are essential. Ensure clear communication plans for all stakeholders.',
+    responsibleParty: 'Security Operations Manager',
     auditReadyGuidance: `**Implementation**
 
 * \n- Document formal policies and procedures related to this control\n- Implement appropriate technical controls\n- Train personnel on related security practices\n- Monitor and audit compliance with this control\n- Regularly review and update  as needed\n- Maintain documentation of compliance evidence`,
 
     tags: [],
-    categories: ['Vulnerability Management'],
+    categories: ['Incident Response', 'Governance & Leadership'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -11660,6 +11857,62 @@ export const assessments: Assessment[] = [
     startDate: '2024-02-15T09:00:00Z',
     assessorName: 'Michael Thompson',
     assessorId: 'user-1',
+    notes: `🎯 **Assessment Overview:**
+This comprehensive annual assessment evaluates our ISO 27001 ISMS implementation across all business units. The assessment covers 114 controls across 14 categories, with particular focus on recent organizational changes and the integration of new cloud services.
+
+📋 **Key Findings So Far:**
+• Strong performance in access control and cryptography (95% compliance)
+• Gaps identified in supplier relationship security and business continuity
+• Significant improvement in incident response capabilities since last assessment
+• New regulatory requirements (NIS2, GDPR updates) have been integrated
+
+🔍 **Areas of Focus:**
+• Asset management procedures require updating for cloud environments
+• Security awareness training completion rates need improvement (currently 87%)
+• Vulnerability management process shows good coverage but needs faster remediation
+• Business continuity plans need testing and updates
+
+⚡ **Next Steps:**
+Completing final reviews of physical security controls and management system documentation. Expected completion by end of month with formal report and recommendations for 2024 security roadmap.`,
+    evidence: `📁 **Documentation Reviewed:**
+• Information Security Policy v3.2 and 12 supporting policies
+• Risk Assessment Report (Q4 2023) with 127 identified risks
+• Vulnerability Assessment Report (January 2024) - 47 pages
+• Penetration Test Results (Q4 2023) - RedTeam Security Ltd.
+• Business Continuity Plan v2.1 (updated December 2023)
+• Incident Response Playbook v4.3 (62 pages, last updated Q3 2023)
+• Security Awareness Training Records (2023-2024)
+• Vendor Security Assessment Questionnaires (15 critical suppliers)
+
+📎 **Attached Evidence Files:**
+• ISO27001_Risk_Register_2024.xlsx (updated 2024-02-20, 15.2 MB)
+• Security_Incident_Log_2023.pdf (annual summary, 8.4 MB)
+• Penetration_Test_Report_Q4_2023.pdf (confidential, 12.1 MB)
+• ISMS_Audit_Findings_2023.docx (internal audit, 3.7 MB)
+• Security_Training_Completion_Matrix.xlsx (HR records, 2.1 MB)
+• Incident Response Plan and 15 incident reports from 2023
+• Security Awareness Training records (287 employees, 87% completion)
+• Vendor Security Assessment results (43 vendors evaluated)
+
+🔐 **Technical Evidence:**
+• SIEM logs analysis covering 6 months (Jan-Jun 2024)
+• Vulnerability scan results from Qualys (monthly scans)
+• Access control reviews covering 2,847 user accounts
+• Backup and recovery test results (last performed March 2024)
+• Security tool configurations (Firewall, IDS/IPS, EDR)
+
+🏢 **Physical Security:**
+• Badge access logs and physical security assessment
+• Data center environmental controls documentation
+• Secure disposal certificates for 23 decommissioned assets
+• Visitor log reviews and clean desk policy compliance checks
+
+📊 **Compliance Evidence:**
+• Internal audit reports (Q1 2024) from Ernst & Young
+• Third-party security assessments (SOC 2 Type II report)
+• Penetration testing results (conducted February 2024)
+• Security metrics dashboard showing KPI trends
+• Management review meeting minutes (quarterly reviews)`,
     updatedAt: '2024-03-28T14:30:00Z',
     createdAt: '2024-02-15T09:00:00Z',
   },
@@ -11674,6 +11927,37 @@ export const assessments: Assessment[] = [
     endDate: '2023-10-15T16:45:00Z',
     assessorName: 'Michael Thompson',
     assessorId: 'user-1',
+    assessorNames: ['Michael Thompson', 'Emily Johnson', 'Robert Chen'],
+    assessorIds: ['user-1', 'user-2', 'user-3'],
+    notes: `🎯 **Q4 2023 Quarterly Assessment Summary:**
+Comprehensive review of ISO 27001 controls conducted by multi-disciplinary team. This assessment focused on operational effectiveness and compliance following the post-summer holiday period and preparation for year-end audits.
+
+📊 **Assessment Results:**
+• 97% of controls found to be operating effectively
+• 3 minor non-conformities identified and remediated within assessment period
+• Significant improvement in access control compliance (up from 89% to 97%)
+• Incident response capability tested successfully during Q4 tabletop exercise
+
+⭐ **Key Achievements:**
+• Zero critical security incidents during Q4
+• 100% completion of mandatory security training for all staff
+• Successful implementation of new endpoint detection and response (EDR) solution
+• Completion of business continuity plan testing with 95% success rate`,
+    evidence: `📋 **Assessment Evidence Collected:**
+• Q4 Security Metrics Dashboard (comprehensive KPI tracking)
+• Access Control Audit Report (September 2023) - 34 pages
+• Incident Response Exercise Report (October 2023) - tabletop scenario
+• Security Awareness Training Completion Records (100% staff completion)
+• Vulnerability Management Report (Q4 2023) - 87% remediation rate
+• Business Continuity Testing Results (October 2023)
+
+📎 **Supporting Documentation:**
+• Q4_Security_Metrics_Report.pdf (dashboard export, 4.2 MB)
+• Access_Control_Audit_Sept2023.docx (detailed findings, 6.8 MB)
+• BC_Testing_Results_Oct2023.xlsx (test scenarios & outcomes, 3.1 MB)
+• Security_Training_Records_Q4.pdf (completion certificates, 2.7 MB)
+• Vulnerability_Scan_Results_Q4.pdf (automated scan results, 9.4 MB)
+• Incident_Response_Tabletop_Oct2023.docx (exercise debrief, 5.3 MB)`,
     updatedAt: '2023-10-15T16:45:00Z',
     createdAt: '2023-10-01T09:00:00Z',
   },
@@ -11687,6 +11971,36 @@ export const assessments: Assessment[] = [
     startDate: '2024-02-10T11:00:00Z',
     assessorName: 'Emily Johnson',
     assessorId: 'user-2',
+    notes: `🎯 **NIS2 Gap Analysis Progress:**
+Initial comprehensive review of current security posture against NIS2 Directive requirements. Assessment identifies gaps in cybersecurity measures, incident reporting capabilities, and supply chain security.
+
+📋 **Current Assessment Focus:**
+• Risk management and cybersecurity governance frameworks
+• Technical cybersecurity measures and network security
+• Incident handling and crisis management procedures
+• Supply chain security and third-party risk management
+
+🔍 **Preliminary Findings:**
+• Strong foundation in most technical security controls
+• Gap in 6-hour incident reporting capabilities requiring automation
+• Supply chain security assessments need standardization
+• Crisis management procedures require NIS2-specific updates`,
+    evidence: `📁 **Gap Analysis Documentation:**
+• NIS2 Directive requirements mapping (185 specific requirements)
+• Current security control inventory and effectiveness assessment
+• Incident response capability assessment results
+• Supply chain security evaluation findings
+
+📎 **Attached Evidence Files:**
+• NIS2_Gap_Analysis_Initial_Report.pdf (preliminary findings, 23.4 MB)
+• Security_Controls_Mapping_Matrix.xlsx (current vs required, 11.2 MB)
+• Incident_Response_Capability_Assessment.pdf (analysis, 8.7 MB)
+• Supply_Chain_Security_Review.xlsx (vendor assessments, 6.9 MB)
+
+🔐 **Technical Assessment Areas:**
+• Network segmentation and monitoring capabilities evaluated
+• Vulnerability management processes assessed against NIS2 requirements
+• Access control systems reviewed for compliance requirements`,
     updatedAt: '2024-03-25T09:30:00Z',
     createdAt: '2024-02-10T11:00:00Z',
   },
@@ -11701,6 +12015,41 @@ export const assessments: Assessment[] = [
     endDate: '2024-01-20T15:45:00Z',
     assessorName: 'Emily Johnson',
     assessorId: 'user-2',
+    notes: `🎯 **GDPR Annual Review 2023-2024 - COMPLETED:**
+Comprehensive annual assessment of GDPR compliance across all business processes and data handling activities. Review encompassed data processing inventories, privacy policies, consent management, and data subject rights procedures.
+
+📋 **Final Assessment Results:**
+• 100% compliance achieved across all assessed GDPR requirements
+• Data processing inventory updated and verified (127 processing activities)
+• Privacy policy updates implemented following regulatory guidance
+• Data subject rights request handling process optimized and documented
+
+🔍 **Key Accomplishments:**
+• Implemented automated consent management system across all digital touchpoints
+• Enhanced data subject rights response procedures (average response time: 18 days)
+• Completed privacy impact assessments for 12 new processing activities
+• Updated data retention schedules for all business units
+
+⚡ **Full Compliance Achieved:**
+All GDPR requirements fully implemented and verified. Annual compliance program established for ongoing monitoring.`,
+    evidence: `📁 **GDPR Compliance Documentation:**
+• Updated Data Processing Inventory (127 processing activities documented)
+• Privacy Policy updates (v4.2) implemented across all platforms
+• Data Subject Rights request logs and response documentation (2023 full year)
+• Privacy Impact Assessments for 12 new processing activities
+• Consent management system implementation documentation
+
+📎 **Attached Evidence Files:**
+• GDPR_Annual_Review_Final_Report.pdf (comprehensive assessment, 67.3 MB)
+• Data_Processing_Inventory_2024.xlsx (complete inventory, 14.8 MB)
+• Privacy_Impact_Assessments_2023.pdf (12 PIAs completed, 28.4 MB)
+• Data_Subject_Rights_Annual_Log.xlsx (all requests 2023, 7.2 MB)
+• Consent_Management_Implementation.pdf (system setup, 11.9 MB)
+
+🔐 **Compliance Verification:**
+• Data Protection Impact Assessments completed for all high-risk processing
+• Consent mechanisms validated and documented across all systems
+• Data retention policies implemented and automated where possible`,
     updatedAt: '2024-01-20T15:45:00Z',
     createdAt: '2023-11-05T13:00:00Z',
   },
@@ -11727,6 +12076,37 @@ export const assessments: Assessment[] = [
     startDate: '2024-03-25T09:00:00Z',
     assessorName: 'Robert Chen',
     assessorId: 'user-3',
+    notes: `🎯 **ISO 27002:2022 Implementation Review Progress:**
+Detailed assessment of ISO 27002:2022 control implementation across organizational and technical domains. Focus on the updated control framework and new requirements introduced in the 2022 revision.
+
+📋 **Assessment Coverage (45% Complete):**
+• Organizational Controls (A5): 80% reviewed - strong policy framework
+• People Controls (A6): 70% reviewed - security awareness needs enhancement
+• Physical Controls (A7): 60% reviewed - facility security requires updates
+• Technological Controls (A8): 30% reviewed - ongoing technical assessment
+
+🔍 **Key Findings So Far:**
+• Strong foundation in organizational governance and policy frameworks
+• Gap in security awareness training effectiveness measurement
+• Physical security controls need updating for hybrid work environment
+• Cryptography and data protection controls show good implementation`,
+    evidence: `📁 **ISO 27002 Assessment Documentation:**
+• ISO 27002:2022 controls mapping and implementation checklist
+• Current security policy framework review (14 policies assessed)
+• Security awareness training effectiveness analysis
+• Physical security audit findings (3 office locations)
+• Technical controls assessment - preliminary findings
+
+📎 **Attached Evidence Files:**
+• ISO27002_2022_Controls_Assessment_Matrix.xlsx (implementation status, 18.7 MB)
+• Security_Policies_Framework_Review.pdf (policy analysis, 22.1 MB)
+• Physical_Security_Audit_Report.pdf (facility assessments, 9.4 MB)
+• Security_Awareness_Effectiveness_Study.xlsx (training metrics, 5.8 MB)
+
+🔐 **Technical Controls Assessment:**
+• Cryptographic controls implementation verified for data at rest and in transit
+• Access control mechanisms assessed across 15 critical systems
+• Vulnerability management process effectiveness reviewed and documented`,
     updatedAt: '2024-03-25T09:00:00Z',
     createdAt: '2024-03-25T09:00:00Z',
   },
@@ -11780,6 +12160,35 @@ export const assessments: Assessment[] = [
     startDate: '2024-02-20T13:15:00Z',
     assessorName: 'Robert Chen',
     assessorId: 'user-3',
+    notes: `🎯 **Vendor Security Assessment Overview:**
+This assessment evaluates the security posture of our 15 critical third-party vendors against ISO 27001 standards. Focus areas include data processing agreements, security controls, and compliance certifications.
+
+📋 **Key Findings:**
+• 12 out of 15 vendors have current ISO 27001 certifications
+• 3 vendors require updated data processing agreements
+• Strong performance in cloud service providers (AWS, Azure partners)
+• Gaps identified in smaller vendors' security documentation
+
+🔍 **Areas Requiring Attention:**
+• Vendor risk assessment framework needs updating
+• Quarterly security reviews not consistently performed
+• Some vendors lack adequate incident response procedures`,
+    evidence: `📁 **Vendor Documentation Reviewed:**
+• Vendor Security Questionnaire responses from 15 critical suppliers
+• Current ISO 27001, SOC 2 certificates from vendor partners
+• Data Processing Agreements (DPA) and vendor contracts
+• Security incident reports from vendor-related incidents (Q1 2024)
+
+📎 **Attached Evidence Files:**
+• Vendor_Security_Assessment_Matrix_2024.xlsx (vendor ratings, 8.3 MB)
+• Critical_Vendor_Contracts_Review.pdf (legal analysis, 12.7 MB)
+• Third_Party_Risk_Register.xlsx (current risks, 5.4 MB)
+• Vendor_Incident_Reports_Q1_2024.pdf (incident summaries, 3.2 MB)
+
+🔐 **Security Certifications Verified:**
+• AWS: SOC 2 Type II, ISO 27001, PCI DSS compliance verified
+• Microsoft Azure: FedRAMP, ISO 27001 certifications current
+• Salesforce: SOC 2 Type II, privacy shield compliance verified`,
     updatedAt: '2024-03-27T16:45:00Z',
     createdAt: '2024-02-20T13:15:00Z',
   },
@@ -11793,6 +12202,38 @@ export const assessments: Assessment[] = [
     startDate: '2024-03-05T11:00:00Z',
     assessorName: 'Sarah Martinez',
     assessorId: 'user-4',
+    notes: `🎯 **NIS2 Incident Response Assessment Overview:**
+Comprehensive evaluation of our incident detection, response, and reporting capabilities to ensure compliance with NIS2 Directive requirements. Assessment covers technical capabilities, processes, and regulatory reporting procedures.
+
+📋 **Key Assessment Areas:**
+• Incident detection and monitoring systems (SIEM, SOAR integration)
+• Response team structure and escalation procedures
+• Regulatory reporting capabilities (6-hour and 72-hour requirements)
+• Cross-border incident coordination procedures
+
+🔍 **Current Status:**
+• Strong technical detection capabilities with 24/7 SOC coverage
+• Response procedures need updating for NIS2 timelines
+• Regulatory reporting framework requires automation improvements
+• Staff training on new NIS2 requirements completed for 87% of team`,
+    evidence: `📁 **Incident Response Documentation:**
+• Current Incident Response Plan v4.3 (62 pages)
+• NIS2 Compliance Gap Analysis Report (March 2024)
+• SIEM configuration and monitoring procedures
+• Incident response team contact lists and escalation matrices
+• Historical incident reports for 2023-2024 (24 incidents reviewed)
+
+📎 **Attached Evidence Files:**
+• NIS2_Incident_Response_Gap_Analysis.pdf (compliance review, 15.8 MB)
+• Incident_Response_Playbook_v4.3.docx (updated procedures, 4.2 MB)
+• SIEM_Monitoring_Configuration.xlsx (technical setup, 6.7 MB)
+• Historical_Incident_Analysis_2023_2024.pdf (trend analysis, 9.3 MB)
+• NIS2_Training_Completion_Report.xlsx (staff readiness, 2.8 MB)
+
+🔐 **Technical Capabilities Verified:**
+• SIEM platform monitoring 847 log sources across infrastructure
+• Automated alerting configured for 23 critical incident types
+• Integration with threat intelligence feeds (3 commercial, 2 government)`,
     updatedAt: '2024-03-28T09:30:00Z',
     createdAt: '2024-03-05T11:00:00Z',
   },
@@ -11807,6 +12248,41 @@ export const assessments: Assessment[] = [
     endDate: '2024-01-05T16:00:00Z',
     assessorName: 'Emily Johnson',
     assessorId: 'user-2',
+    notes: `🎯 **GDPR Processor Agreement Assessment - COMPLETED:**
+Comprehensive review of all data processor agreements to ensure full GDPR compliance. Assessment covered 28 processor agreements including cloud services, SaaS platforms, and outsourced processing activities.
+
+📋 **Final Assessment Results:**
+• 28 processor agreements reviewed and updated to GDPR standards
+• 100% compliance achieved with Article 28 requirements
+• All processors provided necessary technical and organizational measures documentation
+• Data transfer mechanisms verified for international processors (SCCs implemented)
+
+🔍 **Key Accomplishments:**
+• Updated 23 legacy agreements to include GDPR-compliant clauses
+• Established processor audit procedures and annual review schedule
+• Implemented data breach notification procedures with all processors
+• Created standardized processor agreement template for future use
+
+⚡ **Implementation Complete:**
+All processor agreements now fully compliant. Annual review cycle established for ongoing compliance monitoring.`,
+    evidence: `📁 **GDPR Processor Documentation:**
+• Updated Data Processor Agreements (28 agreements, fully executed)
+• Technical and Organizational Measures documentation from all processors
+• Standard Contractual Clauses (SCCs) for international data transfers
+• Processor audit reports and compliance certifications
+• Data Processing Impact Assessments (DPIAs) for high-risk processing
+
+📎 **Attached Evidence Files:**
+• GDPR_Processor_Agreements_Final_2024.pdf (all 28 agreements, 45.2 MB)
+• Technical_Organizational_Measures_Summary.xlsx (processor TOMs, 8.1 MB)
+• International_Transfer_Assessment.pdf (SCCs and adequacy, 12.4 MB)
+• Processor_Compliance_Certificates.pdf (certifications, 15.7 MB)
+• DPIA_High_Risk_Processing_Final.docx (impact assessments, 6.3 MB)
+
+🔐 **Compliance Verification Completed:**
+• Article 28 compliance verified for all 28 processors
+• Data transfer mechanisms compliant with Schrems II requirements
+• Processor audit rights and procedures documented and tested`,
     updatedAt: '2024-01-05T16:00:00Z',
     createdAt: '2023-12-10T10:00:00Z',
   }
