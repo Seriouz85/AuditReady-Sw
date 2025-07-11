@@ -679,7 +679,6 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
                                 <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{req.notes}</div>
                               </div>
                             )}
-                          </div>
                             
                             {relatedReqs.length > 0 && (
                               <div className="mt-4">
