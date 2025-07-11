@@ -71,6 +71,7 @@ export const validateFileName = (fileName: string): boolean => {
   }
   
   // Check for reserved characters
+  // eslint-disable-next-line no-control-regex
   const reservedChars = /[<>:"\/\\|?*\x00-\x1f]/;
   if (reservedChars.test(fileName)) {
     return false;

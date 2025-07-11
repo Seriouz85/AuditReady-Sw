@@ -40,13 +40,13 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
   const getActionIcon = (actionType: string) => {
     switch (actionType) {
       case 'viewing':
-        return <Eye className=\"h-3 w-3\" />;
+        return <Eye className="h-3 w-3" />;
       case 'editing':
-        return <Edit3 className=\"h-3 w-3\" />;
+        return <Edit3 className="h-3 w-3" />;
       case 'commenting':
-        return <MessageCircle className=\"h-3 w-3\" />;
+        return <MessageCircle className="h-3 w-3" />;
       default:
-        return <Eye className=\"h-3 w-3\" />;
+        return <Eye className="h-3 w-3" />;
     }
   };
 
@@ -82,8 +82,8 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Badge variant=\"destructive\" className=\"flex items-center gap-1\">
-                <AlertTriangle className=\"h-3 w-3\" />
+              <Badge variant="destructive" className="flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
                 Conflict
               </Badge>
             </TooltipTrigger>
@@ -99,8 +99,8 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Badge variant=\"secondary\" className=\"flex items-center gap-1\">
-                <Lock className=\"h-3 w-3\" />
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Lock className="h-3 w-3" />
                 Locked
               </Badge>
             </TooltipTrigger>
@@ -115,18 +115,18 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
       )}
 
       {/* Active collaborators */}
-      <div className=\"flex items-center gap-1\">
+      <div className="flex items-center gap-1">
         {activeCollaborators.slice(0, 3).map((collaborator) => (
           <TooltipProvider key={collaborator.id}>
             <Tooltip>
               <TooltipTrigger>
-                <div className=\"relative\">
-                  <Avatar className=\"h-6 w-6 border-2 border-white\">
+                <div className="relative">
+                  <Avatar className="h-6 w-6 border-2 border-white">
                     <AvatarImage 
                       src={collaborator.user.avatar_url} 
                       alt={`${collaborator.user.first_name} ${collaborator.user.last_name}`} 
                     />
-                    <AvatarFallback className=\"text-xs\">
+                    <AvatarFallback className="text-xs">
                       {getUserInitials(collaborator.user.first_name, collaborator.user.last_name)}
                     </AvatarFallback>
                   </Avatar>
@@ -140,11 +140,11 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <div className=\"text-center\">
-                  <p className=\"font-medium\">
+                <div className="text-center">
+                  <p className="font-medium">
                     {collaborator.user.first_name} {collaborator.user.last_name}
                   </p>
-                  <p className=\"text-sm text-muted-foreground\">
+                  <p className="text-sm text-muted-foreground">
                     {collaborator.action_type} • {getTimeAgo(collaborator.started_at)}
                   </p>
                 </div>
@@ -158,17 +158,17 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <div className=\"h-6 w-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center\">
-                  <span className=\"text-xs font-medium text-gray-600\">
+                <div className="h-6 w-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
+                  <span className="text-xs font-medium text-gray-600">
                     +{activeCollaborators.length - 3}
                   </span>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
                 <div>
-                  <p className=\"font-medium mb-1\">Other active users:</p>
+                  <p className="font-medium mb-1">Other active users:</p>
                   {activeCollaborators.slice(3).map((collaborator) => (
-                    <p key={collaborator.id} className=\"text-sm\">
+                    <p key={collaborator.id} className="text-sm">
                       {collaborator.user.first_name} {collaborator.user.last_name} ({collaborator.action_type})
                     </p>
                   ))}
@@ -181,7 +181,7 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
 
       {/* Activity summary */}
       {activeCollaborators.length > 0 && (
-        <div className=\"flex gap-1\">
+        <div className="flex gap-1">
           {['viewing', 'editing', 'commenting'].map((actionType) => {
             const count = activeCollaborators.filter(c => c.action_type === actionType).length;
             if (count === 0) return null;
@@ -189,11 +189,11 @@ export const RequirementCollaborationIndicators: React.FC<RequirementCollaborati
             return (
               <Badge 
                 key={actionType}
-                variant=\"outline\" 
+                variant="outline" 
                 className={`text-xs ${getActionColor(actionType)}`}
               >
                 {getActionIcon(actionType)}
-                <span className=\"ml-1\">{count}</span>
+                <span className="ml-1">{count}</span>
               </Badge>
             );
           })}

@@ -56,6 +56,20 @@ export interface Requirement {
   updatedAt: string;
 }
 
+// Assessment method types
+export const ASSESSMENT_METHODS = {
+  DOCUMENT_REVIEW: 'Document Review',
+  INTERVIEWS: 'Interviews',
+  OBSERVATION: 'Observation',
+  SURVEYS: 'Surveys and Questionnaires',
+  DATA_ANALYSIS: 'Data Analysis & Statistics',
+  SAMPLING: 'Sampling',
+  PROCESS_WALKTHROUGH: 'Process Walkthrough',
+  BENCHMARKING: 'Benchmarking'
+} as const;
+
+export type AssessmentMethod = typeof ASSESSMENT_METHODS[keyof typeof ASSESSMENT_METHODS];
+
 // Assessment types
 export interface Assessment {
   id: string;
@@ -66,8 +80,13 @@ export interface Assessment {
   progress: number; // Percentage of completion
   startDate: string;
   endDate?: string;
-  assessorName: string;
-  assessorId: string; // Added this field to match the mock data
+  assessorName: string; // Primary assessor name (for backward compatibility)
+  assessorId: string; // Primary assessor ID (for backward compatibility)
+  assessorNames?: string[]; // Multiple assessor names
+  assessorIds?: string[]; // Multiple assessor IDs
+  notes?: string; // Assessment notes from the assessor
+  evidence?: string; // Evidence collection notes
+  methods?: string[]; // Assessment methods used (document review, interviews, etc.)
   createdAt: string;
   updatedAt: string;
 }

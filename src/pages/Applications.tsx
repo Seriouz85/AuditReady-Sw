@@ -88,10 +88,10 @@ const Applications = () => {
   // Get filtered applications
   const filteredApplications = applications.filter((application) => {
     const matchesSearch = 
-      application.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      application.organizationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      application.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      application.organizationNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (application.category && application.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      application.contact.name.toLowerCase().includes(searchQuery.toLowerCase());
+      (application.contact?.name && application.contact.name.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesStatus = statusFilter === "all" || application.status === statusFilter;
     const matchesCriticality = criticalityFilter === "all" || application.criticality === criticalityFilter;
@@ -421,22 +421,22 @@ const Applications = () => {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Contact Person</h3>
-                <p className="font-medium">{selectedApplication.contact.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedApplication.contact.title || 'N/A'}</p>
+                <p className="font-medium">{selectedApplication.contact?.name || 'N/A'}</p>
+                <p className="text-sm text-muted-foreground">{selectedApplication.contact?.title || 'N/A'}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
-                <p>{selectedApplication.contact.email}</p>
+                <p>{selectedApplication.contact?.email || 'N/A'}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Phone</h3>
-                <p>{selectedApplication.contact.phone || 'N/A'}</p>
+                <p>{selectedApplication.contact?.phone || 'N/A'}</p>
               </div>
               <div className="pt-2 border-t">
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Internal Responsible</h3>
-                <p className="font-medium">{selectedApplication.internalResponsible.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedApplication.internalResponsible.department || 'N/A'}</p>
-                <p className="text-sm">{selectedApplication.internalResponsible.email}</p>
+                <p className="font-medium">{selectedApplication.internalResponsible?.name || 'N/A'}</p>
+                <p className="text-sm text-muted-foreground">{selectedApplication.internalResponsible?.department || 'N/A'}</p>
+                <p className="text-sm">{selectedApplication.internalResponsible?.email || 'N/A'}</p>
               </div>
             </CardContent>
           </Card>
@@ -869,7 +869,7 @@ const Applications = () => {
                       <SelectContent>
                         {internalUsers.map(user => (
                           <SelectItem key={user.id} value={user.id}>
-                            {user.name} ({user.department})
+                            {user.name || 'N/A'} ({user.department || 'N/A'})
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -910,10 +910,10 @@ const Applications = () => {
               <TableBody>
                 {filteredApplications.map((application) => (
                   <TableRow key={application.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewApplication(application)}>
-                    <TableCell className="font-medium">{application.name}</TableCell>
+                    <TableCell className="font-medium">{application.name || 'N/A'}</TableCell>
                     <TableCell>{application.type || 'N/A'}</TableCell>
                     <TableCell>{getCriticalityBadge(application.criticality)}</TableCell>
-                    <TableCell>{application.internalResponsible.name}</TableCell>
+                    <TableCell>{application.internalResponsible?.name || 'N/A'}</TableCell>
                     <TableCell className={isReviewDueSoon(application.nextReviewDate) ? "text-red-500 font-medium" : ""}>
                       {formatDate(application.nextReviewDate)}
                     </TableCell>
@@ -939,7 +939,7 @@ const Applications = () => {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-base mb-1">{application.name}</h3>
+                      <h3 className="font-semibold text-base mb-1">{application.name || 'N/A'}</h3>
                       <p className="text-sm text-muted-foreground">{application.type || 'N/A'}</p>
                     </div>
                     <div className="flex flex-col items-end gap-1">
@@ -951,7 +951,7 @@ const Applications = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Responsible:</span>
-                      <span className="font-medium">{application.internalResponsible.name}</span>
+                      <span className="font-medium">{application.internalResponsible?.name || 'N/A'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Next Review:</span>

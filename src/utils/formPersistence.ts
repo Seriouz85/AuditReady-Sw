@@ -235,11 +235,11 @@ function debounce<T extends (...args: any[]) => any>(
 /**
  * Higher-order component for automatic form persistence
  */
-export function withFormPersistence<P extends Record<string, any>>(
-  Component: React.ComponentType<P>,
+export function withFormPersistence(
+  Component: React.ComponentType<any>,
   persistenceOptions: FormPersistenceOptions
 ) {
-  return function PersistedFormComponent(props: P & { initialValues?: Record<string, any> }) {
+  return function PersistedFormComponent(props: any) {
     const { initialValues = {}, ...restProps } = props;
     
     const {
@@ -251,17 +251,15 @@ export function withFormPersistence<P extends Record<string, any>>(
       resetForm
     } = useFormPersistence(initialValues, persistenceOptions);
 
-    return (
-      <Component
-        {...(restProps as P)}
-        formValues={values}
-        updateFormValue={updateValue}
-        updateFormValues={updateValues}
-        clearPersistedFormData={clearPersistedData}
-        hasPersistedFormData={hasPersistedData}
-        resetFormData={resetForm}
-      />
-    );
+    return React.createElement(Component, {
+      ...restProps,
+      formValues: values,
+      updateFormValue: updateValue,
+      updateFormValues: updateValues,
+      clearPersistedFormData: clearPersistedData,
+      hasPersistedFormData: hasPersistedData,
+      resetFormData: resetForm
+    });
   };
 }
 
@@ -283,32 +281,24 @@ export function FormPersistenceIndicator({
 }: FormPersistenceIndicatorProps) {
   if (!hasPersistedData) return null;
 
-  return (
-    <div className={`flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm ${className}`}>
-      <div className="flex-1">
-        <p className="text-blue-800 dark:text-blue-200">
-          📝 Draft saved automatically
-        </p>
-      </div>
-      <div className="flex gap-2">
-        {onRestore && (
-          <button
-            onClick={onRestore}
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
-          >
-            Restore
-          </button>
-        )}
-        {onClear && (
-          <button
-            onClick={onClear}
-            className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 underline"
-          >
-            Clear
-          </button>
-        )}
-      </div>
-    </div>
+  const containerClass = `flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm ${className}`;
+  
+  return React.createElement('div', { className: containerClass },
+    React.createElement('div', { className: 'flex-1' },
+      React.createElement('p', { className: 'text-blue-800 dark:text-blue-200' },
+        '📝 Draft saved automatically'
+      )
+    ),
+    React.createElement('div', { className: 'flex gap-2' },
+      onRestore && React.createElement('button', {
+        onClick: onRestore,
+        className: 'text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline'
+      }, 'Restore'),
+      onClear && React.createElement('button', {
+        onClick: onClear,
+        className: 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 underline'
+      }, 'Clear')
+    )
   );
 }
 
@@ -330,25 +320,32 @@ export function AutoSaveStatus({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  return (
-    <div className={`flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 ${className}`}>
-      {isSaving ? (
-        <>
-          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-          <span>Saving...</span>
-        </>
-      ) : lastSaved ? (
-        <>
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-          <span>Saved at {formatTime(lastSaved)}</span>
-        </>
-      ) : (
-        <>
-          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-          <span>Not saved</span>
-        </>
-      )}
-    </div>
+  const containerClass = `flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 ${className}`;
+  
+  return React.createElement('div', { className: containerClass },
+    isSaving 
+      ? [
+          React.createElement('div', { 
+            key: 'dot', 
+            className: 'w-2 h-2 bg-yellow-500 rounded-full animate-pulse' 
+          }),
+          React.createElement('span', { key: 'text' }, 'Saving...')
+        ]
+      : lastSaved 
+        ? [
+            React.createElement('div', { 
+              key: 'dot', 
+              className: 'w-2 h-2 bg-green-500 rounded-full' 
+            }),
+            React.createElement('span', { key: 'text' }, `Saved at ${formatTime(lastSaved)}`)
+          ]
+        : [
+            React.createElement('div', { 
+              key: 'dot', 
+              className: 'w-2 h-2 bg-gray-400 rounded-full' 
+            }),
+            React.createElement('span', { key: 'text' }, 'Not saved')
+          ]
   );
 }
 

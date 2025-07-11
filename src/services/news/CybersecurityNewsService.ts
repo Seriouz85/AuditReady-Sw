@@ -28,7 +28,9 @@ class CybersecurityNewsService {
     'https://www.darkreading.com/rss.xml'
   ];
   
-  private readonly CORS_PROXY = 'https://api.allorigins.win/get?url=';
+  // CORS proxy - currently disabled due to reliability issues
+  // private readonly CORS_PROXY = 'https://api.allorigins.win/get?url=';
+  private readonly USE_LIVE_FEEDS = false; // Temporarily disabled
 
   /**
    * Get latest cybersecurity news from multiple sources
@@ -78,6 +80,11 @@ class CybersecurityNewsService {
    * Fetch live news from RSS feeds
    */
   private async fetchLiveNews(): Promise<NewsResponse | null> {
+    // Temporarily disable live feeds due to CORS proxy issues
+    if (!this.USE_LIVE_FEEDS) {
+      return null;
+    }
+    
     try {
       // Set up fetch with timeout to prevent hanging
       const controller = new AbortController();
@@ -85,7 +92,7 @@ class CybersecurityNewsService {
       
       // Try The Hacker News RSS feed first (best cybersecurity source)
       const response = await fetch(
-        `${this.CORS_PROXY}${encodeURIComponent('https://feeds.feedburner.com/TheHackersNews')}`,
+        `https://api.allorigins.win/get?url=${encodeURIComponent('https://feeds.feedburner.com/TheHackersNews')}`,
         {
           headers: {
             'Accept': 'application/json'

@@ -234,12 +234,6 @@ const Dashboard = () => {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold">Quick Actions</h3>
-        </div>
-        <QuickActions />
-      </motion.div>
     </motion.div>
   );
 };
@@ -420,59 +414,5 @@ const CurrentActivities = () => {
   );
 };
 
-// Add a new "Quick Actions" section to the dashboard
-const QuickActions = () => {
-  const navigate = useNavigate();
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
-      <div
-        onClick={() => navigate('/editor')}
-        className="cursor-pointer"
-      >
-        <Card className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 h-full" data-card="true">
-          <CardContent className="p-4 flex flex-col items-center text-center">
-            <div className="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full mt-2 mb-3">
-              <Edit size={24} className="text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold">AuditReady Mermaid Editor</h3>
-            <p className="text-sm text-muted-foreground mt-1">Create stunning professional diagrams with Mermaid.js - 14+ diagram types, glassmorphic design, audit themes</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Placeholder for additional quick action cards */}
-      <div
-        className="cursor-pointer opacity-60 hover:opacity-80 transition-opacity"
-        onClick={() => alert("Coming soon!")}
-      >
-        <Card className="shadow-md border border-border/70 h-full" data-card="true">
-          <CardContent className="p-4 flex flex-col items-center text-center">
-            <div className="bg-purple-100 dark:bg-purple-900/50 p-3 rounded-full mt-2 mb-3">
-              <BookOpen size={24} className="text-purple-600 dark:text-purple-400" />
-            </div>
-            <h3 className="text-lg font-semibold">Documentation Generator</h3>
-            <p className="text-sm text-muted-foreground mt-1">Generate compliance documentation (Coming soon)</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div
-        className="cursor-pointer opacity-60 hover:opacity-80 transition-opacity"
-        onClick={() => alert("Coming soon!")}
-      >
-        <Card className="shadow-md border border-border/70 h-full" data-card="true">
-          <CardContent className="p-4 flex flex-col items-center text-center">
-            <div className="bg-green-100 dark:bg-green-900/50 p-3 rounded-full mt-2 mb-3">
-              <CheckSquare size={24} className="text-green-600 dark:text-green-400" />
-            </div>
-            <h3 className="text-lg font-semibold">Compliance Wizard</h3>
-            <p className="text-sm text-muted-foreground mt-1">Generate assessments faster (Coming soon)</p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-};
 
 export default Dashboard;

@@ -25,8 +25,8 @@ export function cleanMarkdownFormatting(text: string): string {
   cleaned = cleaned.replace(/\*/g, '');
   
   // Remove Unicode symbols and special characters (fixed with u flag)
-  cleaned = cleaned.replace(/[⚡️🔥💡⭐️✨🎯🚀💪📋🔒⚠️📊📈📉🔍]/gu, '');
-  cleaned = cleaned.replace(/[★☆✓✔️❌❗️❓⚙️🔧🛠️]/gu, '');
+  cleaned = cleaned.replace(/[⚡🔥💡⭐✨🎯🚀💪📋🔒⚠📊📈📉🔍]/gu, '');
+  cleaned = cleaned.replace(/[★☆✓✔❌❗❓⚙🔧🛠]/gu, '');
   
   // Remove emoji modifiers and zero-width characters
   cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');

@@ -48,6 +48,7 @@ const wsServer = new WebSocketServer({
 });
 
 // Create GraphQL WebSocket server
+// eslint-disable-next-line react-hooks/rules-of-hooks
 const serverCleanup = useServer(
   {
     schema,

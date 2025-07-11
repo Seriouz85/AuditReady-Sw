@@ -5,7 +5,7 @@
 
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
 import { useMultiTenantServices } from './MultiTenantService';
@@ -271,16 +271,26 @@ export class ExportService {
   }
 
   /**
-   * Generate Excel report with multiple sheets
+   * Generate Excel report with multiple sheets using ExcelJS
    */
   private async generateExcelReport(
     reportData: ReportData,
     options: ExportOptions
   ): Promise<string> {
-    const workbook = XLSX.utils.book_new();
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'AuditReady';
+    workbook.created = new Date();
 
     // Summary sheet
     if (options.includeSummary && reportData.summary) {
+      const summarySheet = workbook.addWorksheet('Summary');
+      
+      // Add header styling
+      summarySheet.getCell('A1').value = 'Report Summary';
+      summarySheet.getCell('A1').font = { bold: true, size: 16 };
+      summarySheet.mergeCells('A1:B1');
+
+      // Add metadata
       const summaryData = [
         ['Report Title', reportData.title],
         ['Generated', format(reportData.generatedAt, 'PPpp')],
@@ -294,42 +304,73 @@ export class ExportService {
         ['Critical Findings', reportData.summary.criticalFindings]
       ];
 
-      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+      summaryData.forEach((row, index) => {
+        const rowIndex = index + 2;
+        summarySheet.getCell(`A${rowIndex}`).value = row[0];
+        summarySheet.getCell(`B${rowIndex}`).value = row[1];
+        
+        if (index === 5) { // Header row
+          summarySheet.getRow(rowIndex).font = { bold: true };
+        }
+      });
+
+      // Auto-size columns
+      summarySheet.columns = [
+        { width: 20 },
+        { width: 30 }
+      ];
     }
 
     // Data sheets for each section
     reportData.sections.forEach((section, index) => {
       if (section.type === 'table' && section.data && section.columns) {
-        const sheetData = [section.columns, ...section.data];
-        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+        const sheetName = section.title.substring(0, 31); // Excel sheet name limit
+        const worksheet = workbook.addWorksheet(sheetName);
         
+        // Add headers
+        worksheet.addRow(section.columns);
+        const headerRow = worksheet.getRow(1);
+        headerRow.font = { bold: true };
+        headerRow.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: options.branding?.colors?.primary ? 
+            options.branding.colors.primary.replace('#', 'FF') : 'FF428BCA' }
+        };
+
+        // Add data
+        section.data.forEach((row: any[]) => {
+          worksheet.addRow(row);
+        });
+
         // Auto-size columns
-        const colWidths = section.columns.map((col, colIndex) => {
+        section.columns.forEach((_, colIndex) => {
           const maxLength = Math.max(
-            col.length,
+            section.columns[colIndex].length,
             ...section.data.map((row: any[]) => 
               row[colIndex] ? row[colIndex].toString().length : 0
             )
           );
-          return { wch: Math.min(maxLength + 2, 50) };
+          worksheet.getColumn(colIndex + 1).width = Math.min(maxLength + 2, 50);
         });
-        worksheet['!cols'] = colWidths;
 
-        XLSX.utils.book_append_sheet(
-          workbook, 
-          worksheet, 
-          section.title.substring(0, 31) // Excel sheet name limit
-        );
+        // Add borders
+        worksheet.eachRow((row, rowNumber) => {
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+          });
+        });
       }
     });
 
-    // Generate and save
-    const excelBuffer = XLSX.write(workbook, { 
-      type: 'array', 
-      bookType: 'xlsx' 
-    });
-    const blob = new Blob([excelBuffer], { 
+    // Generate buffer and create blob
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { 
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
     });
     

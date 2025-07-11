@@ -121,7 +121,7 @@ export const tags: Tag[] = [
 // Mock Standards
 export const standards: Standard[] = [
   {
-    id: 'iso-27001',
+    id: '55742f4e-769b-4efe-912c-1371de5e1cd6', // Real database UUID for ISO/IEC 27001
     name: 'ISO/IEC 27001',
     version: '2022',
     type: 'framework',
@@ -171,7 +171,7 @@ export const standards: Standard[] = [
     updatedAt: '2024-03-20T10:00:00Z',
   },
   {
-    id: 'nis2',
+    id: 'f4e13e2b-1bcc-4865-913f-084fb5599a00', // Real database UUID for NIS2 Directive
     name: 'NIS2 Directive',
     version: '2022',
     type: 'regulation',
@@ -186,7 +186,7 @@ export const standards: Standard[] = [
     updatedAt: '2024-03-12T14:30:00Z',
   },
   {
-    id: 'gdpr',
+    id: '73869227-cd63-47db-9981-c0d633a3d47b', // Real database UUID for GDPR
     name: 'GDPR',
     version: '2018',
     type: 'regulation',
@@ -11850,7 +11850,7 @@ export const assessments: Assessment[] = [
   {
     id: 'assessment-1',
     name: 'ISO 27001 Annual Assessment',
-    standardIds: ['iso-27001'],
+    standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6'], // Real database UUID for ISO/IEC 27001
     description: 'Annual comprehensive review of ISO 27001 ISMS implementation and effectiveness.',
     status: 'in-progress',
     progress: 68,
@@ -11913,13 +11913,14 @@ Completing final reviews of physical security controls and management system doc
 • Penetration testing results (conducted February 2024)
 • Security metrics dashboard showing KPI trends
 • Management review meeting minutes (quarterly reviews)`,
+    methods: ['Document Review', 'Interviews', 'Observation', 'Data Analysis & Statistics', 'Process Walkthrough'],
     updatedAt: '2024-03-28T14:30:00Z',
     createdAt: '2024-02-15T09:00:00Z',
   },
   {
     id: 'assessment-2',
     name: 'ISO 27001 Q4 2023 Assessment',
-    standardIds: ['iso-27001'],
+    standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6'], // Real database UUID for ISO/IEC 27001
     description: 'Quarterly assessment of ISO 27001 controls and implementation progress.',
     status: 'completed',
     progress: 100,
@@ -11964,7 +11965,7 @@ Comprehensive review of ISO 27001 controls conducted by multi-disciplinary team.
   {
     id: 'assessment-3',
     name: 'NIS2 Gap Analysis',
-    standardIds: ['nis2'],
+    standardIds: ['f4e13e2b-1bcc-4865-913f-084fb5599a00'], // Real database UUID for NIS2 Directive
     description: 'Initial assessment of compliance with NIS2 directive requirements.',
     status: 'in-progress',
     progress: 35,
@@ -12007,7 +12008,7 @@ Initial comprehensive review of current security posture against NIS2 Directive 
   {
     id: 'assessment-4',
     name: 'GDPR Annual Review',
-    standardIds: ['gdpr'],
+    standardIds: ['73869227-cd63-47db-9981-c0d633a3d47b'], // Real database UUID for GDPR
     description: 'Annual assessment of GDPR compliance focusing on data handling processes.',
     status: 'completed',
     progress: 100,
@@ -12100,7 +12101,7 @@ Detailed assessment of ISO 27002:2022 control implementation across organization
   {
     id: 'assessment-10',
     name: 'Third-Party Vendor Security Assessment',
-    standardIds: ['iso-27001'],
+    standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6'], // Real database UUID for ISO/IEC 27001
     description: 'Assessment of key third-party vendors against ISO 27001 requirements.',
     status: 'in-progress',
     progress: 75,
@@ -12142,7 +12143,7 @@ This assessment evaluates the security posture of our 15 critical third-party ve
   {
     id: 'assessment-11',
     name: 'NIS2 Incident Response Readiness',
-    standardIds: ['nis2'],
+    standardIds: ['f4e13e2b-1bcc-4865-913f-084fb5599a00'], // Real database UUID for NIS2 Directive
     description: 'Assessment of incident detection, response and reporting capabilities.',
     status: 'in-progress',
     progress: 60,
@@ -12187,7 +12188,7 @@ Comprehensive evaluation of our incident detection, response, and reporting capa
   {
     id: 'assessment-12',
     name: 'GDPR Processor Agreements Review',
-    standardIds: ['gdpr'],
+    standardIds: ['73869227-cd63-47db-9981-c0d633a3d47b'], // Real database UUID for GDPR
     description: 'Assessment of data processor agreements for GDPR compliance.',
     status: 'completed',
     progress: 100,
@@ -12598,6 +12599,127 @@ export const applications: Application[] = [
     nextReviewDate: '2024-08-15T11:20:00Z',
     createdAt: '2021-09-05T09:15:00Z',
     updatedAt: '2023-08-15T11:20:00Z'
+  },
+  {
+    id: 'assessment-multi-standard',
+    name: 'Multi-Framework Compliance Assessment 2024',
+    standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6', 'f4e13e2b-1bcc-4865-913f-084fb5599a00', 'iso-27002-2022'],
+    description: 'Comprehensive assessment covering ISO 27001, NIS2 Directive, and ISO 27002:2022 requirements for unified compliance management.',
+    status: 'in-progress',
+    progress: 72,
+    startDate: '2024-01-15T09:00:00Z',
+    assessorName: 'Sarah Williams',
+    assessorId: 'user-4',
+    assessorNames: ['Sarah Williams', 'Michael Thompson', 'Emily Johnson'],
+    assessorIds: ['user-4', 'user-1', 'user-2'],
+    notes: `🎯 **Multi-Framework Assessment Overview:**
+This comprehensive assessment evaluates our security posture against three critical frameworks: ISO 27001 (ISMS), NIS2 Directive (Critical Infrastructure Protection), and ISO 27002:2022 (Security Controls Implementation). The unified approach ensures compliance efficiency and identifies synergies between frameworks.
+
+📋 **Assessment Scope:**
+• **ISO 27001:** Information Security Management System implementation
+• **NIS2 Directive:** Critical infrastructure cybersecurity requirements
+• **ISO 27002:2022:** Comprehensive security controls catalog (114 controls)
+
+🔍 **Key Findings Across Frameworks:**
+• **Strong Performance Areas:**
+  - Access Control (ISO 27001 A.8 / ISO 27002 A.5): 94% compliance
+  - Cryptography (ISO 27001 A.10 / ISO 27002 A.7): 91% compliance
+  - Incident Management (All frameworks): 89% compliance
+  - Technical Security Measures (NIS2 Article 21): 87% compliance
+
+• **Areas Requiring Attention:**
+  - Supply Chain Security (ISO 27001 A.15 / NIS2 Article 23): 67% compliance
+  - Business Continuity (ISO 27001 A.17 / NIS2 Article 22): 71% compliance
+  - Vulnerability Management (ISO 27002 A.8): 73% compliance
+  - Crisis Management (NIS2 Article 14): 69% compliance
+
+⚡ **Cross-Framework Synergies Identified:**
+• Incident response procedures satisfy both ISO 27001 and NIS2 requirements
+• Risk management framework covers all three standards with minor adaptations
+• Security awareness training programs exceed requirements across all frameworks
+• Technical controls implementation provides coverage for 95% of overlapping requirements
+
+📊 **Compliance Status by Framework:**
+• **ISO 27001:** 78% compliant (89/114 controls)
+• **NIS2 Directive:** 74% compliant (23/31 requirements)
+• **ISO 27002:2022:** 76% compliant (87/114 controls)
+
+🎯 **Strategic Recommendations:**
+• Implement unified governance framework to manage all three standards
+• Develop integrated compliance dashboard for real-time monitoring
+• Establish cross-functional teams for supply chain and crisis management
+• Create harmonized policy framework addressing all regulatory requirements`,
+    evidence: `📁 **Multi-Framework Evidence Portfolio:**
+
+**Cross-Framework Documentation:**
+• Unified Security Policy Framework v2.0 (covers all three standards)
+• Integrated Risk Management Methodology (ISO 27001 + NIS2 alignment)
+• Comprehensive Control Matrix mapping 342 unique requirements
+• Multi-Standard Compliance Dashboard (real-time monitoring)
+
+**ISO 27001 Evidence:**
+• ISMS Documentation Suite (14 policies, 47 procedures)
+• Management Review Reports (Q1-Q3 2024)
+• Internal Audit Reports (conducted by KPMG, Q2 2024)
+• Risk Treatment Plans covering 127 identified risks
+• Statement of Applicability (SoA) v3.1 with justifications
+
+**NIS2 Directive Evidence:**
+• Critical Infrastructure Asset Inventory (updated monthly)
+• Cybersecurity Incident Response Plan v2.0 (NIS2 compliant)
+• Supply Chain Security Assessment Framework
+• Crisis Management Procedures and Communication Plans
+• Cybersecurity Governance Structure documentation
+
+**ISO 27002:2022 Evidence:**
+• Security Controls Implementation Status Report
+• Technical Safeguards Configuration Documentation
+• Physical Security Assessment Reports (quarterly)
+• Personnel Security Procedures and Training Records
+• Information Systems Security Configuration Standards
+
+📎 **Attached Evidence Files:**
+• Multi_Framework_Compliance_Matrix_2024.xlsx (requirements mapping, 18.7 MB)
+• Unified_Risk_Assessment_Report_Q3_2024.pdf (comprehensive analysis, 24.3 MB)
+• ISO27001_ISMS_Audit_Report_Q2_2024.pdf (external audit, 15.8 MB)
+• NIS2_Gap_Analysis_2024.docx (directive compliance, 12.4 MB)
+• ISO27002_Controls_Implementation_Status.xlsx (control status, 8.9 MB)
+• Cross_Framework_Policy_Suite_v2.0.zip (unified policies, 11.2 MB)
+• Incident_Response_Playbooks_Multi_Standard.pdf (procedures, 19.6 MB)
+• Security_Awareness_Training_Records_2024.xlsx (multi-framework, 6.7 MB)
+
+**Technical Security Evidence:**
+• Vulnerability Assessment Reports (monthly, Qualys + Nessus)
+• Penetration Testing Results (Q1 & Q3 2024, RedTeam Security)
+• SIEM Log Analysis covering 12 months (Splunk Enterprise)
+• Network Security Architecture Documentation
+• Endpoint Detection & Response (EDR) deployment evidence
+• Multi-Factor Authentication (MFA) implementation across all systems
+
+**Governance & Compliance Evidence:**
+• Board-level Cybersecurity Committee meeting minutes (quarterly)
+• Compliance Officer Reports to Executive Management
+• Third-party Security Assessment Results (SOC 2 Type II)
+• Supplier Security Assessment Questionnaire responses (67 vendors)
+• Business Continuity Testing Results (annual full-scale exercise)
+• Crisis Communication Plan testing documentation
+
+**Physical & Environmental Security:**
+• Data Center Security Audit Reports (quarterly assessments)
+• Physical Access Control Logs and Badge Management System data
+• Environmental Monitoring Systems documentation
+• Secure Disposal Certificates for IT assets (23 items in 2024)
+• Clean Desk Policy Compliance Assessment Results
+
+🔐 **Cross-Framework Metrics Dashboard:**
+• Real-time compliance scoring across all three frameworks
+• Automated control effectiveness monitoring
+• Integrated risk heat map covering all standards
+• Unified incident tracking and reporting system
+• Comprehensive security metrics trending analysis`,
+    methods: ['Document Review', 'Interviews', 'Observation', 'Surveys and Questionnaires', 'Data Analysis & Statistics', 'Sampling', 'Process Walkthrough', 'Benchmarking'],
+    updatedAt: '2024-03-28T16:45:00Z',
+    createdAt: '2024-01-15T09:00:00Z',
   }
 ];
 

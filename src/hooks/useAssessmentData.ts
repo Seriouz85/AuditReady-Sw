@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { Assessment, Requirement, RequirementStatus, Standard } from '@/types';
 import { standards as allStandards } from '@/data/mockData';
 import { assessmentProgressService, AssessmentStats } from '@/services/assessments/AssessmentProgressService';
+import { StandardsService } from '@/services/standards/StandardsService';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Remove duplicate interface as it's now imported from the service
 
@@ -19,21 +22,66 @@ interface UseAssessmentDataReturn {
 }
 
 export function useAssessmentData(initialAssessment: Assessment): UseAssessmentDataReturn {
+  const { isDemo } = useAuth();
   const [assessment, setAssessment] = useState<Assessment>({...initialAssessment});
   const [assessmentRequirements, setAssessmentRequirements] = useState<Requirement[]>([]);
+  const [standards, setStandards] = useState<Standard[]>([]);
   const [activeStandardId, setActiveStandardId] = useState<string | undefined>(
     initialAssessment.standardIds.length === 1 ? initialAssessment.standardIds[0] : undefined
   );
   
-  // Initialize requirements with stored statuses
+  // Initialize requirements from database (for all accounts including demo in assessment flow)
   useEffect(() => {
-    const requirements = assessmentProgressService.getRequirementsWithStoredStatuses(initialAssessment);
-    setAssessmentRequirements(requirements);
+    const fetchRequirements = async () => {
+      try {
+        console.log('Loading requirements from database for standards:', initialAssessment.standardIds);
+        const requirements = await assessmentProgressService.getRequirementsWithStoredStatusesAsync(initialAssessment);
+        
+        console.log(`Loaded ${requirements.length} requirements for assessment ${initialAssessment.id}`);
+        console.log('Standards breakdown:', requirements.reduce((acc, req) => {
+          acc[req.standardId] = (acc[req.standardId] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>));
+        
+        setAssessmentRequirements(requirements);
+      } catch (error) {
+        console.error('Error fetching requirements:', error);
+        // Final fallback to mock data with stored statuses
+        const requirements = assessmentProgressService.getRequirementsWithStoredStatuses(initialAssessment);
+        setAssessmentRequirements(requirements);
+      }
+    };
+
+    fetchRequirements();
   }, [initialAssessment]);
   
-  // Get standards information
-  const standards = useMemo(() => {
-    return allStandards.filter(s => assessment.standardIds.includes(s.id));
+  // Fetch standards from database (for all accounts including demo in assessment flow)
+  useEffect(() => {
+    const fetchStandards = async () => {
+      try {
+        // Create instance of StandardsService
+        const standardsService = new StandardsService();
+        
+        // Fetch all available standards from database
+        const availableStandards = await standardsService.getAvailableStandards();
+        
+        // Filter to only include standards that are part of this assessment
+        const assessmentStandards = availableStandards.filter(s => 
+          assessment.standardIds.includes(s.id)
+        );
+        
+        setStandards(assessmentStandards);
+      } catch (error) {
+        console.error('Error fetching standards from database:', error);
+        // Fallback to mock data if database fetch fails
+        const fallbackStandards = allStandards.filter(s => assessment.standardIds.includes(s.id));
+        setStandards(fallbackStandards);
+      }
+    };
+
+    if (assessment.standardIds.length > 0) {
+      fetchStandards();
+    }
   }, [assessment.standardIds]);
   
   // Filter requirements based on active standard if selected

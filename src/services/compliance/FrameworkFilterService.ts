@@ -189,12 +189,16 @@ You are required to report significant cybersecurity incidents to the CSIRT auth
         /45-day maximum for disabling dormant accounts, 72-hour GDPR breach notification to authorities, 24-hour NIS2 incident early warning, 1-month deadline for full incident reports, 90-day minimum audit log retention, monthly vulnerability remediation cycles/g,
         'key compliance timelines: disable unused accounts within 45 days, have incident response plans ready for quick regulatory notifications (72h for GDPR breaches, 24h for NIS2 incidents), keep audit logs for at least 90 days, and patch vulnerabilities monthly'
       );
-    } else if (selectedFrameworks.gdpr) {
+    }
+    
+    if (selectedFrameworks.gdpr && !selectedFrameworks.nis2) {
       text = text.replace(
         /72-hour GDPR breach notification/g,
         'GDPR 72-hour breach notification (having a breach response plan and authority contact details ready makes this achievable)'
       );
-    } else if (selectedFrameworks.nis2) {
+    }
+    
+    if (selectedFrameworks.nis2 && !selectedFrameworks.gdpr) {
       text = text.replace(
         /24-hour NIS2 incident early warning/g,
         'NIS2 24-hour incident reporting (early detection systems and documented escalation procedures help meet this timeline)'

@@ -19,9 +19,10 @@ import {
   Download,
   ClipboardCheck,
   Eye,
-  FileText
+  FileText,
+  HelpCircle
 } from "lucide-react";
-import { Assessment, Requirement, RequirementStatus, Standard } from "@/types";
+import { Assessment, Requirement, RequirementStatus, Standard, ASSESSMENT_METHODS } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -58,14 +59,14 @@ import { toast } from "@/utils/toast";
 import { requirements as allRequirements, standards } from "@/data/mockData";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "@/lib/i18n";
-import { AssessmentReport } from "./AssessmentReport";
+import { NewAssessmentReport } from "./NewAssessmentReport";
 import { useAssessmentData } from "@/hooks/useAssessmentData";
+import "@/styles/assessment-export.css";
 import { RequirementCard } from "./RequirementCard";
 import { assessmentCompletionService, NotesTransferResult } from "@/services/assessments/AssessmentCompletionService";
 import { PageHeader } from '@/components/PageHeader';
 import { motion } from "framer-motion";
-import { generatePDF } from "@/utils/pdfUtils";
-import { generateWordExport } from "@/utils/wordUtils";
+import { ProfessionalExportService } from "@/services/assessments/ProfessionalExportService";
 
 type AssessmentStatus = 'draft' | 'in-progress' | 'completed';
 
@@ -97,6 +98,12 @@ export function AssessmentDetail({
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { t } = useTranslation();
   
+  // Search and filter state for requirements
+  const [requirementSearchQuery, setRequirementSearchQuery] = useState('');
+  const [requirementStatusFilter, setRequirementStatusFilter] = useState('all');
+  const [requirementStandardFilter, setRequirementStandardFilter] = useState('all');
+  const [requirementPriorityFilter, setRequirementPriorityFilter] = useState('all');
+  
   // Use the assessment data hook for state management
   const {
     assessment: localAssessment,
@@ -116,6 +123,118 @@ export function AssessmentDetail({
     notApplicableCount,
     progress
   } = stats;
+  
+  // Filter requirements based on search query and filters
+  const filteredRequirements = assessmentRequirements.filter(req => {
+    // Search filter
+    if (requirementSearchQuery) {
+      const query = requirementSearchQuery.toLowerCase();
+      const standardName = selectedStandards.find(s => s.id === req.standardId)?.name?.toLowerCase() || '';
+      
+      const matchesSearch = (
+        req.title.toLowerCase().includes(query) ||
+        req.description.toLowerCase().includes(query) ||
+        standardName.includes(query) ||
+        req.id.toLowerCase().includes(query)
+      );
+      
+      if (!matchesSearch) return false;
+    }
+    
+    // Status filter
+    if (requirementStatusFilter !== 'all') {
+      if (req.status !== requirementStatusFilter) return false;
+    }
+    
+    // Standard filter
+    if (requirementStandardFilter !== 'all') {
+      if (req.standardId !== requirementStandardFilter) return false;
+    }
+    
+    // Priority filter (assuming requirements have a priority field)
+    if (requirementPriorityFilter !== 'all') {
+      const reqPriority = (req as any).priority || 'medium'; // Default to medium if not set
+      if (reqPriority !== requirementPriorityFilter) return false;
+    }
+    
+    return true;
+  });
+  
+  // Group filtered requirements by standard with proper sorting
+  const groupedFilteredRequirements = filteredRequirements.reduce((acc, req) => {
+    const standardId = req.standardId;
+    if (!acc[standardId]) {
+      acc[standardId] = [];
+    }
+    acc[standardId].push(req);
+    return acc;
+  }, {} as Record<string, typeof assessmentRequirements>);
+
+  // Sort requirements within each standard group by control_id/section for proper ordering
+  Object.keys(groupedFilteredRequirements).forEach(standardId => {
+    groupedFilteredRequirements[standardId].sort((a, b) => {
+      // First sort by section, then by control ID or name
+      const sectionCompare = (a.section || '').localeCompare(b.section || '');
+      if (sectionCompare !== 0) return sectionCompare;
+      
+      // Try to sort by control ID if available, otherwise by name
+      const aId = a.code || a.name || '';
+      const bId = b.code || b.name || '';
+      return aId.localeCompare(bId, undefined, { numeric: true });
+    });
+  });
+
+  // Debug logging to identify mixing issues
+  useEffect(() => {
+    if (assessmentRequirements.length > 0) {
+      console.log('=== REQUIREMENTS DEBUG ===');
+      console.log('Total requirements loaded:', assessmentRequirements.length);
+      console.log('Assessment standards:', localAssessment.standardIds);
+      
+      const standardCounts = assessmentRequirements.reduce((acc, req) => {
+        acc[req.standardId] = (acc[req.standardId] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      console.log('Requirements by standard:', standardCounts);
+      
+      // Check for requirements that don't match assessment standards
+      const invalidRequirements = assessmentRequirements.filter(req => 
+        !localAssessment.standardIds.includes(req.standardId)
+      );
+      
+      if (invalidRequirements.length > 0) {
+        console.error('🚨 MIXING DETECTED! Found requirements not matching assessment standards:');
+        console.error('Invalid requirements count:', invalidRequirements.length);
+        console.error('Sample invalid requirements:', invalidRequirements.slice(0, 5).map(r => ({
+          id: r.id,
+          name: r.name,
+          standardId: r.standardId
+        })));
+      } else {
+        console.log('✅ All requirements properly filtered for assessment standards');
+      }
+      console.log('=== END DEBUG ===');
+    }
+  }, [assessmentRequirements, localAssessment.standardIds]);
+  
+  // Get local standards for display
+  const localStandards = selectedStandards;
+  
+  // Filter helper functions
+  const hasActiveFilters = !!(
+    requirementSearchQuery ||
+    requirementStatusFilter !== 'all' ||
+    requirementStandardFilter !== 'all' ||
+    requirementPriorityFilter !== 'all'
+  );
+  
+  const clearAllFilters = () => {
+    setRequirementSearchQuery('');
+    setRequirementStatusFilter('all');
+    setRequirementStandardFilter('all');
+    setRequirementPriorityFilter('all');
+  };
   
   // Handle requirement status change
   const handleRequirementStatusChange = (reqId: string, newStatus: RequirementStatus) => {
@@ -359,49 +478,12 @@ export function AssessmentDetail({
   // Handle PDF export
   const handleExportPDF = async () => {
     try {
-      const assessmentData = {
-        title: localAssessment.name,
-        status: localAssessment.status,
-        progress: progress,
-        assessor: localAssessment.assessorNames && localAssessment.assessorNames.length > 1
-          ? localAssessment.assessorNames.join(', ')
-          : localAssessment.assessorName,
-        startDate: localAssessment.startDate ? new Date(localAssessment.startDate).toLocaleDateString() : 'N/A',
-        endDate: localAssessment.endDate ? new Date(localAssessment.endDate).toLocaleDateString() : undefined,
-        description: localAssessment.description,
-        
-        assessmentSummary: {
-          assessmentNotes: localAssessment.notes,
-          evidence: localAssessment.evidence,
-          attachments: localAssessment.evidence ? extractAttachmentsFromEvidence(localAssessment.evidence) : []
-        },
-        
-        standards: selectedStandards.map(s => ({ name: s.name, version: s.version })),
-        summary: {
-          totalRequirements,
-          fulfilled: fulfilledCount,
-          partial: partialCount,
-          notFulfilled: notFulfilledCount,
-          notApplicable: notApplicableCount
-        },
-        requirements: assessmentRequirements.map(req => ({
-          code: req.code,
-          name: req.name,
-          description: req.description,
-          status: req.status,
-          notes: req.notes,
-          evidence: req.evidence
-        })),
-        
-        metadata: {
-          organizationName: 'Organization',
-          reportType: 'Security Assessment Report',
-          confidentialityLevel: 'CONFIDENTIAL',
-          version: '1.0'
-        }
-      };
-      
-      await generatePDF(null, `${localAssessment.name} - Assessment Report`, undefined, assessmentData);
+      const exportService = ProfessionalExportService.getInstance();
+      await exportService.exportPDF(
+        localAssessment,
+        assessmentRequirements,
+        selectedStandards
+      );
     } catch (error) {
       console.error('PDF export error:', error);
       toast.error('Failed to export PDF');
@@ -411,49 +493,12 @@ export function AssessmentDetail({
   // Handle Word export
   const handleExportWord = async () => {
     try {
-      const assessmentData = {
-        title: localAssessment.name,
-        status: localAssessment.status,
-        progress: progress,
-        assessor: localAssessment.assessorNames && localAssessment.assessorNames.length > 1
-          ? localAssessment.assessorNames.join(', ')
-          : localAssessment.assessorName,
-        startDate: localAssessment.startDate ? new Date(localAssessment.startDate).toLocaleDateString() : 'N/A',
-        endDate: localAssessment.endDate ? new Date(localAssessment.endDate).toLocaleDateString() : undefined,
-        description: localAssessment.description,
-        
-        assessmentSummary: {
-          assessmentNotes: localAssessment.notes,
-          evidence: localAssessment.evidence,
-          attachments: localAssessment.evidence ? extractAttachmentsFromEvidence(localAssessment.evidence) : []
-        },
-        
-        standards: selectedStandards.map(s => ({ name: s.name, version: s.version })),
-        summary: {
-          totalRequirements,
-          fulfilled: fulfilledCount,
-          partial: partialCount,
-          notFulfilled: notFulfilledCount,
-          notApplicable: notApplicableCount
-        },
-        requirements: assessmentRequirements.map(req => ({
-          code: req.code,
-          name: req.name,
-          description: req.description,
-          status: req.status,
-          notes: req.notes,
-          evidence: req.evidence
-        })),
-        
-        metadata: {
-          organizationName: 'Organization',
-          reportType: 'Security Assessment Report',
-          confidentialityLevel: 'CONFIDENTIAL',
-          version: '1.0'
-        }
-      };
-      
-      await generateWordExport(assessmentData, `${localAssessment.name} - Assessment Report`);
+      const exportService = ProfessionalExportService.getInstance();
+      await exportService.exportWord(
+        localAssessment,
+        assessmentRequirements,
+        selectedStandards
+      );
     } catch (error) {
       console.error('Word export error:', error);
       toast.error('Failed to export Word document');
@@ -487,7 +532,7 @@ export function AssessmentDetail({
 
   return (
     <motion.div 
-      className="container mx-auto py-6 space-y-4 sm:space-y-6 min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)]"
+      className="max-w-none mx-auto px-4 lg:px-6 xl:px-8 py-6 space-y-4 sm:space-y-6 min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)]"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -753,28 +798,242 @@ export function AssessmentDetail({
                 </TabsContent>
                 
                 <TabsContent value="requirements" className="space-y-4 pt-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-sm font-medium">{t('assessment.requirements.count')} ({totalRequirements})</h3>
-                    {isCompleted && (
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                        <Lock size={12} className="mr-1" />
-                        {t('assessment.requirements.locked')}
-                      </Badge>
+                  {/* Header with counts and status */}
+                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-medium">{t('assessment.requirements.count')} ({filteredRequirements.length}/{totalRequirements})</h3>
+                      {isCompleted && (
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                          <Lock size={12} className="mr-1" />
+                          {t('assessment.requirements.locked')}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Enhanced Search and Filter Controls */}
+                  <div className="bg-gradient-to-r from-gray-50/50 to-gray-100/30 dark:from-gray-900/50 dark:to-gray-800/30 rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-4 space-y-4">
+                    {/* Search Bar */}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <Input
+                        placeholder="Search requirements by title, description, or standard..."
+                        value={requirementSearchQuery}
+                        onChange={(e) => setRequirementSearchQuery(e.target.value)}
+                        className="pl-10 bg-white/80 dark:bg-gray-900/80 border-gray-300/50 dark:border-gray-600/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                      />
+                      {requirementSearchQuery && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute inset-y-0 right-0 px-3 h-full"
+                          onClick={() => setRequirementSearchQuery('')}
+                        >
+                          <CheckCircle2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Filter Controls - Responsive Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {/* Status Filter */}
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-muted-foreground">Status</Label>
+                        <Select value={requirementStatusFilter} onValueChange={setRequirementStatusFilter}>
+                          <SelectTrigger className="h-9 bg-white/80 dark:bg-gray-900/80">
+                            <SelectValue placeholder="All Statuses" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="fulfilled">✅ Fulfilled</SelectItem>
+                            <SelectItem value="partial">⚠️ Partial</SelectItem>
+                            <SelectItem value="not-fulfilled">❌ Not Fulfilled</SelectItem>
+                            <SelectItem value="not-applicable">➖ Not Applicable</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Standard Filter */}
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-muted-foreground">Standard</Label>
+                        <Select value={requirementStandardFilter} onValueChange={setRequirementStandardFilter}>
+                          <SelectTrigger className="h-9 bg-white/80 dark:bg-gray-900/80">
+                            <SelectValue placeholder="All Standards" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Standards</SelectItem>
+                            {localStandards.map(standard => (
+                              <SelectItem key={standard.id} value={standard.id}>
+                                {standard.name} ({standard.version})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Priority Filter */}
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-muted-foreground">Priority</Label>
+                        <Select value={requirementPriorityFilter} onValueChange={setRequirementPriorityFilter}>
+                          <SelectTrigger className="h-9 bg-white/80 dark:bg-gray-900/80">
+                            <SelectValue placeholder="All Priorities" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Priorities</SelectItem>
+                            <SelectItem value="high">🔴 High</SelectItem>
+                            <SelectItem value="medium">🟡 Medium</SelectItem>
+                            <SelectItem value="low">🟢 Low</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Clear Filters */}
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-muted-foreground">Actions</Label>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 w-full text-xs"
+                          onClick={clearAllFilters}
+                          disabled={!hasActiveFilters}
+                        >
+                          Clear All
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Active Filters Display */}
+                    {hasActiveFilters && (
+                      <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
+                        <span className="text-xs text-muted-foreground">Active filters:</span>
+                        {requirementSearchQuery && (
+                          <Badge variant="secondary" className="text-xs">
+                            Search: "{requirementSearchQuery}"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-3 w-3 p-0 ml-1 hover:bg-transparent"
+                              onClick={() => setRequirementSearchQuery('')}
+                            >
+                              ×
+                            </Button>
+                          </Badge>
+                        )}
+                        {requirementStatusFilter !== 'all' && (
+                          <Badge variant="secondary" className="text-xs">
+                            Status: {requirementStatusFilter}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-3 w-3 p-0 ml-1 hover:bg-transparent"
+                              onClick={() => setRequirementStatusFilter('all')}
+                            >
+                              ×
+                            </Button>
+                          </Badge>
+                        )}
+                        {requirementStandardFilter !== 'all' && (
+                          <Badge variant="secondary" className="text-xs">
+                            Standard: {localStandards.find(s => s.id === requirementStandardFilter)?.name}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-3 w-3 p-0 ml-1 hover:bg-transparent"
+                              onClick={() => setRequirementStandardFilter('all')}
+                            >
+                              ×
+                            </Button>
+                          </Badge>
+                        )}
+                        {requirementPriorityFilter !== 'all' && (
+                          <Badge variant="secondary" className="text-xs">
+                            Priority: {requirementPriorityFilter}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-3 w-3 p-0 ml-1 hover:bg-transparent"
+                              onClick={() => setRequirementPriorityFilter('all')}
+                            >
+                              ×
+                            </Button>
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </div>
                   
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 md:pr-4 w-full">
-                    {assessmentRequirements.map((req) => (
-                      <RequirementCard
-                        key={req.id}
-                        requirement={req}
-                        readOnly={readOnly}
-                        isCompleted={isCompleted}
-                        onStatusChange={handleRequirementStatusChange}
-                        onNotesChange={handleRequirementNotesChange}
-                        fullWidth={true}
-                      />
-                    ))}
+                  <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2 md:pr-4 w-full">
+                    {Object.entries(groupedFilteredRequirements).map(([standardId, requirements]) => {
+                      const standard = localStandards.find(s => s.id === standardId);
+                      
+                      // Fallback to a more user-friendly name if standard not found
+                      let standardName;
+                      if (standard) {
+                        standardName = `${standard.name} (${standard.version})`;
+                      } else {
+                        // Map common UUID patterns to readable names as fallback
+                        const fallbackNames: Record<string, string> = {
+                          '55742f4e-769b-4efe-912c-1371de5e1cd6': 'ISO/IEC 27001 (2022)',
+                          'f4e13e2b-1bcc-4865-913f-084fb5599a00': 'NIS2 Directive (2022)',
+                          '73869227-cd63-47db-9981-c0d633a3d47b': 'GDPR (2018)',
+                          '8508cfb0-3457-4226-b39a-851be52ef7ea': 'ISO/IEC 27002 (2022)',
+                          'afe9728d-2084-4b6b-8653-b04e1e92cdff': 'CIS Controls IG1 (8.1.2)',
+                          '05501cbc-c463-4668-ae84-9acb1a4d5332': 'CIS Controls IG2 (8.1.2)',
+                          'b1d9e82f-b0c3-40e2-89d7-4c51e216214e': 'CIS Controls IG3 (8.1.2)'
+                        };
+                        standardName = fallbackNames[standardId] || `Unknown Standard (${standardId.substring(0, 8)}...)`;
+                      }
+                      
+                      return (
+                        <div key={standardId} className="space-y-4">
+                          {/* Standard Header with visual separation */}
+                          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border pb-2">
+                            <div className="flex items-center gap-3 py-2 px-3 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                              <div className="w-2 h-8 bg-gradient-to-b from-primary to-primary/60 rounded-full"></div>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-lg text-primary">{standardName}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {requirements.length} requirement{requirements.length !== 1 ? 's' : ''}
+                                </p>
+                              </div>
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+                                {standard?.category || 'Standard'}
+                              </Badge>
+                            </div>
+                          </div>
+                          
+                          {/* Requirements for this standard */}
+                          <div className="space-y-3 pl-4">
+                            {requirements.map((req) => (
+                              <RequirementCard
+                                key={req.id}
+                                requirement={req}
+                                readOnly={readOnly}
+                                isCompleted={isCompleted}
+                                onStatusChange={handleRequirementStatusChange}
+                                onNotesChange={handleRequirementNotesChange}
+                                fullWidth={true}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                    {Object.keys(groupedFilteredRequirements).length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-medium mb-2">No requirements found</p>
+                        <p className="text-sm">
+                          {requirementSearchQuery 
+                            ? `No requirements match "${requirementSearchQuery}"`
+                            : "No requirements available for this assessment"
+                          }
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
                 
@@ -810,6 +1069,118 @@ export function AssessmentDetail({
                         setHasChanges(true);
                       }}
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Assessment Methods</Label>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="gap-1">
+                            <HelpCircle className="h-4 w-4" />
+                            Guidance
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Assessment Methods Guide</DialogTitle>
+                            <DialogDescription>
+                              Select the methods used during your assessment
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 mt-4">
+                            <div>
+                              <h4 className="font-medium mb-2">1. Document Review</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Systematically examining and analyzing existing documents and records. 
+                                You're literally "at your desk," reviewing papers, digital files, and official reports.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">2. Interviews</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Collecting qualitative information directly from individuals. 
+                                Talk to people involved to understand their experiences, opinions, and knowledge.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">3. Observation</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Direct observation of processes, activities, or behaviors in their natural environment. 
+                                Witness operations or actions offering a real-time perspective.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">4. Surveys and Questionnaires</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Collecting quantitative and qualitative information from a larger group. 
+                                Distribute questions to gather data on opinions, satisfaction, or adherence.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">5. Data Analysis & Statistics</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Using statistical techniques to analyze large datasets. 
+                                Examine numbers to find patterns, trends, and anomalies.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">6. Sampling</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Selecting a representative subset for detailed examination. 
+                                When data is vast, pick a smaller group that represents the whole.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">7. Process Walkthrough</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Step-by-step review of a specific process. 
+                                Trace a process from start to finish to see how it flows and identify controls.
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">8. Benchmarking</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Comparing performance against best practices or similar organizations. 
+                                Measure against standards to identify improvements or confirm good performance.
+                              </p>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.values(ASSESSMENT_METHODS).map((method) => (
+                        <label
+                          key={method}
+                          className={`
+                            flex items-center space-x-2 p-3 rounded-lg border cursor-pointer
+                            transition-colors duration-200
+                            ${localAssessment.methods?.includes(method) 
+                              ? 'bg-blue-50 border-blue-300 dark:bg-blue-950/30 dark:border-blue-700' 
+                              : 'bg-white border-gray-200 hover:bg-gray-50 dark:bg-gray-950 dark:border-gray-800 dark:hover:bg-gray-900'
+                            }
+                            ${readOnly || isCompleted ? 'opacity-50 cursor-not-allowed' : ''}
+                          `}
+                        >
+                          <input
+                            type="checkbox"
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            checked={localAssessment.methods?.includes(method) || false}
+                            disabled={readOnly || isCompleted}
+                            onChange={(e) => {
+                              const currentMethods = localAssessment.methods || [];
+                              const newMethods = e.target.checked
+                                ? [...currentMethods, method]
+                                : currentMethods.filter(m => m !== method);
+                              updateAssessment({ methods: newMethods });
+                              setHasChanges(true);
+                            }}
+                          />
+                          <span className="text-sm font-medium">{method}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
@@ -1190,7 +1561,7 @@ export function AssessmentDetail({
       
       {/* Report Dialog */}
       {showReportDialog && (
-        <AssessmentReport
+        <NewAssessmentReport
           assessment={localAssessment}
           requirements={assessmentRequirements}
           standards={selectedStandards}

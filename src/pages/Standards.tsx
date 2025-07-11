@@ -262,8 +262,7 @@ const Standards = () => {
         const savedStandards = localStorage.getItem('standards');
         if (!savedStandards) {
           const initialStandards = standardsLibrary.filter(std => 
-            std.id !== 'nist-csf-2.0' && 
-            std.id !== 'iso-27005-2022'
+            ['iso-27001', 'iso-27002-2022', 'gdpr', 'nis2', 'cis-ig3'].includes(std.id)
           );
           localStorage.setItem('standards', JSON.stringify(initialStandards));
           

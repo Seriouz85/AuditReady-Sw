@@ -216,10 +216,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const loadDemoData = async () => {
     setLoading(false); // Ensure loading state is cleared for demo users
-    // Create demo organization structure
+    // Create demo organization structure (using real database org)
     const demoOrg: Organization = {
-      id: 'demo-org',
-      name: 'Demo Company',
+      id: '34adc4bb-d1e7-43bd-8249-89c76520533d', // Real demo org ID from database
+      name: 'Demo Organization',
       slug: 'demo-company',
       industry: 'Technology',
       company_size: '51-200',
@@ -253,7 +253,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const demoOrgUser: OrganizationUser = {
       id: 'demo-org-user',
-      organization_id: 'demo-org',
+      organization_id: '34adc4bb-d1e7-43bd-8249-89c76520533d', // Real demo org ID
       user_id: user?.id || 'demo-user',
       role_id: 'demo-role',
       status: 'active',

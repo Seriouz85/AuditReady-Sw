@@ -43,13 +43,24 @@ export class StandardsService {
       }
 
       console.log('Fetching fresh standards data from database');
-      const { data, error } = await supabase
+      
+      // Create a new supabase client without auth for public data
+      const { createClient } = await import('@supabase/supabase-js');
+      const publicSupabase = createClient(
+        import.meta.env.VITE_SUPABASE_URL || '',
+        import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+      );
+      
+      const { data, error } = await publicSupabase
         .from('standards_library')
         .select('id, name, version, type, description, category, created_at, updated_at')
         .eq('is_active', true)
         .order('name');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database query failed, falling back to mock data:', error);
+        throw error;
+      }
 
       const standards = data?.map(std => ({
         id: std.id,
@@ -382,16 +393,17 @@ export const useStandardsService = () => {
 
   const getAvailableStandards = async (): Promise<Standard[]> => {
     if (isDemo) {
-      // Return demo standards library
+      // Return demo standards library for assessment flow
       try {
-        const { standardsLibrary } = await import('@/pages/Standards');
-        return standardsLibrary;
+        const { standards } = await import('@/data/mockData');
+        return standards;
       } catch (error) {
-        console.error('Error importing standards library:', error);
+        console.error('Error importing mock standards:', error);
         return [];
       }
     }
 
+    // Use database for production accounts
     return service.getAvailableStandards();
   };
 

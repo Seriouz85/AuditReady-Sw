@@ -1,5 +1,6 @@
 import { Assessment, Requirement, RequirementStatus } from '@/types';
 import { requirements as allRequirements } from '@/data/mockData';
+import { supabase } from '@/lib/supabase';
 
 // Storage keys for persistence
 const ASSESSMENT_PROGRESS_KEY = 'assessment_progress_data';
@@ -51,9 +52,73 @@ export class AssessmentProgressService {
    * Get requirements for an assessment
    */
   public getAssessmentRequirements(assessment: Assessment): Requirement[] {
+    // For now, still use mock data as requirements need to be fetched asynchronously
+    // This will be replaced with async version in the future
     return allRequirements.filter(req => 
       assessment.standardIds.includes(req.standardId)
     );
+  }
+
+  /**
+   * Get requirements for an assessment from database (async version)
+   */
+  public async getAssessmentRequirementsAsync(assessment: Assessment): Promise<Requirement[]> {
+    try {
+      // Create a new supabase client without auth for public data
+      const { createClient } = await import('@supabase/supabase-js');
+      const publicSupabase = createClient(
+        import.meta.env.VITE_SUPABASE_URL || '',
+        import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+      );
+      
+      const { data, error } = await publicSupabase
+        .from('requirements_library')
+        .select('*')
+        .in('standard_id', assessment.standardIds)
+        .eq('is_active', true)
+        .order('control_id');
+
+      if (error) {
+        console.error('Database error, falling back to mock data:', error);
+        throw error;
+      }
+
+      // If no data returned from database, use mock data
+      if (!data || data.length === 0) {
+        console.log('No requirements found in database, using filtered mock data');
+        return allRequirements.filter(req => 
+          assessment.standardIds.includes(req.standardId)
+        );
+      }
+
+      // Map database requirements to our Requirement type
+      const requirements: Requirement[] = data.map(req => ({
+        id: req.id,
+        standardId: req.standard_id,
+        section: req.section || '',
+        code: req.control_id,
+        name: req.title,
+        description: req.description || '',
+        guidance: req.implementation_guidance || '',
+        auditReadyGuidance: req.audit_ready_guidance || '',
+        status: 'not-fulfilled' as RequirementStatus, // Default status
+        priority: req.priority || 'medium',
+        tags: req.tags || [],
+        categories: req.tags || [],
+        createdAt: req.created_at,
+        updatedAt: req.updated_at
+      }));
+
+      console.log(`Loaded ${requirements.length} requirements from database for standards:`, assessment.standardIds);
+      return requirements;
+    } catch (error) {
+      console.error('Error fetching requirements from database:', error);
+      // Fallback to mock data if database fetch fails
+      console.log('Falling back to filtered mock data');
+      return allRequirements.filter(req => 
+        assessment.standardIds.includes(req.standardId)
+      );
+    }
   }
   
   /**
@@ -76,6 +141,19 @@ export class AssessmentProgressService {
    */
   public getRequirementsWithStoredStatuses(assessment: Assessment): Requirement[] {
     const requirements = this.getAssessmentRequirements(assessment);
+    const storedStatuses = this.getStoredRequirementStatuses(assessment.id);
+    
+    return requirements.map(req => ({
+      ...req,
+      status: storedStatuses[req.id] || req.status
+    }));
+  }
+
+  /**
+   * Get requirements with current stored statuses applied (async version)
+   */
+  public async getRequirementsWithStoredStatusesAsync(assessment: Assessment): Promise<Requirement[]> {
+    const requirements = await this.getAssessmentRequirementsAsync(assessment);
     const storedStatuses = this.getStoredRequirementStatuses(assessment.id);
     
     return requirements.map(req => ({
