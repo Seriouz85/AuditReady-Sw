@@ -487,7 +487,7 @@ export function AssessmentDetail({
 
   return (
     <motion.div 
-      className="container mx-auto py-6 space-y-4 sm:space-y-6"
+      className="container mx-auto py-6 space-y-4 sm:space-y-6 min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)]"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -625,8 +625,8 @@ export function AssessmentDetail({
         variants={itemVariants}
       >
         {/* Main Assessment Content */}
-        <div className="lg:col-span-2 xl:col-span-3">
-          <Card className="bg-gradient-to-br from-white to-gray-50/30 dark:from-gray-900 dark:to-gray-800/30 border-0 shadow-lg">
+        <div className="lg:col-span-2 xl:col-span-3 min-h-[calc(100vh-12rem)] md:min-h-[calc(100vh-14rem)]">
+          <Card className="bg-gradient-to-br from-white to-gray-50/30 dark:from-gray-900 dark:to-gray-800/30 border-0 shadow-lg h-full">
             <CardHeader className="pb-4">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-xl font-bold">Assessment Details</CardTitle>
