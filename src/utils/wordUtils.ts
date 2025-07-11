@@ -283,17 +283,17 @@ function createAssessmentSummaryContent(data: AssessmentWordData): Array<Paragra
 }
 
 /**
- * Create requirements analysis content
+ * Create requirements analysis content with professional card-based design
  */
-function createRequirementsAnalysisContent(data: AssessmentWordData): Array<Paragraph> {
-  const content: Array<Paragraph> = [];
+function createRequirementsAnalysisContent(data: AssessmentWordData): Array<Paragraph | Table> {
+  const content: Array<Paragraph | Table> = [];
 
   if (data.requirements.length > 0) {
     content.push(
       new Paragraph({
         children: [
           new TextRun({
-            text: 'REQUIREMENTS ANALYSIS',
+            text: 'DETAILED REQUIREMENTS ANALYSIS',
             bold: true,
             size: 28,
             color: 'FFFFFF',
@@ -309,33 +309,231 @@ function createRequirementsAnalysisContent(data: AssessmentWordData): Array<Para
       })
     );
 
-    // Add requirement details (limit to first 20 for performance)
-    data.requirements.slice(0, 20).forEach(req => {
+    // Group requirements by section
+    const requirementsToShow = data.requirements
+      .filter(req => req.status !== 'not-applicable')
+      .slice(0, 15);
+    
+    const groupedReqs = requirementsToShow.reduce((acc, req) => {
+      const section = req.code.split('.')[0] || 'Other';
+      if (!acc[section]) {
+        acc[section] = [];
+      }
+      acc[section].push(req);
+      return acc;
+    }, {} as Record<string, typeof requirementsToShow>);
+
+    // Create professional sections and requirement cards
+    Object.entries(groupedReqs).forEach(([section, sectionReqs]) => {
+      // Section header
       content.push(
         new Paragraph({
           children: [
             new TextRun({
-              text: `${req.code}: `,
+              text: section,
               bold: true,
-              size: 18,
-              color: '1E293B'
+              size: 20,
+              color: 'FFFFFF',
+              font: 'Arial'
             }),
             new TextRun({
-              text: req.name,
-              size: 18,
-              color: '334155'
-            }),
-            new TextRun({
-              text: ` [${req.status.toUpperCase()}]`,
-              bold: true,
+              text: `    ${sectionReqs.length} requirement${sectionReqs.length !== 1 ? 's' : ''}`,
               size: 16,
-              color: getStatusColor(req.status)
+              color: 'CBD5E1',
+              font: 'Arial'
             })
           ],
-          spacing: { after: 120 }
+          shading: {
+            type: ShadingType.SOLID,
+            color: '1E293B'
+          },
+          spacing: { after: 200, before: 200 }
         })
       );
+
+      // Individual requirement cards
+      sectionReqs.forEach(req => {
+        // Create requirement card as table for better layout control
+        const statusColor = getStatusColor(req.status);
+        
+        const cardTable = new Table({
+          width: {
+            size: 100,
+            type: WidthType.PERCENTAGE
+          },
+          borders: {
+            top: { style: BorderStyle.SINGLE, size: 1, color: 'E2E8F0' },
+            bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E2E8F0' },
+            left: { style: BorderStyle.SINGLE, size: 1, color: 'E2E8F0' },
+            right: { style: BorderStyle.SINGLE, size: 1, color: 'E2E8F0' }
+          },
+          rows: [
+            // Header row with code and status
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: req.code,
+                          bold: true,
+                          size: 18,
+                          color: '334155',
+                          font: 'Arial'
+                        })
+                      ]
+                    })
+                  ],
+                  shading: { type: ShadingType.SOLID, color: 'F1F5F9' },
+                  width: { size: 15, type: WidthType.PERCENTAGE }
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: req.name,
+                          bold: true,
+                          size: 16,
+                          color: '0F172A',
+                          font: 'Arial'
+                        })
+                      ]
+                    })
+                  ],
+                  width: { size: 65, type: WidthType.PERCENTAGE }
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: req.status.replace('-', ' ').toUpperCase(),
+                          bold: true,
+                          size: 14,
+                          color: 'FFFFFF',
+                          font: 'Arial'
+                        })
+                      ],
+                      alignment: AlignmentType.CENTER
+                    })
+                  ],
+                  shading: { type: ShadingType.SOLID, color: statusColor },
+                  width: { size: 20, type: WidthType.PERCENTAGE }
+                })
+              ]
+            }),
+            // Description row
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: 'Description',
+                          bold: true,
+                          size: 14,
+                          color: '475569',
+                          font: 'Arial'
+                        })
+                      ]
+                    })
+                  ],
+                  shading: { type: ShadingType.SOLID, color: 'F8FAFC' }
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: req.description,
+                          size: 14,
+                          color: '475569',
+                          font: 'Arial'
+                        })
+                      ]
+                    })
+                  ],
+                  columnSpan: 2
+                })
+              ]
+            })
+          ]
+        });
+
+        // Add notes row if notes exist
+        if (req.notes) {
+          cardTable.root[0].children.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: 'Notes',
+                          bold: true,
+                          size: 14,
+                          color: '3B82F6',
+                          font: 'Arial'
+                        })
+                      ]
+                    })
+                  ],
+                  shading: { type: ShadingType.SOLID, color: 'EFF6FF' }
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: cleanTextForWord(req.notes),
+                          size: 14,
+                          color: '475569',
+                          font: 'Arial'
+                        })
+                      ]
+                    })
+                  ],
+                  columnSpan: 2,
+                  shading: { type: ShadingType.SOLID, color: 'F0F9FF' }
+                })
+              ]
+            })
+          );
+        }
+
+        content.push(cardTable);
+        
+        // Add spacing between cards
+        content.push(
+          new Paragraph({
+            children: [new TextRun('')],
+            spacing: { after: 200 }
+          })
+        );
+      });
     });
+
+    // Note if there are more requirements
+    if (data.requirements.length > 15) {
+      content.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `Note: Showing first 15 of ${data.requirements.length} total requirements`,
+              italic: true,
+              size: 16,
+              color: '6B7280',
+              font: 'Arial'
+            })
+          ],
+          spacing: { after: 200 }
+        })
+      );
+    }
   }
 
   return content;

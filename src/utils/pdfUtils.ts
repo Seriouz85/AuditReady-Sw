@@ -556,52 +556,115 @@ function generateProfessionalAssessmentPDF(doc: jsPDF, data: AssessmentPDFData, 
       return acc;
     }, {} as Record<string, number>);
     
-    // Show key requirements (first 10 to keep PDF concise)
+    // Show key requirements (first 15 for comprehensive view)
     const requirementsToShow = data.requirements
       .filter(req => req.status !== 'not-applicable') // Focus on actionable requirements
-      .slice(0, 10);
+      .slice(0, 15);
     
-    // Create requirements table
-    const requirementsData = requirementsToShow.map(req => [
-      req.code,
-      req.name.length > 60 ? req.name.substring(0, 60) + '...' : req.name,
-      req.status.replace('-', ' ').toUpperCase(),
-      req.notes ? (req.notes.length > 40 ? req.notes.substring(0, 40) + '...' : req.notes) : 'N/A'
-    ]);
-    
-    autoTable(doc, {
-      startY: yPos,
-      head: [['Code', 'Requirement', 'Status', 'Notes']],
-      body: requirementsData,
-      theme: 'plain',
-      styles: { 
-        fontSize: 8, 
-        cellPadding: 3,
-        textColor: [60, 60, 60]
-      },
-      headStyles: { 
-        fillColor: [240, 240, 240],
-        textColor: [40, 40, 40],
-        fontStyle: 'bold',
-        lineWidth: 0.1,
-        lineColor: [200, 200, 200]
-      },
-      bodyStyles: {
-        lineWidth: 0.1,
-        lineColor: [220, 220, 220]
-      },
-      alternateRowStyles: {
-        fillColor: [250, 250, 250]
-      },
-      columnStyles: {
-        0: { cellWidth: 25, fontStyle: 'bold' },
-        1: { cellWidth: 70 },
-        2: { cellWidth: 30, halign: 'center' },
-        3: { cellWidth: 65 }
+    // Group requirements by section
+    const groupedReqs = requirementsToShow.reduce((acc, req) => {
+      // Extract section from requirement code (e.g., "A5.1" -> "A5")
+      const section = req.code.split('.')[0] || 'Other';
+      if (!acc[section]) {
+        acc[section] = [];
       }
-    });
+      acc[section].push(req);
+      return acc;
+    }, {} as Record<string, typeof requirementsToShow>);
     
-    yPos = (doc as any).lastAutoTable.finalY + 10;
+    // Create professional requirement cards for each section
+    Object.entries(groupedReqs).forEach(([section, sectionReqs]) => {
+      // Check if we need a new page
+      if (yPos > pageHeight - 100) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      // Section header
+      doc.setFillColor(30, 41, 59); // Slate-900 equivalent
+      doc.rect(15, yPos, pageWidth - 30, 12, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${section}`, 20, yPos + 8);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${sectionReqs.length} requirement${sectionReqs.length !== 1 ? 's' : ''}`, pageWidth - 20, yPos + 8, { align: 'right' });
+      
+      yPos += 18;
+      
+      // Individual requirement cards
+      sectionReqs.forEach((req) => {
+        // Check if we need a new page for this requirement
+        if (yPos > pageHeight - 60) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        // Card background
+        doc.setFillColor(255, 255, 255);
+        doc.rect(15, yPos, pageWidth - 30, 45, 'F');
+        doc.setDrawColor(226, 232, 240); // border-gray-200
+        doc.setLineWidth(0.5);
+        doc.rect(15, yPos, pageWidth - 30, 45, 'S');
+        
+        // Code badge
+        doc.setFillColor(241, 245, 249); // bg-slate-100
+        doc.rect(20, yPos + 5, 20, 12, 'F');
+        doc.setDrawColor(203, 213, 224); // border-slate-200
+        doc.rect(20, yPos + 5, 20, 12, 'S');
+        doc.setTextColor(51, 65, 85); // text-slate-700
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text(req.code, 30, yPos + 12, { align: 'center' });
+        
+        // Requirement name
+        doc.setTextColor(15, 23, 42); // text-slate-900
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        const nameLines = doc.splitTextToSize(req.name, 120);
+        doc.text(nameLines.slice(0, 2), 45, yPos + 8); // Limit to 2 lines
+        
+        // Status badge (right aligned)
+        const statusText = req.status.replace('-', ' ').toUpperCase();
+        const statusColor = getStatusColorRGB(req.status);
+        doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
+        doc.rect(pageWidth - 45, yPos + 5, 25, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(statusText, pageWidth - 32.5, yPos + 10, { align: 'center' });
+        
+        // Description
+        doc.setTextColor(71, 85, 105); // text-slate-600
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        const descLines = doc.splitTextToSize(req.description, pageWidth - 50);
+        doc.text(descLines.slice(0, 3), 20, yPos + 22); // Limit to 3 lines
+        
+        // Notes section (if exists)
+        if (req.notes) {
+          // Notes indicator
+          doc.setFillColor(59, 130, 246); // bg-blue-500
+          doc.circle(20, yPos + 38, 1, 'F');
+          doc.setTextColor(51, 65, 85); // text-slate-700
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Notes', 25, yPos + 40);
+          
+          // Notes content
+          doc.setTextColor(71, 85, 105); // text-slate-600
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'normal');
+          const notesLines = doc.splitTextToSize(req.notes, pageWidth - 60);
+          doc.text(notesLines.slice(0, 2), 35, yPos + 40); // Limit to 2 lines
+        }
+        
+        yPos += 50; // Space between cards
+      });
+      
+      yPos += 5; // Extra space between sections
+    });
     
     // Note if there are more requirements
     if (data.requirements.length > 10) {
@@ -660,5 +723,24 @@ function generateProfessionalAssessmentPDF(doc: jsPDF, data: AssessmentPDFData, 
       pageHeight - 10,
       { align: 'center' }
     );
+  }
+}
+
+/**
+ * Get RGB status color for requirements
+ */
+function getStatusColorRGB(status: string): [number, number, number] {
+  switch (status.toLowerCase()) {
+    case 'fulfilled':
+      return [34, 197, 94]; // Green
+    case 'partially-fulfilled':
+    case 'partial':
+      return [245, 158, 11]; // Amber
+    case 'not-fulfilled':
+      return [239, 68, 68]; // Red
+    case 'not-applicable':
+      return [148, 163, 184]; // Gray
+    default:
+      return [71, 85, 105]; // Default slate
   }
 } 

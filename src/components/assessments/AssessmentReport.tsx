@@ -23,12 +23,6 @@ interface AssessmentReportProps {
   onClose: () => void;
 }
 
-interface RelatedRequirement {
-  id: string;
-  code: string;
-  name: string;
-  status: RequirementStatus;
-}
 
 // Helper function to extract attachment information from evidence content
 const extractAttachmentsFromEvidence = (evidence: string) => {
@@ -316,26 +310,6 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
     return acc;
   }, {} as Record<string, Requirement[]>);
 
-  // Find related requirements based on tags (mocked implementation for now)
-  const findRelatedRequirements = (currentReq: Requirement): RelatedRequirement[] => {
-    // In a real implementation, this would use requirement tags to find related items
-    // For now, we'll simulate by finding requirements with similar section codes
-    const currentSectionPattern = currentReq.code.split('.')[0]; // Get the main section number
-    
-    return requirements
-      .filter(req => 
-        req.id !== currentReq.id && // Not the same requirement
-        req.code.startsWith(currentSectionPattern) && // Same main section
-        Math.random() > 0.7 // Randomly select some to show as related (for demo purposes)
-      )
-      .slice(0, 3) // Limit to 3 related requirements
-      .map(req => ({
-        id: req.id,
-        code: req.code,
-        name: req.name,
-        status: req.status
-      }));
-  };
 
   return (
     <>
@@ -653,57 +627,44 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
               {Object.entries(groupedRequirements).length > 0 ? (
                 Object.entries(groupedRequirements).map(([section, reqs]) => (
                   <div key={section} className="mb-8">
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 pb-2 border-b-2 border-gradient-to-r from-primary/20 to-blue-600/20">{section}</h3>
+                    <div className="bg-slate-900 dark:bg-slate-800 text-white px-6 py-4 rounded-lg mb-6">
+                      <h3 className="text-xl font-bold">{section}</h3>
+                      <p className="text-sm text-slate-300 mt-1">{reqs.length} requirement{reqs.length !== 1 ? 's' : ''}</p>
+                    </div>
                     
                     {reqs.map(req => {
-                      const relatedReqs = findRelatedRequirements(req);
-                      
                       return (
-                        <div key={req.id} className="requirement-card mb-6 bg-gradient-to-br from-white to-gray-50/30 dark:from-slate-800/50 dark:to-slate-700/30 border-0 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 page-break-inside-avoid">
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="flex-1">
-                              <p className="text-sm text-primary font-semibold">{req.code}</p>
-                              <p className="font-bold text-lg text-gray-900 dark:text-gray-100 mt-1">{t(`requirement.${req.id}.name`, req.name)}</p>
+                        <div key={req.id} className="requirement-card mb-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200 page-break-inside-avoid">
+                          {/* Header Section */}
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-200 dark:border-slate-600">
+                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{req.code}</span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">{t(`requirement.${req.id}.name`, req.name)}</h4>
+                              </div>
                             </div>
                             <StatusBadge status={req.status} />
                           </div>
                           
-                          <Separator className="my-4 bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
-                          
-                          <div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">{t(`requirement.${req.id}.description`, req.description)}</p>
-                            
-                            {req.notes && (
-                              <div className="mt-4">
-                                <p className="font-semibold text-gray-800 dark:text-gray-200 mb-1 text-sm">{t('requirement.field.notes', 'Notes')}:</p>
-                                <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{req.notes}</div>
-                              </div>
-                            )}
-                            
-                            {relatedReqs.length > 0 && (
-                              <div className="mt-4">
-                                <p className="text-xs font-medium text-muted-foreground mb-2">
-                                  {t('assessment.report.related', 'Related Requirements')}:
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {relatedReqs.map(related => (
-                                    <div 
-                                      key={related.id}
-                                      className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs"
-                                    >
-                                      <span className="font-mono">{related.code}</span>
-                                      <span className="max-w-[150px] truncate">{related.name}</span>
-                                      <StatusBadge 
-                                        status={related.status} 
-                                        size="xs"
-                                        showLabel={false}
-                                      />
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                          {/* Description Section */}
+                          <div className="mb-4">
+                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t(`requirement.${req.id}.description`, req.description)}</p>
                           </div>
+                          
+                          {/* Notes Section */}
+                          {req.notes && (
+                            <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                <h5 className="text-sm font-medium text-slate-700 dark:text-slate-300">Notes</h5>
+                              </div>
+                              <div className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-4 border-l-2 border-blue-100 dark:border-blue-900 bg-blue-50/30 dark:bg-blue-950/30 p-3 rounded-r">
+                                <div className="whitespace-pre-line">{req.notes}</div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
