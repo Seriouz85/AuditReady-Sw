@@ -70,6 +70,16 @@ export const ASSESSMENT_METHODS = {
 
 export type AssessmentMethod = typeof ASSESSMENT_METHODS[keyof typeof ASSESSMENT_METHODS];
 
+// Recurrence settings interface
+export interface RecurrenceSettings {
+  frequency: 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  interval: number;
+  weekdays?: string[];
+  skipWeekends: boolean;
+  startDate: string;
+  endDate?: string;
+}
+
 // Assessment types
 export interface Assessment {
   id: string;
@@ -87,6 +97,11 @@ export interface Assessment {
   notes?: string; // Assessment notes from the assessor
   evidence?: string; // Evidence collection notes
   methods?: string[]; // Assessment methods used (document review, interviews, etc.)
+  requirementNotes?: Record<string, string>; // Notes for specific requirements
+  isPinned?: boolean; // Whether the assessment is pinned
+  isRecurring?: boolean; // Whether the assessment is recurring
+  recurrenceSettings?: RecurrenceSettings; // Recurrence configuration
+  nextDueDate?: string; // Next due date for recurring assessments
   createdAt: string;
   updatedAt: string;
 }

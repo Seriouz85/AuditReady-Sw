@@ -211,6 +211,9 @@ export class MultiTenantAssessmentService {
       assessorIds: dbRow.assessor_ids || [],
       notes: dbRow.notes || '',
       evidence: dbRow.evidence || '',
+      isRecurring: dbRow.is_recurring || false,
+      recurrenceSettings: dbRow.recurrence_pattern || undefined,
+      nextDueDate: dbRow.next_due_date || undefined,
       createdAt: dbRow.created_at || new Date().toISOString(),
       updatedAt: dbRow.updated_at || new Date().toISOString()
     };
@@ -235,6 +238,9 @@ export class MultiTenantAssessmentService {
     if (assessment.assessorIds !== undefined) dbData.assessor_ids = assessment.assessorIds;
     if (assessment.notes !== undefined) dbData.notes = assessment.notes;
     if (assessment.evidence !== undefined) dbData.evidence = assessment.evidence;
+    if (assessment.isRecurring !== undefined) dbData.is_recurring = assessment.isRecurring;
+    if (assessment.recurrenceSettings !== undefined) dbData.recurrence_pattern = assessment.recurrenceSettings;
+    if (assessment.nextDueDate !== undefined) dbData.next_due_date = assessment.nextDueDate;
 
     return dbData;
   }
@@ -263,16 +269,36 @@ export class MultiTenantAssessmentService {
       const stored = localStorage.getItem('demo_assessments');
       const demoAssessments = stored ? JSON.parse(stored) : [];
       
-      // Merge with mock data, giving precedence to stored assessments
+      // Check if we need to clear old localStorage data that doesn't have isRecurring
+      const needsMigration = demoAssessments.length > 0 && 
+        demoAssessments.some((a: Assessment) => a.isRecurring === undefined);
+      
+      if (needsMigration) {
+        console.log('Clearing old localStorage assessments without isRecurring property');
+        localStorage.removeItem('demo_assessments');
+        return mockAssessments;
+      }
+      
+      // Start with fresh mock data as the base
       let allAssessments = [...mockAssessments];
       const storedIds = demoAssessments.map((a: Assessment) => a.id);
       
-      // Update with stored data
+      // Merge stored assessments with mock data, preserving user changes but ensuring isRecurring is set
       demoAssessments.forEach((storedAssessment: Assessment) => {
         const index = allAssessments.findIndex(a => a.id === storedAssessment.id);
         if (index >= 0) {
-          allAssessments[index] = storedAssessment;
+          // Merge stored assessment with mock data, but ensure isRecurring comes from mock data if not set
+          const mockAssessment = allAssessments[index];
+          allAssessments[index] = {
+            ...mockAssessment, // Start with mock data (has isRecurring)
+            ...storedAssessment, // Override with stored data (user changes)
+            // Ensure isRecurring is preserved from mock data if not explicitly set in stored data
+            isRecurring: storedAssessment.isRecurring !== undefined ? storedAssessment.isRecurring : mockAssessment.isRecurring,
+            recurrenceSettings: storedAssessment.recurrenceSettings || mockAssessment.recurrenceSettings,
+            nextDueDate: storedAssessment.nextDueDate || mockAssessment.nextDueDate
+          };
         } else {
+          // This is a user-created assessment, add it as-is
           allAssessments.push(storedAssessment);
         }
       });
@@ -280,11 +306,16 @@ export class MultiTenantAssessmentService {
       // Migrate old standard IDs to new UUIDs
       allAssessments = this.migrateOldStandardIds(allAssessments);
 
-      // Save migrated data back to localStorage if needed
-      if (stored && JSON.stringify(demoAssessments) !== JSON.stringify(allAssessments.filter(a => storedIds.includes(a.id)))) {
+      // Force localStorage update to include isRecurring properties
+      const shouldUpdate = stored && (
+        JSON.stringify(demoAssessments) !== JSON.stringify(allAssessments.filter(a => storedIds.includes(a.id))) ||
+        demoAssessments.some((a: Assessment) => a.isRecurring === undefined)
+      );
+      
+      if (shouldUpdate) {
         const migratedStored = allAssessments.filter(a => storedIds.includes(a.id));
         localStorage.setItem('demo_assessments', JSON.stringify(migratedStored));
-        console.log('Migrated demo assessments to use new UUID standard IDs');
+        console.log('Migrated demo assessments to include isRecurring properties');
       }
 
       return allAssessments;
@@ -309,6 +340,8 @@ export class MultiTenantAssessmentService {
       assessorIds: assessmentData.assessorIds || [assessmentData.assessorId],
       notes: '',
       evidence: '',
+      isRecurring: assessmentData.isRecurring || false,
+      recurrenceSettings: assessmentData.recurrenceSettings || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -333,7 +366,13 @@ export class MultiTenantAssessmentService {
     };
     
     currentAssessments[index] = updatedAssessment;
-    localStorage.setItem('demo_assessments', JSON.stringify(currentAssessments));
+    
+    // Store all assessments including the ones modified in memory
+    const storedIds = new Set(currentAssessments.map(a => a.id));
+    const allToStore = currentAssessments.filter(a => storedIds.has(a.id) || a.id === assessmentId);
+    
+    localStorage.setItem('demo_assessments', JSON.stringify(allToStore));
+    console.log(`Updated demo assessment ${assessmentId} in localStorage`);
     
     return updatedAssessment;
   }

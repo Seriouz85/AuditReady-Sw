@@ -24,7 +24,7 @@ import {
   Pin
 } from "lucide-react";
 import { AssessmentDetail } from "@/components/assessments/AssessmentDetail";
-import { Assessment } from "@/types";
+import { Assessment, RecurrenceSettings } from "@/types";
 import { toast } from "@/utils/toast";
 import { PageHeader } from '@/components/PageHeader';
 import { useTranslation } from "@/lib/i18n";
@@ -72,20 +72,8 @@ import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 
-interface RecurrenceSettings {
-  frequency: 'weekly' | 'monthly' | 'quarterly' | 'yearly';
-  interval: number;
-  weekdays?: string[];
-  skipWeekends: boolean;
-  startDate: string;
-  endDate?: string;
-}
-
 interface ExtendedAssessment extends Assessment {
-  isRecurring?: boolean;
-  recurrenceSettings?: RecurrenceSettings;
   isPinned?: boolean;
-  nextDueDate?: string;
 }
 
 const Assessments = () => {
@@ -140,6 +128,16 @@ const Assessments = () => {
       (filterRecurring === 'recurring' && assessment.isRecurring) ||
       (filterRecurring === 'one-time' && !assessment.isRecurring);
     
+    // Debug filtering when recurring is selected
+    if (filterRecurring === 'recurring') {
+      console.log(`Filter Debug - "${assessment.name}":`, {
+        filterRecurring,
+        'assessment.isRecurring': assessment.isRecurring,
+        'typeof assessment.isRecurring': typeof assessment.isRecurring,
+        matchesRecurring
+      });
+    }
+    
     const matchesStatus = filterStatus === 'all' || 
       assessment.status === filterStatus;
     
@@ -169,6 +167,7 @@ const Assessments = () => {
     if (ids.length === 1) return getStandardName(firstId);
     return `${getStandardName(firstId)} +${ids.length - 1} more`;
   };
+
 
 
   const getStatusIcon = (status: string) => {
@@ -210,6 +209,24 @@ const Assessments = () => {
         setLoading(true);
         const organizationId = organization.id;
         const fetchedAssessments = await multiTenantAssessmentService.getAssessments(organizationId, isDemo);
+        
+        // Debug: Log all assessments and their isRecurring status
+        console.log('=== ASSESSMENT DEBUG ===');
+        console.log('Total assessments fetched:', fetchedAssessments.length);
+        console.log('isDemo:', isDemo);
+        fetchedAssessments.forEach((assessment, index) => {
+          console.log(`Assessment ${index + 1}:`, {
+            name: assessment.name,
+            isRecurring: assessment.isRecurring,
+            hasRecurrenceSettings: !!assessment.recurrenceSettings
+          });
+        });
+        
+        const recurringCount = fetchedAssessments.filter(a => a.isRecurring === true).length;
+        const oneTimeCount = fetchedAssessments.filter(a => a.isRecurring === false || a.isRecurring === undefined).length;
+        console.log('Recurring assessments (isRecurring === true):', recurringCount);
+        console.log('One-time assessments (isRecurring === false or undefined):', oneTimeCount);
+        console.log('=== END ASSESSMENT DEBUG ===');
         
         // Calculate progress for each assessment
         const assessmentsWithProgress = fetchedAssessments.map(assessment => {
@@ -362,14 +379,33 @@ const Assessments = () => {
     }
   };
 
-  const handleTogglePin = (id: string) => {
-    const updatedAssessments = assessments.map(a => 
-      a.id === id ? { ...a, isPinned: !a.isPinned } : a
-    );
-    setAssessments(updatedAssessments);
-    
+  const handleTogglePin = async (id: string) => {
     const assessment = assessments.find(a => a.id === id);
-    toast.success(assessment?.isPinned ? 'Assessment unpinned' : 'Assessment pinned');
+    if (!assessment || !organization) return;
+
+    const newPinnedState = !assessment.isPinned;
+    
+    try {
+      // Update in database/localStorage
+      const organizationId = organization.id;
+      await multiTenantAssessmentService.updateAssessment(
+        id,
+        { isPinned: newPinnedState },
+        organizationId,
+        isDemo
+      );
+      
+      // Update local state
+      const updatedAssessments = assessments.map(a => 
+        a.id === id ? { ...a, isPinned: newPinnedState } : a
+      );
+      setAssessments(updatedAssessments);
+      
+      toast.success(newPinnedState ? 'Assessment pinned' : 'Assessment unpinned');
+    } catch (error) {
+      console.error('Error updating pin state:', error);
+      toast.error('Failed to update pin state');
+    }
   };
 
   const handleNewAssessmentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -987,17 +1023,23 @@ const Assessments = () => {
             key={assessment.id} 
             className={cn(
               "group hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer border-0 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 relative overflow-hidden",
-              assessment.isPinned && "ring-2 ring-primary/20 bg-gradient-to-br from-primary/5 to-primary/10"
+              assessment.isPinned && "ring-4 ring-primary/30 ring-offset-2 bg-gradient-to-br from-primary/8 to-primary/15 shadow-lg shadow-primary/20 border-primary/20"
             )}
           >
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/2 to-transparent group-hover:via-primary/5 transition-all duration-300" />
             
-            {/* Pinned indicator */}
+            {/* Enhanced Pinned indicator */}
             {assessment.isPinned && (
-              <div className="absolute top-0 right-0 w-0 h-0 border-l-[25px] border-l-transparent border-t-[25px] border-t-primary/20">
-                <Pin className="absolute -top-6 -right-1 h-3 w-3 text-primary transform rotate-45" />
-              </div>
+              <>
+                <div className="absolute top-0 right-0 w-0 h-0 border-l-[35px] border-l-transparent border-t-[35px] border-t-primary/40">
+                  <Pin className="absolute -top-8 -right-1.5 h-4 w-4 text-primary transform rotate-45 drop-shadow-sm" />
+                </div>
+                <div className="absolute top-2 left-2 flex items-center gap-1 bg-primary/10 backdrop-blur-sm px-2 py-1 rounded-full border border-primary/20">
+                  <Pin className="h-3 w-3 text-primary" />
+                  <span className="text-xs font-medium text-primary">Pinned</span>
+                </div>
+              </>
             )}
             
             <CardContent className="p-2 relative">

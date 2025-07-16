@@ -75,7 +75,24 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
         console.error('Error fetching standards from database:', error);
         // Fallback to mock data if database fetch fails
         const fallbackStandards = allStandards.filter(s => assessment.standardIds.includes(s.id));
-        setStandards(fallbackStandards);
+        
+        // If no mock standards match either, create minimal standard objects
+        if (fallbackStandards.length === 0 && assessment.standardIds.length > 0) {
+          const minimalStandards = assessment.standardIds.map(id => ({
+            id,
+            name: `Standard ${id.substring(0, 8)}...`,
+            version: 'Unknown',
+            description: 'Standard details not available',
+            category: 'General',
+            requirements: [],
+            type: 'compliance' as const,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }));
+          setStandards(minimalStandards);
+        } else {
+          setStandards(fallbackStandards);
+        }
       }
     };
 

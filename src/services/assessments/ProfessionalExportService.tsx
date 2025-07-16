@@ -63,6 +63,20 @@ export class ProfessionalExportService {
         throw new Error(`Invalid assessment data: ${validation.errors.join(', ')}`);
       }
 
+      // Create fallback standards if none provided but assessment has standardIds
+      let exportStandards = standards;
+      if ((!standards || standards.length === 0) && assessment.standardIds.length > 0) {
+        exportStandards = assessment.standardIds.map(id => ({
+          id,
+          name: `Standard ${id.substring(0, 8)}...`, // Show first 8 chars of UUID
+          version: 'Unknown',
+          description: 'Standard details not available',
+          category: 'Unknown',
+          requirements: []
+        }));
+        console.warn('Created fallback standards for PDF export');
+      }
+
       // Stage 2: Process data
       onProgress?.({
         stage: 'preparing',
@@ -73,7 +87,7 @@ export class ProfessionalExportService {
       const data = AssessmentDataProcessor.processAssessmentData(
         assessment,
         requirements,
-        standards,
+        exportStandards,
         { ...options, format: 'pdf' }
       );
 
@@ -142,10 +156,24 @@ export class ProfessionalExportService {
         message: 'Validating assessment data...'
       });
 
+      // Create fallback standards if none provided but assessment has standardIds
+      let exportStandards = standards;
+      if ((!standards || standards.length === 0) && assessment.standardIds.length > 0) {
+        exportStandards = assessment.standardIds.map(id => ({
+          id,
+          name: `Standard ${id.substring(0, 8)}...`, // Show first 8 chars of UUID
+          version: 'Unknown',
+          description: 'Standard details not available',
+          category: 'Unknown',
+          requirements: []
+        }));
+        console.warn('Created fallback standards for Word export');
+      }
+
       const validation = AssessmentDataProcessor.validateAssessmentData(
         assessment,
         requirements,
-        standards
+        exportStandards
       );
 
       if (!validation.valid) {
@@ -162,7 +190,7 @@ export class ProfessionalExportService {
       const data = AssessmentDataProcessor.processAssessmentData(
         assessment,
         requirements,
-        standards,
+        exportStandards,
         { ...options, format: 'word' }
       );
 

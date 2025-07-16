@@ -1,32 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { 
-  BarChart, 
   BarChart3,
-  Calendar, 
   CheckCircle2, 
   Clock, 
   User, 
   ChevronLeft, 
   Play, 
-  Pause, 
   CheckSquare, 
   AlertCircle, 
   FilePlus, 
   Save,
   Lock,
-  Send,
   Trash2,
   Download,
-  ClipboardCheck,
   Eye,
   FileText,
-  HelpCircle
+  HelpCircle,
+  Loader2
 } from "lucide-react";
-import { Assessment, Requirement, RequirementStatus, Standard, ASSESSMENT_METHODS } from "@/types";
+import { Assessment, RequirementStatus, ASSESSMENT_METHODS } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { 
   Tabs, 
   TabsContent, 
@@ -54,10 +49,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "@/utils/toast";
-import { requirements as allRequirements, standards } from "@/data/mockData";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "@/lib/i18n";
 import { NewAssessmentReport } from "./NewAssessmentReport";
 import { useAssessmentData } from "@/hooks/useAssessmentData";
@@ -65,7 +57,7 @@ import "@/styles/assessment-export.css";
 import { RequirementCard } from "./RequirementCard";
 import { assessmentCompletionService, NotesTransferResult } from "@/services/assessments/AssessmentCompletionService";
 import { PageHeader } from '@/components/PageHeader';
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { ProfessionalExportService } from "@/services/assessments/ProfessionalExportService";
 
 type AssessmentStatus = 'draft' | 'in-progress' | 'completed';
@@ -95,6 +87,8 @@ export function AssessmentDetail({
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
+  const [exportingPDF, setExportingPDF] = useState(false);
+  const [exportingWord, setExportingWord] = useState(false);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { t } = useTranslation();
   
@@ -132,7 +126,7 @@ export function AssessmentDetail({
       const standardName = selectedStandards.find(s => s.id === req.standardId)?.name?.toLowerCase() || '';
       
       const matchesSearch = (
-        req.title.toLowerCase().includes(query) ||
+        req.name.toLowerCase().includes(query) ||
         req.description.toLowerCase().includes(query) ||
         standardName.includes(query) ||
         req.id.toLowerCase().includes(query)
@@ -172,7 +166,7 @@ export function AssessmentDetail({
 
   // Sort requirements within each standard group by control_id/section for proper ordering
   Object.keys(groupedFilteredRequirements).forEach(standardId => {
-    groupedFilteredRequirements[standardId].sort((a, b) => {
+    groupedFilteredRequirements[standardId]?.sort((a, b) => {
       // First sort by section, then by control ID or name
       const sectionCompare = (a.section || '').localeCompare(b.section || '');
       if (sectionCompare !== 0) return sectionCompare;
@@ -243,13 +237,16 @@ export function AssessmentDetail({
   };
 
   // Handle requirement notes change
-  const handleRequirementNotesChange = (reqId: string, notes: any[]) => {
+  const handleRequirementNotesChange = (reqId: string, notes: Array<{id: string; text: string; timestamp: string; author: string; authorId: string}>) => {
+    // Convert notes array to a string representation for storage
+    const notesString = notes.map(note => note.text).join('\n');
+    
     // Update the requirement notes in the assessment data
-    const updatedAssessment = {
-      ...localAssessment,
+    const currentNotes: Record<string, string> = localAssessment.requirementNotes || {};
+    const updatedAssessment: Partial<Assessment> = {
       requirementNotes: {
-        ...localAssessment.requirementNotes,
-        [reqId]: notes
+        ...currentNotes,
+        [reqId]: notesString
       }
     };
     updateAssessment(updatedAssessment);
@@ -446,62 +443,52 @@ export function AssessmentDetail({
     setShowReportDialog(true);
   };
 
-  // Extract attachments from evidence for export
-  const extractAttachmentsFromEvidence = (evidence: string) => {
-    const attachments: Array<{filename: string; description: string; size?: string; type?: string}> = [];
-    
-    if (evidence && (evidence.includes('📎') || evidence.includes('Attached Evidence Files'))) {
-      const fileMatches = evidence.match(/•\s*([^(]+)\(([^)]+)\)/g) || [];
-      
-      fileMatches.forEach(match => {
-        const parts = match.match(/•\s*([^(]+)\(([^)]+)\)/);
-        if (parts) {
-          const filename = parts[1].trim();
-          const details = parts[2];
-          
-          const sizeMatch = details.match(/(\d+\.?\d*\s*[KMGT]?B)/i);
-          const typeMatch = filename.match(/\.([a-zA-Z0-9]+)$/);
-          
-          attachments.push({
-            filename,
-            description: details,
-            size: sizeMatch ? sizeMatch[1] : undefined,
-            type: typeMatch ? typeMatch[1].toUpperCase() : 'Document'
-          });
-        }
-      });
-    }
-    
-    return attachments;
-  };
 
   // Handle PDF export
   const handleExportPDF = async () => {
+    if (exportingPDF) return; // Prevent multiple simultaneous exports
+    
     try {
+      setExportingPDF(true);
+      toast.info('Generating PDF export...');
+      
       const exportService = ProfessionalExportService.getInstance();
       await exportService.exportPDF(
         localAssessment,
         assessmentRequirements,
         selectedStandards
       );
+      
+      toast.success('PDF export completed successfully');
     } catch (error) {
       console.error('PDF export error:', error);
       toast.error('Failed to export PDF');
+    } finally {
+      setExportingPDF(false);
     }
   };
 
   // Handle Word export
   const handleExportWord = async () => {
+    if (exportingWord) return; // Prevent multiple simultaneous exports
+    
     try {
+      setExportingWord(true);
+      toast.info('Generating Word document...');
+      
       const exportService = ProfessionalExportService.getInstance();
       await exportService.exportWord(
         localAssessment,
         assessmentRequirements,
         selectedStandards
       );
+      
+      toast.success('Word document exported successfully');
     } catch (error) {
       console.error('Word export error:', error);
       toast.error('Failed to export Word document');
+    } finally {
+      setExportingWord(false);
     }
   };
   
@@ -517,13 +504,13 @@ export function AssessmentDetail({
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 15
       }
@@ -623,7 +610,7 @@ export function AssessmentDetail({
         <PageHeader 
           title={localAssessment.name}
           description={selectedStandards.length === 1 
-            ? `${selectedStandards[0].name} ${selectedStandards[0].version}` 
+            ? `${selectedStandards[0]?.name} ${selectedStandards[0]?.version}` 
             : `Multi-standard Assessment (${selectedStandards.length} standards)`}
         />
         
@@ -758,9 +745,14 @@ export function AssessmentDetail({
                       size="sm" 
                       className="gap-2 rounded-full border-red-300/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 backdrop-blur-sm"
                       onClick={handleExportPDF}
+                      disabled={exportingPDF}
                     >
-                      <Download size={14} />
-                      Export PDF
+                      {exportingPDF ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Download size={14} />
+                      )}
+                      {exportingPDF ? 'Exporting...' : 'Export PDF'}
                     </Button>
                     
                     <Button 
@@ -768,9 +760,14 @@ export function AssessmentDetail({
                       size="sm" 
                       className="gap-2 rounded-full border-blue-300/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 backdrop-blur-sm"
                       onClick={handleExportWord}
+                      disabled={exportingWord}
                     >
-                      <FileText size={14} />
-                      Export Word
+                      {exportingWord ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <FileText size={14} />
+                      )}
+                      {exportingWord ? 'Exporting...' : 'Export Word'}
                     </Button>
                     
                     <Button 
@@ -1407,9 +1404,14 @@ export function AssessmentDetail({
                   size="sm" 
                   className="w-full gap-2 rounded-full border-blue-300/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                   onClick={handleExportPDF}
+                  disabled={exportingPDF}
                 >
-                  <Download size={14} />
-                  Export PDF
+                  {exportingPDF ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Download size={14} />
+                  )}
+                  {exportingPDF ? 'Exporting...' : 'Export PDF'}
                 </Button>
                 
                 <Button 
@@ -1417,9 +1419,14 @@ export function AssessmentDetail({
                   size="sm" 
                   className="w-full gap-2 rounded-full border-green-300/50 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20"
                   onClick={handleExportWord}
+                  disabled={exportingWord}
                 >
-                  <FileText size={14} />
-                  Export Word
+                  {exportingWord ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <FileText size={14} />
+                  )}
+                  {exportingWord ? 'Exporting...' : 'Export Word'}
                 </Button>
                 
                 {!readOnly && (

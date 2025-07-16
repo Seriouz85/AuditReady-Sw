@@ -53,7 +53,7 @@ export class StandardsService {
       
       const { data, error } = await publicSupabase
         .from('standards_library')
-        .select('id, name, version, type, description, category, created_at, updated_at')
+        .select('id, name, version, type, description, created_at, updated_at')
         .eq('is_active', true)
         .order('name');
 
@@ -68,7 +68,7 @@ export class StandardsService {
         version: std.version,
         type: std.type as any,
         description: std.description || '',
-        category: std.category || 'General',
+        category: 'General', // Default category since column doesn't exist
         requirements: [], // Will be populated separately
         createdAt: std.created_at,
         updatedAt: std.updated_at

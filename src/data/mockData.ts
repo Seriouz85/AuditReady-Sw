@@ -11849,31 +11849,31 @@ The executive team has demonstrated strong commitment to information security th
 export const assessments: Assessment[] = [
   {
     id: 'assessment-1',
-    name: 'ISO 27001 Annual Assessment',
+    name: 'TechCorp Global - ISO 27001 Annual Certification Review',
     standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6'], // Real database UUID for ISO/IEC 27001
-    description: 'Annual comprehensive review of ISO 27001 ISMS implementation and effectiveness.',
+    description: 'Annual comprehensive review of ISO 27001 ISMS implementation across 12 global offices and cloud infrastructure.',
     status: 'in-progress',
-    progress: 68,
+    progress: 72,
     startDate: '2024-02-15T09:00:00Z',
     assessorName: 'Michael Thompson',
     assessorId: 'user-1',
-    notes: `🎯 **Assessment Overview:**
-This comprehensive annual assessment evaluates our ISO 27001 ISMS implementation across all business units. The assessment covers 114 controls across 14 categories, with particular focus on recent organizational changes and the integration of new cloud services.
+    notes: `🎯 **TechCorp Global ISO 27001 Assessment Overview:**
+Annual certification review covering 114 ISO 27001 controls across TechCorp's global infrastructure including 12 offices, 3 data centers, and hybrid cloud environment. Assessment validates ISMS effectiveness and prepares for external certification audit.
 
-📋 **Key Findings So Far:**
-• Strong performance in access control and cryptography (95% compliance)
-• Gaps identified in supplier relationship security and business continuity
-• Significant improvement in incident response capabilities since last assessment
-• New regulatory requirements (NIS2, GDPR updates) have been integrated
+📋 **Progress Summary (72% Complete):**
+• Information Security Controls: 95% compliance (110 of 114 controls assessed)
+• Risk Management: Completed - 127 risks identified and treated
+• Business Continuity: 85% complete - testing scheduled for next week
+• Supplier Security: 78% complete - 43 critical vendors assessed
 
-🔍 **Areas of Focus:**
-• Asset management procedures require updating for cloud environments
-• Security awareness training completion rates need improvement (currently 87%)
-• Vulnerability management process shows good coverage but needs faster remediation
-• Business continuity plans need testing and updates
+🔍 **Key Achievements:**
+• Zero critical security incidents in 2024
+• 94% completion rate for mandatory security training (2,847 employees)
+• Successful implementation of Zero Trust architecture
+• Enhanced cloud security posture across AWS and Azure environments
 
-⚡ **Next Steps:**
-Completing final reviews of physical security controls and management system documentation. Expected completion by end of month with formal report and recommendations for 2024 security roadmap.`,
+⚡ **Final Phase Activities:**
+Completing physical security assessments at London and Singapore offices. Management review scheduled for next Friday. Target certification date: April 30, 2024.`,
     evidence: `📁 **Documentation Reviewed:**
 • Information Security Policy v3.2 and 12 supporting policies
 • Risk Assessment Report (Q4 2023) with 127 identified risks
@@ -11916,12 +11916,21 @@ Completing final reviews of physical security controls and management system doc
     methods: ['Document Review', 'Interviews', 'Observation', 'Data Analysis & Statistics', 'Process Walkthrough'],
     updatedAt: '2024-03-28T14:30:00Z',
     createdAt: '2024-02-15T09:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-02-15',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2025-02-15T09:00:00Z'
   },
   {
     id: 'assessment-2',
-    name: 'ISO 27001 Q4 2023 Assessment',
+    name: 'GlobalBank Financial - SOC 2 Type II Readiness',
     standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6'], // Real database UUID for ISO/IEC 27001
-    description: 'Quarterly assessment of ISO 27001 controls and implementation progress.',
+    description: 'SOC 2 Type II readiness assessment for financial services compliance and customer trust requirements.',
     status: 'completed',
     progress: 100,
     startDate: '2023-10-01T09:00:00Z',
@@ -11961,14 +11970,23 @@ Comprehensive review of ISO 27001 controls conducted by multi-disciplinary team.
 • Incident_Response_Tabletop_Oct2023.docx (exercise debrief, 5.3 MB)`,
     updatedAt: '2023-10-15T16:45:00Z',
     createdAt: '2023-10-01T09:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'quarterly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2023-10-01',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-01-01T09:00:00Z'
   },
   {
     id: 'assessment-3',
-    name: 'NIS2 Gap Analysis',
+    name: 'EuroTech Industries - NIS2 Compliance Initiative',
     standardIds: ['f4e13e2b-1bcc-4865-913f-084fb5599a00'], // Real database UUID for NIS2 Directive
-    description: 'Initial assessment of compliance with NIS2 directive requirements.',
+    description: 'Comprehensive NIS2 directive compliance assessment for critical infrastructure protection.',
     status: 'in-progress',
-    progress: 35,
+    progress: 45,
     startDate: '2024-02-10T11:00:00Z',
     assessorName: 'Emily Johnson',
     assessorId: 'user-2',
@@ -12004,12 +12022,21 @@ Initial comprehensive review of current security posture against NIS2 Directive 
 • Access control systems reviewed for compliance requirements`,
     updatedAt: '2024-03-25T09:30:00Z',
     createdAt: '2024-02-10T11:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'quarterly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-02-10',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-05-10T11:00:00Z'
   },
   {
     id: 'assessment-4',
-    name: 'GDPR Annual Review',
+    name: 'DataFlow Solutions - GDPR Privacy Impact Assessment',
     standardIds: ['73869227-cd63-47db-9981-c0d633a3d47b'], // Real database UUID for GDPR
-    description: 'Annual assessment of GDPR compliance focusing on data handling processes.',
+    description: 'Comprehensive GDPR compliance review for data processing operations and privacy by design implementation.',
     status: 'completed',
     progress: 100,
     startDate: '2023-11-05T13:00:00Z',
@@ -12053,6 +12080,15 @@ All GDPR requirements fully implemented and verified. Annual compliance program 
 • Data retention policies implemented and automated where possible`,
     updatedAt: '2024-01-20T15:45:00Z',
     createdAt: '2023-11-05T13:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2023-11-05',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-11-05T13:00:00Z'
   },
   {
     id: 'assessment-6',
@@ -12097,6 +12133,15 @@ Detailed assessment of ISO 27002:2022 control implementation across organization
 • Vulnerability management process effectiveness reviewed and documented`,
     updatedAt: '2024-03-25T09:00:00Z',
     createdAt: '2024-03-25T09:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-03-25',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2025-03-25T09:00:00Z'
   },
   {
     id: 'assessment-10',
@@ -12139,6 +12184,15 @@ This assessment evaluates the security posture of our 15 critical third-party ve
 • Salesforce: SOC 2 Type II, privacy shield compliance verified`,
     updatedAt: '2024-03-27T16:45:00Z',
     createdAt: '2024-02-20T13:15:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'quarterly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-02-20',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-05-20T13:15:00Z'
   },
   {
     id: 'assessment-11',
@@ -12184,6 +12238,15 @@ Comprehensive evaluation of our incident detection, response, and reporting capa
 • Integration with threat intelligence feeds (3 commercial, 2 government)`,
     updatedAt: '2024-03-28T09:30:00Z',
     createdAt: '2024-03-05T11:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'quarterly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-03-05',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-06-05T11:00:00Z'
   },
   {
     id: 'assessment-12',
@@ -12233,6 +12296,137 @@ All processor agreements now fully compliant. Annual review cycle established fo
 • Processor audit rights and procedures documented and tested`,
     updatedAt: '2024-01-05T16:00:00Z',
     createdAt: '2023-12-10T10:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2023-12-10',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-12-10T10:00:00Z'
+  },
+  {
+    id: 'assessment-13',
+    name: 'CloudFirst Technologies - Multi-Cloud Security Assessment',
+    standardIds: ['55742f4e-769b-4efe-912c-1371de5e1cd6', 'afe9728d-2084-4b6b-8653-b04e1e92cdff'], // ISO 27001 + CIS Controls
+    description: 'Comprehensive security assessment of multi-cloud infrastructure spanning AWS, Azure, and GCP environments.',
+    status: 'in-progress',
+    progress: 58,
+    startDate: '2024-03-01T10:00:00Z',
+    assessorName: 'Sarah Martinez',
+    assessorId: 'user-4',
+    assessorNames: ['Sarah Martinez', 'David Kumar'],
+    assessorIds: ['user-4', 'user-5'],
+    notes: `🎯 **CloudFirst Multi-Cloud Security Assessment:**
+Enterprise-grade assessment covering cloud security posture across three major cloud providers. Focus on identity management, data protection, network security, and compliance across hybrid cloud infrastructure.
+
+📋 **Assessment Progress (58% Complete):**
+• AWS Security Controls: 75% complete - 45 of 60 controls assessed
+• Azure Security Baseline: 65% complete - strong identity integration
+• GCP Security Framework: 40% complete - network security in progress
+• Cross-Cloud Identity Management: 80% complete - excellent integration
+
+🔍 **Key Findings:**
+• Strong cloud security posture with consistent policy enforcement
+• Excellent use of infrastructure as code for security controls
+• Minor gaps in cross-cloud logging and monitoring integration
+• Data residency controls properly implemented across all regions`,
+    evidence: `📁 **Cloud Security Documentation:**
+• Cloud Security Posture Management (CSPM) reports from all three providers
+• Identity and Access Management (IAM) policy reviews and recommendations
+• Network security architecture diagrams and configuration exports
+• Data encryption and key management implementation evidence`,
+    methods: ['Automated Scanning', 'Configuration Review', 'Interviews', 'Data Analysis & Statistics'],
+    updatedAt: '2024-03-15T11:30:00Z',
+    createdAt: '2024-03-01T10:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'monthly',
+      interval: 3,
+      skipWeekends: true,
+      startDate: '2024-03-01',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2024-06-01T10:00:00Z'
+  },
+  {
+    id: 'assessment-14',
+    name: 'MedTech Innovations - HIPAA Security Rule Assessment',
+    standardIds: ['73869227-cd63-47db-9981-c0d633a3d47b'], // GDPR (representing healthcare privacy)
+    description: 'Healthcare technology compliance assessment focusing on patient data protection and medical device security.',
+    status: 'draft',
+    progress: 15,
+    startDate: '2024-03-20T14:00:00Z',
+    assessorName: 'Dr. Jennifer Walsh',
+    assessorId: 'user-6',
+    notes: `🎯 **MedTech HIPAA Security Assessment - Planning Phase:**
+Initial assessment of HIPAA Security Rule compliance for medical device manufacturer. Assessment will cover electronic protected health information (ePHI) handling, medical device security, and healthcare partner integrations.
+
+📋 **Assessment Scope:**
+• 127 HIPAA Security Rule requirements across 18 implementation specifications
+• Medical device security for 12 connected healthcare products
+• Electronic health record (EHR) integration security
+• Business associate agreements and third-party risk management
+
+🔍 **Initial Planning Complete:**
+• Assessment methodology aligned with healthcare industry standards
+• Medical device inventory and security classification completed
+• Stakeholder interviews scheduled with clinical and IT teams
+• Regulatory compliance timeline established for Q2 2024`,
+    evidence: `📁 **Initial Documentation:**
+• Medical device inventory and security classification matrix
+• Current HIPAA policies and procedures (under review)
+• Business associate agreements and vendor assessment framework
+• Healthcare data flow diagrams and system architecture documentation`,
+    methods: ['Document Review', 'Interviews', 'Process Walkthrough', 'Technical Testing'],
+    updatedAt: '2024-03-22T09:15:00Z',
+    createdAt: '2024-03-20T14:00:00Z',
+    isRecurring: false
+  },
+  {
+    id: 'assessment-15',
+    name: 'RetailMax Chain - PCI DSS Level 1 Compliance',
+    standardIds: ['b1d9e82f-b0c3-40e2-89d7-4c51e216214e'], // NIST CSF
+    description: 'PCI DSS Level 1 merchant compliance assessment for omnichannel retail payment processing.',
+    status: 'in-progress',
+    progress: 82,
+    startDate: '2024-01-15T09:00:00Z',
+    assessorName: 'Marcus Johnson',
+    assessorId: 'user-7',
+    assessorNames: ['Marcus Johnson', 'Lisa Chen', 'Robert Martinez'],
+    assessorIds: ['user-7', 'user-8', 'user-9'],
+    notes: `🎯 **RetailMax PCI DSS Assessment - Near Completion:**
+Level 1 merchant assessment covering 329 PCI DSS requirements across retail stores, e-commerce platform, and payment processing infrastructure. Assessment validates cardholder data environment (CDE) security and payment application compliance.
+
+📋 **Assessment Progress (82% Complete):**
+• Network Security Controls: 95% complete - excellent segmentation
+• Payment Application Security: 90% complete - minimal findings
+• Retail Store POS Systems: 85% complete - upgrading legacy terminals
+• E-commerce Platform Security: 98% complete - ready for validation
+
+🔍 **Key Achievements:**
+• Strong network segmentation with proper CDE isolation
+• End-to-end encryption implemented across all payment channels
+• Comprehensive logging and monitoring with SIEM integration
+• Regular vulnerability scanning and penetration testing program`,
+    evidence: `📁 **PCI DSS Compliance Documentation:**
+• Network segmentation validation testing results
+• Payment application security testing reports (PA-DSS compliance)
+• Vulnerability scanning reports for all CDE components
+• Penetration testing results for retail and e-commerce environments`,
+    methods: ['Technical Testing', 'Network Scanning', 'Penetration Testing', 'Process Walkthrough'],
+    updatedAt: '2024-03-18T16:45:00Z',
+    createdAt: '2024-01-15T09:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-01-15',
+      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+    },
+    nextDueDate: '2025-01-15T09:00:00Z'
   }
 ];
 
