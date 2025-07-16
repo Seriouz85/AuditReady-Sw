@@ -779,7 +779,7 @@ export default function ComplianceSimplification() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl border-2 border-blue-200 dark:border-blue-800 flex flex-col items-center justify-center"
+                    className="absolute inset-0 z-[10000] bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl border-2 border-blue-200 dark:border-blue-800 flex flex-col items-center justify-center"
                   >
                     <motion.div
                       animate={{ 
@@ -1056,7 +1056,7 @@ export default function ComplianceSimplification() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col overflow-visible ${
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
                         frameworksSelected.nis2
                           ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 shadow-lg shadow-indigo-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-indigo-300'
@@ -1096,9 +1096,11 @@ export default function ComplianceSimplification() {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             className="w-full mt-2 industry-dropdown"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
                           >
-                            <div className="p-1 bg-indigo-50 dark:bg-indigo-900/30 rounded border border-indigo-200 dark:border-indigo-700">
+                            <div className="p-1 bg-indigo-50 dark:bg-indigo-900/30 rounded border border-indigo-200 dark:border-indigo-700 relative z-50">
                               <div className="flex items-center gap-1 mb-0.5">
                                 <Building2 className="w-2 h-2 text-indigo-600" />
                                 <span className="text-[9px] font-medium text-indigo-700 dark:text-indigo-300">Sector</span>
@@ -1106,46 +1108,31 @@ export default function ComplianceSimplification() {
                                   NIS2
                                 </Badge>
                               </div>
-                              <div className="relative">
-                                <Select value={selectedIndustrySector || 'none'} onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}>
-                                  <SelectTrigger className="w-full text-[9px] h-4 border-indigo-300 focus:border-indigo-500 px-1 py-0">
+                              <div className="relative" onClick={(e) => e.stopPropagation()}>
+                                <Select 
+                                  value={selectedIndustrySector || 'none'} 
+                                  onValueChange={(value) => setSelectedIndustrySector(value === 'none' ? null : value)}
+                                >
+                                  <SelectTrigger 
+                                    className="w-full text-[9px] h-4 border-indigo-300 focus:border-indigo-500 px-1 py-0"
+                                  >
                                     <SelectValue placeholder="All Industries" className="text-[9px] leading-none" />
                                   </SelectTrigger>
-                                  <SelectContent 
-                                    className="max-h-48 w-full text-xs z-50 overflow-y-auto" 
-                                    position="popper"
-                                    sideOffset={4}
-                                    align="start"
-                                  >
+                                  <SelectContent className="max-h-48 overflow-y-auto z-[9999]">
                                     <SelectItem value="none" className="text-xs py-1 px-2">
                                       <div className="flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></div>
                                         <span className="text-xs">All Industries</span>
                                       </div>
                                     </SelectItem>
-                                    {industrySectors?.filter(sector => {
-                                      // Only show official NIS2 sectors according to directive
-                                      const officialNIS2Sectors = [
-                                        'Energy',
-                                        'Healthcare', 
-                                        'Health', // Alternative naming
-                                        'Transportation',
-                                        'Transport', // Alternative naming
-                                        'Banking & Finance',
-                                        'Water & Wastewater',
-                                        'Digital Infrastructure',
-                                        'Government & Public',
-                                        'Manufacturing',
-                                        'Food & Agriculture',
-                                        'ICT Service Management',
-                                        'Space',
-                                        'Postal and Courier Services',
-                                        'Waste Management',
-                                        'Digital Providers',
-                                        'Research'
-                                      ];
-                                      return officialNIS2Sectors.includes(sector.name);
-                                    }).map((sector) => (
+                                    {isLoadingSectors ? (
+                                      <SelectItem value="loading" disabled>
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0 animate-pulse"></div>
+                                          <span className="text-xs">Loading...</span>
+                                        </div>
+                                      </SelectItem>
+                                    ) : (industrySectors || []).map((sector) => (
                                       <SelectItem key={sector.id} value={sector.id} className="text-xs py-1 px-2">
                                         <div className="flex items-center gap-2 w-full">
                                           <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${

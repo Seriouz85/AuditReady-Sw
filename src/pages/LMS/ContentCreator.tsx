@@ -37,7 +37,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useOrganization } from '@/hooks/useOrganization';
 import { toast } from '@/utils/toast';
 import { LearningPath } from '@/types/lms';
-import { MediaBrowserPanel } from '@/components/LMS/MediaBrowserPanel';
+import { UnifiedMediaSidePanel } from '@/components/LMS/UnifiedMediaSidePanel';
 
 // Content type interfaces
 interface ContentType {
@@ -232,6 +232,12 @@ const ContentCreator: React.FC = () => {
           navigate('/lms/create/course-builder', { state: { courseData: finalData } });
         } else if (selectedType === 'learning-path') {
           navigate('/lms/create/learning-path-builder', { state: { learningPathData: finalData } });
+        } else if (selectedType === 'page') {
+          navigate('/lms/create/page-editor', { state: { pageData: finalData } });
+        } else if (selectedType === 'quiz') {
+          navigate('/lms/create/quiz-editor', { state: { quizData: finalData } });
+        } else if (selectedType === 'assignment') {
+          navigate('/lms/create/assignment-editor', { state: { assignmentData: finalData } });
         } else {
           navigate('/lms');
         }
@@ -249,9 +255,21 @@ const ContentCreator: React.FC = () => {
             navigate('/lms/create/learning-path-builder', { 
               state: { learningPathData: { ...contentData, ...createdCourse } } 
             });
+          } else if (selectedType === 'page') {
+            navigate('/lms/create/page-editor', { 
+              state: { pageData: { ...contentData, ...createdCourse } } 
+            });
+          } else if (selectedType === 'quiz') {
+            navigate('/lms/create/quiz-editor', { 
+              state: { quizData: { ...contentData, ...createdCourse } } 
+            });
+          } else if (selectedType === 'assignment') {
+            navigate('/lms/create/assignment-editor', { 
+              state: { assignmentData: { ...contentData, ...createdCourse } } 
+            });
           } else {
             // For other content types, navigate to the appropriate editor
-            navigate(`/lms/${selectedType}/create`, { 
+            navigate(`/lms/create/${selectedType}-editor`, { 
               state: { contentData: { ...contentData, ...createdCourse } } 
             });
           }
@@ -413,6 +431,12 @@ const ContentCreator: React.FC = () => {
                     navigate('/lms/create/course-builder', { state: { courseData: finalData } });
                   } else if (selectedType === 'learning-path') {
                     navigate('/lms/create/learning-path-builder', { state: { learningPathData: finalData } });
+                  } else if (selectedType === 'page') {
+                    navigate('/lms/create/page-editor', { state: { pageData: finalData } });
+                  } else if (selectedType === 'quiz') {
+                    navigate('/lms/create/quiz-editor', { state: { quizData: finalData } });
+                  } else if (selectedType === 'assignment') {
+                    navigate('/lms/create/assignment-editor', { state: { assignmentData: finalData } });
                   } else {
                     navigate('/lms');
                   }
@@ -887,19 +911,22 @@ const ContentCreator: React.FC = () => {
         )}
       </div>
 
-      {/* Media Browser Panel */}
-      <MediaBrowserPanel
+      {/* Unified Media Side Panel */}
+      <UnifiedMediaSidePanel
         isOpen={showMediaBrowser}
         onClose={() => setShowMediaBrowser(false)}
         onSelect={(file) => {
           // Update content data with selected media
+          const fileName = 'originalName' in file ? file.originalName : file.title;
+          const fileTags = 'tags' in file ? file.tags : [];
+          
           setContentData(prev => ({
             ...prev,
-            description: prev.description + `\n\n[Media: ${file.originalName}]`,
-            tags: [...new Set([...prev.tags, ...file.tags])]
+            description: prev.description + `\n\n[Media: ${fileName}]`,
+            tags: [...new Set([...prev.tags, ...fileTags])]
           }));
           
-          toast.success(`Selected ${file.originalName}`);
+          toast.success(`Selected ${fileName}`);
           setShowMediaBrowser(false);
         }}
       />

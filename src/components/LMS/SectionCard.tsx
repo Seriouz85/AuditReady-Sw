@@ -33,7 +33,7 @@ import {
 interface Module {
   id: string;
   title: string;
-  type: 'text' | 'video' | 'quiz' | 'link' | 'assignment';
+  type: 'text' | 'video' | 'quiz';
   content: string;
   duration?: string;
   isExpanded?: boolean;
@@ -61,9 +61,7 @@ interface SectionCardProps {
 const moduleTypeOptions = [
   { type: 'text' as const, icon: FileText, label: 'Text Content', color: 'bg-blue-500' },
   { type: 'video' as const, icon: Video, label: 'Video', color: 'bg-red-500' },
-  { type: 'quiz' as const, icon: FileQuestion, label: 'Quiz', color: 'bg-green-500' },
-  { type: 'link' as const, icon: LinkIcon, label: 'External Link', color: 'bg-purple-500' },
-  { type: 'assignment' as const, icon: PenTool, label: 'Assignment', color: 'bg-orange-500' }
+  { type: 'quiz' as const, icon: FileQuestion, label: 'Quiz', color: 'bg-green-500' }
 ];
 
 export const SectionCard: React.FC<SectionCardProps> = ({
@@ -252,21 +250,27 @@ export const SectionCard: React.FC<SectionCardProps> = ({
               />
             ))}
 
-            {/* Add Module Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mt-4">
+            {/* Direct Module Addition */}
+            <div className="mt-4 space-y-2">
               {moduleTypeOptions.map(({ type, icon: Icon, label, color }) => (
-                <Button
+                <div
                   key={type}
-                  variant="outline"
-                  size="sm"
                   onClick={() => onAddModule(type)}
-                  className="flex flex-col items-center gap-2 h-auto py-3 hover:shadow-sm transition-shadow"
+                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer transition-all duration-200 group"
                 >
-                  <div className={`w-6 h-6 rounded ${color} flex items-center justify-center`}>
-                    <Icon className="h-3 w-3 text-white" />
+                  <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+                    <Icon className="h-4 w-4 text-white" />
                   </div>
-                  <span className="text-xs">{label}</span>
-                </Button>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-800">{label}</p>
+                    <p className="text-xs text-gray-500">
+                      {type === 'text' && 'Add formatted text, images, and links'}
+                      {type === 'video' && 'Embed videos from YouTube, Vimeo, or upload'}
+                      {type === 'quiz' && 'Create interactive assessments'}
+                    </p>
+                  </div>
+                  <Plus className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
               ))}
             </div>
           </div>

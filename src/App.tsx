@@ -50,6 +50,9 @@ const MediaLibrary = lazy(() => import("./pages/LMS/MediaLibrary"));
 const LMSAnalytics = lazy(() => import("./pages/LMS/Analytics"));
 const CourseViewer = lazy(() => import("./pages/LMS/CourseViewer"));
 const CourseLibrary = lazy(() => import("./pages/LMS/CourseLibrary"));
+const PageEditor = lazy(() => import("./pages/LMS/PageEditor"));
+const AssignmentEditor = lazy(() => import("./pages/LMS/AssignmentEditor"));
+const LearningPathBuilder = lazy(() => import("./pages/LMS/LearningPathBuilder"));
 
 // Lazy load editor
 const GraphicalEditor = lazy(() => import("./pages/documents/GraphicalEditor"));
@@ -310,6 +313,36 @@ const App = () => {
                     } 
                   />
                   <Route 
+                    path="/lms/learning-path/create" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading learning path builder..." />}>
+                          <LearningPathBuilder />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/learning-path/edit/:pathId" 
+                    element={
+                      <ProtectedRoute requiredPermission="edit_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading learning path builder..." />}>
+                          <LearningPathBuilder />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/learning-path/:pathId" 
+                    element={
+                      <ProtectedRoute requiredPermission="view_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading learning path..." />}>
+                          <LearningPathBuilder />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
                     path="/lms/create/content" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
@@ -325,6 +358,106 @@ const App = () => {
                       <ProtectedRoute requiredPermission="create_lms_content">
                         <Suspense fallback={<LoadingSpinner text="Loading course builder..." />}>
                           <CourseBuilder />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/learning-path-builder" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading learning path builder..." />}>
+                          <LearningPathBuilder />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/page-editor" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading page editor..." />}>
+                          <PageEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/quiz-editor" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading quiz editor..." />}>
+                          <QuizEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/create/assignment-editor" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading assignment editor..." />}>
+                          <AssignmentEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/page/create" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading page editor..." />}>
+                          <PageEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/page/edit/:pageId" 
+                    element={
+                      <ProtectedRoute requiredPermission="edit_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading page editor..." />}>
+                          <PageEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/page/:pageId" 
+                    element={
+                      <ProtectedRoute requiredPermission="view_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading page..." />}>
+                          <PageEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/assignment/create" 
+                    element={
+                      <ProtectedRoute requiredPermission="create_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading assignment editor..." />}>
+                          <AssignmentEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/assignment/edit/:assignmentId" 
+                    element={
+                      <ProtectedRoute requiredPermission="edit_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading assignment editor..." />}>
+                          <AssignmentEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/assignment/:assignmentId" 
+                    element={
+                      <ProtectedRoute requiredPermission="view_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading assignment..." />}>
+                          <AssignmentEditor />
                         </Suspense>
                       </ProtectedRoute>
                     } 
