@@ -21,7 +21,8 @@ import {
   MoreVertical,
   ChevronRight,
   RotateCcw,
-  Pin
+  Pin,
+  ArrowUpDown
 } from "lucide-react";
 import { AssessmentDetail } from "@/components/assessments/AssessmentDetail";
 import { Assessment, RecurrenceSettings } from "@/types";
@@ -84,12 +85,15 @@ const Assessments = () => {
   const [loading, setLoading] = useState(true);
   const [selectedAssessment, setSelectedAssessment] = useState<ExtendedAssessment | null>(null);
   const [isNewAssessmentOpen, setIsNewAssessmentOpen] = useState(false);
+  const [isEditAssessmentOpen, setIsEditAssessmentOpen] = useState(false);
+  const [editingAssessment, setEditingAssessment] = useState<ExtendedAssessment | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [assessorPopoverOpen, setAssessorPopoverOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStandard, setFilterStandard] = useState<string>('all');
   const [filterRecurring, setFilterRecurring] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('date-desc'); // Default sort by date, newest first
   const [standards, setStandards] = useState(mockStandards); // Start with mock data as fallback
   const { t } = useTranslation();
   
@@ -144,15 +148,38 @@ const Assessments = () => {
     return matchesSearch && matchesStandard && matchesRecurring && matchesStatus;
   });
 
-  // Sort assessments - pinned first, then by status and date
+  // Sort assessments - pinned first, then by selected criteria
   const sortedAssessments = [...filteredAssessments].sort((a, b) => {
+    // Always sort pinned items first
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
-    if (a.status !== b.status) {
-      const statusOrder = { 'in-progress': 0, 'draft': 1, 'completed': 2 };
-      return statusOrder[a.status] - statusOrder[b.status];
+    
+    // Apply selected sorting
+    switch (sortBy) {
+      case 'date-desc':
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      case 'date-asc':
+        return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+      case 'name-asc':
+        return a.name.localeCompare(b.name);
+      case 'name-desc':
+        return b.name.localeCompare(a.name);
+      case 'progress-desc':
+        return b.progress - a.progress;
+      case 'progress-asc':
+        return a.progress - b.progress;
+      case 'status':
+        const statusOrder = { 'in-progress': 0, 'draft': 1, 'completed': 2 };
+        return statusOrder[a.status] - statusOrder[b.status];
+      case 'assessor':
+        return a.assessorName.localeCompare(b.assessorName);
+      case 'standard':
+        const aStandardName = getStandardName(a.standardIds[0] || '');
+        const bStandardName = getStandardName(b.standardIds[0] || '');
+        return aStandardName.localeCompare(bStandardName);
+      default:
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     }
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
   });
 
   const getStandardName = (id: string): string => {
@@ -949,6 +976,407 @@ const Assessments = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Assessment Dialog */}
+        <Dialog open={isEditAssessmentOpen} onOpenChange={setIsEditAssessmentOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Edit Assessment</DialogTitle>
+              <DialogDescription>
+                Update the assessment details below
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-name" className="text-right">
+                  {t('assessments.form.name')} <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="edit-name"
+                  name="name"
+                  value={editingAssessment?.name || ''}
+                  onChange={(e) => setEditingAssessment(prev => prev ? {...prev, name: e.target.value} : null)}
+                  className="col-span-3"
+                  placeholder={t('assessments.form.name.placeholder')}
+                  required
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-standard" className="text-right">
+                  {t('assessments.form.standard')} <span className="text-red-500">*</span>
+                </Label>
+                <div className="col-span-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between"
+                      >
+                        {editingAssessment?.standardIds && editingAssessment.standardIds.length > 0
+                          ? getStandardNames(editingAssessment.standardIds)
+                          : "Select standards..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search standards..." />
+                        <CommandList>
+                          <CommandEmpty>No standards found.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              onSelect={() => {
+                                if (editingAssessment) {
+                                  const allSelected = editingAssessment.standardIds.length === standards.length;
+                                  setEditingAssessment({
+                                    ...editingAssessment,
+                                    standardIds: allSelected ? [] : standards.map(s => s.id)
+                                  });
+                                }
+                              }}
+                              className="flex items-center"
+                            >
+                              <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
+                                {editingAssessment?.standardIds.length === standards.length && (
+                                  <Check className="h-3 w-3" />
+                                )}
+                              </div>
+                              <span className="font-medium">Select All</span>
+                            </CommandItem>
+                          </CommandGroup>
+                          <CommandSeparator />
+                          <CommandGroup>
+                            {standards.map((standard) => (
+                              <CommandItem
+                                key={standard.id}
+                                onSelect={() => {
+                                  if (editingAssessment) {
+                                    const isSelected = editingAssessment.standardIds.includes(standard.id);
+                                    setEditingAssessment({
+                                      ...editingAssessment,
+                                      standardIds: isSelected 
+                                        ? editingAssessment.standardIds.filter(id => id !== standard.id)
+                                        : [...editingAssessment.standardIds, standard.id]
+                                    });
+                                  }
+                                }}
+                                className="flex items-center"
+                              >
+                                <div className={cn(
+                                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                  editingAssessment?.standardIds.includes(standard.id) 
+                                    ? "bg-primary text-primary-foreground" 
+                                    : "opacity-50"
+                                )}>
+                                  {editingAssessment?.standardIds.includes(standard.id) && (
+                                    <Check className="h-3 w-3" />
+                                  )}
+                                </div>
+                                <span>{standard.name} ({standard.version})</span>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-description" className="text-right">
+                  {t('assessments.form.description')}
+                </Label>
+                <Textarea
+                  id="edit-description"
+                  name="description"
+                  value={editingAssessment?.description || ''}
+                  onChange={(e) => setEditingAssessment(prev => prev ? {...prev, description: e.target.value} : null)}
+                  className="col-span-3"
+                  placeholder={t('assessments.form.description.placeholder')}
+                  rows={3}
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-assessors" className="text-right">
+                  {t('assessments.form.assessor')} <span className="text-red-500">*</span>
+                </Label>
+                <div className="col-span-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between"
+                      >
+                        {editingAssessment?.assessorIds && editingAssessment.assessorIds.length > 0
+                          ? getAssessorNames(editingAssessment.assessorIds)
+                          : "Select assessors..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search assessors..." />
+                        <CommandList>
+                          <CommandEmpty>No assessors found.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              onSelect={() => {
+                                if (editingAssessment) {
+                                  const allSelected = editingAssessment.assessorIds?.length === internalUsers.length;
+                                  const allUserIds = internalUsers.map(user => user.id);
+                                  const primaryUser = allSelected ? null : internalUsers[0];
+                                  setEditingAssessment({
+                                    ...editingAssessment,
+                                    assessorIds: allSelected ? [] : allUserIds,
+                                    assessorName: allSelected ? '' : (primaryUser?.name || '')
+                                  });
+                                }
+                              }}
+                              className="flex items-center"
+                            >
+                              <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
+                                {editingAssessment?.assessorIds?.length === internalUsers.length && (
+                                  <Check className="h-3 w-3" />
+                                )}
+                              </div>
+                              <span className="font-medium">Select All</span>
+                            </CommandItem>
+                          </CommandGroup>
+                          <CommandSeparator />
+                          <CommandGroup>
+                            {internalUsers.map((user) => (
+                              <CommandItem
+                                key={user.id}
+                                onSelect={() => {
+                                  if (editingAssessment) {
+                                    const currentIds = editingAssessment.assessorIds || [];
+                                    const isSelected = currentIds.includes(user.id);
+                                    const newAssessorIds = isSelected 
+                                      ? currentIds.filter(id => id !== user.id)
+                                      : [...currentIds, user.id];
+                                    
+                                    const primaryUser = newAssessorIds.length > 0 
+                                      ? internalUsers.find(u => u.id === newAssessorIds[0])
+                                      : null;
+                                    
+                                    setEditingAssessment({
+                                      ...editingAssessment,
+                                      assessorIds: newAssessorIds,
+                                      assessorName: primaryUser ? primaryUser.name : ''
+                                    });
+                                  }
+                                }}
+                                className="flex items-center"
+                              >
+                                <div className={cn(
+                                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                  editingAssessment?.assessorIds?.includes(user.id) 
+                                    ? "bg-primary text-primary-foreground" 
+                                    : "opacity-50"
+                                )}>
+                                  {editingAssessment?.assessorIds?.includes(user.id) && (
+                                    <Check className="h-3 w-3" />
+                                  )}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{user.name}</span>
+                                  <span className="text-xs text-muted-foreground">{user.title} • {user.department}</span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              {/* Recurrence Options */}
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label className="text-right pt-3">
+                  Assessment Type
+                </Label>
+                <div className="col-span-3 space-y-4">
+                  <RadioGroup 
+                    value={editingAssessment?.isRecurring ? 'recurring' : 'one-time'}
+                    onValueChange={(value) => setEditingAssessment(prev => prev ? {
+                      ...prev,
+                      isRecurring: value === 'recurring'
+                    } : null)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="one-time" id="edit-one-time" />
+                      <Label htmlFor="edit-one-time" className="font-normal cursor-pointer">
+                        One-time Assessment
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="recurring" id="edit-recurring" />
+                      <Label htmlFor="edit-recurring" className="font-normal cursor-pointer">
+                        Recurring Assessment
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
+                  {editingAssessment?.isRecurring && (
+                    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="edit-frequency" className="text-sm">Frequency</Label>
+                          <Select 
+                            value={editingAssessment?.recurrenceSettings?.frequency || 'monthly'}
+                            onValueChange={(value: any) => setEditingAssessment(prev => prev ? {
+                              ...prev,
+                              recurrenceSettings: {
+                                ...prev.recurrenceSettings!,
+                                frequency: value
+                              }
+                            } : null)}
+                          >
+                            <SelectTrigger id="edit-frequency">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="weekly">Weekly</SelectItem>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                              <SelectItem value="quarterly">Quarterly</SelectItem>
+                              <SelectItem value="yearly">Yearly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="edit-interval" className="text-sm">Every</Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              id="edit-interval"
+                              type="number"
+                              min="1"
+                              max="12"
+                              value={editingAssessment?.recurrenceSettings?.interval || 1}
+                              onChange={(e) => setEditingAssessment(prev => prev ? {
+                                ...prev,
+                                recurrenceSettings: {
+                                  ...prev.recurrenceSettings!,
+                                  interval: parseInt(e.target.value) || 1
+                                }
+                              } : null)}
+                            />
+                            <span className="text-sm text-muted-foreground">
+                              {(() => {
+                                const freq = editingAssessment?.recurrenceSettings?.frequency || 'monthly';
+                                switch (freq) {
+                                  case 'weekly': return 'week(s)';
+                                  case 'monthly': return 'month(s)';
+                                  case 'quarterly': return 'quarter(s)';
+                                  case 'yearly': return 'year(s)';
+                                  default: return 'period(s)';
+                                }
+                              })()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="edit-startDate" className="text-sm">Start Date</Label>
+                        <Input
+                          id="edit-startDate"
+                          type="date"
+                          value={editingAssessment?.recurrenceSettings?.startDate || new Date().toISOString().split('T')[0]}
+                          onChange={(e) => setEditingAssessment(prev => prev ? {
+                            ...prev,
+                            recurrenceSettings: {
+                              ...prev.recurrenceSettings!,
+                              startDate: e.target.value
+                            }
+                          } : null)}
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="edit-skipWeekends"
+                          checked={editingAssessment?.recurrenceSettings?.skipWeekends ?? true}
+                          onCheckedChange={(checked) => setEditingAssessment(prev => prev ? {
+                            ...prev,
+                            recurrenceSettings: {
+                              ...prev.recurrenceSettings!,
+                              skipWeekends: checked as boolean
+                            }
+                          } : null)}
+                        />
+                        <Label htmlFor="edit-skipWeekends" className="text-sm font-normal cursor-pointer">
+                          Skip weekends (Saturday and Sunday)
+                        </Label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setIsEditAssessmentOpen(false);
+                setEditingAssessment(null);
+              }}>
+                Cancel
+              </Button>
+              <Button onClick={async () => {
+                if (!editingAssessment || !organization) return;
+                
+                // Validate form
+                if (!editingAssessment.name || editingAssessment.standardIds.length === 0 || !editingAssessment.assessorIds || editingAssessment.assessorIds.length === 0) {
+                  toast.error(t('assessments.toast.fillRequired'));
+                  return;
+                }
+
+                try {
+                  const organizationId = organization.id;
+                  
+                  // Update assessment
+                  const updatedData = {
+                    ...editingAssessment,
+                    assessorNames: editingAssessment.assessorIds.map(id => {
+                      const user = internalUsers.find(u => u.id === id);
+                      return user ? user.name : '';
+                    }).filter(Boolean),
+                    updatedAt: new Date().toISOString()
+                  };
+
+                  await multiTenantAssessmentService.updateAssessment(
+                    editingAssessment.id,
+                    updatedData,
+                    organizationId,
+                    isDemo
+                  );
+
+                  // Update local state
+                  setAssessments(prev => prev.map(a => 
+                    a.id === editingAssessment.id ? { ...a, ...updatedData } : a
+                  ));
+                  
+                  setIsEditAssessmentOpen(false);
+                  setEditingAssessment(null);
+                  toast.success('Assessment updated successfully');
+                } catch (error) {
+                  console.error('Error updating assessment:', error);
+                  toast.error('Failed to update assessment');
+                }
+              }}>
+                Update Assessment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       
       {/* Search and Filters */}
@@ -994,6 +1422,25 @@ const Assessments = () => {
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="in-progress">In Progress</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[200px]">
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="h-4 w-4" />
+              <SelectValue placeholder="Sort by" />
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date-desc">Date (Newest First)</SelectItem>
+            <SelectItem value="date-asc">Date (Oldest First)</SelectItem>
+            <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+            <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+            <SelectItem value="progress-desc">Progress (High to Low)</SelectItem>
+            <SelectItem value="progress-asc">Progress (Low to High)</SelectItem>
+            <SelectItem value="status">Status (In Progress First)</SelectItem>
+            <SelectItem value="assessor">Assessor (A-Z)</SelectItem>
+            <SelectItem value="standard">Standard (A-Z)</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -1192,6 +1639,30 @@ const Assessments = () => {
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => handleTogglePin(assessment.id)}>
                         {assessment.isPinned ? 'Unpin' : 'Pin'} Assessment
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        // Initialize editing assessment with proper recurrence settings
+                        const today = new Date();
+                        const todayStr = today.getFullYear() + '-' + 
+                          String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(today.getDate()).padStart(2, '0');
+                        
+                        const defaultRecurrenceSettings: RecurrenceSettings = {
+                          frequency: 'monthly',
+                          interval: 1,
+                          weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+                          skipWeekends: true,
+                          startDate: todayStr
+                        };
+                        
+                        const assessmentToEdit: ExtendedAssessment = {
+                          ...assessment,
+                          recurrenceSettings: assessment.recurrenceSettings || defaultRecurrenceSettings
+                        };
+                        setEditingAssessment(assessmentToEdit);
+                        setIsEditAssessmentOpen(true);
+                      }}>
+                        Edit Assessment
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleDeleteAssessment(assessment.id)}>
                         Delete Assessment
