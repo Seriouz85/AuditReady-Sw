@@ -12,11 +12,22 @@ dist
 dist-ssr
 *.local
 
+# Rust/Tauri build artifacts
+target/
+Cargo.lock
+
+# System files
+*.DS_Store
+.DS_Store
+
+# Build outputs
+*.tmp
+*~
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
