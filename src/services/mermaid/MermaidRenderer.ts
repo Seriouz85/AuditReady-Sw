@@ -58,8 +58,9 @@ export class MermaidRenderer {
         options
       );
 
-      // Clear container and insert new SVG
-      this.containerElement.innerHTML = result.svg;
+      // Clear container and insert sanitized SVG
+      const { sanitizeSVG } = await import('@/lib/security/htmlSanitizer');
+      this.containerElement.innerHTML = sanitizeSVG(result.svg);
 
       // Apply AuditReady-specific styling
       this.applyCustomStyling();

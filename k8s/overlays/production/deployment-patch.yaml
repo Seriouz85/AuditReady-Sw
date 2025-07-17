@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-readiness-hub
+  namespace: audit-readiness-hub-prod
+spec:
+  replicas: 5
+  template:
+    spec:
+      containers:
+      - name: audit-readiness-hub
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ENABLE_DEBUG_LOGS
+          value: "false"
+        - name: MAX_MEMORY
+          value: "1Gi"
+        - name: MAX_CPU
+          value: "1000m"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - audit-readiness-hub
+            topologyKey: kubernetes.io/hostname

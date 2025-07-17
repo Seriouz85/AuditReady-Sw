@@ -1,0 +1,49 @@
+# MCP Server Dockerfile for enhanced AI development assistance
+FROM node:20-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    curl \
+    docker-cli \
+    python3 \
+    py3-pip \
+    bash \
+    jq
+
+# Create workspace directory
+WORKDIR /mcp-server
+
+# Copy MCP server package.json
+COPY docker/mcp/package.json ./
+RUN npm install
+
+# Copy MCP server source
+COPY docker/mcp/ ./
+
+# Install additional tools for code analysis
+RUN pip3 install --no-cache-dir \
+    black \
+    flake8 \
+    mypy \
+    pylint
+
+# Create non-root user
+RUN addgroup -g 1001 -S mcp && \
+    adduser -S mcp -u 1001 -G mcp
+
+# Change ownership
+RUN chown -R mcp:mcp /mcp-server
+
+# Switch to non-root user
+USER mcp
+
+# Expose MCP server port
+EXPOSE 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Start MCP server
+CMD ["node", "server.js"]

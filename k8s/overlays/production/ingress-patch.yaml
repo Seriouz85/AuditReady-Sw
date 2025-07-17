@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: audit-readiness-hub-ingress
+  namespace: audit-readiness-hub-prod
+  annotations:
+    # Production-specific annotations
+    nginx.ingress.kubernetes.io/rate-limit: "200"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/rate-limit-connections: "20"
+    
+    # Enhanced security for production
+    nginx.ingress.kubernetes.io/server-snippet: |
+      add_header X-Frame-Options "DENY" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co https://api.stripe.com wss://*.supabase.co; frame-src 'self' https://js.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self';" always;
+      add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+    
+    # Performance optimizations
+    nginx.ingress.kubernetes.io/upstream-keepalive-connections: "20"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "120"
+    
+    # Advanced load balancing
+    nginx.ingress.kubernetes.io/load-balance: "ewma"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+spec:
+  tls:
+  - hosts:
+    - app.auditready.com
+    - auditready.com
+    - www.auditready.com
+    secretName: audit-readiness-hub-tls-prod

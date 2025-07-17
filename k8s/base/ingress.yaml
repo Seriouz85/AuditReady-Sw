@@ -1,0 +1,151 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: audit-readiness-hub-ingress
+  namespace: audit-readiness-hub
+  labels:
+    app: audit-readiness-hub
+  annotations:
+    # NGINX Ingress Controller annotations
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # Security annotations
+    nginx.ingress.kubernetes.io/server-snippet: |
+      add_header X-Frame-Options "DENY" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'self' https://js.stripe.com; object-src 'none';" always;
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/rate-limit-connections: "10"
+    
+    # Compression
+    nginx.ingress.kubernetes.io/enable-gzip: "true"
+    nginx.ingress.kubernetes.io/gzip-types: "text/plain,text/css,text/xml,text/javascript,application/javascript,application/xml+rss,application/json"
+    
+    # CORS
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://app.auditready.com,https://auditready.com"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, X-Requested-With"
+    
+    # Load balancer configuration
+    nginx.ingress.kubernetes.io/upstream-keepalive-connections: "10"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "60"
+    
+    # Certificate management (cert-manager)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    
+    # Client body size
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+    
+    # Buffering
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "4k"
+
+spec:
+  tls:
+  - hosts:
+    - app.auditready.com
+    - auditready.com
+    - www.auditready.com
+    secretName: audit-readiness-hub-tls
+  
+  rules:
+  - host: app.auditready.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: audit-readiness-hub-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: audit-readiness-hub-service
+            port:
+              number: 4173
+  
+  - host: auditready.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: audit-readiness-hub-service
+            port:
+              number: 80
+  
+  - host: www.auditready.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: audit-readiness-hub-service
+            port:
+              number: 80
+
+---
+# Network Policy for additional security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: audit-readiness-hub-netpol
+  namespace: audit-readiness-hub
+spec:
+  podSelector:
+    matchLabels:
+      app: audit-readiness-hub
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 4173
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443  # HTTPS
+    - protocol: TCP
+      port: 80   # HTTP
+    - protocol: TCP
+      port: 6379 # Redis
+    - protocol: TCP
+      port: 5432 # PostgreSQL
+    - protocol: UDP
+      port: 53   # DNS

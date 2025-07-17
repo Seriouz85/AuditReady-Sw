@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SafeHTML } from '@/lib/security/htmlSanitizer';
 import { 
   ArrowLeft, 
   Save, 
@@ -355,9 +356,10 @@ const PageEditor: React.FC = () => {
                       </div>
                     </div>
                     <div className="p-6">
-                      <div 
+                      <SafeHTML
+                        content={pageData.content}
+                        type="rich"
                         className="prose prose-lg max-w-none"
-                        dangerouslySetInnerHTML={{ __html: pageData.content }}
                       />
                     </div>
                   </Card>

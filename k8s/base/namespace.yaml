@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: audit-readiness-hub
+  labels:
+    name: audit-readiness-hub
+    environment: base
+  annotations:
+    description: "Namespace for Audit Readiness Hub application"

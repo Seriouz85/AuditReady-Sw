@@ -11,13 +11,44 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+// Secure CORS configuration - restrict to specific origins
+const getAllowedOrigins = () => {
+  const prodOrigins = [
+    'https://app.auditready.com',
+    'https://auditready.com',
+    'https://www.auditready.com'
+  ];
+  
+  const devOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost'
+  ];
+  
+  // In development, allow dev origins, in production only prod origins
+  const isDev = Deno.env.get('ENVIRONMENT') === 'development';
+  return isDev ? [...prodOrigins, ...devOrigins] : prodOrigins;
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigins = getAllowedOrigins();
+  const allowedOrigin = origin && allowedOrigins.includes(origin) 
+    ? origin 
+    : allowedOrigins[0];
+  
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Credentials': 'true',
+    'Vary': 'Origin'
+  };
 };
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });

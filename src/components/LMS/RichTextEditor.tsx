@@ -65,7 +65,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   useEffect(() => {
     if (editorRef.current) {
-      editorRef.current.innerHTML = initialContent;
+      const { sanitizeRichText } = require('@/lib/security/htmlSanitizer');
+      editorRef.current.innerHTML = sanitizeRichText(initialContent);
     }
   }, [initialContent]);
 

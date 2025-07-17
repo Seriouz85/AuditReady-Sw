@@ -1,0 +1,114 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: audit-readiness-hub-hpa
+  namespace: audit-readiness-hub
+  labels:
+    app: audit-readiness-hub
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: audit-readiness-hub
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: audit-readiness-hub-pdb
+  namespace: audit-readiness-hub
+  labels:
+    app: audit-readiness-hub
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: audit-readiness-hub
+      component: frontend
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: audit-readiness-hub-limits
+  namespace: audit-readiness-hub
+spec:
+  limits:
+  - type: Container
+    default:
+      memory: "512Mi"
+      cpu: "500m"
+    defaultRequest:
+      memory: "256Mi"
+      cpu: "250m"
+    max:
+      memory: "1Gi"
+      cpu: "1000m"
+    min:
+      memory: "128Mi"
+      cpu: "100m"
+  - type: Pod
+    max:
+      memory: "2Gi"
+      cpu: "2000m"
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: audit-readiness-hub-quota
+  namespace: audit-readiness-hub
+spec:
+  hard:
+    requests.cpu: "10"
+    requests.memory: "10Gi"
+    limits.cpu: "20"
+    limits.memory: "20Gi"
+    pods: "50"
+    services: "10"
+    persistentvolumeclaims: "5"
+    secrets: "10"
+    configmaps: "10"

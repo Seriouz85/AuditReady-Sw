@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  # Production Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: production
+    ports:
+      - "4173:4173"
+    environment:
+      - NODE_ENV=production
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+      - VITE_STRIPE_PUBLISHABLE_KEY=${VITE_STRIPE_PUBLISHABLE_KEY}
+      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
+    depends_on:
+      - redis
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4173/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for production caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "auth", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Production Nginx with SSL
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.prod.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      - frontend
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+
+  # Monitoring in production
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.retention.time=30d'
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+
+  # Log aggregation
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./docker/promtail/promtail.yml:/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    networks:
+      - audit-hub-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  nginx_cache:
+
+networks:
+  audit-hub-network:
+    driver: bridge

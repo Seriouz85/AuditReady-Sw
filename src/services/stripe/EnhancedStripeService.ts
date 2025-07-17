@@ -117,9 +117,9 @@ export class EnhancedStripeService {
   constructor() {
     // Try multiple possible env var names
     this.secretKey = import.meta.env.VITE_STRIPE_SECRET_KEY || 
-                     import.meta.env.STRIPE_SECRET_KEY || 
-                     'sk_test_51RXKwbBDPoJ4xbIHIzeSLnkgKI6HYUZ8LyRUqRqyqVTBJqfGHq99mWnya5YHNinElMMTksFhLsOy3IEoQsocqYxK00mKpv3Du7';
+                     import.meta.env.STRIPE_SECRET_KEY || '';
     if (!this.secretKey) {
+      console.error('Stripe secret key not configured. Please set VITE_STRIPE_SECRET_KEY in your environment.');
       throw new Error('Stripe secret key is required');
     }
   }

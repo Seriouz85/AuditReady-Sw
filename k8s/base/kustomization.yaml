@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: audit-readiness-hub-base
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - redis.yaml
+  - monitoring.yaml
+
+commonLabels:
+  app: audit-readiness-hub
+  version: v1.0.0
+
+commonAnnotations:
+  maintainer: "audit-ready-team"
+  description: "Enterprise compliance management platform"
+
+images:
+  - name: audit-readiness-hub
+    newTag: latest

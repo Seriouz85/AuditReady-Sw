@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: audit-readiness-hub-config
+  namespace: audit-readiness-hub
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  VITE_APP_ENV: "kubernetes"
+  
+  # Redis Configuration
+  REDIS_URL: "redis://redis-service:6379"
+  
+  # Monitoring Configuration
+  ENABLE_MONITORING: "true"
+  ENABLE_HEALTH_CHECKS: "true"
+  
+  # Performance Configuration
+  MAX_MEMORY: "512Mi"
+  MAX_CPU: "500m"
+  
+  # Security Configuration
+  ENABLE_SECURITY_HEADERS: "true"
+  ENABLE_RATE_LIMITING: "true"
+  
+  # Features Configuration
+  ENABLE_REAL_TIME_COLLABORATION: "true"
+  ENABLE_AI_ASSISTANCE: "true"
+  ENABLE_ADVANCED_REPORTING: "true"
+  
+  # Cache Configuration
+  CACHE_TTL_DEFAULT: "300"
+  CACHE_TTL_DASHBOARD: "120"
+  CACHE_TTL_STATIC: "1800"
+  
+  # Database Configuration
+  CONNECTION_POOL_SIZE: "10"
+  QUERY_TIMEOUT: "30000"
+  
+  # nginx.conf for production
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+    
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        
+        # Logging
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                       '$status $body_bytes_sent "$http_referer" '
+                       '"$http_user_agent" "$http_x_forwarded_for"';
+        
+        access_log /var/log/nginx/access.log main;
+        error_log /var/log/nginx/error.log warn;
+        
+        # Gzip compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_types text/plain text/css text/xml text/javascript 
+                   application/javascript application/xml+rss 
+                   application/json application/xml;
+        
+        # Security headers
+        add_header X-Frame-Options "DENY" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        
+        # Rate limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/m;
+        
+        upstream backend {
+            server 127.0.0.1:4173;
+        }
+        
+        server {
+            listen 80;
+            server_name _;
+            root /usr/share/nginx/html;
+            index index.html;
+            
+            # Security
+            server_tokens off;
+            
+            # Health check
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+            
+            # API rate limiting
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                proxy_pass http://backend;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+            }
+            
+            # Auth rate limiting
+            location /auth/ {
+                limit_req zone=auth burst=10 nodelay;
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Static files
+            location / {
+                try_files $uri $uri/ /index.html;
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+            
+            # Disable access to sensitive files
+            location ~ /\. {
+                deny all;
+            }
+            
+            location ~ /(config|logs|scripts) {
+                deny all;
+            }
+        }
+    }

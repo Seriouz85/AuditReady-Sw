@@ -224,8 +224,8 @@ const Requirements = () => {
       } else {
         // Load from Supabase
         const [standardsResponse, categoriesResponse] = await Promise.all([
-          supabase.from('standards').select('*').eq('is_active', true).order('name'),
-          supabase.from('unified_compliance_categories').select('*').eq('is_active', true).order('sort_order')
+          supabase.from('standards').select('id, name, version, description, type, is_active').eq('is_active', true).order('name'),
+          supabase.from('unified_compliance_categories').select('id, name, description, sort_order, is_active').eq('is_active', true).order('sort_order')
         ]);
 
         if (standardsResponse.data) {

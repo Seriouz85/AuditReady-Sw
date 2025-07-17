@@ -1,0 +1,206 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-readiness-hub
+  namespace: audit-readiness-hub
+  labels:
+    app: audit-readiness-hub
+    component: frontend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: audit-readiness-hub
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: audit-readiness-hub
+        component: frontend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: audit-readiness-hub
+        image: audit-readiness-hub:latest
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        - containerPort: 4173
+          protocol: TCP
+        env:
+        # Environment variables from ConfigMap
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: audit-readiness-hub-config
+              key: NODE_ENV
+        - name: VITE_APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: audit-readiness-hub-config
+              key: VITE_APP_ENV
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: audit-readiness-hub-config
+              key: REDIS_URL
+        
+        # Secret environment variables
+        - name: VITE_SUPABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: audit-readiness-hub-secrets
+              key: VITE_SUPABASE_URL
+        - name: VITE_SUPABASE_ANON_KEY
+          valueFrom:
+            secretKeyRef:
+              name: audit-readiness-hub-secrets
+              key: VITE_SUPABASE_ANON_KEY
+        - name: VITE_STRIPE_PUBLISHABLE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: audit-readiness-hub-secrets
+              key: VITE_STRIPE_PUBLISHABLE_KEY
+        - name: VITE_GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: audit-readiness-hub-secrets
+              key: VITE_GEMINI_API_KEY
+        - name: VITE_SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: audit-readiness-hub-secrets
+              key: VITE_SENTRY_DSN
+        
+        # Resource limits and requests
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # Startup probe for slower initialization
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        
+        # Volume mounts
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: cache-volume
+          mountPath: /var/cache/nginx
+        - name: logs-volume
+          mountPath: /var/log/nginx
+      
+      # Pod security context
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      
+      # Service account
+      serviceAccountName: audit-readiness-hub
+      automountServiceAccountToken: false
+      
+      # Volumes
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: audit-readiness-hub-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+      - name: tmp-volume
+        emptyDir: {}
+      - name: cache-volume
+        emptyDir: {}
+      - name: logs-volume
+        emptyDir: {}
+      
+      # Node selection and affinity
+      nodeSelector:
+        kubernetes.io/os: linux
+      
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - audit-readiness-hub
+              topologyKey: kubernetes.io/hostname
+      
+      # Tolerations for node conditions
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: audit-readiness-hub
+  namespace: audit-readiness-hub
+  labels:
+    app: audit-readiness-hub
+automountServiceAccountToken: false

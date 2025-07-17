@@ -137,14 +137,17 @@ export const EntraCallbackPage = () => {
   };
 
   const exchangeCodeForTokens = async (code: string) => {
-    const tenantId = import.meta.env.VITE_ENTRA_TENANT_ID;
-    const clientId = import.meta.env.VITE_ENTRA_CLIENT_ID;
-    const clientSecret = import.meta.env.VITE_ENTRA_CLIENT_SECRET;
-    const redirectUri = `${window.location.origin}/auth/callback/entra`;
-
-    if (!tenantId || !clientId || !clientSecret) {
-      throw new Error('Entra ID configuration missing');
-    }
+    // SECURITY: Client secret should NEVER be in frontend code
+    // This token exchange must be handled by a backend service/edge function
+    console.error('Security violation: Token exchange attempted in frontend');
+    throw new Error('Token exchange must be handled server-side for security');
+    
+    // TODO: Implement server-side token exchange endpoint
+    // const response = await fetch('/api/auth/entra/exchange', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ code })
+    // });
 
     const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
     
