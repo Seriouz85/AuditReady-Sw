@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || '';
@@ -10,25 +11,51 @@ let supabaseInstance: ReturnType<typeof createClient> | null = null;
 
 function createSupabaseClient() {
   if (!supabaseInstance) {
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storageKey: 'auditready_auth', // Unique storage key to avoid conflicts
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-        persistSession: true,
-        autoRefreshToken: true,
-      },
-      db: {
-        schema: 'public',
-      },
-      global: {
-        headers: { 'x-client-info': 'auditready-app' },
-      },
-    });
+    // Validate configuration - if missing, create a dummy client to prevent crashes
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.warn('⚠️ Supabase configuration missing. Creating dummy client.');
+      // Create a minimal client that won't crash but also won't work
+      supabaseInstance = createClient('https://example.supabase.co', 'dummy-key', {
+        auth: {
+          storageKey: 'auditready_auth', // Unique storage key to avoid conflicts
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          persistSession: true,
+          autoRefreshToken: true,
+        },
+        global: {
+          headers: { 'x-client-info': 'auditready-app' },
+        },
+      });
+    } else {
+      // Create the real Supabase client
+      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          storageKey: 'auditready_auth', // Unique storage key to avoid conflicts
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          persistSession: true,
+          autoRefreshToken: true,
+        },
+        global: {
+          headers: { 'x-client-info': 'auditready-app' },
+        },
+      });
+    }
   }
   return supabaseInstance;
 }
 
-export const supabase = createSupabaseClient();
+// Lazy-load the Supabase client to avoid initialization errors
+export const supabase = (() => {
+  let client: ReturnType<typeof createClient> | null = null;
+  return new Proxy({} as ReturnType<typeof createClient>, {
+    get(target, prop) {
+      if (!client) {
+        client = createSupabaseClient();
+      }
+      return (client as any)[prop];
+    }
+  });
+})();
 
 // Create admin client for platform admin operations (only if service role key is available)
 // This bypasses RLS for admin operations
@@ -60,7 +87,18 @@ function createAdminClient() {
   return supabaseAdminInstance;
 }
 
-export const supabaseAdmin = createAdminClient();
+// Lazy-load the admin client as well
+export const supabaseAdmin = (() => {
+  let client: ReturnType<typeof createClient> | null = null;
+  return new Proxy({} as ReturnType<typeof createClient>, {
+    get(target, prop) {
+      if (!client) {
+        client = createAdminClient();
+      }
+      return (client as any)[prop];
+    }
+  });
+})();
 
 // Demo credentials for showcase purposes
 export const DEMO_EMAIL = "demo@auditready.com";
