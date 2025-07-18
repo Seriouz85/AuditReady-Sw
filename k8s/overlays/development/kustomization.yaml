@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: audit-readiness-hub-development
+
+namespace: audit-readiness-hub-dev
+
+namePrefix: dev-
+
+resources:
+- ../../base
+
+patchesStrategicMerge:
+- deployment-patch.yaml
+
+configMapGenerator:
+- name: audit-readiness-hub-config
+  behavior: merge
+  literals:
+  - NODE_ENV=development
+  - VITE_APP_ENV=development
+  - ENABLE_DEBUG_LOGS=true
+  - ENABLE_MONITORING=false
+  - CACHE_TTL_DEFAULT=60
+  - CACHE_TTL_DASHBOARD=30
+  - CACHE_TTL_STATIC=300
+  - ENABLE_DEMO_ACCOUNT=true
+
+images:
+- name: audit-readiness-hub
+  newName: audit-readiness-hub
+  newTag: development
+
+commonLabels:
+  environment: development
+  tier: frontend
+
+commonAnnotations:
+  environment: development
+
+replicas:
+- name: audit-readiness-hub
+  count: 1

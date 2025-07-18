@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: audit-readiness-hub-staging
+
+namespace: audit-readiness-hub-staging
+
+namePrefix: staging-
+
+resources:
+- ../../base
+
+patchesStrategicMerge:
+- deployment-patch.yaml
+- ingress-patch.yaml
+
+configMapGenerator:
+- name: audit-readiness-hub-config
+  behavior: merge
+  literals:
+  - NODE_ENV=staging
+  - VITE_APP_ENV=staging
+  - ENABLE_DEBUG_LOGS=true
+  - ENABLE_MONITORING=true
+  - ENABLE_SECURITY_HEADERS=true
+  - CACHE_TTL_DEFAULT=300
+  - CACHE_TTL_DASHBOARD=120
+  - CACHE_TTL_STATIC=1800
+  - ENABLE_DEMO_ACCOUNT=true
+
+images:
+- name: audit-readiness-hub
+  newName: audit-readiness-hub
+  newTag: staging
+
+commonLabels:
+  environment: staging
+  tier: frontend
+
+commonAnnotations:
+  environment: staging
+  deployment.kubernetes.io/revision: "1"
+
+replicas:
+- name: audit-readiness-hub
+  count: 2

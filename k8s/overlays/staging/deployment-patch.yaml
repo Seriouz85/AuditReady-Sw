@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-readiness-hub
+  namespace: audit-readiness-hub-staging
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: audit-readiness-hub
+        resources:
+          requests:
+            memory: "384Mi"
+            cpu: "300m"
+          limits:
+            memory: "768Mi"
+            cpu: "600m"
+        env:
+        - name: NODE_ENV
+          value: "staging"
+        - name: VITE_APP_ENV
+          value: "staging"
+        - name: ENABLE_DEBUG_LOGS
+          value: "true"
+        - name: ENABLE_DEMO_ACCOUNT
+          value: "true"
+        # Demo account configuration (preserved for staging testing)
+        - name: DEMO_EMAIL
+          value: "demo@auditready.com"
+        - name: DEMO_PASSWORD
+          value: "AuditReady@Demo2025!"

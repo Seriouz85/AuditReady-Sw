@@ -1,0 +1,209 @@
+groups:
+  - name: audit-readiness-hub.rules
+    rules:
+    # Application Health Alerts
+    - alert: ApplicationDown
+      expr: up{job="audit-readiness-hub"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: frontend
+        team: engineering
+      annotations:
+        summary: "Audit Readiness Hub application is down"
+        description: "The Audit Readiness Hub application has been down for more than 1 minute"
+        runbook_url: "https://docs.auditready.com/runbooks/application-down"
+
+    - alert: HighErrorRate
+      expr: rate(nginx_ingress_controller_requests{status=~"5.."}[5m]) / rate(nginx_ingress_controller_requests[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: warning
+        component: frontend
+        team: engineering
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate is {{ $value | humanizePercentage }} which is above 5%"
+        runbook_url: "https://docs.auditready.com/runbooks/high-error-rate"
+
+    - alert: HighResponseTime
+      expr: histogram_quantile(0.95, rate(nginx_ingress_controller_request_duration_seconds_bucket[5m])) > 2
+      for: 5m
+      labels:
+        severity: warning
+        component: frontend
+        team: engineering
+      annotations:
+        summary: "High response time detected"
+        description: "95th percentile response time is {{ $value }}s which is above 2s"
+        runbook_url: "https://docs.auditready.com/runbooks/high-response-time"
+
+    # Resource Usage Alerts
+    - alert: HighCPUUsage
+      expr: rate(container_cpu_usage_seconds_total{namespace="audit-readiness-hub-prod",container="audit-readiness-hub"}[5m]) > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        component: frontend
+        team: engineering
+      annotations:
+        summary: "High CPU usage detected"
+        description: "CPU usage is {{ $value | humanizePercentage }} on pod {{ $labels.pod }}"
+        runbook_url: "https://docs.auditready.com/runbooks/high-cpu-usage"
+
+    - alert: HighMemoryUsage
+      expr: container_memory_usage_bytes{namespace="audit-readiness-hub-prod",container="audit-readiness-hub"} / container_spec_memory_limit_bytes > 0.9
+      for: 5m
+      labels:
+        severity: warning
+        component: frontend
+        team: engineering
+      annotations:
+        summary: "High memory usage detected"
+        description: "Memory usage is {{ $value | humanizePercentage }} on pod {{ $labels.pod }}"
+        runbook_url: "https://docs.auditready.com/runbooks/high-memory-usage"
+
+    - alert: PodRestartingTooOften
+      expr: rate(kube_pod_container_status_restarts_total{namespace="audit-readiness-hub-prod"}[1h]) > 0.1
+      for: 5m
+      labels:
+        severity: warning
+        component: frontend
+        team: engineering
+      annotations:
+        summary: "Pod restarting too often"
+        description: "Pod {{ $labels.pod }} is restarting {{ $value }} times per hour"
+        runbook_url: "https://docs.auditready.com/runbooks/pod-restarts"
+
+    # Redis Alerts
+    - alert: RedisDown
+      expr: up{job="redis"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: cache
+        team: engineering
+      annotations:
+        summary: "Redis is down"
+        description: "Redis cache is not responding"
+        runbook_url: "https://docs.auditready.com/runbooks/redis-down"
+
+    - alert: RedisHighMemoryUsage
+      expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+      for: 5m
+      labels:
+        severity: warning
+        component: cache
+        team: engineering
+      annotations:
+        summary: "Redis memory usage is high"
+        description: "Redis memory usage is {{ $value | humanizePercentage }}"
+        runbook_url: "https://docs.auditready.com/runbooks/redis-memory"
+
+    # Kubernetes Cluster Alerts
+    - alert: KubernetesNodeNotReady
+      expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+      for: 5m
+      labels:
+        severity: warning
+        component: infrastructure
+        team: devops
+      annotations:
+        summary: "Kubernetes node not ready"
+        description: "Node {{ $labels.node }} has been not ready for more than 5 minutes"
+
+    - alert: KubernetesPodCrashLooping
+      expr: rate(kube_pod_container_status_restarts_total[15m]) * 60 * 15 > 0
+      for: 5m
+      labels:
+        severity: warning
+        component: infrastructure
+        team: devops
+      annotations:
+        summary: "Pod crash looping"
+        description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+
+    # Storage Alerts
+    - alert: PersistentVolumeUsageHigh
+      expr: kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.9
+      for: 5m
+      labels:
+        severity: warning
+        component: storage
+        team: devops
+      annotations:
+        summary: "Persistent volume usage high"
+        description: "PV {{ $labels.persistentvolumeclaim }} usage is {{ $value | humanizePercentage }}"
+
+    # Security Alerts
+    - alert: UnauthorizedAPIAccess
+      expr: rate(nginx_ingress_controller_requests{status="401"}[5m]) > 10
+      for: 2m
+      labels:
+        severity: warning
+        component: security
+        team: security
+      annotations:
+        summary: "High rate of unauthorized API access"
+        description: "{{ $value }} unauthorized requests per second detected"
+
+    - alert: PotentialDDoSAttack
+      expr: rate(nginx_ingress_controller_requests[1m]) > 1000
+      for: 2m
+      labels:
+        severity: critical
+        component: security
+        team: security
+      annotations:
+        summary: "Potential DDoS attack detected"
+        description: "{{ $value }} requests per second detected, possible DDoS attack"
+
+  - name: business-metrics.rules
+    rules:
+    # Business Metrics Alerts
+    - alert: LowUserActivity
+      expr: rate(nginx_ingress_controller_requests{ingress=~"audit-readiness-hub.*"}[1h]) < 10
+      for: 30m
+      labels:
+        severity: info
+        component: business
+        team: product
+      annotations:
+        summary: "Low user activity detected"
+        description: "User activity is below normal levels"
+
+    - alert: HighDemoAccountUsage
+      expr: rate(nginx_ingress_controller_requests{path=~"/.*demo.*"}[5m]) / rate(nginx_ingress_controller_requests[5m]) > 0.5
+      for: 10m
+      labels:
+        severity: info
+        component: business
+        team: product
+      annotations:
+        summary: "High demo account usage"
+        description: "Demo account usage is {{ $value | humanizePercentage }} of total traffic"
+
+  - name: sla.rules
+    rules:
+    # SLA Metrics
+    - alert: SLAErrorRateBreach
+      expr: rate(nginx_ingress_controller_requests{status=~"5.."}[5m]) / rate(nginx_ingress_controller_requests[5m]) > 0.01
+      for: 5m
+      labels:
+        severity: critical
+        component: sla
+        team: engineering
+      annotations:
+        summary: "SLA error rate breached"
+        description: "Error rate {{ $value | humanizePercentage }} exceeds SLA threshold of 1%"
+
+    - alert: SLALatencyBreach
+      expr: histogram_quantile(0.99, rate(nginx_ingress_controller_request_duration_seconds_bucket[5m])) > 5
+      for: 5m
+      labels:
+        severity: critical
+        component: sla
+        team: engineering
+      annotations:
+        summary: "SLA latency breached"
+        description: "99th percentile latency {{ $value }}s exceeds SLA threshold of 5s"
