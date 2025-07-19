@@ -34,6 +34,7 @@ export class StandardsService {
   // Get all available standards from the library (admin-managed)
   async getAvailableStandards(): Promise<Standard[]> {
     try {
+      console.log('Getting available standards from library');
       // Check cache first for performance
       const now = Date.now();
       if (StandardsService.standardsCache && 
@@ -56,6 +57,8 @@ export class StandardsService {
         .select('id, name, version, type, description, created_at, updated_at')
         .eq('is_active', true)
         .order('name');
+
+      console.log('Standards library query result:', { data, error });
 
       if (error) {
         console.error('Database query failed, falling back to mock data:', error);
@@ -95,8 +98,10 @@ export class StandardsService {
   // Get organization's selected standards with applicability status
   async getOrganizationStandards(organizationId: string): Promise<StandardWithRequirements[]> {
     try {
+      console.log('Getting organization standards for:', organizationId);
       // For demo organization, use a direct query without RLS constraints
       const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
+      console.log('Is demo org:', isDemoOrg);
       
       let query;
       if (isDemoOrg) {
@@ -140,9 +145,13 @@ export class StandardsService {
       
       const { data, error } = await query;
 
+      console.log('Query result:', { data, error });
+
       if (error) throw error;
 
       if (!data) return [];
+      
+      console.log('Organization standards found:', data.length);
 
       // Get requirement counts for each standard
       const standardsWithCounts = await Promise.all(
