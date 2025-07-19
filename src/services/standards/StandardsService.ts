@@ -103,45 +103,22 @@ export class StandardsService {
       const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
       console.log('Is demo org:', isDemoOrg);
       
-      let query;
-      if (isDemoOrg) {
-        // Create a new supabase client without auth for demo organization
-        const { createClient } = await import('@supabase/supabase-js');
-        const publicSupabase = createClient(
-          import.meta.env.VITE_SUPABASE_URL || '',
-          import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-        );
-        
-        query = publicSupabase
-          .from('organization_standards')
-          .select(`
-            *,
-            standard:standards_library (
-              id,
-              name,
-              version,
-              type,
-              description
-            )
-          `)
-          .eq('organization_id', organizationId)
-          .order('created_at', { ascending: false });
-      } else {
-        query = supabase
-          .from('organization_standards')
-          .select(`
-            *,
-            standard:standards_library (
-              id,
-              name,
-              version,
-              type,
-              description
-            )
-          `)
-          .eq('organization_id', organizationId)
-          .order('created_at', { ascending: false });
-      }
+      // Use the same query for both demo and regular organizations
+      // RLS policies have been updated to allow demo access
+      const query = supabase
+        .from('organization_standards')
+        .select(`
+          *,
+          standard:standards_library (
+            id,
+            name,
+            version,
+            type,
+            description
+          )
+        `)
+        .eq('organization_id', organizationId)
+        .order('created_at', { ascending: false });
       
       const { data, error } = await query;
 
@@ -192,21 +169,10 @@ export class StandardsService {
     standardIds: string[]
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      // For demo organization, use a direct query without RLS constraints
-      const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
-      
-      let supabaseClient = supabase;
-      if (isDemoOrg) {
-        // Create a new supabase client without auth for demo organization
-        const { createClient } = await import('@supabase/supabase-js');
-        supabaseClient = createClient(
-          import.meta.env.VITE_SUPABASE_URL || '',
-          import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-        );
-      }
+      // Use the regular supabase client - RLS has been fixed for demo org
       
       // Check if standards already exist for organization
-      const { data: existingStandards } = await supabaseClient
+      const { data: existingStandards } = await supabase
         .from('organization_standards')
         .select('standard_id')
         .eq('organization_id', organizationId)
@@ -226,7 +192,7 @@ export class StandardsService {
         is_applicable: true // Default to applicable
       }));
 
-      const { error: insertError } = await supabaseClient
+      const { error: insertError } = await supabase
         .from('organization_standards')
         .insert(organizationStandards);
 
@@ -234,7 +200,7 @@ export class StandardsService {
 
       // For each new standard, create organization_requirements entries
       for (const standardId of newStandardIds) {
-        const { data: requirements } = await supabaseClient
+        const { data: requirements } = await supabase
           .from('requirements_library')
           .select('id')
           .eq('standard_id', standardId)
@@ -247,7 +213,7 @@ export class StandardsService {
             status: 'not-started' as const
           }));
 
-          await supabaseClient
+          await supabase
             .from('organization_requirements')
             .insert(orgRequirements);
         }
