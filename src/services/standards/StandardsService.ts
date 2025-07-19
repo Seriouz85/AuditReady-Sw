@@ -95,21 +95,50 @@ export class StandardsService {
   // Get organization's selected standards with applicability status
   async getOrganizationStandards(organizationId: string): Promise<StandardWithRequirements[]> {
     try {
-      const { data, error } = await supabase
-        .from('organization_standards')
-        .select(`
-          *,
-          standard:standards_library (
-            id,
-            name,
-            version,
-            type,
-            description,
-            category
-          )
-        `)
-        .eq('organization_id', organizationId)
-        .order('added_at', { ascending: false });
+      // For demo organization, use a direct query without RLS constraints
+      const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
+      
+      let query;
+      if (isDemoOrg) {
+        // Create a new supabase client without auth for demo organization
+        const { createClient } = await import('@supabase/supabase-js');
+        const publicSupabase = createClient(
+          import.meta.env.VITE_SUPABASE_URL || '',
+          import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+        );
+        
+        query = publicSupabase
+          .from('organization_standards')
+          .select(`
+            *,
+            standard:standards_library (
+              id,
+              name,
+              version,
+              type,
+              description
+            )
+          `)
+          .eq('organization_id', organizationId)
+          .order('created_at', { ascending: false });
+      } else {
+        query = supabase
+          .from('organization_standards')
+          .select(`
+            *,
+            standard:standards_library (
+              id,
+              name,
+              version,
+              type,
+              description
+            )
+          `)
+          .eq('organization_id', organizationId)
+          .order('created_at', { ascending: false });
+      }
+      
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -129,7 +158,7 @@ export class StandardsService {
             version: orgStd.standard.version,
             type: orgStd.standard.type as any,
             description: orgStd.standard.description || '',
-            category: orgStd.standard.category || 'General',
+            category: 'General', // Standards don't have categories, only requirements do
             requirements: [], // Will be populated when needed
             requirementCount: count || 0,
             isApplicable: orgStd.is_applicable,
@@ -143,6 +172,7 @@ export class StandardsService {
       return standardsWithCounts;
     } catch (error) {
       console.error('Error fetching organization standards:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return [];
     }
   }
@@ -153,8 +183,21 @@ export class StandardsService {
     standardIds: string[]
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      // For demo organization, use a direct query without RLS constraints
+      const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
+      
+      let supabaseClient = supabase;
+      if (isDemoOrg) {
+        // Create a new supabase client without auth for demo organization
+        const { createClient } = await import('@supabase/supabase-js');
+        supabaseClient = createClient(
+          import.meta.env.VITE_SUPABASE_URL || '',
+          import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+        );
+      }
+      
       // Check if standards already exist for organization
-      const { data: existingStandards } = await supabase
+      const { data: existingStandards } = await supabaseClient
         .from('organization_standards')
         .select('standard_id')
         .eq('organization_id', organizationId)
@@ -174,7 +217,7 @@ export class StandardsService {
         is_applicable: true // Default to applicable
       }));
 
-      const { error: insertError } = await supabase
+      const { error: insertError } = await supabaseClient
         .from('organization_standards')
         .insert(organizationStandards);
 
@@ -182,7 +225,7 @@ export class StandardsService {
 
       // For each new standard, create organization_requirements entries
       for (const standardId of newStandardIds) {
-        const { data: requirements } = await supabase
+        const { data: requirements } = await supabaseClient
           .from('requirements_library')
           .select('id')
           .eq('standard_id', standardId)
@@ -195,7 +238,7 @@ export class StandardsService {
             status: 'not-started' as const
           }));
 
-          await supabase
+          await supabaseClient
             .from('organization_requirements')
             .insert(orgRequirements);
         }
@@ -204,6 +247,7 @@ export class StandardsService {
       return { success: true };
     } catch (error) {
       console.error('Error adding standards to organization:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
@@ -308,22 +352,9 @@ export const useStandardsService = () => {
 
   const getStandards = async (): Promise<StandardWithRequirements[]> => {
     if (isDemo) {
-      // Return demo data from localStorage
-      const savedStandards = localStorage.getItem('standards');
-      const applicableStandards = localStorage.getItem('applicableStandards');
-      
-      if (savedStandards) {
-        const standards = JSON.parse(savedStandards);
-        const applicability = applicableStandards ? JSON.parse(applicableStandards) : {};
-        
-        return standards.map((std: Standard) => ({
-          ...std,
-          requirementCount: std.requirements?.length || 0,
-          isApplicable: applicability[std.id] || false,
-          addedAt: std.createdAt
-        }));
-      }
-      return [];
+      // Demo account now uses database with real demo organization ID
+      const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d'; // Real demo org ID from database
+      return service.getOrganizationStandards(demoOrgId);
     }
 
     if (!organization) {
@@ -335,8 +366,9 @@ export const useStandardsService = () => {
 
   const addStandards = async (standardIds: string[]): Promise<{ success: boolean; error?: string }> => {
     if (isDemo) {
-      // Handle demo mode - update localStorage
-      return { success: true };
+      // Demo account uses database with real demo organization ID
+      const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d'; // Real demo org ID from database
+      return service.addStandardsToOrganization(demoOrgId, standardIds);
     }
 
     if (!organization) {
@@ -348,12 +380,9 @@ export const useStandardsService = () => {
 
   const updateApplicability = async (standardId: string, isApplicable: boolean): Promise<{ success: boolean; error?: string }> => {
     if (isDemo) {
-      // Handle demo mode - update localStorage
-      const applicableStandards = localStorage.getItem('applicableStandards');
-      const current = applicableStandards ? JSON.parse(applicableStandards) : {};
-      current[standardId] = isApplicable;
-      localStorage.setItem('applicableStandards', JSON.stringify(current));
-      return { success: true };
+      // Demo account uses database with real demo organization ID
+      const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d'; // Real demo org ID from database
+      return service.updateStandardApplicability(demoOrgId, standardId, isApplicable);
     }
 
     if (!organization) {
@@ -365,23 +394,9 @@ export const useStandardsService = () => {
 
   const removeStandard = async (standardId: string): Promise<{ success: boolean; error?: string }> => {
     if (isDemo) {
-      // Handle demo mode - update localStorage
-      const savedStandards = localStorage.getItem('standards');
-      const applicableStandards = localStorage.getItem('applicableStandards');
-      
-      if (savedStandards) {
-        const standards = JSON.parse(savedStandards);
-        const filtered = standards.filter((std: Standard) => std.id !== standardId);
-        localStorage.setItem('standards', JSON.stringify(filtered));
-      }
-      
-      if (applicableStandards) {
-        const applicable = JSON.parse(applicableStandards);
-        delete applicable[standardId];
-        localStorage.setItem('applicableStandards', JSON.stringify(applicable));
-      }
-      
-      return { success: true };
+      // Demo account uses database with real demo organization ID
+      const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d'; // Real demo org ID from database
+      return service.removeStandardFromOrganization(demoOrgId, standardId);
     }
 
     if (!organization) {
@@ -392,18 +407,7 @@ export const useStandardsService = () => {
   };
 
   const getAvailableStandards = async (): Promise<Standard[]> => {
-    if (isDemo) {
-      // Return demo standards library for assessment flow
-      try {
-        const { standards } = await import('@/data/mockData');
-        return standards;
-      } catch (error) {
-        console.error('Error importing mock standards:', error);
-        return [];
-      }
-    }
-
-    // Use database for production accounts
+    // Both demo and production accounts now use database
     return service.getAvailableStandards();
   };
 

@@ -193,47 +193,17 @@ const Requirements = () => {
 
   const loadStandardsAndCategories = async () => {
     try {
-      if (isDemo) {
-        // Load demo standards
-        const { standards: demoStandards } = await import('@/data/mockData');
-        setStandards(demoStandards);
-        // Set demo unified categories
-        setUnifiedCategories([
-          { id: '1', name: 'Governance & Leadership', sort_order: 1 },
-          { id: '2', name: 'Risk Management', sort_order: 2 },
-          { id: '3', name: 'Inventory and Control of Software Assets', sort_order: 3 },
-          { id: '4', name: 'Inventory and Control of Hardware Assets', sort_order: 4 },
-          { id: '5', name: 'Identity & Access Management', sort_order: 5 },
-          { id: '6', name: 'Data Protection', sort_order: 6 },
-          { id: '7', name: 'Secure Configuration of Hardware and Software', sort_order: 7 },
-          { id: '8', name: 'Vulnerability Management', sort_order: 8 },
-          { id: '9', name: 'Physical & Environmental Security Controls', sort_order: 9 },
-          { id: '10', name: 'Network Infrastructure Management', sort_order: 10 },
-          { id: '11', name: 'Secure Software Development', sort_order: 11 },
-          { id: '12', name: 'Network Monitoring & Defense', sort_order: 12 },
-          { id: '13', name: 'Supplier & Third-Party Risk Management', sort_order: 13 },
-          { id: '14', name: 'Security Awareness & Skills Training', sort_order: 14 },
-          { id: '15', name: 'Business Continuity & Disaster Recovery Management', sort_order: 15 },
-          { id: '16', name: 'Incident Response Management', sort_order: 16 },
-          { id: '17', name: 'Malware Defenses', sort_order: 17 },
-          { id: '18', name: 'Email & Web Browser Protections', sort_order: 18 },
-          { id: '19', name: 'Penetration Testing', sort_order: 19 },
-          { id: '20', name: 'Audit Log Management', sort_order: 20 },
-          { id: '21', name: 'GDPR Unified Compliance', sort_order: 21 }
-        ]);
-      } else {
-        // Load from Supabase
-        const [standardsResponse, categoriesResponse] = await Promise.all([
-          supabase.from('standards').select('id, name, version, description, type, is_active').eq('is_active', true).order('name'),
-          supabase.from('unified_compliance_categories').select('id, name, description, sort_order, is_active').eq('is_active', true).order('sort_order')
-        ]);
+      // Load from database for both demo and production accounts
+      const [standardsResponse, categoriesResponse] = await Promise.all([
+        supabase.from('standards_library').select('id, name, version, description, type, is_active').eq('is_active', true).order('name'),
+        supabase.from('unified_compliance_categories').select('id, name, description, sort_order, is_active').eq('is_active', true).order('sort_order')
+      ]);
 
-        if (standardsResponse.data) {
-          setStandards(standardsResponse.data);
-        }
-        if (categoriesResponse.data) {
-          setUnifiedCategories(categoriesResponse.data);
-        }
+      if (standardsResponse.data) {
+        setStandards(standardsResponse.data);
+      }
+      if (categoriesResponse.data) {
+        setUnifiedCategories(categoriesResponse.data);
       }
     } catch (error) {
       console.error('Error loading standards and categories:', error);

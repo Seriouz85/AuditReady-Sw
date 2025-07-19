@@ -1,6 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { readFileSync } from 'fs';
+
+// Load version info
+let versionInfo = {
+  version: '1.1.0',
+  buildDate: new Date().toISOString(),
+  commitSha: 'development',
+  branch: 'main'
+};
+
+try {
+  const versionFile = readFileSync('./src/version.json', 'utf8');
+  versionInfo = JSON.parse(versionFile);
+} catch (e) {
+  console.log('Using default version info');
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -53,5 +69,11 @@ export default defineConfig(({ mode }) => ({
       strictPort: false,
     },
     publicDir: 'public',
-    assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.ico']
+    assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.ico'],
+    define: {
+      'import.meta.env.VITE_APP_VERSION': JSON.stringify(versionInfo.version),
+      'import.meta.env.VITE_BUILD_DATE': JSON.stringify(versionInfo.buildDate),
+      'import.meta.env.VITE_COMMIT_SHA': JSON.stringify(versionInfo.commitSha),
+      'import.meta.env.VITE_BRANCH': JSON.stringify(versionInfo.branch),
+    },
 }));

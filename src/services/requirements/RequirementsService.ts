@@ -91,7 +91,8 @@ export class RequirementsService {
             description,
             category,
             priority,
-            order_index
+            order_index,
+            audit_ready_guidance
           )
         `)
         .eq('organization_id', organizationId);
@@ -137,7 +138,8 @@ export class RequirementsService {
         riskLevel: orgReq.risk_level,
         lastUpdated: orgReq.updated_at,
         createdAt: orgReq.created_at || new Date().toISOString(),
-        updatedAt: orgReq.updated_at || new Date().toISOString()
+        updatedAt: orgReq.updated_at || new Date().toISOString(),
+        auditReadyGuidance: orgReq.requirement.audit_ready_guidance
       }));
     } catch (error) {
       console.error('Error fetching organization requirements:', error);
@@ -264,7 +266,8 @@ export class RequirementsService {
         status: 'not-fulfilled' as any, // Default status
         priority: (req.priority || 'medium') as any,
         section: req.category || 'General',
-        tags: []
+        tags: [],
+        auditReadyGuidance: req.audit_ready_guidance
       })) || [];
     } catch (error) {
       console.error('Error fetching standard requirements:', error);
@@ -281,31 +284,9 @@ export const useRequirementsService = () => {
 
   const getRequirements = async (standardId?: string): Promise<RequirementWithStatus[]> => {
     if (isDemo) {
-      // Load demo data dynamically to avoid import issues
-      const { requirements: mockRequirements } = await import('@/data/mockData');
-      
-      // Return demo data filtered by standard if specified
-      let filteredRequirements = mockRequirements;
-      
-      if (standardId) {
-        filteredRequirements = mockRequirements.filter(req => req.standardId === standardId);
-      }
-      
-      // Get saved requirement updates from localStorage
-      const savedUpdates = localStorage.getItem('requirementUpdates');
-      const updates = savedUpdates ? JSON.parse(savedUpdates) : {};
-      
-      return filteredRequirements.map(req => ({
-        ...req,
-        organizationStatus: updates[req.id]?.status || req.status,
-        fulfillmentPercentage: updates[req.id]?.fulfillmentPercentage || 0,
-        evidence: updates[req.id]?.evidence || '',
-        notes: updates[req.id]?.notes || '',
-        responsibleParty: updates[req.id]?.responsibleParty || '',
-        organizationTags: updates[req.id]?.tags || req.tags || [],
-        riskLevel: updates[req.id]?.riskLevel || 'medium',
-        lastUpdated: updates[req.id]?.lastUpdated || new Date().toISOString()
-      }));
+      // Demo account now uses database too, with real demo organization ID
+      const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d'; // Real demo org ID from database
+      return service.getOrganizationRequirements(demoOrgId, standardId);
     }
 
     if (!organization) {
@@ -331,26 +312,18 @@ export const useRequirementsService = () => {
     }
   ): Promise<{ success: boolean; error?: string }> => {
     if (isDemo) {
-      // Handle demo mode - update localStorage with better error handling
+      // Demo account uses database with real demo organization ID
+      const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d'; // Real demo org ID from database
       try {
-        const savedUpdates = localStorage.getItem('requirementUpdates');
-        const currentUpdates = savedUpdates ? JSON.parse(savedUpdates) : {};
-        
-        currentUpdates[requirementId] = {
-          ...currentUpdates[requirementId],
-          ...updates,
-          lastUpdated: new Date().toISOString()
-        };
-        
-        localStorage.setItem('requirementUpdates', JSON.stringify(currentUpdates));
-        
-        // Also persist to sessionStorage as backup
-        sessionStorage.setItem('requirementUpdates', JSON.stringify(currentUpdates));
-        
-        return { success: true };
+        const result = await service.updateOrganizationRequirement(demoOrgId, requirementId, updates);
+        if (!result.success && result.error?.includes('not found')) {
+          // Try to create the requirement record if it doesn't exist
+          return await service.createOrganizationRequirement(demoOrgId, requirementId, updates);
+        }
+        return result;
       } catch (error) {
-        console.error('Error saving requirement updates:', error);
-        return { success: false, error: 'Failed to save changes locally' };
+        console.error('Error updating demo requirement:', error);
+        return { success: false, error: 'Failed to update requirement' };
       }
     }
 
@@ -373,12 +346,7 @@ export const useRequirementsService = () => {
   };
 
   const getStandardRequirements = async (standardId: string): Promise<Requirement[]> => {
-    if (isDemo) {
-      // Load demo data dynamically to avoid import issues
-      const { requirements: mockRequirements } = await import('@/data/mockData');
-      return mockRequirements.filter(req => req.standardId === standardId);
-    }
-
+    // Both demo and production accounts now use database
     return service.getStandardRequirements(standardId);
   };
 

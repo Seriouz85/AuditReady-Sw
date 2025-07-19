@@ -182,6 +182,60 @@ The user must explicitly say one of these phrases for ANY deletion:
 - **Commands**: Use `./scripts/docker-dev.sh help` for all available commands
 - **MCP Features**: Real-time file watching, code analysis, Docker management, AI assistance
 
+### 24. Versioning & Release Management
+- **Current Version**: 1.1.0 (see `package.json`)
+- **Version Display**: Available in Platform Admin → System → Infrastructure tab
+- **Version Scripts**:
+  - `npm run version:patch` - Bug fixes (1.1.0 → 1.1.1)
+  - `npm run version:minor` - New features (1.1.0 → 1.2.0)
+  - `npm run version:major` - Breaking changes (1.1.0 → 2.0.0)
+  - `npm run version:release` - Create release with tag and push
+- **Version Files**:
+  - `src/version.json` - Build metadata (version, date, commit, branch)
+  - `scripts/version.js` - Automated versioning script
+- **Docker Versioning**:
+  - `npm run docker:build:prod` - Build with version tag
+  - Images tagged as `audit-readiness-hub:1.1.0`
+
+### 25. Kubernetes Management in Platform Admin
+- **Location**: Platform Admin → System Settings → Infrastructure tab
+- **Access Path**: `/admin/system/settings#infrastructure`
+- **Features Implemented**:
+  - ✅ **Cluster Health Monitoring**: Node status, namespaces, pod counts
+  - ✅ **Environment Status**: Real-time health across dev/staging/prod
+  - ✅ **Deployment Management**: View, scale, and manage deployments
+  - ✅ **Pod Metrics**: CPU/Memory usage with visual indicators
+  - ✅ **Deployment History**: Full audit trail with rollback capability
+  - ✅ **Version Information**: Current app version and build info
+  - ✅ **Quick Actions**: Deploy to staging, setup monitoring, view logs
+- **Key Components**:
+  - `src/services/kubernetes/KubernetesService.ts` - Browser-compatible K8s service
+  - `src/components/admin/VersionInfo.tsx` - Version display component
+  - `src/components/admin/DeploymentHistory.tsx` - Deployment tracking UI
+  - `src/pages/admin/system/SystemSettings.tsx` - Infrastructure tab implementation
+- **Implementation Notes**:
+  - Service is browser-compatible (no Node.js dependencies)
+  - Mock data provided for development/demo environments
+  - Production mode connects to backend K8s API endpoints
+  - Preserves demo account functionality across all deployments
+
+### 26. Deployment Tracking & Rollback
+- **Deployment History**: Tracks all deployments with:
+  - Version numbers and upgrade/downgrade indicators
+  - Deployment status (success, failed, in_progress, rolled_back)
+  - Deployer information and timestamps
+  - Commit SHA and branch information
+  - Deployment duration and notes
+- **Rollback Feature**:
+  - One-click rollback to previous versions
+  - Confirmation dialog to prevent accidental rollbacks
+  - Only available for successful deployments
+  - Maintains audit trail of rollback operations
+- **Safety Measures**:
+  - Demo environment protection warnings
+  - Rollback availability checks
+  - Version compatibility validation
+
 ---
 
 **Remember: The user's data is sacred. Protect it at all costs.**

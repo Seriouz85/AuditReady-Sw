@@ -1,5 +1,4 @@
 import { Assessment, Requirement, RequirementStatus } from '@/types';
-import { requirements as allRequirements } from '@/data/mockData';
 import { supabase } from '@/lib/supabase';
 
 // Storage keys for persistence
@@ -52,11 +51,10 @@ export class AssessmentProgressService {
    * Get requirements for an assessment
    */
   public getAssessmentRequirements(assessment: Assessment): Requirement[] {
-    // For now, still use mock data as requirements need to be fetched asynchronously
-    // This will be replaced with async version in the future
-    return allRequirements.filter(req => 
-      assessment.standardIds.includes(req.standardId)
-    );
+    // Requirements are now loaded from database - use async version instead
+    // This synchronous version returns empty array
+    console.warn('Using deprecated synchronous getAssessmentRequirements - use getAssessmentRequirementsAsync instead');
+    return [];
   }
 
   /**
@@ -85,10 +83,8 @@ export class AssessmentProgressService {
 
       // If no data returned from database, use mock data
       if (!data || data.length === 0) {
-        console.log('No requirements found in database, using filtered mock data');
-        return allRequirements.filter(req => 
-          assessment.standardIds.includes(req.standardId)
-        );
+        console.log('No requirements found in database for standards:', assessment.standardIds);
+        return [];
       }
 
       // Map database requirements to our Requirement type
