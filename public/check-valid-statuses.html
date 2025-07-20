@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Valid Statuses</title>
+</head>
+<body>
+  <h1>Check Valid Database Statuses</h1>
+  
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    async function checkStatuses() {
+      try {
+        // Get distinct status values
+        const { data, error } = await supabase
+          .from('organization_requirements')
+          .select('status');
+          
+        if (error) throw error;
+        
+        const uniqueStatuses = [...new Set(data.map(r => r.status))].sort();
+        
+        console.log('Unique status values in database:', uniqueStatuses);
+        document.body.innerHTML += `
+          <h2>Unique Status Values in Database:</h2>
+          <ul>
+            ${uniqueStatuses.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+          <p>Total unique statuses: ${uniqueStatuses.length}</p>
+        `;
+        
+        // Try to find any partially-fulfilled records
+        const { data: partialData, error: partialError } = await supabase
+          .from('organization_requirements')
+          .select('id, status')
+          .ilike('status', '%partial%')
+          .limit(5);
+          
+        if (!partialError && partialData && partialData.length > 0) {
+          console.log('Found partial records:', partialData);
+          document.body.innerHTML += `
+            <h2>Records with partial in status:</h2>
+            <pre>${JSON.stringify(partialData, null, 2)}</pre>
+          `;
+        } else {
+          document.body.innerHTML += '<p>No records found with "partial" in status</p>';
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        document.body.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    }
+    
+    checkStatuses();
+  </script>
+</body>
+</html>

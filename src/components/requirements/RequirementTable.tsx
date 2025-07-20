@@ -22,7 +22,7 @@ export function RequirementTable({
 }: RequirementTableProps) {
   const [unifiedCategories, setUnifiedCategories] = useState<any[]>([]);
 
-  // Load unified categories
+  // Load unified categories (no separate tags table needed)
   useEffect(() => {
     loadUnifiedCategories();
   }, []);
@@ -60,6 +60,27 @@ export function RequirementTable({
     }
     
     return categoryId;
+  };
+
+  const getTagName = (tagName: string): string => {
+    // Tags are now category names directly, not IDs
+    return tagName;
+  };
+
+  const getTagColor = (tagName: string): string => {
+    // Find the unified category that matches this tag name
+    const category = unifiedCategories.find((cat) => cat.name === tagName);
+    if (category) {
+      // Use a color based on the category index/sort order
+      const colors = [
+        '#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899',
+        '#2563EB', '#7C3AED', '#059669', '#D97706', '#DC2626', '#C2410C',
+        '#4338CA', '#0D9488', '#1D4ED8', '#7C2D12', '#166534', '#581C87',
+        '#B91C1C', '#BE185D', '#0369A1', '#1E40AF'
+      ];
+      return colors[category.sort_order % colors.length] || '#6B7280';
+    }
+    return '#6B7280';
   };
 
   const getCategoryColor = (categoryId: string, index: number): string => {
@@ -202,15 +223,20 @@ export function RequirementTable({
                       ))
                     )}
                     
-                    {/* Display old tags with different styling */}
+                    {/* Display requirement tags */}
                     {req.tags && req.tags.length > 0 && (
                       req.tags.map((tagId, index) => (
                         <Badge 
                           key={`tag-${index}`} 
-                          variant="secondary" 
-                          className="text-xs opacity-75"
+                          variant="outline" 
+                          className="text-xs"
+                          style={{ 
+                            borderColor: getTagColor(tagId),
+                            color: getTagColor(tagId),
+                            backgroundColor: getTagColor(tagId) + '10'
+                          }}
                         >
-                          {getCategoryName(tagId)}
+                          {getTagName(tagId)}
                         </Badge>
                       ))
                     )}

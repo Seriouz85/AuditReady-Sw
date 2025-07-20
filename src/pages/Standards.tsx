@@ -91,6 +91,21 @@ const Standards = () => {
   };
 
   const handleRemoveStandard = async (standardId: string) => {
+    // Show confirmation dialog with proper warning
+    const confirmed = window.confirm(
+      "⚠️ Are you sure you want to remove this standard?\n\n" +
+      "This action will permanently delete:\n" +
+      "• All current settings and configurations\n" +
+      "• All requirement fulfillment levels and progress\n" +
+      "• All notes and custom data\n" +
+      "• All assessment history related to this standard\n\n" +
+      "This action cannot be undone!"
+    );
+
+    if (!confirmed) {
+      return; // User cancelled
+    }
+
     try {
       const result = await standardsService.removeStandard(standardId);
       if (result.success) {
@@ -162,29 +177,42 @@ const Standards = () => {
   }
 
   return (
-    <div className="space-y-6 px-4 sm:px-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Standards & Regulations</h1>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Dialog open={isSOADialogOpen} onOpenChange={setIsSOADialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <ClipboardCheck className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Statement of Applicability</span>
-                <span className="sm:hidden">SoA</span>
-              </Button>
-            </DialogTrigger>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Modern Header Section with Gradient Background */}
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
+                Standards & Regulations
+              </h1>
+              <p className="text-blue-100 text-lg max-w-2xl">
+                Manage your compliance framework with enterprise-grade standards and automated requirement tracking.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+              <Dialog open={isSOADialogOpen} onOpenChange={setIsSOADialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="secondary" 
+                    className="w-full lg:w-auto bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm transition-all duration-200"
+                  >
+                    <ClipboardCheck className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Statement of Applicability</span>
+                    <span className="sm:hidden">SoA</span>
+                  </Button>
+                </DialogTrigger>
             <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col">
               <DialogHeader>
                 <DialogTitle>Statement of Applicability</DialogTitle>
                 <DialogDescription>
-                  Live preview of your Statement of Applicability (SoA) based on all applicable standards.
+                  Live preview of your Statement of Applicability (SoA) based on all standards and requirements.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex-1 overflow-y-auto pr-4">
                 <SoAPreview 
                   ref={soaRef}
-                  standards={localStandards.filter(std => std.isApplicable)}
+                  standards={localStandards}
                   requirements={requirementsData}
                 />
               </div>
@@ -194,14 +222,14 @@ const Standards = () => {
             </DialogContent>
           </Dialog>
           
-          <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Library className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Add from Library</span>
-                <span className="sm:hidden">Library</span>
-              </Button>
-            </DialogTrigger>
+              <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full lg:w-auto bg-white hover:bg-gray-50 text-blue-700 shadow-lg transition-all duration-200">
+                    <Library className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Add from Library</span>
+                    <span className="sm:hidden">Library</span>
+                  </Button>
+                </DialogTrigger>
             <DialogContent className="sm:max-w-[800px] max-h-[80vh]">
               <DialogHeader>
                 <DialogTitle>Standards Library</DialogTitle>
@@ -231,14 +259,14 @@ const Standards = () => {
             </DialogContent>
           </Dialog>
 
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Create Standard</span>
-                <span className="sm:hidden">Create</span>
-              </Button>
-            </DialogTrigger>
+              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full lg:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200">
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Create Standard</span>
+                    <span className="sm:hidden">Create</span>
+                  </Button>
+                </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>Create New Standard</DialogTitle>
@@ -247,79 +275,142 @@ const Standards = () => {
                 </DialogDescription>
               </DialogHeader>
               <CreateStandardForm onSubmit={handleCreateStandard} />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-      
-      <div className="flex flex-col gap-4">
-        <div className="relative w-full">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search standards..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2">
-          <Select 
-            value={filterType}
-            onValueChange={(value) => setFilterType(value as string)}
-          >
-            <SelectTrigger className="w-full">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Filter by type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="framework">Framework</SelectItem>
-              <SelectItem value="regulation">Regulation</SelectItem>
-              <SelectItem value="policy">Policy</SelectItem>
-              <SelectItem value="guideline">Guideline</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <div className="bg-muted/50 p-4 rounded-lg">
-        <h2 className="text-xl font-semibold mb-2">Available Standards</h2>
-        <p className="text-muted-foreground">
-          Browse, filter, and manage your cybersecurity standards and regulations. Click on a standard to view its requirements.
-        </p>
-      </div>
-      
-      {filteredStandards.length > 0 ? (
-        <div className="pb-6">
-          <div className="space-y-4">
-            {filteredStandards.map((standard) => (
-              <div key={standard.id} className="pb-4">
-                <StandardCard 
-                  standard={standard}
-                  requirementCount={getRequirementCount(standard.id)}
-                  onExport={() => exportStandard(standard.id)}
-                  isApplicable={standard.isApplicable}
-                  onApplicabilityChange={(isApplicable) => handleApplicabilityChange(standard.id, isApplicable)}
-                  onRemove={() => handleRemoveStandard(standard.id)}
-                />
-              </div>
-            ))}
+              </DialogContent>
+            </Dialog>
+            </div>
           </div>
         </div>
-      ) : (
-        <div className="text-center py-12 border rounded-lg bg-background">
-          <h3 className="text-lg font-medium">No standards found</h3>
-          <p className="text-muted-foreground mt-1 mb-4">
-            Adjust your search or add a new standard.
-          </p>
-          <Button variant="outline" onClick={() => {
-            setSearchTerm("");
-            setFilterType("all");
-          }}>
-            Clear Filters
-          </Button>
+      </div>
+
+      {/* Modern Search and Filter Section */}
+      <div className="container mx-auto px-6 -mt-6 relative z-10">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                placeholder="Search standards and frameworks..."
+                className="pl-12 h-12 text-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="lg:w-64">
+              <Select 
+                value={filterType}
+                onValueChange={(value) => setFilterType(value as string)}
+              >
+                <SelectTrigger className="h-12 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500">
+                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="framework">Framework</SelectItem>
+                  <SelectItem value="regulation">Regulation</SelectItem>
+                  <SelectItem value="policy">Policy</SelectItem>
+                  <SelectItem value="guideline">Guideline</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="container mx-auto px-6 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-600">Total Standards</p>
+                <p className="text-3xl font-bold text-blue-900">{filteredStandards.length}</p>
+              </div>
+              <div className="h-12 w-12 bg-blue-500 rounded-full flex items-center justify-center">
+                <Library className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-6 border border-green-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-600">Applicable</p>
+                <p className="text-3xl font-bold text-green-900">
+                  {filteredStandards.filter(s => s.isApplicable).length}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-green-500 rounded-full flex items-center justify-center">
+                <ClipboardCheck className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-6 border border-purple-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-600">Requirements</p>
+                <p className="text-3xl font-bold text-purple-900">
+                  {filteredStandards.reduce((sum, std) => sum + getRequirementCount(std.id), 0)}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-purple-500 rounded-full flex items-center justify-center">
+                <Plus className="h-6 w-6 text-white" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Standards Grid */}
+        {filteredStandards.length > 0 ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">Your Standards</h2>
+              <p className="text-gray-600">{filteredStandards.length} standard{filteredStandards.length !== 1 ? 's' : ''} found</p>
+            </div>
+            
+            <div className="grid gap-6">
+              {filteredStandards.map((standard) => (
+                <div key={standard.id} className="transform transition-all duration-200 hover:scale-[1.02]">
+                  <StandardCard 
+                    standard={standard}
+                    requirementCount={getRequirementCount(standard.id)}
+                    onExport={() => exportStandard(standard.id)}
+                    isApplicable={standard.isApplicable}
+                    onApplicabilityChange={(isApplicable) => handleApplicabilityChange(standard.id, isApplicable)}
+                    onRemove={() => handleRemoveStandard(standard.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="mb-6">
+                <div className="h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-12 w-12 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No standards found</h3>
+                <p className="text-gray-600">
+                  Adjust your search criteria or add a new standard to get started.
+                </p>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSearchTerm("");
+                  setFilterType("all");
+                }}
+                className="rounded-xl px-6 py-3"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

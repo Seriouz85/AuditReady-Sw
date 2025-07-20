@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clear Demo Enhancement</title>
+</head>
+<body>
+  <script>
+    // Clear enhancement flag immediately
+    const DEMO_ORG_ID = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+    const enhancementKey = `demo_data_enhanced_${DEMO_ORG_ID}`;
+    localStorage.removeItem(enhancementKey);
+    localStorage.removeItem(`${enhancementKey}_time`);
+    document.write('<h1>✅ Enhancement flag cleared!</h1>');
+    document.write('<p>Demo data will be re-enhanced on next login.</p>');
+    document.write('<p><a href="/app/login">Go to login page</a></p>');
+  </script>
+</body>
+</html>

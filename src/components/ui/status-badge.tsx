@@ -37,15 +37,30 @@ export function StatusBadge({
       label: t('assessment.status.notApplicable', 'Not Applicable'),
       className: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-400",
       icon: "—"
-    },
+    }
   };
 
-  const config = statusConfig[status];
+  const config = statusConfig[status] || statusConfig["not-fulfilled"]; // Fallback to not-fulfilled if status is invalid
   const sizeClasses = {
     xs: "px-1.5 py-0.5 text-[10px]",
     sm: "px-2.5 py-0.5 text-xs",
     md: "px-3 py-1 text-sm"
   };
+
+  // Additional safety check
+  if (!config) {
+    console.warn('StatusBadge: Invalid status provided:', status);
+    return (
+      <span className={cn(
+        "inline-flex items-center rounded-full font-medium whitespace-nowrap",
+        "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
+        sizeClasses[size],
+        className
+      )}>
+        {showLabel ? "Unknown" : "?"}
+      </span>
+    );
+  }
 
   return (
     <span 

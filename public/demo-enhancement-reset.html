@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Enhancement Reset</title>
+</head>
+<body>
+  <h1>Demo Enhancement Reset</h1>
+  <p>This tool clears the demo enhancement flag to force re-enhancement on next login.</p>
+  
+  <button onclick="clearEnhancementFlag()">Clear Enhancement Flag</button>
+  <button onclick="checkEnhancementStatus()">Check Enhancement Status</button>
+  
+  <div id="status"></div>
+
+  <script>
+    const DEMO_ORG_ID = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+    
+    function clearEnhancementFlag() {
+      try {
+        const enhancementKey = `demo_data_enhanced_${DEMO_ORG_ID}`;
+        localStorage.removeItem(enhancementKey);
+        localStorage.removeItem(`${enhancementKey}_time`);
+        document.getElementById('status').innerHTML = '✅ Enhancement flag cleared. Demo data will be re-enhanced on next login.<br><br>📋 <strong>Next steps:</strong><br>1. Log out completely<br>2. Log back in with demo@auditready.com<br>3. Check requirements status distribution';
+        console.log('🧹 Cleared demo enhancement flag - will re-enhance on next login');
+      } catch (error) {
+        document.getElementById('status').innerHTML = '❌ Error clearing flag: ' + error.message;
+        console.error('Could not clear enhancement flag:', error);
+      }
+    }
+    
+    function checkEnhancementStatus() {
+      try {
+        const enhancementKey = `demo_data_enhanced_${DEMO_ORG_ID}`;
+        const enhanced = localStorage.getItem(enhancementKey);
+        const enhancementTime = localStorage.getItem(`${enhancementKey}_time`);
+        
+        if (enhanced === 'true' && enhancementTime) {
+          const timeDiff = Date.now() - parseInt(enhancementTime);
+          const hoursDiff = timeDiff / (1000 * 60 * 60);
+          document.getElementById('status').innerHTML = `✅ Demo data enhanced: ${new Date(parseInt(enhancementTime)).toLocaleString()} (${hoursDiff.toFixed(1)} hours ago)`;
+        } else {
+          document.getElementById('status').innerHTML = '❌ Demo data not enhanced';
+        }
+      } catch (error) {
+        document.getElementById('status').innerHTML = '❌ Error checking status: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>

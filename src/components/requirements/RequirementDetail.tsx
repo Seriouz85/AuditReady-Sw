@@ -397,13 +397,36 @@ export function RequirementDetail({
 
         <Separator />
 
-        {/* Dual Tag System - Side by Side Layout */}
+        {/* Triple Tag System - Three Column Layout */}
         <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Categories (21 compliance categories) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Tags (organizational tags) */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Tags size={16} className="text-muted-foreground" />
+                <span className="text-sm font-medium">Tags</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info size={14} className="text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Organizational tags for categorizing and filtering requirements</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <TagSelector
+                selectedTags={tags}
+                onChange={handleTagsChange}
+                className="min-h-[40px]"
+              />
+            </div>
+
+            {/* Categories (21 compliance categories) */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Flag size={16} className="text-muted-foreground" />
                 <span className="text-sm font-medium">Categories</span>
                 <TooltipProvider>
                   <Tooltip>

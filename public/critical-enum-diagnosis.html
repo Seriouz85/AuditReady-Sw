@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🚨 CRITICAL: Database Enum Diagnosis</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #fee; }
+    .critical { background: #f00; color: white; padding: 20px; margin: 10px 0; text-align: center; font-size: 18px; }
+    button { padding: 15px 25px; font-size: 16px; margin: 10px 5px; }
+    .fix-btn { background: #f00; color: white; font-weight: bold; }
+    #output { margin-top: 20px; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 15px; max-height: 400px; overflow-y: auto; border: 2px solid #f00; }
+  </style>
+</head>
+<body>
+  <div class="critical">
+    🚨 CRITICAL DATABASE CORRUPTION 🚨<br>
+    Multiple enum values are failing: partially-fulfilled AND not-fulfilled<br>
+    This affects ALL customers and core functionality!
+  </div>
+  
+  <button onclick="diagnoseEnum()" class="fix-btn">🔍 DIAGNOSE ENUM CORRUPTION</button>
+  <button onclick="fixEnum()" class="fix-btn">🔧 FIX ALL ENUM VALUES</button>
+  <button onclick="testAllStatuses()" style="background: #090; color: white;">🧪 TEST ALL STATUSES</button>
+  
+  <div id="output"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    const DEMO_ORG_ID = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+    
+    function log(message) {
+      const output = document.getElementById('output');
+      const timestamp = new Date().toLocaleTimeString();
+      output.textContent += `[${timestamp}] ${message}\n`;
+      output.scrollTop = output.scrollHeight;
+      console.log(message);
+    }
+    
+    window.diagnoseEnum = async function() {
+      try {
+        log('🚨 DIAGNOSING CRITICAL DATABASE ENUM CORRUPTION...');
+        log('');
+        
+        // Check what statuses exist in actual data
+        const { data: statusData, error: statusError } = await supabase
+          .from('organization_requirements')
+          .select('status')
+          .eq('organization_id', DEMO_ORG_ID)
+          .limit(100);
+          
+        if (statusError) throw statusError;
+        
+        const uniqueStatuses = [...new Set(statusData.map(r => r.status))].sort();
+        log(`CURRENT STATUS VALUES IN DEMO DATA: ${uniqueStatuses.join(', ')}`);
+        log('');
+        
+        // Check status counts
+        const statusCounts = {};
+        statusData.forEach(req => {
+          statusCounts[req.status] = (statusCounts[req.status] || 0) + 1;
+        });
+        
+        log('STATUS DISTRIBUTION:');
+        Object.entries(statusCounts).forEach(([status, count]) => {
+          log(`  ${status}: ${count} requirements`);
+        });
+        log('');
+        
+        // Expected enum values according to TypeScript
+        const expectedValues = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
+        const missingValues = expectedValues.filter(val => !uniqueStatuses.includes(val));
+        
+        if (missingValues.length > 0) {
+          log(`❌ MISSING ENUM VALUES: ${missingValues.join(', ')}`);
+          log('🚨 CRITICAL: Database enum is incomplete!');
+        } else {
+          log('✅ All expected enum values found in data');
+        }
+        
+        log('');
+        log('RECOMMENDATION: Run "FIX ALL ENUM VALUES" to repair database');
+        
+      } catch (error) {
+        log(`❌ DIAGNOSIS ERROR: ${error.message}`);
+      }
+    };
+    
+    window.fixEnum = async function() {
+      try {
+        log('🔧 ATTEMPTING TO FIX DATABASE ENUM...');
+        log('This will recreate the requirement_status enum with all values');
+        log('');
+        
+        // Try to fix by recreating the enum properly
+        const fixQueries = [
+          // Drop and recreate approach (dangerous but necessary)
+          `
+          DO $$
+          BEGIN
+            -- Create new enum with all values
+            CREATE TYPE requirement_status_new AS ENUM (
+              'fulfilled', 
+              'partially-fulfilled', 
+              'not-fulfilled', 
+              'not-applicable'
+            );
+            
+            -- Update the table to use new enum (if possible)
+            ALTER TABLE organization_requirements 
+            ALTER COLUMN status TYPE requirement_status_new 
+            USING status::text::requirement_status_new;
+            
+            -- Drop old enum and rename new one
+            DROP TYPE requirement_status;
+            ALTER TYPE requirement_status_new RENAME TO requirement_status;
+            
+          EXCEPTION
+            WHEN OTHERS THEN
+              -- If that fails, try adding missing values
+              ALTER TYPE requirement_status ADD VALUE IF NOT EXISTS 'partially-fulfilled';
+              ALTER TYPE requirement_status ADD VALUE IF NOT EXISTS 'not-fulfilled';
+          END $$;
+          `
+        ];
+        
+        for (const query of fixQueries) {
+          try {
+            log(`Executing database fix...`);
+            
+            // This is a hack - we'll try to use a function if it exists
+            const { data, error } = await supabase.rpc('exec_sql', { query });
+            
+            if (error) {
+              log(`RPC failed: ${error.message}`);
+              // Try direct approach
+              log('Trying alternative fix method...');
+              
+              // Add values individually
+              await supabase.rpc('exec_sql', { 
+                query: "ALTER TYPE requirement_status ADD VALUE IF NOT EXISTS 'partially-fulfilled';"
+              });
+              await supabase.rpc('exec_sql', { 
+                query: "ALTER TYPE requirement_status ADD VALUE IF NOT EXISTS 'not-fulfilled';"
+              });
+            } else {
+              log('✅ DATABASE ENUM FIXED!');
+            }
+            
+            break;
+          } catch (queryError) {
+            log(`❌ Query failed: ${queryError.message}`);
+          }
+        }
+        
+        log('');
+        log('🧪 Now test with "TEST ALL STATUSES" button');
+        
+      } catch (error) {
+        log(`❌ CRITICAL FIX ERROR: ${error.message}`);
+      }
+    };
+    
+    window.testAllStatuses = async function() {
+      try {
+        log('🧪 TESTING ALL STATUS VALUES...');
+        log('');
+        
+        // Get a test requirement
+        const { data: testReq, error: fetchError } = await supabase
+          .from('organization_requirements')
+          .select('id, status')
+          .eq('organization_id', DEMO_ORG_ID)
+          .limit(1)
+          .single();
+          
+        if (fetchError) throw fetchError;
+        
+        const originalStatus = testReq.status;
+        const testStatuses = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
+        
+        log(`Testing with requirement ${testReq.id} (original: ${originalStatus})`);
+        log('');
+        
+        for (const status of testStatuses) {
+          try {
+            const { error } = await supabase
+              .from('organization_requirements')
+              .update({ status: status })
+              .eq('id', testReq.id);
+              
+            if (error) {
+              log(`❌ ${status}: FAILED - ${error.message}`);
+            } else {
+              log(`✅ ${status}: SUCCESS`);
+            }
+          } catch (err) {
+            log(`❌ ${status}: ERROR - ${err.message}`);
+          }
+        }
+        
+        // Restore original status
+        await supabase
+          .from('organization_requirements')
+          .update({ status: originalStatus })
+          .eq('id', testReq.id);
+          
+        log('');
+        log('✅ Test complete - requirement restored to original status');
+        
+      } catch (error) {
+        log(`❌ TEST ERROR: ${error.message}`);
+      }
+    };
+  </script>
+</body>
+</html>

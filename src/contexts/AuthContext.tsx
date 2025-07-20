@@ -3,6 +3,8 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/utils/toast';
 import { documentUploadService } from '@/services/documents/DocumentUploadService';
+import { TagInitializationService } from '@/services/initialization/TagInitializationService';
+import { DemoDataEnhancementService } from '@/services/demo/DemoDataEnhancementService';
 
 interface Organization {
   id: string;
@@ -196,6 +198,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setOrganization(orgUserData.organization);
         setUserRole(orgUserData.role);
 
+        // Initialize unified category tags for the organization
+        try {
+          await TagInitializationService.initializeUnifiedCategoryTags();
+          console.log('Initialized unified category tags for organization:', orgUserData.organization.id);
+        } catch (tagError) {
+          console.warn('Failed to initialize unified category tags for organization:', tagError);
+          // Don't block user login if tag initialization fails
+        }
+
         // Update last login (silently fail if it doesn't work)
         try {
           await supabase
@@ -267,6 +278,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Initialize demo documents
     documentUploadService.initializeDemoDocuments();
+    
+    // Initialize unified category tags and apply to existing demo requirements
+    try {
+      console.log('Initializing unified category tags for demo account...');
+      await TagInitializationService.initializeUnifiedCategoryTags();
+      
+      // Apply unified category tagging to existing demo requirements
+      const taggedCount = await TagInitializationService.applyUnifiedCategoryTaggingToExistingRequirements(demoOrg.id);
+      if (taggedCount > 0) {
+        console.log(`Applied unified category tagging to ${taggedCount} demo requirements`);
+      }
+
+      // Enhance demo data with realistic status distribution and business rules
+      console.log('Enhancing demo data with realistic compliance status distribution...');
+      await DemoDataEnhancementService.enhanceDemoData();
+      
+      // Log final statistics
+      const stats = await DemoDataEnhancementService.getDemoDataStatistics();
+      console.log('Demo data statistics:', stats.percentages);
+    } catch (error) {
+      console.warn('Failed to initialize demo account enhancements:', error);
+      // Don't block demo initialization if enhancement fails
+    }
   };
 
   const refreshUserData = async () => {

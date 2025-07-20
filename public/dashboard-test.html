@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Data Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .stat-card { 
+            margin: 10px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            background: #f9f9f9;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>📊 Dashboard Data Test</h1>
+    <p>This page tests the dashboard data fetching to ensure all metrics are working correctly.</p>
+    
+    <button onclick="testDashboardData()">🚀 Test Dashboard Data</button>
+    <button onclick="testRequirements()">📋 Test Requirements Data</button>
+    
+    <div id="results"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://rztpjfevkqfxbonzqlzd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6dHBqZmV2a3FmeGJvbnpxbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4OTI2NjEsImV4cCI6MjA1MTQ2ODY2MX0.jG5RMIpYy6K-Z4wqCo-_7oOQKgKWU0VnKPe3g_3wl8M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+
+        function addResult(testName, data, isError = false) {
+            const resultsDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.className = `stat-card ${isError ? 'error' : 'success'}`;
+            
+            let content = `<h3>${isError ? '❌' : '✅'} ${testName}</h3>`;
+            content += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            
+            testDiv.innerHTML = content;
+            resultsDiv.appendChild(testDiv);
+        }
+
+        async function testDashboardData() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>🔄 Testing dashboard data...</p>';
+
+            try {
+                // Test 1: Organization Standards
+                const { data: orgStandards, error: stdError } = await supabase
+                    .from('organization_standards')
+                    .select(`
+                        *,
+                        standard:standards_library (
+                            id,
+                            name,
+                            version,
+                            type,
+                            description
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (stdError) throw stdError;
+                addResult('Organization Standards', {
+                    count: orgStandards?.length || 0,
+                    applicable: orgStandards?.filter(s => s.is_applicable).length || 0,
+                    samples: orgStandards?.slice(0, 2).map(s => ({
+                        name: s.standard?.name,
+                        applicable: s.is_applicable
+                    })) || []
+                });
+
+                // Test 2: Organization Requirements
+                const { data: orgRequirements, error: reqError } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        *,
+                        requirement:requirements_library (
+                            id,
+                            title,
+                            category
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (reqError) throw reqError;
+
+                // Calculate compliance breakdown
+                const breakdown = {
+                    fulfilled: 0,
+                    partiallyFulfilled: 0,
+                    notFulfilled: 0,
+                    notApplicable: 0,
+                    notStarted: 0,
+                    total: orgRequirements?.length || 0
+                };
+
+                orgRequirements?.forEach(req => {
+                    switch (req.status) {
+                        case 'fulfilled':
+                            breakdown.fulfilled++;
+                            break;
+                        case 'partially-fulfilled':
+                            breakdown.partiallyFulfilled++;
+                            break;
+                        case 'not-fulfilled':
+                            breakdown.notFulfilled++;
+                            break;
+                        case 'not-applicable':
+                            breakdown.notApplicable++;
+                            break;
+                        case 'not-started':
+                        default:
+                            breakdown.notStarted++;
+                            break;
+                    }
+                });
+
+                addResult('Requirements Breakdown', breakdown);
+
+                // Test 3: Calculate compliance score
+                const applicableReqs = breakdown.total - breakdown.notApplicable;
+                const complianceScore = applicableReqs > 0 ? Math.round(
+                    ((breakdown.fulfilled + breakdown.partiallyFulfilled * 0.5) / applicableReqs) * 100
+                ) : 0;
+
+                addResult('Dashboard Summary', {
+                    totalStandards: orgStandards?.length || 0,
+                    totalRequirements: breakdown.total,
+                    complianceScore: complianceScore + '%',
+                    applicableRequirements: applicableReqs
+                });
+
+            } catch (error) {
+                addResult('Dashboard Test Error', error, true);
+            }
+        }
+
+        async function testRequirements() {
+            try {
+                // Test requirement tags
+                const { data: taggedReqs, error } = await supabase
+                    .from('organization_requirements')
+                    .select('id, tags, status')
+                    .eq('organization_id', demoOrgId)
+                    .not('tags', 'is', null)
+                    .limit(5);
+
+                if (error) throw error;
+
+                addResult('Requirements with Tags', {
+                    count: taggedReqs?.length || 0,
+                    samples: taggedReqs?.map(r => ({
+                        tags: r.tags,
+                        status: r.status
+                    })) || []
+                });
+
+            } catch (error) {
+                addResult('Requirements Tags Test Error', error, true);
+            }
+        }
+
+        // Auto-run tests
+        window.addEventListener('load', () => {
+            setTimeout(testDashboardData, 1000);
+        });
+    </script>
+</body>
+</html>

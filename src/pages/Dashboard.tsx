@@ -3,18 +3,20 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
 import { CybersecurityNews } from "@/components/dashboard/CybersecurityNews";
-import { dashboardStats, assessments, requirements } from "@/data/mockData";
+import { assessments } from "@/data/mockData";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 const Dashboard = () => {
   console.log("Dashboard component loaded");
   const navigate = useNavigate();
   const { user, isPlatformAdmin, isDemo } = useAuth();
+  const { stats, loading, error } = useDashboardData();
 
   // Platform admins should see the Platform Admin Console, not customer dashboard
   useEffect(() => {
@@ -64,36 +66,33 @@ const Dashboard = () => {
     }
   };
 
-  // Calculate actual requirement counts dynamically
-  const calculateRequirementCounts = () => {
-    const counts = {
-      fulfilled: 0,
-      partiallyFulfilled: 0,
-      notFulfilled: 0,
-      notApplicable: 0
-    };
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="pt-0 space-y-4 sm:space-y-6 pb-6 sm:pb-8 w-full px-2 sm:px-0">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    requirements.forEach(req => {
-      switch (req.status) {
-        case 'fulfilled':
-          counts.fulfilled++;
-          break;
-        case 'partially-fulfilled':
-          counts.partiallyFulfilled++;
-          break;
-        case 'not-fulfilled':
-          counts.notFulfilled++;
-          break;
-        case 'not-applicable':
-          counts.notApplicable++;
-          break;
-      }
-    });
-
-    return counts;
-  };
-
-  const dynamicRequirementCounts = calculateRequirementCounts();
+  // Show error state
+  if (error) {
+    return (
+      <div className="pt-0 space-y-4 sm:space-y-6 pb-6 sm:pb-8 w-full px-2 sm:px-0">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="h-8 w-8 text-red-500 mx-auto" />
+            <p className="mt-2 text-muted-foreground">Error loading dashboard: {error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -162,7 +161,7 @@ const Dashboard = () => {
         <div onClick={() => navigate("/app/standards")} className="cursor-pointer">
           <StatsCard
             title="Total Standards"
-            value={dashboardStats.totalStandards}
+            value={stats.totalStandards}
             icon={<Shield size={16} />}
             description="Active compliance standards"
             className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
@@ -172,7 +171,7 @@ const Dashboard = () => {
         <div onClick={() => navigate("/app/requirements")} className="cursor-pointer">
           <StatsCard
             title="Total Requirements"
-            value={dashboardStats.totalRequirements}
+            value={stats.totalRequirements}
             icon={<BookOpen size={16} />}
             description="Across all standards"
             className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
@@ -182,7 +181,7 @@ const Dashboard = () => {
         <div onClick={() => navigate("/app/assessments")} className="cursor-pointer">
           <StatsCard
             title="Total Assessments"
-            value={dashboardStats.totalAssessments}
+            value={stats.totalAssessments}
             icon={<CheckSquare size={16} />}
             description="Ongoing and completed"
             className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
@@ -192,7 +191,7 @@ const Dashboard = () => {
         <div onClick={() => navigate("/app/compliance-monitoring")} className="cursor-pointer">
           <StatsCard
             title="Compliance Score"
-            value={`${dashboardStats.complianceScore}%`}
+            value={`${stats.complianceScore}%`}
             icon={<BarChart3 size={16} />}
             trend={{
               value: 5,
@@ -212,7 +211,7 @@ const Dashboard = () => {
         {/* Left Column - Compliance Chart and Tasks */}
         <div className="flex flex-col gap-5 lg:col-span-2">
           <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden">
-            <ComplianceChart data={dynamicRequirementCounts} />
+            <ComplianceChart data={stats.complianceBreakdown} />
           </motion.div>
 
           <motion.div variants={itemVariants}>

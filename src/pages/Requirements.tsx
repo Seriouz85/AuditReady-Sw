@@ -42,7 +42,7 @@ const Requirements = () => {
       : "all"
   );
   const [standardFilter, setStandardFilter] = useState<string>(standardIdFromUrl || "all");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [selectedRequirement, setSelectedRequirement] = useState<RequirementWithStatus | null>(null);
   const [localRequirements, setLocalRequirements] = useState<RequirementWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,10 +114,12 @@ const Requirements = () => {
     loadRequirements();
   }, [standardFilter]);
 
-  // Load standards and unified categories
+  // Load standards and unified categories - only when organization is available
   useEffect(() => {
-    loadStandardsAndCategories();
-  }, []);
+    if (organization?.id) {
+      loadStandardsAndCategories();
+    }
+  }, [organization?.id, isDemo]);
 
   // Handle URL params
   useEffect(() => {
@@ -193,18 +195,54 @@ const Requirements = () => {
 
   const loadStandardsAndCategories = async () => {
     try {
-      // Load from database for both demo and production accounts
-      const [standardsResponse, categoriesResponse] = await Promise.all([
-        supabase.from('standards_library').select('id, name, version, description, type, is_active').eq('is_active', true).order('name'),
+      if (!organization?.id) {
+        console.log('No organization ID available, skipping standards load');
+        return;
+      }
+
+      console.log('Loading standards and categories for org:', organization.id);
+
+      // Load standards and categories in parallel
+      const [orgStandardsResponse, categoriesResponse] = await Promise.all([
+        // For demo account, also check standards_library as fallback
+        isDemo 
+          ? supabase.from('standards_library').select('id, name, version, description, type, is_active').eq('is_active', true).order('name')
+          : supabase
+              .from('organization_standards')
+              .select(`
+                standard_id,
+                standards_library (
+                  id, 
+                  name, 
+                  version, 
+                  description, 
+                  type, 
+                  is_active
+                )
+              `)
+              .eq('organization_id', organization.id),
         supabase.from('unified_compliance_categories').select('id, name, description, sort_order, is_active').eq('is_active', true).order('sort_order')
       ]);
 
-      if (standardsResponse.data) {
-        setStandards(standardsResponse.data);
+      if (orgStandardsResponse.data) {
+        if (isDemo) {
+          // For demo, use all standards from standards_library
+          setStandards(orgStandardsResponse.data);
+        } else {
+          // For production, extract from organization_standards join
+          const orgStandards = orgStandardsResponse.data
+            .map(item => item.standards_library)
+            .filter(standard => standard && standard.is_active)
+            .sort((a, b) => a.name.localeCompare(b.name));
+          setStandards(orgStandards);
+        }
       }
+      
       if (categoriesResponse.data) {
         setUnifiedCategories(categoriesResponse.data);
       }
+
+      console.log('Standards and categories loaded successfully');
     } catch (error) {
       console.error('Error loading standards and categories:', error);
     }
@@ -368,13 +406,21 @@ const Requirements = () => {
       const matchesStandard = standardFilter === "all" || requirement.standardId === standardFilter;
       const matchesPriority = priorityFilter === "all" || requirement.priority === priorityFilter;
       
-      const matchesCategory = categoryFilter === "all" || 
-        (requirement.tags && requirement.tags.includes(categoryFilter)) ||
-        (requirement.categories && requirement.categories.includes(categoryFilter)) ||
+      const matchesCategory = categoryFilter.length === 0 || 
+        (requirement.tags && requirement.tags.some(tag => {
+          // Tags are category names, categoryFilter contains category IDs
+          // Convert categoryFilter IDs to names and check
+          return categoryFilter.some(filterId => {
+            const category = unifiedCategories.find(uc => uc.id === filterId);
+            return category && category.name === tag;
+          });
+        })) ||
         (requirement.categories && requirement.categories.some(cat => {
-          // Check if category name matches the filter (for demo data)
-          const category = unifiedCategories.find(uc => uc.name === cat);
-          return category && category.id === categoryFilter;
+          // Check if category name matches selected filters (convert IDs to names)
+          return categoryFilter.some(filterId => {
+            const category = unifiedCategories.find(uc => uc.id === filterId);
+            return category && category.name === cat;
+          });
         }));
       
       return matchesSearch && matchesStatus && matchesStandard && matchesPriority && matchesCategory;
@@ -669,24 +715,33 @@ const Requirements = () => {
             <div className="flex flex-wrap gap-2">
               <Badge 
                 key="all" 
-                className={`cursor-pointer transition-colors ${categoryFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}
-                onClick={() => setCategoryFilter('all')}
+                className={`cursor-pointer transition-colors ${categoryFilter.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}
+                onClick={() => setCategoryFilter([])}
               >
                 All Categories
               </Badge>
-              {unifiedCategories.map(category => (
-                <Badge 
-                  key={category.id}
-                  className={`cursor-pointer transition-colors border ${
-                    categoryFilter === category.id 
-                      ? getCategoryColor(category.name) 
-                      : getCategoryColor(category.name) + ' opacity-60 hover:opacity-80'
-                  }`}
-                  onClick={() => setCategoryFilter(categoryFilter === category.id ? 'all' : category.id)}
-                >
-                  {category.name}
-                </Badge>
-              ))}
+              {unifiedCategories.map(category => {
+                const isSelected = categoryFilter.includes(category.id);
+                return (
+                  <Badge 
+                    key={category.id}
+                    className={`cursor-pointer transition-colors border ${
+                      isSelected 
+                        ? getCategoryColor(category.name) 
+                        : getCategoryColor(category.name) + ' opacity-60 hover:opacity-80'
+                    }`}
+                    onClick={() => {
+                      if (isSelected) {
+                        setCategoryFilter(prev => prev.filter(id => id !== category.id));
+                      } else {
+                        setCategoryFilter(prev => [...prev, category.id]);
+                      }
+                    }}
+                  >
+                    {category.name}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
           

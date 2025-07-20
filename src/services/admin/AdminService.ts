@@ -355,7 +355,7 @@ export class AdminService {
       const orgRequirements = requirements.map(req => ({
         organization_id: organizationId,
         requirement_id: req.id,
-        status: 'not-started' as const
+        status: 'not-fulfilled' as const
       }));
 
       const { error: reqError } = await supabase

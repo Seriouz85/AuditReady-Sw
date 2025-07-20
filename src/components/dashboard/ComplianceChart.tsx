@@ -73,9 +73,10 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
   ].filter(item => item.value > 0 || item.name === "Not Applicable");
 
   const total = Object.values(data).reduce((acc, curr) => acc + curr, 0);
-  const complianceScore = Math.round(
-    ((data.fulfilled + data.partiallyFulfilled * 0.5) / (total - data.notApplicable)) * 100
-  ) || 0;
+  const applicableTotal = total - data.notApplicable;
+  const complianceScore = applicableTotal > 0 ? Math.round(
+    ((data.fulfilled + data.partiallyFulfilled * 0.5) / applicableTotal) * 100
+  ) : 0;
 
   const createGradientId = (index: number) => `gradient-${index}`;
 

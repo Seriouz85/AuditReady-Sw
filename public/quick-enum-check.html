@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Enum Check</title>
+</head>
+<body>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    async function checkEnum() {
+      try {
+        // Query enum values from PostgreSQL system tables
+        const { data, error } = await supabase
+          .rpc('get_enum_values', { enum_name: 'requirement_status' });
+          
+        if (error) {
+          console.log('RPC error, trying direct query...');
+          
+          // Alternative: check what values exist in the table
+          const { data: existingValues, error: queryError } = await supabase
+            .from('organization_requirements')
+            .select('status')
+            .neq('status', null);
+            
+          if (queryError) {
+            console.error('Query error:', queryError);
+          } else {
+            const uniqueStatuses = [...new Set(existingValues.map(r => r.status))];
+            console.log('Existing status values in DB:', uniqueStatuses);
+            document.body.innerHTML = '<h1>Existing Status Values:</h1><pre>' + JSON.stringify(uniqueStatuses, null, 2) + '</pre>';
+          }
+        } else {
+          console.log('Enum values:', data);
+          document.body.innerHTML = '<h1>Enum Values:</h1><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        document.body.innerHTML = '<h1>Error:</h1><pre>' + err.message + '</pre>';
+      }
+    }
+    
+    checkEnum();
+  </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Partial Status</title>
+</head>
+<body>
+  <h1>Test Partially-Fulfilled Status</h1>
+  <button onclick="testStatus()">Test Status Update</button>
+  <div id="output" style="margin-top: 20px; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px;"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    const DEMO_ORG_ID = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+    
+    function log(message) {
+      const output = document.getElementById('output');
+      output.textContent += message + '\n';
+      console.log(message);
+    }
+    
+    window.testStatus = async function() {
+      try {
+        log('🔍 Testing partially-fulfilled status...');
+        
+        // Get one requirement
+        const { data: req, error: fetchError } = await supabase
+          .from('organization_requirements')
+          .select('id, status')
+          .eq('organization_id', DEMO_ORG_ID)
+          .limit(1)
+          .single();
+          
+        if (fetchError) throw fetchError;
+        log(`Found requirement: ${req.id} with status: ${req.status}`);
+        
+        // Try different variations
+        const variations = [
+          'partially-fulfilled',
+          'partially‐fulfilled', // with non-breaking hyphen U+2010
+          'partially−fulfilled', // with minus sign U+2212
+          'partially–fulfilled', // with en dash U+2013
+          'partially—fulfilled', // with em dash U+2014
+        ];
+        
+        for (const status of variations) {
+          log(`\nTesting: "${status}"`);
+          log(`Bytes: ${Array.from(status).map(c => c.charCodeAt(0).toString(16)).join(' ')}`);
+          
+          const { error } = await supabase
+            .from('organization_requirements')
+            .update({ 
+              status: status,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', req.id);
+            
+          if (error) {
+            log(`❌ Failed: ${error.message}`);
+          } else {
+            log(`✅ Success with "${status}"`);
+            break;
+          }
+        }
+        
+        // Try with raw SQL
+        log('\n🔍 Testing with raw SQL...');
+        const { data: sqlResult, error: sqlError } = await supabase.rpc('execute_sql', {
+          query: `UPDATE organization_requirements SET status = 'partially-fulfilled'::requirement_status WHERE id = '${req.id}'`
+        });
+        
+        if (sqlError) {
+          log(`SQL error: ${sqlError.message}`);
+        } else {
+          log(`SQL result: ${JSON.stringify(sqlResult)}`);
+        }
+        
+      } catch (error) {
+        log('❌ Error: ' + error.message);
+      }
+    };
+  </script>
+</body>
+</html>

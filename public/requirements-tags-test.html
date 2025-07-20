@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requirements Tags Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1000px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #e2e3e5; border-color: #d6d8db; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .tag-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 12px;
+            font-size: 11px;
+            border: 1px solid;
+        }
+        .requirement-item {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Requirements & Tags Test</h1>
+    <p>This page tests requirements loading, tag display, and status distribution for the demo account.</p>
+    
+    <button onclick="testRequirementsAndTags()">🏷️ Test Requirements & Tags</button>
+    <button onclick="testStatusDistribution()">📊 Test Status Distribution</button>
+    <button onclick="updateDemoRequirements()">🔄 Update Demo Requirements</button>
+    
+    <div id="results"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://rztpjfevkqfxbonzqlzd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6dHBqZmV2a3FmeGJvbnpxbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4OTI2NjEsImV4cCI6MjA1MTQ2ODY2MX0.jG5RMIpYy6K-Z4wqCo-_7oOQKgKWU0VnKPe3g_3wl8M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+
+        function addResult(testName, content, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-section ${type}`;
+            
+            let html = `<h3>${type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'} ${testName}</h3>`;
+            
+            if (typeof content === 'string') {
+                html += `<p>${content}</p>`;
+            } else {
+                html += '<pre>' + JSON.stringify(content, null, 2) + '</pre>';
+            }
+            
+            testDiv.innerHTML = html;
+            resultsDiv.appendChild(testDiv);
+        }
+
+        async function testRequirementsAndTags() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>🔄 Testing requirements and tags...</p>';
+
+            try {
+                // Test 1: Load Tags
+                const { data: tags, error: tagsError } = await supabase
+                    .from('tags')
+                    .select('*')
+                    .order('name');
+
+                if (tagsError) throw tagsError;
+                addResult('Available Tags', {
+                    count: tags?.length || 0,
+                    samples: tags?.slice(0, 5).map(t => ({
+                        id: t.id,
+                        name: t.name,
+                        color: t.color,
+                        category: t.category
+                    })) || []
+                }, 'success');
+
+                // Test 2: Load Requirements with Tags
+                const { data: requirements, error: reqError } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        *,
+                        requirement:requirements_library (
+                            id,
+                            title,
+                            description,
+                            category
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId)
+                    .not('tags', 'is', null)
+                    .limit(10);
+
+                if (reqError) throw reqError;
+
+                addResult('Requirements with Tags', {
+                    count: requirements?.length || 0,
+                    total_demo_requirements: 'See status test for total count'
+                }, requirements?.length > 0 ? 'success' : 'error');
+
+                // Test 3: Display sample requirements with their tags
+                if (requirements && requirements.length > 0) {
+                    let htmlContent = '<div>';
+                    requirements.slice(0, 5).forEach(req => {
+                        htmlContent += `
+                            <div class="requirement-item">
+                                <strong>${req.requirement?.title || 'Unknown Title'}</strong>
+                                <p>Status: <span style="color: ${getStatusColor(req.status)}">${req.status}</span></p>
+                                <div>Tags: `;
+                        
+                        if (req.tags && req.tags.length > 0) {
+                            req.tags.forEach(tagId => {
+                                const tag = tags.find(t => t.id === tagId);
+                                if (tag) {
+                                    htmlContent += `<span class="tag-badge" style="border-color: ${tag.color}; color: ${tag.color}; background-color: ${tag.color}20">${tag.name}</span>`;
+                                } else {
+                                    htmlContent += `<span class="tag-badge" style="border-color: #999; color: #999">${tagId}</span>`;
+                                }
+                            });
+                        } else {
+                            htmlContent += '<em>No tags</em>';
+                        }
+                        
+                        htmlContent += '</div></div>';
+                    });
+                    htmlContent += '</div>';
+                    
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'test-section success';
+                    resultDiv.innerHTML = '<h3>✅ Sample Requirements with Tags</h3>' + htmlContent;
+                    resultsDiv.appendChild(resultDiv);
+                }
+
+            } catch (error) {
+                addResult('Requirements & Tags Test Error', error, 'error');
+            }
+        }
+
+        async function testStatusDistribution() {
+            try {
+                const { data: requirements, error } = await supabase
+                    .from('organization_requirements')
+                    .select('status')
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                const distribution = {
+                    fulfilled: 0,
+                    'partially-fulfilled': 0,
+                    'not-fulfilled': 0,
+                    'not-applicable': 0,
+                    'not-started': 0,
+                    other: 0
+                };
+
+                requirements?.forEach(req => {
+                    if (distribution.hasOwnProperty(req.status)) {
+                        distribution[req.status]++;
+                    } else {
+                        distribution.other++;
+                    }
+                });
+
+                const total = requirements?.length || 0;
+                const percentages = {};
+                Object.keys(distribution).forEach(status => {
+                    percentages[status] = total > 0 ? ((distribution[status] / total) * 100).toFixed(1) + '%' : '0%';
+                });
+
+                addResult('Status Distribution', {
+                    total_requirements: total,
+                    distribution: distribution,
+                    percentages: percentages
+                }, 'success');
+
+                // Check for penetration test requirements
+                const { data: penTestReqs, error: penError } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        status,
+                        requirement:requirements_library (
+                            title,
+                            description
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId)
+                    .or('requirement.title.ilike.%penetration%,requirement.title.ilike.%pen test%,requirement.description.ilike.%penetration%');
+
+                if (!penError && penTestReqs) {
+                    addResult('Penetration Test Requirements', {
+                        count: penTestReqs.length,
+                        statuses: penTestReqs.map(r => ({
+                            title: r.requirement?.title,
+                            status: r.status
+                        }))
+                    }, penTestReqs.length > 0 ? 'success' : 'info');
+                }
+
+            } catch (error) {
+                addResult('Status Distribution Test Error', error, 'error');
+            }
+        }
+
+        async function updateDemoRequirements() {
+            try {
+                addResult('Demo Requirements Update', 'Starting update process...', 'info');
+
+                // First, let's set some penetration test requirements as not applicable
+                const { data: penTestReqs, error: penError } = await supabase
+                    .from('organization_requirements')
+                    .select('id')
+                    .eq('organization_id', demoOrgId)
+                    .or('requirement.title.ilike.%penetration%,requirement.title.ilike.%pen test%');
+
+                if (!penError && penTestReqs && penTestReqs.length > 0) {
+                    const { error: updateError } = await supabase
+                        .from('organization_requirements')
+                        .update({ status: 'not-applicable' })
+                        .in('id', penTestReqs.map(r => r.id));
+
+                    if (updateError) {
+                        addResult('Penetration Test Update Error', updateError, 'error');
+                    } else {
+                        addResult('Penetration Test Update', `Updated ${penTestReqs.length} penetration test requirements to 'not applicable'`, 'success');
+                    }
+                }
+
+                // Update some requirements to partially-fulfilled for better demo
+                const { data: someReqs, error: someError } = await supabase
+                    .from('organization_requirements')
+                    .select('id')
+                    .eq('organization_id', demoOrgId)
+                    .eq('status', 'not-started')
+                    .limit(20);
+
+                if (!someError && someReqs && someReqs.length > 0) {
+                    // Update half to partially-fulfilled, half to fulfilled
+                    const partialIds = someReqs.slice(0, 10).map(r => r.id);
+                    const fulfilledIds = someReqs.slice(10).map(r => r.id);
+
+                    if (partialIds.length > 0) {
+                        await supabase
+                            .from('organization_requirements')
+                            .update({ 
+                                status: 'partially-fulfilled',
+                                fulfillment_percentage: 65,
+                                notes: 'Demo: Implementation in progress'
+                            })
+                            .in('id', partialIds);
+                    }
+
+                    if (fulfilledIds.length > 0) {
+                        await supabase
+                            .from('organization_requirements')
+                            .update({ 
+                                status: 'fulfilled',
+                                fulfillment_percentage: 100,
+                                notes: 'Demo: Fully implemented'
+                            })
+                            .in('id', fulfilledIds);
+                    }
+
+                    addResult('Status Update', `Updated ${partialIds.length} to partially-fulfilled and ${fulfilledIds.length} to fulfilled`, 'success');
+                }
+
+                // Re-run status distribution test
+                setTimeout(testStatusDistribution, 1000);
+
+            } catch (error) {
+                addResult('Update Demo Requirements Error', error, 'error');
+            }
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'fulfilled': '#10B981',
+                'partially-fulfilled': '#F59E0B',
+                'not-fulfilled': '#EF4444',
+                'not-applicable': '#94A3B8',
+                'not-started': '#64748B'
+            };
+            return colors[status] || '#666';
+        }
+
+        // Auto-run tests
+        window.addEventListener('load', () => {
+            setTimeout(testRequirementsAndTags, 1000);
+        });
+    </script>
+</body>
+</html>

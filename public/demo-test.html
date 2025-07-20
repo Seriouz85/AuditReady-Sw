@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Account Test</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #e2e3e5; border-color: #d6d8db; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Demo Account Test Suite</h1>
+    <p>This page tests the demo account's ability to load standards and requirements from the database.</p>
+    
+    <button onclick="runAllTests()">🚀 Run All Tests</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const supabaseUrl = 'https://rztpjfevkqfxbonzqlzd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6dHBqZmV2a3FmeGJvbnpxbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4OTI2NjEsImV4cCI6MjA1MTQ2ODY2MX0.jG5RMIpYy6K-Z4wqCo-_7oOQKgKWU0VnKPe3g_3wl8M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+
+        function addResult(testName, success, data, error) {
+            const resultsDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-section ${success ? 'success' : 'error'}`;
+            
+            let content = `<h3>${success ? '✅' : '❌'} ${testName}</h3>`;
+            
+            if (success && data) {
+                if (Array.isArray(data)) {
+                    content += `<p><strong>Found ${data.length} items:</strong></p>`;
+                    if (data.length > 0) {
+                        content += '<pre>' + JSON.stringify(data.slice(0, 3), null, 2) + '</pre>';
+                        if (data.length > 3) {
+                            content += `<p><em>... and ${data.length - 3} more items</em></p>`;
+                        }
+                    }
+                } else {
+                    content += `<p><strong>Count:</strong> ${data}</p>`;
+                }
+            }
+            
+            if (error) {
+                content += `<p><strong>Error:</strong> ${error.message || JSON.stringify(error)}</p>`;
+                if (error.details) {
+                    content += `<p><strong>Details:</strong> ${error.details}</p>`;
+                }
+            }
+            
+            testDiv.innerHTML = content;
+            resultsDiv.appendChild(testDiv);
+        }
+
+        async function testAvailableStandards() {
+            try {
+                const { data, error } = await supabase
+                    .from('standards_library')
+                    .select('id, name, version, type, description')
+                    .eq('is_active', true)
+                    .order('name');
+
+                if (error) throw error;
+                addResult('Available Standards from Library', true, data);
+                return data;
+            } catch (error) {
+                addResult('Available Standards from Library', false, null, error);
+                return [];
+            }
+        }
+
+        async function testDemoOrganizationStandards() {
+            try {
+                const { data, error } = await supabase
+                    .from('organization_standards')
+                    .select(`
+                        *,
+                        standard:standards_library (
+                            id,
+                            name,
+                            version,
+                            type,
+                            description
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                addResult('Demo Organization Standards', true, data);
+                return data;
+            } catch (error) {
+                addResult('Demo Organization Standards', false, null, error);
+                return [];
+            }
+        }
+
+        async function testDemoOrganizationRequirements() {
+            try {
+                const { data, error, count } = await supabase
+                    .from('organization_requirements')
+                    .select('id, requirement_id, status', { count: 'exact' })
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+                addResult('Demo Organization Requirements', true, count || data?.length);
+                return data;
+            } catch (error) {
+                addResult('Demo Organization Requirements', false, null, error);
+                return [];
+            }
+        }
+
+        async function testAddStandardToOrganization() {
+            try {
+                // First get available standards
+                const { data: availableStandards } = await supabase
+                    .from('standards_library')
+                    .select('id, name')
+                    .eq('is_active', true)
+                    .limit(1);
+
+                if (!availableStandards || availableStandards.length === 0) {
+                    throw new Error('No available standards found');
+                }
+
+                // Check if already added
+                const { data: existingStandards } = await supabase
+                    .from('organization_standards')
+                    .select('standard_id')
+                    .eq('organization_id', demoOrgId)
+                    .eq('standard_id', availableStandards[0].id);
+
+                if (existingStandards && existingStandards.length > 0) {
+                    addResult('Add Standard Test', true, `Standard "${availableStandards[0].name}" already exists in demo org`);
+                    return;
+                }
+
+                // Try to add the standard
+                const { data, error } = await supabase
+                    .from('organization_standards')
+                    .insert({
+                        organization_id: demoOrgId,
+                        standard_id: availableStandards[0].id,
+                        is_applicable: true
+                    })
+                    .select();
+
+                if (error) throw error;
+                addResult('Add Standard Test', true, `Successfully added "${availableStandards[0].name}" to demo org`);
+            } catch (error) {
+                addResult('Add Standard Test', false, null, error);
+            }
+        }
+
+        async function runAllTests() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="test-section info"><h3>🔄 Running Tests...</h3></div>';
+
+            console.log('Starting demo account tests...');
+
+            await testAvailableStandards();
+            await testDemoOrganizationStandards();
+            await testDemoOrganizationRequirements();
+            await testAddStandardToOrganization();
+
+            // Remove the "Running Tests..." message
+            const runningDiv = resultsDiv.querySelector('.info');
+            if (runningDiv) runningDiv.remove();
+
+            console.log('Demo account tests completed!');
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>

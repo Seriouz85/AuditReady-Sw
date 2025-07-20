@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Character Test</title>
+</head>
+<body>
+  <h1>Character Encoding Test</h1>
+  
+  <script>
+    function testString(str, label) {
+      console.log(`${label}:`, str);
+      console.log(`Length: ${str.length}`);
+      console.log('Hex bytes:', Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' '));
+      console.log('---');
+    }
+    
+    // Test our current string
+    const ourString = 'partially-fulfilled';
+    testString(ourString, 'Our string');
+    
+    // Test copied from migration 
+    const migrationString = 'partially-fulfilled';
+    testString(migrationString, 'Migration string');
+    
+    // Test if they're equal
+    console.log('Strings equal:', ourString === migrationString);
+    
+    // Show in DOM
+    document.body.innerHTML += `
+      <p>Our string: "${ourString}"</p>
+      <p>Migration string: "${migrationString}"</p>
+      <p>Equal: ${ourString === migrationString}</p>
+      <p>Our hex: ${Array.from(ourString).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ')}</p>
+      <p>Migration hex: ${Array.from(migrationString).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ')}</p>
+    `;
+  </script>
+</body>
+</html>

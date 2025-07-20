@@ -26,7 +26,7 @@ export interface Standard {
   updatedAt: string;
 }
 
-// Requirement status types
+// Requirement status types - matches database enum exactly
 export type RequirementStatus = 'fulfilled' | 'partially-fulfilled' | 'not-fulfilled' | 'not-applicable';
 
 // Requirement priority types

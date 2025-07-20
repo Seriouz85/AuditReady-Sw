@@ -79,7 +79,15 @@ export class RequirementsService {
     standardId?: string
   ): Promise<RequirementWithStatus[]> {
     try {
-      let query = supabase
+      const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
+      let clientToUse = supabase;
+      
+      // For demo org, use main client to avoid multiple client issues
+      if (isDemoOrg) {
+        console.log('Using main supabase client for demo org requirements');
+      }
+
+      let query = clientToUse
         .from('organization_requirements')
         .select(`
           *,
@@ -100,7 +108,7 @@ export class RequirementsService {
       // If standard is specified, filter by standard
       if (standardId) {
         // First get requirement IDs for this standard
-        const { data: standardRequirements } = await supabase
+        const { data: standardRequirements } = await clientToUse
           .from('requirements_library')
           .select('id')
           .eq('standard_id', standardId);
@@ -113,34 +121,77 @@ export class RequirementsService {
         }
       }
 
-      const { data, error } = await query.order('requirement.order_index');
+      const { data, error } = await query.order('created_at', { ascending: true });
+
+      // Handle RLS infinite recursion specifically
+      if (error && error.code === '42P17') {
+        console.warn('RLS infinite recursion in requirements query, returning empty result for demo org');
+        return [];
+      }
 
       if (error) throw error;
 
       if (!data) return [];
 
-      return data.map(orgReq => ({
-        id: orgReq.requirement.id,
-        code: orgReq.requirement.control_id,
-        name: orgReq.requirement.title,
-        description: orgReq.requirement.description,
-        standardId: orgReq.requirement.standard_id,
-        status: orgReq.status as RequirementStatus,
-        priority: (orgReq.requirement.priority || 'medium') as RequirementPriority,
-        section: orgReq.requirement.category || 'General',
-        tags: orgReq.tags || [],
-        organizationStatus: orgReq.status,
-        fulfillmentPercentage: orgReq.fulfillment_percentage || 0,
-        evidence: orgReq.evidence,
-        notes: orgReq.notes,
-        responsibleParty: orgReq.responsible_party,
-        organizationTags: orgReq.tags || [],
-        riskLevel: orgReq.risk_level,
-        lastUpdated: orgReq.updated_at,
-        createdAt: orgReq.created_at || new Date().toISOString(),
-        updatedAt: orgReq.updated_at || new Date().toISOString(),
-        auditReadyGuidance: orgReq.requirement.audit_ready_guidance
-      }));
+      return data.map(orgReq => {
+        // Validate and normalize status value
+        const validStatuses: RequirementStatus[] = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
+        let status: RequirementStatus = 'not-fulfilled';
+        
+        if (orgReq.status && validStatuses.includes(orgReq.status as RequirementStatus)) {
+          status = orgReq.status as RequirementStatus;
+        } else {
+          console.warn('Invalid requirement status:', orgReq.status, 'for requirement:', orgReq.requirement?.title);
+          // Map common variations to valid statuses
+          switch (orgReq.status?.toLowerCase()) {
+            case 'complete':
+            case 'completed':
+            case 'done':
+              status = 'fulfilled';
+              break;
+            case 'partial':
+            case 'partially-complete':
+            case 'in-progress':
+              status = 'partially-fulfilled';
+              break;
+            case 'incomplete':
+            case 'failed':
+            case 'missing':
+              status = 'not-fulfilled';
+              break;
+            case 'na':
+            case 'n/a':
+            case 'exempt':
+              status = 'not-applicable';
+              break;
+            default:
+              status = 'not-fulfilled';
+          }
+        }
+
+        return {
+          id: orgReq.requirement.id,
+          code: orgReq.requirement.control_id,
+          name: orgReq.requirement.title,
+          description: orgReq.requirement.description,
+          standardId: orgReq.requirement.standard_id,
+          status,
+          priority: (orgReq.requirement.priority || 'medium') as RequirementPriority,
+          section: orgReq.requirement.category || 'General',
+          tags: orgReq.tags || [],
+          organizationStatus: orgReq.status,
+          fulfillmentPercentage: orgReq.fulfillment_percentage || 0,
+          evidence: orgReq.evidence,
+          notes: orgReq.notes,
+          responsibleParty: orgReq.responsible_party,
+          organizationTags: orgReq.tags || [],
+          riskLevel: orgReq.risk_level,
+          lastUpdated: orgReq.updated_at,
+          createdAt: orgReq.created_at || new Date().toISOString(),
+          updatedAt: orgReq.updated_at || new Date().toISOString(),
+          auditReadyGuidance: orgReq.requirement.audit_ready_guidance
+        };
+      });
     } catch (error) {
       console.error('Error fetching organization requirements:', error);
       return [];

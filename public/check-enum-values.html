@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Enum Values</title>
+</head>
+<body>
+  <h1>Check Database Enum Values</h1>
+  
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    async function checkEnum() {
+      try {
+        // Try to get enum values from PostgreSQL
+        const { data: enumData, error: enumError } = await supabase
+          .rpc('sql', {
+            query: `
+              SELECT enumlabel as enum_value, enumsortorder as sort_order
+              FROM pg_enum 
+              WHERE enumtypid = 'requirement_status'::regtype 
+              ORDER BY enumsortorder;
+            `
+          });
+          
+        if (enumError) {
+          console.error('Enum query error:', enumError);
+          document.body.innerHTML += `<p style="color: red;">Enum query error: ${enumError.message}</p>`;
+        } else {
+          console.log('Enum values:', enumData);
+          document.body.innerHTML += `
+            <h2>Requirement Status Enum Values:</h2>
+            <ol>
+              ${enumData.map(item => `<li>${item.enum_value} (order: ${item.sort_order})</li>`).join('')}
+            </ol>
+          `;
+        }
+        
+        // Also check what values exist in actual data
+        const { data: statusData, error: statusError } = await supabase
+          .from('organization_requirements')
+          .select('status')
+          .eq('organization_id', '34adc4bb-d1e7-43bd-8249-89c76520533d')
+          .limit(100);
+          
+        if (!statusError && statusData) {
+          const uniqueStatuses = [...new Set(statusData.map(r => r.status))].sort();
+          document.body.innerHTML += `
+            <h2>Actual Status Values in Demo Org Data:</h2>
+            <ul>
+              ${uniqueStatuses.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+          `;
+        }
+        
+        // Test creating a single update with each enum value
+        const testValues = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
+        document.body.innerHTML += '<h2>Testing Each Enum Value:</h2>';
+        
+        // Get one demo requirement to test with
+        const { data: testReq } = await supabase
+          .from('organization_requirements')
+          .select('id')
+          .eq('organization_id', '34adc4bb-d1e7-43bd-8249-89c76520533d')
+          .limit(1)
+          .single();
+          
+        if (testReq) {
+          for (const status of testValues) {
+            try {
+              const { error } = await supabase
+                .from('organization_requirements')
+                .update({ 
+                  status: status,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', testReq.id);
+                
+              if (error) {
+                document.body.innerHTML += `<p style="color: red;">❌ ${status}: ${error.message}</p>`;
+              } else {
+                document.body.innerHTML += `<p style="color: green;">✅ ${status}: SUCCESS</p>`;
+              }
+            } catch (err) {
+              document.body.innerHTML += `<p style="color: red;">❌ ${status}: ${err.message}</p>`;
+            }
+          }
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        document.body.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    }
+    
+    checkEnum();
+  </script>
+</body>
+</html>

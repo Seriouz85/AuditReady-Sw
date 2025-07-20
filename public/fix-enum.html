@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fix Enum</title>
+</head>
+<body>
+  <h1>Fix Requirement Status Enum</h1>
+  <button onclick="fixEnum()">Fix Enum - Add partially-fulfilled</button>
+  <div id="output" style="margin-top: 20px; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px;"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    function log(message) {
+      const output = document.getElementById('output');
+      output.textContent += message + '\n';
+      console.log(message);
+    }
+    
+    window.fixEnum = async function() {
+      try {
+        log('🔧 Checking current enum values...');
+        
+        // First check what enum values exist
+        const { data: enumData, error: enumError } = await supabase.rpc('sql', {
+          query: `SELECT enumlabel FROM pg_enum WHERE enumtypid = 'requirement_status'::regtype ORDER BY enumsortorder;`
+        });
+        
+        if (enumError) {
+          log(`❌ Error checking enum: ${enumError.message}`);
+          return;
+        }
+        
+        const currentValues = enumData.map(row => row.enumlabel);
+        log(`Current enum values: ${currentValues.join(', ')}`);
+        
+        if (currentValues.includes('partially-fulfilled')) {
+          log('✅ partially-fulfilled already exists in enum');
+          
+          // Test if we can use it
+          log('🧪 Testing partially-fulfilled status...');
+          const { data: testReq } = await supabase
+            .from('organization_requirements')
+            .select('id')
+            .eq('organization_id', '34adc4bb-d1e7-43bd-8249-89c76520533d')
+            .limit(1)
+            .single();
+            
+          if (testReq) {
+            const { error: testError } = await supabase
+              .from('organization_requirements')
+              .update({ status: 'partially-fulfilled' })
+              .eq('id', testReq.id);
+              
+            if (testError) {
+              log(`❌ Test failed: ${testError.message}`);
+            } else {
+              log('✅ partially-fulfilled works!');
+            }
+          }
+          
+        } else {
+          log('❌ partially-fulfilled missing from enum');
+          log('🔧 Attempting to add partially-fulfilled...');
+          
+          const { data: addResult, error: addError } = await supabase.rpc('sql', {
+            query: `ALTER TYPE requirement_status ADD VALUE 'partially-fulfilled' AFTER 'fulfilled';`
+          });
+          
+          if (addError) {
+            log(`❌ Failed to add enum value: ${addError.message}`);
+          } else {
+            log('✅ Added partially-fulfilled to enum!');
+          }
+        }
+        
+      } catch (error) {
+        log(`❌ Error: ${error.message}`);
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Requirements Setup</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1000px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #e2e3e5; border-color: #d6d8db; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .progress { 
+            width: 100%; 
+            height: 20px; 
+            background: #f0f0f0; 
+            border-radius: 10px; 
+            overflow: hidden; 
+        }
+        .progress-bar { 
+            height: 100%; 
+            background: #007bff; 
+            transition: width 0.3s; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Demo Requirements Complete Setup</h1>
+    <p>This tool configures the demo account with realistic tags, penetration test settings, and control inclusion legends.</p>
+    
+    <div class="section warning">
+        <h3>⚠️ Setup Steps</h3>
+        <p>This will update the demo account requirements with:</p>
+        <ul>
+            <li>✅ Realistic tags based on content analysis</li>
+            <li>✅ Penetration test requirements set as "Not Applicable"</li>
+            <li>✅ Random control inclusion legends (REG/CON/BP/RC)</li>
+            <li>✅ Better status distribution for showcase</li>
+        </ul>
+    </div>
+    
+    <button onclick="runCompleteSetup()">🔧 Run Complete Setup</button>
+    <button onclick="testCurrentState()">📊 Test Current State</button>
+    
+    <div class="section info">
+        <h3>Progress</h3>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        <p id="progressText">Ready to start</p>
+    </div>
+    
+    <div id="results"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://rztpjfevkqfxbonzqlzd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6dHBqZmV2a3FmeGJvbnpxbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4OTI2NjEsImV4cCI6MjA1MTQ2ODY2MX0.jG5RMIpYy6K-Z4wqCo-_7oOQKgKWU0VnKPe3g_3wl8M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+
+        function updateProgress(percent, text) {
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function addResult(title, content, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `section ${type}`;
+            
+            let icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            let html = `<h3>${icon} ${title}</h3>`;
+            
+            if (typeof content === 'string') {
+                html += `<p>${content}</p>`;
+            } else {
+                html += '<pre>' + JSON.stringify(content, null, 2) + '</pre>';
+            }
+            
+            div.innerHTML = html;
+            resultsDiv.appendChild(div);
+        }
+
+        // Auto-tagging function that mimics the SQL function
+        function autoTagRequirement(title, description, category) {
+            const tags = [];
+            const content = (title + ' ' + (description || '')).toLowerCase();
+            
+            // Type-based tagging
+            if (content.match(/(technical|implement|configure|install|deploy|system|software|hardware)/)) {
+                tags.push('tag-technical');
+            }
+            if (content.match(/(policy|procedure|governance|management|establish|define|document)/)) {
+                tags.push('tag-policy');
+            }
+            if (content.match(/(document|record|maintain|log|report|evidence|retain)/)) {
+                tags.push('tag-documentation');
+            }
+            if (content.match(/(train|awareness|education|competence|skill|knowledge)/)) {
+                tags.push('tag-training');
+            }
+            if (content.match(/(monitor|assess|review|audit|test|evaluate|measure)/)) {
+                tags.push('tag-monitoring');
+            }
+            if (content.match(/(incident|emergency|response|recovery|contingency|crisis)/)) {
+                tags.push('tag-incident');
+            }
+            
+            // Asset type tagging
+            if (content.match(/(network|firewall|router|switch|vpn|dns|connection)/)) {
+                tags.push('tag-network');
+            }
+            if (content.match(/(endpoint|workstation|laptop|mobile|device|antivirus)/)) {
+                tags.push('tag-endpoint');
+            }
+            if (content.match(/(data|information|privacy|personal|sensitive|confidential|encryption)/)) {
+                tags.push('tag-data');
+            }
+            if (content.match(/(access|authentication|authorization|identity|user|account|privilege)/)) {
+                tags.push('tag-access');
+            }
+            if (content.match(/(physical|facility|premises|building|server room|datacenter)/)) {
+                tags.push('tag-physical');
+            }
+            if (content.match(/(cloud|aws|azure|saas|iaas|paas|service provider)/)) {
+                tags.push('tag-cloud');
+            }
+            
+            // Risk level tagging
+            if (content.match(/(critical|essential|vital|mandatory|must|shall|required)/)) {
+                tags.push('tag-high-risk');
+            } else if (content.match(/(important|should|recommended|significant)/)) {
+                tags.push('tag-medium-risk');
+            } else {
+                tags.push('tag-low-risk');
+            }
+            
+            // Ensure at least one tag
+            if (tags.length === 0) {
+                tags.push('tag-technical');
+            }
+            
+            return tags;
+        }
+
+        function getRandomControlInclusion() {
+            const inclusions = [
+                { type: 'REG', weight: 0.3 }, // 30% Regulatory
+                { type: 'CON', weight: 0.2 }, // 20% Contractual  
+                { type: 'BP', weight: 0.4 },  // 40% Best Practice
+                { type: 'RC', weight: 0.1 }   // 10% Risk Control
+            ];
+            
+            const result = [];
+            inclusions.forEach(inc => {
+                if (Math.random() < inc.weight) {
+                    result.push(inc.type);
+                }
+            });
+            
+            // Ensure at least one inclusion
+            if (result.length === 0) {
+                result.push('BP'); // Default to Best Practice
+            }
+            
+            return result;
+        }
+
+        async function createDefaultTags() {
+            try {
+                const defaultTags = [
+                    { id: 'tag-technical', name: 'Technical', color: '#3B82F6', category: 'type' },
+                    { id: 'tag-policy', name: 'Policy', color: '#8B5CF6', category: 'type' },
+                    { id: 'tag-documentation', name: 'Documentation', color: '#10B981', category: 'type' },
+                    { id: 'tag-training', name: 'Training', color: '#F59E0B', category: 'type' },
+                    { id: 'tag-monitoring', name: 'Monitoring', color: '#EF4444', category: 'type' },
+                    { id: 'tag-incident', name: 'Incident Response', color: '#EC4899', category: 'type' },
+                    { id: 'tag-high-risk', name: 'High Risk', color: '#DC2626', category: 'applies-to' },
+                    { id: 'tag-medium-risk', name: 'Medium Risk', color: '#D97706', category: 'applies-to' },
+                    { id: 'tag-low-risk', name: 'Low Risk', color: '#059669', category: 'applies-to' },
+                    { id: 'tag-network', name: 'Network', color: '#2563EB', category: 'applies-to' },
+                    { id: 'tag-endpoint', name: 'Endpoint', color: '#7C3AED', category: 'applies-to' },
+                    { id: 'tag-data', name: 'Data Protection', color: '#0891B2', category: 'applies-to' },
+                    { id: 'tag-access', name: 'Access Control', color: '#C2410C', category: 'applies-to' },
+                    { id: 'tag-physical', name: 'Physical Security', color: '#4338CA', category: 'applies-to' },
+                    { id: 'tag-cloud', name: 'Cloud Security', color: '#0D9488', category: 'applies-to' }
+                ];
+
+                for (const tag of defaultTags) {
+                    const { error } = await supabase
+                        .from('tags')
+                        .upsert(tag, { onConflict: 'id' });
+                    
+                    if (error && !error.message.includes('duplicate')) {
+                        console.warn('Tag creation error:', error);
+                    }
+                }
+                
+                addResult('Default Tags', `Created/updated ${defaultTags.length} default tags`, 'success');
+                return true;
+            } catch (error) {
+                addResult('Tag Creation Error', error, 'error');
+                return false;
+            }
+        }
+
+        async function updatePenetrationTestRequirements() {
+            try {
+                updateProgress(20, 'Updating penetration test requirements...');
+                
+                // Get all requirements for demo org
+                const { data: requirements, error } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        id,
+                        requirement:requirements_library (
+                            title,
+                            description
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                const penTestRequirements = requirements.filter(req => {
+                    const title = req.requirement?.title || '';
+                    const desc = req.requirement?.description || '';
+                    const content = (title + ' ' + desc).toLowerCase();
+                    
+                    return content.includes('penetration') || 
+                           content.includes('pen test') || 
+                           content.includes('pentest') ||
+                           content.includes('vulnerability assessment') ||
+                           content.includes('ethical hacking');
+                });
+
+                if (penTestRequirements.length > 0) {
+                    const { error: updateError } = await supabase
+                        .from('organization_requirements')
+                        .update({ 
+                            status: 'not-applicable',
+                            notes: 'Demo: Not applicable - penetration testing handled by external security firm',
+                            responsible_party: 'External Security Vendor'
+                        })
+                        .in('id', penTestRequirements.map(r => r.id));
+
+                    if (updateError) throw updateError;
+                    
+                    addResult('Penetration Test Requirements', 
+                        `Updated ${penTestRequirements.length} penetration test requirements to 'Not Applicable'`, 
+                        'success');
+                } else {
+                    addResult('Penetration Test Requirements', 'No penetration test requirements found', 'warning');
+                }
+                
+                return penTestRequirements.length;
+            } catch (error) {
+                addResult('Penetration Test Update Error', error, 'error');
+                return 0;
+            }
+        }
+
+        async function updateRequirementsWithTagsAndInclusions() {
+            try {
+                updateProgress(40, 'Loading requirements and applying tags...');
+                
+                // Get all requirements for demo org
+                const { data: requirements, error } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        id,
+                        requirement:requirements_library (
+                            title,
+                            description,
+                            category
+                        )
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                let updateCount = 0;
+                const batchSize = 10;
+                
+                for (let i = 0; i < requirements.length; i += batchSize) {
+                    const batch = requirements.slice(i, i + batchSize);
+                    
+                    for (const req of batch) {
+                        const tags = autoTagRequirement(
+                            req.requirement?.title || '',
+                            req.requirement?.description || '',
+                            req.requirement?.category || ''
+                        );
+                        
+                        const controlInclusions = getRandomControlInclusion();
+                        
+                        const { error: updateError } = await supabase
+                            .from('organization_requirements')
+                            .update({
+                                tags: tags,
+                                control_inclusions: controlInclusions
+                            })
+                            .eq('id', req.id);
+
+                        if (updateError) {
+                            console.warn('Update error for requirement:', req.id, updateError);
+                        } else {
+                            updateCount++;
+                        }
+                    }
+                    
+                    // Update progress
+                    const progress = 40 + ((i + batchSize) / requirements.length) * 40;
+                    updateProgress(progress, `Updated ${updateCount}/${requirements.length} requirements...`);
+                    
+                    // Small delay to prevent overwhelming the API
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                addResult('Requirements Tags & Inclusions', 
+                    `Successfully updated ${updateCount}/${requirements.length} requirements with tags and control inclusions`, 
+                    updateCount > 0 ? 'success' : 'warning');
+                
+                return updateCount;
+            } catch (error) {
+                addResult('Requirements Update Error', error, 'error');
+                return 0;
+            }
+        }
+
+        async function updateStatusDistribution() {
+            try {
+                updateProgress(80, 'Updating status distribution...');
+                
+                const { data: requirements, error } = await supabase
+                    .from('organization_requirements')
+                    .select('id, status')
+                    .eq('organization_id', demoOrgId)
+                    .neq('status', 'not-applicable'); // Don't change not-applicable ones
+
+                if (error) throw error;
+
+                const shuffled = requirements.sort(() => Math.random() - 0.5);
+                const total = shuffled.length;
+                
+                // Target distribution: 67% fulfilled, 20% partial, 13% not-fulfilled/not-started
+                const fulfilledCount = Math.floor(total * 0.67);
+                const partialCount = Math.floor(total * 0.20);
+                const notFulfilledCount = Math.floor(total * 0.10);
+                // Remaining will be not-started
+                
+                let updateCount = 0;
+                
+                // Update fulfilled
+                for (let i = 0; i < fulfilledCount && i < shuffled.length; i++) {
+                    const { error } = await supabase
+                        .from('organization_requirements')
+                        .update({ 
+                            status: 'fulfilled',
+                            fulfillment_percentage: 100,
+                            evidence: 'Demo: Implementation completed and verified',
+                            notes: 'Demo: Fully implemented and operational'
+                        })
+                        .eq('id', shuffled[i].id);
+                    
+                    if (!error) updateCount++;
+                }
+                
+                // Update partially fulfilled
+                for (let i = fulfilledCount; i < fulfilledCount + partialCount && i < shuffled.length; i++) {
+                    const { error } = await supabase
+                        .from('organization_requirements')
+                        .update({ 
+                            status: 'partially-fulfilled',
+                            fulfillment_percentage: 50 + Math.floor(Math.random() * 40), // 50-89%
+                            evidence: 'Demo: Partially implemented, work in progress',
+                            notes: 'Demo: Implementation in progress, target completion Q2'
+                        })
+                        .eq('id', shuffled[i].id);
+                    
+                    if (!error) updateCount++;
+                }
+                
+                // Update not fulfilled
+                for (let i = fulfilledCount + partialCount; i < fulfilledCount + partialCount + notFulfilledCount && i < shuffled.length; i++) {
+                    const { error } = await supabase
+                        .from('organization_requirements')
+                        .update({ 
+                            status: 'not-fulfilled',
+                            fulfillment_percentage: Math.floor(Math.random() * 30), // 0-29%
+                            evidence: 'Demo: Gap identified, action plan created',
+                            notes: 'Demo: Requires additional resources and planning'
+                        })
+                        .eq('id', shuffled[i].id);
+                    
+                    if (!error) updateCount++;
+                }
+                
+                // Remaining become not-started
+                for (let i = fulfilledCount + partialCount + notFulfilledCount; i < shuffled.length; i++) {
+                    const { error } = await supabase
+                        .from('organization_requirements')
+                        .update({ 
+                            status: 'not-started',
+                            fulfillment_percentage: 0,
+                            evidence: null,
+                            notes: 'Demo: Planned for next compliance cycle'
+                        })
+                        .eq('id', shuffled[i].id);
+                    
+                    if (!error) updateCount++;
+                }
+                
+                addResult('Status Distribution', `Updated status for ${updateCount} requirements`, 'success');
+                return updateCount;
+            } catch (error) {
+                addResult('Status Update Error', error, 'error');
+                return 0;
+            }
+        }
+
+        async function testCurrentState() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                // Test requirements with tags
+                const { data: taggedReqs, error: tagError } = await supabase
+                    .from('organization_requirements')
+                    .select('id, tags, control_inclusions, status')
+                    .eq('organization_id', demoOrgId)
+                    .not('tags', 'is', null)
+                    .limit(5);
+
+                if (!tagError) {
+                    addResult('Requirements with Tags', {
+                        count: taggedReqs?.length || 0,
+                        samples: taggedReqs?.slice(0, 3)
+                    }, taggedReqs?.length > 0 ? 'success' : 'warning');
+                }
+
+                // Test status distribution
+                const { data: allReqs, error: statusError } = await supabase
+                    .from('organization_requirements')
+                    .select('status')
+                    .eq('organization_id', demoOrgId);
+
+                if (!statusError) {
+                    const distribution = {};
+                    allReqs?.forEach(req => {
+                        distribution[req.status] = (distribution[req.status] || 0) + 1;
+                    });
+                    
+                    addResult('Status Distribution', distribution, 'info');
+                }
+
+                // Test penetration test requirements
+                const { data: penReqs, error: penError } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        status,
+                        requirement:requirements_library (title)
+                    `)
+                    .eq('organization_id', demoOrgId)
+                    .eq('status', 'not-applicable');
+
+                if (!penError) {
+                    addResult('Not Applicable Requirements', {
+                        count: penReqs?.length || 0,
+                        samples: penReqs?.slice(0, 3).map(r => r.requirement?.title)
+                    }, 'info');
+                }
+
+            } catch (error) {
+                addResult('Test Error', error, 'error');
+            }
+        }
+
+        async function runCompleteSetup() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            updateProgress(0, 'Starting setup...');
+            
+            try {
+                // Step 1: Create default tags
+                updateProgress(10, 'Creating default tags...');
+                await createDefaultTags();
+                
+                // Step 2: Update penetration test requirements
+                const penTestCount = await updatePenetrationTestRequirements();
+                
+                // Step 3: Update requirements with tags and inclusions
+                const taggedCount = await updateRequirementsWithTagsAndInclusions();
+                
+                // Step 4: Update status distribution
+                const statusCount = await updateStatusDistribution();
+                
+                updateProgress(100, 'Setup complete!');
+                
+                addResult('Setup Complete!', 
+                    `✅ Demo account configured successfully!\n` +
+                    `- ${penTestCount} penetration test requirements set as not applicable\n` +
+                    `- ${taggedCount} requirements tagged and categorized\n` +
+                    `- ${statusCount} requirements with updated status distribution`, 
+                    'success');
+                
+                // Test the results
+                setTimeout(testCurrentState, 2000);
+                
+            } catch (error) {
+                addResult('Setup Failed', error, 'error');
+                updateProgress(0, 'Setup failed');
+            }
+        }
+
+        // Auto-run test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testCurrentState, 1000);
+        });
+    </script>
+</body>
+</html>

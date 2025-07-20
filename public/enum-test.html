@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Database Enum Values</title>
+</head>
+<body>
+  <h1>Database Enum Test</h1>
+  <button onclick="testEnumValues()">Test Enum Values</button>
+  <div id="output" style="margin-top: 20px; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px; max-height: 400px; overflow-y: auto;"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    
+    const supabaseUrl = 'https://niqtlyirrjjsowlihfey.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcXRseWlycmpqc293bGloZmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2Nzc5MDQsImV4cCI6MjA0OTI1MzkwNH0.ux_tWYFCOepfvHAE9ZQh5pNrqMfaeBgFq8vZcjwbD0E';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    function log(message) {
+      const output = document.getElementById('output');
+      output.textContent += new Date().toLocaleTimeString() + ' - ' + message + '\n';
+      output.scrollTop = output.scrollHeight;
+      console.log(message);
+    }
+    
+    window.testEnumValues = async function() {
+      try {
+        log('🔍 Testing enum values...');
+        
+        // Test each enum value individually
+        const testValues = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
+        
+        for (const status of testValues) {
+          try {
+            log(`Testing: "${status}"`);
+            
+            // Try to query existing records with this status
+            const { data, error } = await supabase
+              .from('organization_requirements')
+              .select('id, status')
+              .eq('status', status)
+              .limit(1);
+              
+            if (error) {
+              log(`❌ Error with "${status}": ${error.message}`);
+            } else {
+              log(`✅ "${status}" - Found ${data.length} records`);
+            }
+          } catch (err) {
+            log(`❌ Exception with "${status}": ${err.message}`);
+          }
+        }
+        
+        // Test creating a test record with each status
+        log('\n🧪 Testing inserts...');
+        const DEMO_ORG_ID = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+        
+        // Get a sample requirement to test with
+        const { data: sampleReq } = await supabase
+          .from('organization_requirements')
+          .select('id, requirement_id')
+          .eq('organization_id', DEMO_ORG_ID)
+          .limit(1);
+          
+        if (sampleReq && sampleReq.length > 0) {
+          const testReqId = sampleReq[0].id;
+          
+          for (const status of testValues) {
+            try {
+              log(`Testing insert: "${status}"`);
+              
+              const { error } = await supabase
+                .from('organization_requirements')
+                .update({
+                  status: status,
+                  notes: `Test ${status}`,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', testReqId);
+                
+              if (error) {
+                log(`❌ Insert error with "${status}": ${error.message}`);
+                log(`Error code: ${error.code}`);
+              } else {
+                log(`✅ Insert success with "${status}"`);
+              }
+            } catch (err) {
+              log(`❌ Insert exception with "${status}": ${err.message}`);
+            }
+          }
+        } else {
+          log('❌ No sample requirement found for testing');
+        }
+        
+      } catch (error) {
+        log('❌ General error: ' + error.message);
+      }
+    };
+  </script>
+</body>
+</html>

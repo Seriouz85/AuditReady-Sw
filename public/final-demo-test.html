@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Demo Account Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .test-card { 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            background: white;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .info { background-color: #e2e3e5; border-color: #d6d8db; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 11px; }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin: 5px;
+            font-size: 12px;
+        }
+        button:hover { background: #0056b3; }
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .metric {
+            display: inline-block;
+            margin: 0 15px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .tag-display {
+            display: inline-block;
+            background: #e3f2fd;
+            border: 1px solid #1976d2;
+            color: #1976d2;
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-fulfilled { background: #d4edda; color: #155724; }
+        .status-partial { background: #fff3cd; color: #856404; }
+        .status-not-fulfilled { background: #f8d7da; color: #721c24; }
+        .status-not-applicable { background: #e2e3e5; color: #383d41; }
+        .status-not-started { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="summary">
+        <h1>🎯 Final Demo Account Test Suite</h1>
+        <p>Comprehensive validation of all demo account features and data</p>
+        <div id="summary-metrics">
+            <div class="metric">
+                <span class="metric-value">-</span>
+                <span class="metric-label">Standards</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value">-</span>
+                <span class="metric-label">Requirements</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value">-</span>
+                <span class="metric-label">Compliance %</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value">-</span>
+                <span class="metric-label">Tagged</span>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="runAllTests()">🧪 Run All Tests</button>
+    <button onclick="updateDemoData()">🔄 Update Demo Data</button>
+    <button onclick="clearResults()">🗑️ Clear Results</button>
+
+    <div class="test-grid" id="testResults"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://rztpjfevkqfxbonzqlzd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6dHBqZmV2a3FmeGJvbnpxbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4OTI2NjEsImV4cCI6MjA1MTQ2ODY2MX0.jG5RMIpYy6K-Z4wqCo-_7oOQKgKWU0VnKPe3g_3wl8M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const demoOrgId = '34adc4bb-d1e7-43bd-8249-89c76520533d';
+
+        function addTestResult(title, data, type = 'info') {
+            const container = document.getElementById('testResults');
+            const card = document.createElement('div');
+            card.className = `test-card ${type}`;
+            
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            let content = `<h3>${icons[type]} ${title}</h3>`;
+            
+            if (typeof data === 'string') {
+                content += `<p>${data}</p>`;
+            } else if (data && typeof data === 'object') {
+                content += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            }
+            
+            card.innerHTML = content;
+            container.appendChild(card);
+        }
+
+        function updateSummary(standards, requirements, compliance, tagged) {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics[0].textContent = standards || '-';
+            metrics[1].textContent = requirements || '-';
+            metrics[2].textContent = compliance ? `${compliance}%` : '-';
+            metrics[3].textContent = tagged || '-';
+        }
+
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+            updateSummary();
+        }
+
+        async function testStandards() {
+            try {
+                const { data, error } = await supabase
+                    .from('organization_standards')
+                    .select(`
+                        *,
+                        standard:standards_library (id, name, type)
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                const applicable = data?.filter(s => s.is_applicable).length || 0;
+                const total = data?.length || 0;
+
+                addTestResult('Standards Configuration', {
+                    total_standards: total,
+                    applicable_standards: applicable,
+                    not_applicable: total - applicable,
+                    sample_standards: data?.slice(0, 3).map(s => ({
+                        name: s.standard?.name,
+                        type: s.standard?.type,
+                        applicable: s.is_applicable
+                    }))
+                }, total > 0 ? 'success' : 'error');
+
+                return { total, applicable };
+            } catch (error) {
+                addTestResult('Standards Test Error', error, 'error');
+                return { total: 0, applicable: 0 };
+            }
+        }
+
+        async function testRequirements() {
+            try {
+                const { data, error } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        id, status, tags, control_inclusions,
+                        requirement:requirements_library (title)
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                const statusCounts = {};
+                let taggedCount = 0;
+                let inclusionCount = 0;
+
+                data?.forEach(req => {
+                    statusCounts[req.status] = (statusCounts[req.status] || 0) + 1;
+                    if (req.tags && req.tags.length > 0) taggedCount++;
+                    if (req.control_inclusions && req.control_inclusions.length > 0) inclusionCount++;
+                });
+
+                const total = data?.length || 0;
+                const applicableReqs = total - (statusCounts['not-applicable'] || 0);
+                const fulfilled = statusCounts['fulfilled'] || 0;
+                const partial = statusCounts['partially-fulfilled'] || 0;
+                const compliance = applicableReqs > 0 ? Math.round(((fulfilled + partial * 0.5) / applicableReqs) * 100) : 0;
+
+                addTestResult('Requirements Analysis', {
+                    total_requirements: total,
+                    status_distribution: statusCounts,
+                    compliance_score: compliance + '%',
+                    tagged_requirements: taggedCount,
+                    with_inclusions: inclusionCount,
+                    percentages: {
+                        tagged: Math.round((taggedCount / total) * 100) + '%',
+                        with_inclusions: Math.round((inclusionCount / total) * 100) + '%'
+                    }
+                }, total > 0 ? 'success' : 'error');
+
+                return { total, compliance, taggedCount };
+            } catch (error) {
+                addTestResult('Requirements Test Error', error, 'error');
+                return { total: 0, compliance: 0, taggedCount: 0 };
+            }
+        }
+
+        async function testTags() {
+            try {
+                const [tagsResponse, reqsWithTagsResponse] = await Promise.all([
+                    supabase.from('tags').select('*').order('name'),
+                    supabase
+                        .from('organization_requirements')
+                        .select('id, tags')
+                        .eq('organization_id', demoOrgId)
+                        .not('tags', 'is', null)
+                        .limit(5)
+                ]);
+
+                if (tagsResponse.error) throw tagsResponse.error;
+                if (reqsWithTagsResponse.error) throw reqsWithTagsResponse.error;
+
+                const tags = tagsResponse.data || [];
+                const reqsWithTags = reqsWithTagsResponse.data || [];
+
+                addTestResult('Tags System', {
+                    available_tags: tags.length,
+                    sample_tags: tags.slice(0, 5).map(t => ({ name: t.name, color: t.color, category: t.category })),
+                    requirements_with_tags: reqsWithTags.length,
+                    sample_tagged_reqs: reqsWithTags.map(r => ({ id: r.id, tag_count: r.tags?.length || 0 }))
+                }, tags.length > 0 ? 'success' : 'warning');
+
+                return tags.length;
+            } catch (error) {
+                addTestResult('Tags Test Error', error, 'error');
+                return 0;
+            }
+        }
+
+        async function testPenetrationRequirements() {
+            try {
+                const { data, error } = await supabase
+                    .from('organization_requirements')
+                    .select(`
+                        id, status, notes,
+                        requirement:requirements_library (title, description)
+                    `)
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                const penTestReqs = data?.filter(req => {
+                    const title = req.requirement?.title || '';
+                    const desc = req.requirement?.description || '';
+                    const content = (title + ' ' + desc).toLowerCase();
+                    return content.includes('penetration') || content.includes('pen test') || content.includes('pentest');
+                }) || [];
+
+                const notApplicable = penTestReqs.filter(req => req.status === 'not-applicable');
+
+                addTestResult('Penetration Test Requirements', {
+                    total_pen_test_reqs: penTestReqs.length,
+                    set_as_not_applicable: notApplicable.length,
+                    samples: penTestReqs.slice(0, 3).map(req => ({
+                        title: req.requirement?.title?.substring(0, 50) + '...',
+                        status: req.status
+                    }))
+                }, notApplicable.length > 0 ? 'success' : 'warning');
+
+                return notApplicable.length;
+            } catch (error) {
+                addTestResult('Penetration Test Error', error, 'error');
+                return 0;
+            }
+        }
+
+        async function testControlInclusions() {
+            try {
+                const { data, error } = await supabase
+                    .from('organization_requirements')
+                    .select('id, control_inclusions')
+                    .eq('organization_id', demoOrgId)
+                    .not('control_inclusions', 'is', null);
+
+                if (error) throw error;
+
+                const inclusionStats = { REG: 0, CON: 0, BP: 0, RC: 0 };
+                data?.forEach(req => {
+                    req.control_inclusions?.forEach(inc => {
+                        if (inclusionStats.hasOwnProperty(inc)) {
+                            inclusionStats[inc]++;
+                        }
+                    });
+                });
+
+                addTestResult('Control Inclusion Legends', {
+                    requirements_with_inclusions: data?.length || 0,
+                    distribution: inclusionStats,
+                    total_inclusions: Object.values(inclusionStats).reduce((a, b) => a + b, 0)
+                }, data?.length > 0 ? 'success' : 'warning');
+
+                return data?.length || 0;
+            } catch (error) {
+                addTestResult('Control Inclusions Test Error', error, 'error');
+                return 0;
+            }
+        }
+
+        async function testComplianceDistribution() {
+            try {
+                const { data, error } = await supabase
+                    .from('organization_requirements')
+                    .select('status, fulfillment_percentage')
+                    .eq('organization_id', demoOrgId);
+
+                if (error) throw error;
+
+                const distribution = {};
+                data?.forEach(req => {
+                    distribution[req.status] = (distribution[req.status] || 0) + 1;
+                });
+
+                const total = data?.length || 0;
+                const percentages = {};
+                Object.keys(distribution).forEach(status => {
+                    percentages[status] = ((distribution[status] / total) * 100).toFixed(1) + '%';
+                });
+
+                addTestResult('Compliance Distribution', {
+                    total_requirements: total,
+                    status_counts: distribution,
+                    percentages: percentages
+                }, 'success');
+
+                return distribution;
+            } catch (error) {
+                addTestResult('Compliance Distribution Error', error, 'error');
+                return {};
+            }
+        }
+
+        async function runAllTests() {
+            clearResults();
+            
+            try {
+                addTestResult('Test Suite Started', 'Running comprehensive demo account validation...', 'info');
+
+                const [
+                    standardsResult,
+                    requirementsResult,
+                    tagsCount,
+                    penTestCount,
+                    inclusionsCount,
+                    complianceDistribution
+                ] = await Promise.all([
+                    testStandards(),
+                    testRequirements(),
+                    testTags(),
+                    testPenetrationRequirements(),
+                    testControlInclusions(),
+                    testComplianceDistribution()
+                ]);
+
+                updateSummary(
+                    standardsResult.total,
+                    requirementsResult.total,
+                    requirementsResult.compliance,
+                    requirementsResult.taggedCount
+                );
+
+                // Final summary
+                const score = calculateOverallScore({
+                    standards: standardsResult.total > 0,
+                    requirements: requirementsResult.total > 0,
+                    tags: tagsCount > 0,
+                    penTest: penTestCount > 0,
+                    inclusions: inclusionsCount > 0,
+                    distribution: Object.keys(complianceDistribution).length > 0
+                });
+
+                addTestResult('Overall Demo Readiness', {
+                    score: score + '%',
+                    standards_configured: standardsResult.total > 0 ? '✅' : '❌',
+                    requirements_loaded: requirementsResult.total > 0 ? '✅' : '❌',
+                    tags_applied: tagsCount > 0 ? '✅' : '❌',
+                    pen_tests_configured: penTestCount > 0 ? '✅' : '❌',
+                    inclusions_assigned: inclusionsCount > 0 ? '✅' : '❌',
+                    realistic_distribution: Object.keys(complianceDistribution).length > 0 ? '✅' : '❌'
+                }, score >= 80 ? 'success' : score >= 60 ? 'warning' : 'error');
+
+            } catch (error) {
+                addTestResult('Test Suite Error', error, 'error');
+            }
+        }
+
+        function calculateOverallScore(checks) {
+            const weights = {
+                standards: 20,
+                requirements: 25,
+                tags: 20,
+                penTest: 10,
+                inclusions: 15,
+                distribution: 10
+            };
+
+            let score = 0;
+            Object.keys(checks).forEach(key => {
+                if (checks[key]) score += weights[key] || 0;
+            });
+
+            return score;
+        }
+
+        async function updateDemoData() {
+            addTestResult('Demo Data Update', 'Opening setup tool...', 'info');
+            window.open('demo-requirements-setup.html', '_blank');
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>
