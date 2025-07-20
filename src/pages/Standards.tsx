@@ -8,10 +8,13 @@ import { Standard, StandardType } from "@/types";
 import { Plus, Search, Filter, ClipboardCheck, Library } from "lucide-react";
 import { toast } from "@/utils/toast";
 import { CreateStandardForm } from "@/components/standards/CreateStandardForm";
-import { useRequirements } from "@/hooks/useRequirements";
+import { RemoveStandardDialog } from "@/components/standards/RemoveStandardDialog";
+// Removed old useRequirements hook - using database service instead
 import SoAPreview from '@/components/soa/SoAPreview';
 import { useStandardsService, StandardWithRequirements } from "@/services/standards/StandardsService";
 import { useAuth } from "@/contexts/AuthContext";
+import { PDFExportService } from "@/services/export/PDFExportService";
+import { useRequirementsService } from "@/services/requirements/RequirementsService";
 import {
   Dialog,
   DialogContent,
@@ -24,25 +27,31 @@ import {
 // Standards are now loaded from database only
 
 const Standards = () => {
-  const { requirements: requirementsData, loading: requirementsLoading } = useRequirements();
-  const { isDemo } = useAuth();
+  const { isDemo, organization } = useAuth();
   const standardsService = useStandardsService();
+  const requirementsService = useRequirementsService();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [activeTab] = useState("all");
   const [localStandards, setLocalStandards] = useState<StandardWithRequirements[]>([]);
   const [availableStandards, setAvailableStandards] = useState<Standard[]>([]);
+  const [requirementsData, setRequirementsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [isSOADialogOpen, setIsSOADialogOpen] = useState(false);
   const [isLibraryDialogOpen, setIsLibraryDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [selectedLibraryStandards, setSelectedLibraryStandards] = useState<Record<string, boolean>>({});
+  const [standardToRemove, setStandardToRemove] = useState<StandardWithRequirements | null>(null);
+  const [exportingStandards, setExportingStandards] = useState<Set<string>>(new Set());
   const soaRef = useRef(null);
 
-  // Load standards data on component mount
+  // Load standards and requirements data on component mount
   useEffect(() => {
     loadStandardsData();
+    loadRequirementsData();
   }, []);
 
   const loadStandardsData = async () => {
@@ -62,6 +71,21 @@ const Standards = () => {
       toast.error('Failed to load standards');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadRequirementsData = async () => {
+    try {
+      setRequirementsLoading(true);
+      
+      // Load all requirements for all standards
+      const requirements = await requirementsService.getRequirements();
+      setRequirementsData(requirements);
+    } catch (error) {
+      console.error('Error loading requirements:', error);
+      toast.error('Failed to load requirements data');
+    } finally {
+      setRequirementsLoading(false);
     }
   };
 
@@ -90,27 +114,22 @@ const Standards = () => {
     }
   };
 
-  const handleRemoveStandard = async (standardId: string) => {
-    // Show confirmation dialog with proper warning
-    const confirmed = window.confirm(
-      "⚠️ Are you sure you want to remove this standard?\n\n" +
-      "This action will permanently delete:\n" +
-      "• All current settings and configurations\n" +
-      "• All requirement fulfillment levels and progress\n" +
-      "• All notes and custom data\n" +
-      "• All assessment history related to this standard\n\n" +
-      "This action cannot be undone!"
-    );
-
-    if (!confirmed) {
-      return; // User cancelled
+  const handleRemoveStandard = (standardId: string) => {
+    const standard = localStandards.find(std => std.id === standardId);
+    if (standard) {
+      setStandardToRemove(standard);
+      setIsRemoveDialogOpen(true);
     }
+  };
+
+  const confirmRemoveStandard = async () => {
+    if (!standardToRemove) return;
 
     try {
-      const result = await standardsService.removeStandard(standardId);
+      const result = await standardsService.removeStandard(standardToRemove.id);
       if (result.success) {
         // Update local state
-        setLocalStandards(prev => prev.filter(std => std.id !== standardId));
+        setLocalStandards(prev => prev.filter(std => std.id !== standardToRemove.id));
         toast.success("Standard removed successfully");
       } else {
         toast.error(result.error || 'Failed to remove standard');
@@ -118,6 +137,9 @@ const Standards = () => {
     } catch (error) {
       console.error('Error removing standard:', error);
       toast.error('Failed to remove standard');
+    } finally {
+      setIsRemoveDialogOpen(false);
+      setStandardToRemove(null);
     }
   };
 
@@ -131,8 +153,46 @@ const Standards = () => {
     return matchesSearch && matchesType && matchesTab;
   });
 
-  const exportStandard = (id: string) => {
-    toast.success(`Standard ${id} exported successfully`);
+  const exportStandard = async (standardId: string) => {
+    try {
+      // Add to exporting set
+      setExportingStandards(prev => new Set([...prev, standardId]));
+
+      // Find the standard
+      const standard = localStandards.find(std => std.id === standardId);
+      if (!standard) {
+        toast.error('Standard not found');
+        return;
+      }
+
+      // Get requirements for this standard
+      const requirements = await requirementsService.getRequirements(standardId);
+      const standardRequirements = requirements;
+
+      if (standardRequirements.length === 0) {
+        toast.error('No requirements found for this standard');
+        return;
+      }
+
+      // Export to PDF
+      await PDFExportService.exportStandardToPDF(
+        standard,
+        standardRequirements,
+        organization?.name
+      );
+
+      toast.success(`${standard.name} exported successfully`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export standard');
+    } finally {
+      // Remove from exporting set
+      setExportingStandards(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(standardId);
+        return newSet;
+      });
+    }
   };
 
   const handleAddStandards = async (newStandards: Standard[]) => {
@@ -177,25 +237,31 @@ const Standards = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Modern Header Section with Gradient Background */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white">
+      <div className="bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 text-white">
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div className="space-y-2">
               <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
                 Standards & Regulations
               </h1>
-              <p className="text-blue-100 text-lg max-w-2xl">
+              <p className="text-slate-200 dark:text-slate-300 text-lg max-w-2xl">
                 Manage your compliance framework with enterprise-grade standards and automated requirement tracking.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-              <Dialog open={isSOADialogOpen} onOpenChange={setIsSOADialogOpen}>
+              <Dialog open={isSOADialogOpen} onOpenChange={(open) => {
+                setIsSOADialogOpen(open);
+                if (open) {
+                  // Reload requirements data when SoA dialog opens
+                  loadRequirementsData();
+                }
+              }}>
                 <DialogTrigger asChild>
                   <Button 
                     variant="secondary" 
-                    className="w-full lg:w-auto bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm transition-all duration-200"
+                    className="w-full lg:w-auto bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm transition-all duration-200"
                   >
                     <ClipboardCheck className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">Statement of Applicability</span>
@@ -217,14 +283,19 @@ const Standards = () => {
                 />
               </div>
               <div className="border-t pt-3 pb-2 flex justify-end gap-2">
-                <SoAPreview.ActionButtons soaRef={soaRef} onClose={() => setIsSOADialogOpen(false)} />
+                <SoAPreview.ActionButtons 
+                  soaRef={soaRef} 
+                  onClose={() => setIsSOADialogOpen(false)}
+                  standards={localStandards}
+                  requirements={requirementsData}
+                />
               </div>
             </DialogContent>
           </Dialog>
           
               <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full lg:w-auto bg-white hover:bg-gray-50 text-blue-700 shadow-lg transition-all duration-200">
+                  <Button className="w-full lg:w-auto bg-white hover:bg-gray-50 text-slate-700 shadow-lg transition-all duration-200">
                     <Library className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">Add from Library</span>
                     <span className="sm:hidden">Library</span>
@@ -261,7 +332,7 @@ const Standards = () => {
 
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full lg:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200">
+                  <Button className="w-full lg:w-auto bg-slate-800 hover:bg-slate-900 text-white shadow-lg transition-all duration-200">
                     <Plus className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">Create Standard</span>
                     <span className="sm:hidden">Create</span>
@@ -284,13 +355,13 @@ const Standards = () => {
 
       {/* Modern Search and Filter Section */}
       <div className="container mx-auto px-6 -mt-6 relative z-10">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-6">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-slate-400" />
               <Input
                 placeholder="Search standards and frameworks..."
-                className="pl-12 h-12 text-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+                className="pl-12 h-12 text-lg border-gray-200 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500 rounded-xl dark:bg-slate-700 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -300,8 +371,8 @@ const Standards = () => {
                 value={filterType}
                 onValueChange={(value) => setFilterType(value as string)}
               >
-                <SelectTrigger className="h-12 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-blue-500">
-                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
+                <SelectTrigger className="h-12 rounded-xl border-gray-200 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500 dark:bg-slate-700 dark:text-white">
+                  <Filter className="h-4 w-4 mr-2 text-gray-500 dark:text-slate-400" />
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -321,41 +392,41 @@ const Standards = () => {
       <div className="container mx-auto px-6 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200">
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 border border-slate-200 dark:border-slate-600">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Total Standards</p>
-                <p className="text-3xl font-bold text-blue-900">{filteredStandards.length}</p>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Standards</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{filteredStandards.length}</p>
               </div>
-              <div className="h-12 w-12 bg-blue-500 rounded-full flex items-center justify-center">
+              <div className="h-12 w-12 bg-slate-500 dark:bg-slate-600 rounded-full flex items-center justify-center">
                 <Library className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-6 border border-green-200">
+          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-700/50">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Applicable</p>
-                <p className="text-3xl font-bold text-green-900">
+                <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Applicable</p>
+                <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">
                   {filteredStandards.filter(s => s.isApplicable).length}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-green-500 rounded-full flex items-center justify-center">
+              <div className="h-12 w-12 bg-emerald-500 dark:bg-emerald-600 rounded-full flex items-center justify-center">
                 <ClipboardCheck className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-6 border border-purple-200">
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 border border-slate-200 dark:border-slate-600">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Requirements</p>
-                <p className="text-3xl font-bold text-purple-900">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Requirements</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">
                   {filteredStandards.reduce((sum, std) => sum + getRequirementCount(std.id), 0)}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-purple-500 rounded-full flex items-center justify-center">
+              <div className="h-12 w-12 bg-slate-500 dark:bg-slate-600 rounded-full flex items-center justify-center">
                 <Plus className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -366,8 +437,8 @@ const Standards = () => {
         {filteredStandards.length > 0 ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Your Standards</h2>
-              <p className="text-gray-600">{filteredStandards.length} standard{filteredStandards.length !== 1 ? 's' : ''} found</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your Standards</h2>
+              <p className="text-gray-600 dark:text-slate-400">{filteredStandards.length} standard{filteredStandards.length !== 1 ? 's' : ''} found</p>
             </div>
             
             <div className="grid gap-6">
@@ -380,6 +451,7 @@ const Standards = () => {
                     isApplicable={standard.isApplicable}
                     onApplicabilityChange={(isApplicable) => handleApplicabilityChange(standard.id, isApplicable)}
                     onRemove={() => handleRemoveStandard(standard.id)}
+                    isExporting={exportingStandards.has(standard.id)}
                   />
                 </div>
               ))}
@@ -389,11 +461,11 @@ const Standards = () => {
           <div className="text-center py-16">
             <div className="max-w-md mx-auto">
               <div className="mb-6">
-                <div className="h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-12 w-12 text-gray-400" />
+                <div className="h-24 w-24 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-12 w-12 text-gray-400 dark:text-slate-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No standards found</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No standards found</h3>
+                <p className="text-gray-600 dark:text-slate-400">
                   Adjust your search criteria or add a new standard to get started.
                 </p>
               </div>
@@ -411,6 +483,14 @@ const Standards = () => {
           </div>
         )}
       </div>
+
+      {/* Remove Standard Confirmation Dialog */}
+      <RemoveStandardDialog
+        open={isRemoveDialogOpen}
+        onOpenChange={setIsRemoveDialogOpen}
+        standardName={standardToRemove?.name || ""}
+        onConfirm={confirmRemoveStandard}
+      />
     </div>
   );
 };

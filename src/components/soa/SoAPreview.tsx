@@ -2,7 +2,8 @@ import React, { useRef, forwardRef } from 'react';
 import { Standard } from '@/types';
 import { Requirement } from '@/types';
 import { useReactToPrint } from 'react-to-print';
-import { generatePDF } from '@/utils/pdfUtils';
+import { SoAPDFExportService } from '@/services/export/SoAPDFExportService';
+import { toast } from '@/utils/toast';
 
 // Example props, adjust as needed
 const legendDefs = [
@@ -35,8 +36,8 @@ function formatStatus(status: string) {
 }
 
 interface SoAPreviewProps {
-  standards: Standard[];
-  requirements: Requirement[];
+  standards: any[]; // Allow both Standard and StandardWithRequirements
+  requirements: any[]; // Allow both Requirement and RequirementWithStatus
 }
 
 const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, requirements }, ref) => {
@@ -46,10 +47,64 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
   const notes = '';
   const date = new Date().toLocaleString();
 
-  // Filter requirements for selected standards
-  const relevantRequirements = requirements.filter((req: Requirement) =>
-    standards.some((std: Standard) => std.id.toLowerCase() === req.standardId.toLowerCase())
-  );
+  // Filter and sort applicable standards in the same order as standards list
+  const applicableStandards = standards
+    .filter((std: any) => std.isApplicable)
+    .sort((a: any, b: any) => {
+      // Keep the same order as in the standards list
+      const aIndex = standards.findIndex(s => s.id === a.id);
+      const bIndex = standards.findIndex(s => s.id === b.id);
+      return aIndex - bIndex;
+    });
+  
+  const relevantRequirements = requirements.filter((req: any) => {
+    // Robust matching - check both exact match and case-insensitive
+    return applicableStandards.some((std: any) => {
+      const stdId = std.id?.toString().toLowerCase();
+      const reqStdId = req.standardId?.toString().toLowerCase();
+      return stdId === reqStdId;
+    });
+  });
+
+  // Sort requirements numerically by code within each standard, then by standard order
+  const sortedRequirements = relevantRequirements.sort((a: any, b: any) => {
+    // First, sort by standard order (same order as applicable standards)
+    const aStandardIndex = applicableStandards.findIndex((std: any) => 
+      std.id?.toString().toLowerCase() === a.standardId?.toString().toLowerCase()
+    );
+    const bStandardIndex = applicableStandards.findIndex((std: any) => 
+      std.id?.toString().toLowerCase() === b.standardId?.toString().toLowerCase()
+    );
+    
+    if (aStandardIndex !== bStandardIndex) {
+      return aStandardIndex - bStandardIndex;
+    }
+    
+    // Within the same standard, sort numerically by requirement code
+    const aCode = String(a.code || '');
+    const bCode = String(b.code || '');
+    
+    // Extract numbers from codes for proper numerical sorting
+    const aMatch = aCode.match(/(\d+(?:\.\d+)*)/);
+    const bMatch = bCode.match(/(\d+(?:\.\d+)*)/);
+    
+    if (aMatch && bMatch) {
+      const aParts = aMatch[1].split('.').map(Number);
+      const bParts = bMatch[1].split('.').map(Number);
+      
+      // Compare each part numerically
+      for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i] || 0;
+        const bPart = bParts[i] || 0;
+        if (aPart !== bPart) {
+          return aPart - bPart;
+        }
+      }
+    }
+    
+    // Fallback to string comparison
+    return aCode.localeCompare(bCode);
+  });
 
   // Helper: is ISO 27001
   const isISO27001 = (standardId: string) =>
@@ -84,7 +139,7 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
           </div>
         </div>
         <div className="overflow-x-auto">
-          {relevantRequirements.length === 0 ? (
+          {sortedRequirements.length === 0 ? (
             <div className="text-center text-muted-foreground py-8 dark:text-gray-400">
               <p>No requirements found for the selected standards.</p>
               <p className="text-xs mt-2">Check that your requirements are linked to the correct standards and that standards are marked as applicable.</p>
@@ -108,13 +163,20 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
                 </tr>
               </thead>
               <tbody>
-                {relevantRequirements.map((req: Requirement) => {
-                  const std = standards.find((s: Standard) => s.id.toLowerCase() === req.standardId.toLowerCase());
+                {sortedRequirements.map((req: any, index: number) => {
+                  const std = standards.find((s: any) => s.id?.toString().toLowerCase() === req.standardId?.toString().toLowerCase());
                   const regChecked = isISO27001(req.standardId) ? true : (req as any).legendReg;
                   // Clause: use code if present, else section, else '-'
                   const clause = req.code || req.section || '-';
+                  
+                  // Check if this is the first requirement of a new standard
+                  const isFirstOfStandard = index === 0 || 
+                    req.standardId?.toString().toLowerCase() !== sortedRequirements[index - 1]?.standardId?.toString().toLowerCase();
+                  
                   return (
-                    <tr key={req.id} className="even:bg-gray-50 dark:even:bg-slate-800">
+                    <tr key={req.id} className={`even:bg-gray-50 dark:even:bg-slate-800 ${
+                      isFirstOfStandard && index > 0 ? 'border-t-2 border-blue-200 dark:border-blue-700' : ''
+                    }`}>
                       <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{std?.name}</td>
                       <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{clause}</td>
                       <td className="border px-2 py-1 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">{req.name}</td>
@@ -139,14 +201,28 @@ const SoAPreview = forwardRef<HTMLDivElement, SoAPreviewProps>(({ standards, req
 interface ActionButtonsProps {
   soaRef: React.RefObject<HTMLDivElement>;
   onClose: () => void;
+  standards?: any[];
+  requirements?: any[];
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ soaRef, onClose }) => {
-  const handlePrint = () => {
-    generatePDF(
-      soaRef,
-      `SoA_${getCompanyName().replace(/\s+/g, '_')}`
-    );
+const ActionButtons: React.FC<ActionButtonsProps> = ({ soaRef, onClose, standards = [], requirements = [] }) => {
+  const handlePrint = async () => {
+    try {
+      toast.info('Generating SoA PDF...');
+      await SoAPDFExportService.exportSoAToPDF({
+        standards,
+        requirements,
+        organizationName: getCompanyName(),
+        exportDate: new Date().toLocaleDateString(),
+        version: '1.0',
+        preparedBy: 'Compliance Team',
+        notes: ''
+      });
+      toast.success('SoA PDF exported successfully!');
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      toast.error('Failed to export SoA PDF');
+    }
   };
   return (
     <>

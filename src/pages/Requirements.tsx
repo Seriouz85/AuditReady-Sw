@@ -449,12 +449,65 @@ const Requirements = () => {
           const aPriority = priorityOrder[aValue as keyof typeof priorityOrder] ?? 0;
           const bPriority = priorityOrder[bValue as keyof typeof priorityOrder] ?? 0;
           comparison = aPriority - bPriority;
+        } else if (sortConfig.key === 'code') {
+          // Numerical sorting for requirement codes
+          const aCode = String(aValue);
+          const bCode = String(bValue);
+          
+          // Extract numbers from codes for proper numerical sorting
+          const aMatch = aCode.match(/(\d+(?:\.\d+)*)/);
+          const bMatch = bCode.match(/(\d+(?:\.\d+)*)/);
+          
+          if (aMatch && bMatch) {
+            const aParts = aMatch[1].split('.').map(Number);
+            const bParts = bMatch[1].split('.').map(Number);
+            
+            // Compare each part numerically
+            for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+              const aPart = aParts[i] || 0;
+              const bPart = bParts[i] || 0;
+              if (aPart !== bPart) {
+                comparison = aPart - bPart;
+                break;
+              }
+            }
+          } else {
+            // Fallback to string comparison
+            comparison = aCode.localeCompare(bCode);
+          }
         } else {
           // String comparison (case insensitive)
           comparison = String(aValue).toLowerCase().localeCompare(String(bValue).toLowerCase());
         }
         
         return sortConfig.direction === 'asc' ? comparison : -comparison;
+      });
+    } else if (standardFilter !== "all") {
+      // Default to numerical order by code when viewing a specific standard
+      result = result.slice().sort((a, b) => {
+        const aCode = String(a.code);
+        const bCode = String(b.code);
+        
+        // Extract numbers from codes for proper numerical sorting
+        const aMatch = aCode.match(/(\d+(?:\.\d+)*)/);
+        const bMatch = bCode.match(/(\d+(?:\.\d+)*)/);
+        
+        if (aMatch && bMatch) {
+          const aParts = aMatch[1].split('.').map(Number);
+          const bParts = bMatch[1].split('.').map(Number);
+          
+          // Compare each part numerically
+          for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+            const aPart = aParts[i] || 0;
+            const bPart = bParts[i] || 0;
+            if (aPart !== bPart) {
+              return aPart - bPart;
+            }
+          }
+        }
+        
+        // Fallback to string comparison
+        return aCode.localeCompare(bCode);
       });
     }
 
