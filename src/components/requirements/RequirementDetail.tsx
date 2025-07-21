@@ -80,6 +80,11 @@ export function RequirementDetail({
       setGuidance(req.guidance);
     }
   }, [req.id, req.guidance]);
+
+  // Effect to update categories state when requirement prop changes
+  useEffect(() => {
+    setCategories(req.categories || []);
+  }, [req.id, req.categories]);
   
 
 
@@ -231,12 +236,27 @@ export function RequirementDetail({
             <div className="text-xs font-medium text-muted-foreground mb-1">
               {requirement.section} | {requirement.code}
             </div>
-            <CardTitle>{t(`requirement.${requirement.id}.name`, requirement.name)}</CardTitle>
+            <CardTitle>{requirement.name}</CardTitle>
             <CardDescription>
-              {requirement.standardId === 'cis-ig2' && 'CIS Controls IG2 - v8.1'}
-              {requirement.standardId === 'cis-ig1' && 'CIS Controls IG1 - v8.1'}
-              {requirement.standardId === 'cis-ig3' && 'CIS Controls IG3 - v8.1'}
-              {requirement.standardId !== 'cis-ig2' && requirement.standardId !== 'cis-ig1' && requirement.standardId !== 'cis-ig3' && t(`standard.${requirement.standardId}.name`, requirement.standardId)}
+              {(() => {
+                // Map UUIDs to standard names
+                const standardNames: Record<string, string> = {
+                  '55742f4e-769b-4efe-912c-1371de5e1cd6': 'ISO/IEC 27001 (2022)',
+                  'f4e13e2b-1bcc-4865-913f-084fb5599a00': 'NIS2 Directive (2022)',
+                  '73869227-cd63-47db-9981-c0d633a3d47b': 'GDPR (2018)',
+                  '8508cfb0-3457-4226-b39a-851be52ef7ea': 'ISO/IEC 27002 (2022)',
+                  'afe9728d-2084-4b6b-8653-b04e1e92cdff': 'CIS Controls IG1 (8.1.2)',
+                  '05501cbc-c463-4668-ae84-9acb1a4d5332': 'CIS Controls IG2 (8.1.2)',
+                  '8ed562f0-915c-40ad-851e-27f6bddaa54e': 'NIS2 Directive (2022)',
+                  'b1d9e82f-b0c3-40e2-89d7-4c51e216214e': 'NIST Cybersecurity Framework (1.1)',
+                  // Legacy string IDs for backward compatibility
+                  'cis-ig1': 'CIS Controls IG1 - v8.1',
+                  'cis-ig2': 'CIS Controls IG2 - v8.1',
+                  'cis-ig3': 'CIS Controls IG3 - v8.1'
+                };
+                
+                return standardNames[requirement.standardId] || t(`standard.${requirement.standardId}.name`, 'Unknown Standard');
+              })()}
             </CardDescription>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -400,51 +420,28 @@ export function RequirementDetail({
         {/* Triple Tag System - Three Column Layout */}
         <div className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Tags (organizational tags) */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Tags size={16} className="text-muted-foreground" />
-                <span className="text-sm font-medium">Tags</span>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info size={14} className="text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Organizational tags for categorizing and filtering requirements</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <TagSelector
-                selectedTags={tags}
-                onChange={handleTagsChange}
-                className="min-h-[40px]"
-              />
-            </div>
-
             {/* Categories (21 compliance categories) */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Flag size={16} className="text-muted-foreground" />
                 <span className="text-sm font-medium">Categories</span>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
                       <Info size={14} className="text-muted-foreground" />
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Select compliance framework categories that apply to this requirement</p>
+                    <TooltipContent className="max-w-sm p-3 bg-white dark:bg-slate-800 border shadow-lg" side="top" align="start" sideOffset={5}>
+                      <p className="text-sm text-gray-900 dark:text-gray-100">Select compliance framework categories that apply to this requirement</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <UnifiedCategorySelector
-                selectedCategories={categories}
+              <TagSelector
+                selectedTags={categories}
                 onChange={handleCategoriesChange}
                 className="min-h-[40px]"
               />
             </div>
+
 
             {/* Applies To Tags */}
             <div className="space-y-2">
@@ -456,8 +453,8 @@ export function RequirementDetail({
                     <TooltipTrigger>
                       <Info size={14} className="text-muted-foreground" />
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Select what this requirement applies to (people, systems, data, etc.)</p>
+                    <TooltipContent className="max-w-sm p-3 bg-white dark:bg-slate-800 border shadow-lg" side="top" align="start" sideOffset={5}>
+                      <p className="text-sm text-gray-900 dark:text-gray-100">Select what this requirement applies to (people, systems, data, etc.)</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -536,14 +533,14 @@ export function RequirementDetail({
                 <TooltipTrigger asChild>
                   <span className="inline-flex items-center cursor-pointer text-blue-600"><Info size={16} /></span>
                 </TooltipTrigger>
-                <TooltipContent className="max-w-xs text-xs">
-                  <div className="mb-1 font-semibold">Legend Definitions:</div>
-                  <ul className="list-disc ml-4">
-                    <li><b>REG</b>: The control is related to a regulatory or certification requirement</li>
-                    <li><b>CON</b>: The control is required due to contractual obligations</li>
-                    <li><b>BP</b>: The control is needed according to best practices</li>
-                    <li><b>RC</b>: The control is needed to mitigate inherent risk to control objectives</li>
-                  </ul>
+                <TooltipContent className="max-w-sm p-3 text-xs" side="top" align="start">
+                  <div className="mb-2 font-semibold">Legend Definitions:</div>
+                  <div className="space-y-1">
+                    <div><span className="font-semibold">REG:</span> Regulatory or certification requirement</div>
+                    <div><span className="font-semibold">CON:</span> Required due to contractual obligations</div>
+                    <div><span className="font-semibold">BP:</span> Needed according to best practices</div>
+                    <div><span className="font-semibold">RC:</span> Needed to mitigate inherent risk</div>
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

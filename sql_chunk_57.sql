@@ -1,0 +1,15 @@
+-- Update 3.2: Establish and Maintain a Data Inventory...\nUPDATE requirements_library SET\n  title = 'Establish and Maintain a Data Inventory',\n  description = 'Establish and maintain a documented data inventory based on the enterprise''s data management process. Inventory data with a sensitivity of high or very high, or data subject to regulatory requirements. The inventory shall include location, volume, sensitivity, owner, custodian, cloud service provider used, and determine if the location is a new location for the enterprise.',\n  updated_at = NOW()\nWHERE id = '972af6dc-7c7d-4aa9-b61d-8bfcbbd23432';
+
+-- Update 8.7: Collect URL Request Audit Logs...\nUPDATE requirements_library SET\n  title = 'Collect URL Request Audit Logs',\n  description = 'Collect Uniform Resource Locator (URL) request logging. Logging systems need to be configured to collect URL requests from each of the enterprise''s web-facing applications.',\n  updated_at = NOW()\nWHERE id = 'cdeed812-baf6-4d1d-83ff-b60036c7e2d4';
+
+-- Update 8.8: Collect Command-Line Audit Logs...\nUPDATE requirements_library SET\n  title = 'Collect Command-Line Audit Logs',\n  description = 'Collect command-line audit logs. Example implementations include collecting audit logs from PowerShell®, BASH history, or Windows Command Prompt.',\n  updated_at = NOW()\nWHERE id = '7f48ef3f-f086-4985-93df-c8a2ceef10ff';
+
+-- Update 8.6: Collect DNS Query Audit Logs...\nUPDATE requirements_library SET\n  title = 'Collect DNS Query Audit Logs',\n  description = 'Enable Domain Name System (DNS) query logging to collect DNS queries sent by enterprise assets.',\n  updated_at = NOW()\nWHERE id = 'f21a581b-b073-441d-8600-b22b109ec78b';
+
+-- Update 3.7: Establish and Maintain a Data Classification Scheme...\nUPDATE requirements_library SET\n  title = 'Establish and Maintain a Data Classification Scheme',\n  description = 'Establish and maintain an enterprise data classification scheme that includes, at a minimum, sensitive data.',\n  updated_at = NOW()\nWHERE id = '29e2ff83-ab55-4f0c-a625-5337231e1ced';
+
+-- Update 3.8: Document Data Flows...\nUPDATE requirements_library SET\n  title = 'Document Data Flows',\n  description = 'Document data flows. Data flow documentation includes service provider data flows and should be based on the enterprise''s data inventory.',\n  updated_at = NOW()\nWHERE id = '678323d5-52a6-47e9-a125-42be1ec0af64';
+
+-- Update 3.9: Encrypt Data on Removable Media...\nUPDATE requirements_library SET\n  title = 'Encrypt Data on Removable Media',\n  description = 'Encrypt data on removable media.',\n  updated_at = NOW()\nWHERE id = '3a95f99b-7bea-4bba-a5c6-19fecf25a863';
+
+-- Update 3.13: Deploy a Data Loss Prevention Solution...\nUPDATE requirements_library SET\n  title = 'Deploy a Data Loss Prevention Solution',\n  description = 'Deploy an automated tool, such as a host-based Data Loss Prevention (DLP) tool to identify all sensitive data stored, processed, or transmitted through enterprise assets, including those located onsite or at a remote service provider.',\n  updated_at = NOW()\nWHERE id = '597682d6-43bf-4cb7-9ea8-f21b7dea3b71';

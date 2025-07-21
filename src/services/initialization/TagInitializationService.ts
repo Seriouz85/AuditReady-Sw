@@ -153,15 +153,37 @@ export class TagInitializationService {
     try {
       console.log('Applying unified category tagging to existing requirements...');
 
-      // Get requirements without tags
-      const { data: requirements, error } = await supabase
-        .from('organization_requirements')
-        .select(`
-          id,
-          requirement_id,
-          tags
-        `)
-        .eq('organization_id', organizationId);
+      // Get requirements without tags (gracefully handle missing categories column)
+      let requirements;
+      let error;
+      
+      // First try with categories column
+      try {
+        const result = await supabase
+          .from('organization_requirements')
+          .select(`
+            id,
+            requirement_id,
+            tags,
+            categories
+          `)
+          .eq('organization_id', organizationId);
+        requirements = result.data;
+        error = result.error;
+      } catch (categoriesError) {
+        // If categories column doesn't exist, fall back to tags only
+        console.log('Categories column not found, falling back to tags-only mode');
+        const result = await supabase
+          .from('organization_requirements')
+          .select(`
+            id,
+            requirement_id,
+            tags
+          `)
+          .eq('organization_id', organizationId);
+        requirements = result.data;
+        error = result.error;
+      }
 
       if (error) {
         console.error('Error fetching requirements for unified category tagging:', error);
@@ -180,10 +202,12 @@ export class TagInitializationService {
         const batch = requirements.slice(i, i + batchSize);
         
         for (const req of batch) {
-          const needsTagging = !req.tags || req.tags.length === 0;
+          // Check if already has tags (categories check is optional if column doesn't exist)
+          const hasCategories = req.categories !== undefined ? req.categories.length > 0 : false;
+          const needsTagging = (!req.tags || req.tags.length === 0) && !hasCategories;
           
           if (!needsTagging) {
-            continue; // Skip if already has tags
+            continue; // Skip if already has tags or categories
           }
 
           // Get unified category tags for this requirement
@@ -191,9 +215,17 @@ export class TagInitializationService {
           
           // Only update if we found tags
           if (unifiedCategoryTags.length > 0) {
+            // Try to update both tags and categories, fall back to tags only if categories column doesn't exist
+            let updateData: any = { tags: unifiedCategoryTags };
+            
+            // Only add categories if the column exists (req.categories !== undefined means column was selected)
+            if (req.categories !== undefined) {
+              updateData.categories = unifiedCategoryTags;
+            }
+            
             const { error: updateError } = await supabase
               .from('organization_requirements')
-              .update({ tags: unifiedCategoryTags })
+              .update(updateData)
               .eq('id', req.id);
 
             if (updateError) {
@@ -217,6 +249,57 @@ export class TagInitializationService {
       return updatedCount;
     } catch (error) {
       console.error('Unified category tagging failed:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Retroactively populate categories field from tags field for existing demo data
+   */
+  static async populateCategoriesFromTags(organizationId: string): Promise<number> {
+    try {
+      console.log('Populating categories field from existing tags...');
+      
+      // Get requirements that have tags but no categories
+      const { data: requirements, error } = await supabase
+        .from('organization_requirements')
+        .select('id, tags, categories')
+        .eq('organization_id', organizationId)
+        .not('tags', 'is', null)
+        .or('categories.is.null,categories.eq.{}');
+
+      if (error) {
+        console.error('Error fetching requirements for category population:', error);
+        return 0;
+      }
+
+      if (!requirements || requirements.length === 0) {
+        console.log('No requirements need category population');
+        return 0;
+      }
+
+      let updatedCount = 0;
+      
+      for (const req of requirements) {
+        if (req.tags && req.tags.length > 0 && (!req.categories || req.categories.length === 0)) {
+          const { error: updateError } = await supabase
+            .from('organization_requirements')
+            .update({ categories: req.tags })
+            .eq('id', req.id);
+
+          if (updateError) {
+            console.warn('Error updating categories for requirement:', req.id, updateError);
+          } else {
+            updatedCount++;
+            console.log(`Populated categories from tags for requirement ${req.id}:`, req.tags);
+          }
+        }
+      }
+
+      console.log(`Populated categories for ${updatedCount} requirements`);
+      return updatedCount;
+    } catch (error) {
+      console.error('Error populating categories from tags:', error);
       return 0;
     }
   }

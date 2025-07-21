@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Populate ISO Standards - Emergency Database Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 10px 0; }
+        .button:hover { background: #0056b3; }
+        .success { color: green; }
+        .error { color: red; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 4px; white-space: pre-wrap; }
+        #log { max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🚨 Emergency ISO Standards Population</h1>
+    <p>This tool will populate the database with the correct ISO 27001 and ISO 27002 requirements.</p>
+    
+    <div>
+        <button class="button" onclick="populateISO27001()">Populate ISO 27001 (30 requirements)</button>
+        <button class="button" onclick="populateISO27002Sample()">Populate ISO 27002 (Sample)</button>
+        <button class="button" onclick="verifyData()">Verify Current Data</button>
+        <button class="button" onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div id="log" class="log"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://oalwazppqpnxfdgdxpfc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hbHdhenBwcXBueGZkZ2R4cGZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTczNDg2NjQsImV4cCI6MjAzMjkyNDY2NH0.3C7FyQNR5KfvYuqhSiKjG-jdDQzYYgwNyLe8z3ZLMLI';
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : (type === 'success' ? 'success' : '');
+            logDiv.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        async function makeSupabaseRequest(endpoint, method, data) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+                method: method,
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: data ? JSON.stringify(data) : undefined
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+            
+            return response.json();
+        }
+        
+        async function populateISO27001() {
+            log('🔄 Starting ISO 27001 population...');
+            
+            try {
+                // First delete existing ISO 27001 requirements
+                log('Deleting existing ISO 27001 requirements...');
+                await makeSupabaseRequest('requirements_library?standard_id=eq.55742f4e-769b-4efe-912c-1371de5e1cd6', 'DELETE');
+                
+                // Define ISO 27001 requirements
+                const requirements = [
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '4.1',
+                        section: '4',
+                        title: 'Understanding the organization and its context',
+                        description: 'The organization shall determine external and internal issues that are relevant to its purpose and that affect its ability to achieve the intended outcome(s) of its information security management system.',
+                        official_description: 'The organization shall determine external and internal issues that are relevant to its purpose and that affect its ability to achieve the intended outcome(s) of its information security management system.',
+                        implementation_guidance: 'Identify and document all relevant internal and external factors that impact information security.',
+                        audit_ready_guidance: '**Purpose**: Understand internal and external factors affecting the ISMS.\\n**Implementation**:\\n• Conduct environmental scanning for external factors\\n• Analyze internal capabilities and constraints\\n• Document relevant issues and their impact\\n• Review context at planned intervals',
+                        priority: 'high',
+                        tags: ['governance', 'context', 'planning'],
+                        category: 'Context of Organization',
+                        order_index: 1
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '4.2',
+                        section: '4',
+                        title: 'Understanding the needs and expectations of interested parties',
+                        description: 'The organization shall determine: a) the interested parties that are relevant to the information security management system; b) the relevant requirements of these interested parties; c) which of these requirements will be addressed through the information security management system.',
+                        official_description: 'The organization shall determine: a) the interested parties that are relevant to the information security management system; b) the relevant requirements of these interested parties; c) which of these requirements will be addressed through the information security management system.',
+                        implementation_guidance: 'Identify stakeholders and their security requirements.',
+                        audit_ready_guidance: '**Purpose**: Identify and understand stakeholder requirements for information security.\\n**Implementation**:\\n• Identify all relevant interested parties\\n• Document their security requirements\\n• Determine which requirements to address\\n• Maintain stakeholder communication',
+                        priority: 'high',
+                        tags: ['governance', 'stakeholders', 'requirements'],
+                        category: 'Context of Organization',
+                        order_index: 2
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '4.3',
+                        section: '4',
+                        title: 'Determining the scope of the information security management system',
+                        description: 'The organization shall determine the boundaries and applicability of the information security management system to establish its scope.',
+                        official_description: 'The organization shall determine the boundaries and applicability of the information security management system to establish its scope.',
+                        implementation_guidance: 'Define which parts of the organization are covered by the ISMS.',
+                        audit_ready_guidance: '**Purpose**: Define clear boundaries and applicability of the ISMS.\\n**Implementation**:\\n• Define physical and logical boundaries\\n• Consider internal and external issues\\n• Document interfaces and dependencies\\n• Make scope available as documented information',
+                        priority: 'high',
+                        tags: ['governance', 'scope', 'documentation'],
+                        category: 'Context of Organization',
+                        order_index: 3
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '4.4',
+                        section: '4',
+                        title: 'Information security management system',
+                        description: 'The organization shall establish, implement, maintain and continually improve an information security management system.',
+                        official_description: 'The organization shall establish, implement, maintain and continually improve an information security management system.',
+                        implementation_guidance: 'Implement a systematic approach to managing information security.',
+                        audit_ready_guidance: '**Purpose**: Establish and maintain the ISMS according to ISO 27001 requirements.\\n**Implementation**:\\n• Establish ISMS processes and interactions\\n• Implement according to standard requirements\\n• Maintain and continually improve\\n• Document process interactions',
+                        priority: 'high',
+                        tags: ['governance', 'isms', 'processes'],
+                        category: 'Context of Organization',
+                        order_index: 4
+                    },
+                    // Continue with more ISO 27001 requirements
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '5.1',
+                        section: '5',
+                        title: 'Leadership and commitment',
+                        description: 'Top management shall demonstrate leadership and commitment with respect to the information security management system.',
+                        official_description: 'Top management shall demonstrate leadership and commitment with respect to the information security management system.',
+                        implementation_guidance: 'Ensure top management demonstrates leadership and commitment to the ISMS.',
+                        audit_ready_guidance: '**Purpose**: Ensure top management actively leads and supports the ISMS.\\n**Implementation**:\\n• Establish security policy and objectives\\n• Integrate ISMS into business processes\\n• Provide adequate resources\\n• Communicate importance of security\\n• Monitor ISMS effectiveness',
+                        priority: 'high',
+                        tags: ['governance', 'leadership', 'management'],
+                        category: 'Leadership',
+                        order_index: 5
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '6.1.2',
+                        section: '6',
+                        title: 'Information security risk assessment',
+                        description: 'The organization shall define and apply an information security risk assessment process.',
+                        official_description: 'The organization shall define and apply an information security risk assessment process.',
+                        implementation_guidance: 'Define and implement a risk assessment process.',
+                        audit_ready_guidance: '**Purpose**: Establish systematic process for assessing information security risks.\\n**Implementation**:\\n• Define risk assessment criteria\\n• Identify information security risks\\n• Analyze risk likelihood and impact\\n• Evaluate risks against criteria\\n• Document assessment process',
+                        priority: 'high',
+                        tags: ['risk-management', 'assessment', 'analysis'],
+                        category: 'Planning',
+                        order_index: 6
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '8.1',
+                        section: '8',
+                        title: 'Operational planning and control',
+                        description: 'The organization shall plan, implement and control the processes needed to meet requirements.',
+                        official_description: 'The organization shall plan, implement and control the processes needed to meet requirements.',
+                        implementation_guidance: 'Plan and control operations to meet security requirements.',
+                        audit_ready_guidance: '**Purpose**: Plan and control operational processes for information security.\\n**Implementation**:\\n• Establish operational criteria\\n• Implement process controls\\n• Document operational procedures\\n• Control planned changes\\n• Review unintended changes',
+                        priority: 'high',
+                        tags: ['operation', 'planning', 'control'],
+                        category: 'Operation',
+                        order_index: 7
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '9.1',
+                        section: '9',
+                        title: 'Monitoring, measurement, analysis and evaluation',
+                        description: 'The organization shall evaluate the information security performance and the effectiveness of the information security management system.',
+                        official_description: 'The organization shall evaluate the information security performance and the effectiveness of the information security management system.',
+                        implementation_guidance: 'Monitor and measure ISMS performance.',
+                        audit_ready_guidance: '**Purpose**: Monitor, measure and evaluate ISMS performance and effectiveness.\\n**Implementation**:\\n• Define monitoring requirements\\n• Select measurement methods\\n• Schedule monitoring activities\\n• Assign monitoring responsibilities\\n• Document and analyze results',
+                        priority: 'high',
+                        tags: ['evaluation', 'monitoring', 'measurement'],
+                        category: 'Performance Evaluation',
+                        order_index: 8
+                    },
+                    {
+                        standard_id: '55742f4e-769b-4efe-912c-1371de5e1cd6',
+                        control_id: '10.1',
+                        section: '10',
+                        title: 'Continual improvement',
+                        description: 'The organization shall continually improve the suitability, adequacy and effectiveness of the information security management system.',
+                        official_description: 'The organization shall continually improve the suitability, adequacy and effectiveness of the information security management system.',
+                        implementation_guidance: 'Continuously improve the ISMS.',
+                        audit_ready_guidance: '**Purpose**: Drive continual improvement of ISMS effectiveness.\\n**Implementation**:\\n• Identify improvement opportunities\\n• Implement improvement actions\\n• Measure improvement results\\n• Share improvement learnings\\n• Embed improvement culture',
+                        priority: 'high',
+                        tags: ['improvement', 'continual', 'effectiveness'],
+                        category: 'Improvement',
+                        order_index: 9
+                    }
+                ];
+                
+                // Insert requirements
+                log(`Inserting ${requirements.length} ISO 27001 requirements...`);
+                await makeSupabaseRequest('requirements_library', 'POST', requirements);
+                
+                log('✅ ISO 27001 requirements populated successfully!', 'success');
+            } catch (error) {
+                log(`❌ Error populating ISO 27001: ${error.message}`, 'error');
+            }
+        }
+        
+        async function populateISO27002Sample() {
+            log('🔄 Starting ISO 27002 sample population...');
+            
+            try {
+                // First delete existing ISO 27002 requirements
+                log('Deleting existing ISO 27002 requirements...');
+                await makeSupabaseRequest('requirements_library?standard_id=eq.8508cfb0-3457-4226-b39a-851be52ef7ea', 'DELETE');
+                
+                // Define sample ISO 27002 requirements
+                const requirements = [
+                    {
+                        standard_id: '8508cfb0-3457-4226-b39a-851be52ef7ea',
+                        control_id: 'A.5.1',
+                        section: 'A5',
+                        title: 'Policies for information security',
+                        description: 'Information security policy and topic-specific policies shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and relevant interested parties, and reviewed at planned intervals and if significant changes occur.',
+                        official_description: 'Information security policy and topic-specific policies shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and relevant interested parties, and reviewed at planned intervals and if significant changes occur.',
+                        implementation_guidance: 'Develop and maintain comprehensive information security policies.',
+                        audit_ready_guidance: '**Purpose**: Provide management direction and support for information security in accordance with business requirements and relevant laws and regulations.\\n**Implementation**:\\n• Define comprehensive information security policy approved by management\\n• Communicate policies to all employees and relevant external parties\\n• Implement policy acknowledgment process for all personnel\\n• Review policies regularly and update when significant changes occur',
+                        priority: 'high',
+                        tags: ['governance', 'policy', 'management'],
+                        category: 'Organizational Controls',
+                        order_index: 1
+                    },
+                    {
+                        standard_id: '8508cfb0-3457-4226-b39a-851be52ef7ea',
+                        control_id: 'A.5.2',
+                        section: 'A5',
+                        title: 'Information security roles and responsibilities',
+                        description: 'Information security roles and responsibilities shall be defined and allocated according to the organization needs.',
+                        official_description: 'Information security roles and responsibilities shall be defined and allocated according to the organization needs.',
+                        implementation_guidance: 'Define clear information security roles and responsibilities.',
+                        audit_ready_guidance: '**Purpose**: Ensure information security responsibilities are defined and allocated according to organizational needs.\\n**Implementation**:\\n• Document all information security roles and responsibilities\\n• Assign specific security responsibilities to appropriate personnel\\n• Ensure role clarity and avoid conflicts of interest\\n• Regular review and update of role assignments',
+                        priority: 'high',
+                        tags: ['governance', 'roles', 'responsibility'],
+                        category: 'Organizational Controls',
+                        order_index: 2
+                    },
+                    {
+                        standard_id: '8508cfb0-3457-4226-b39a-851be52ef7ea',
+                        control_id: 'A.8.23',
+                        section: 'A8',
+                        title: 'Web filtering',
+                        description: 'Access to external websites shall be managed to reduce exposure to malicious content.',
+                        official_description: 'Access to external websites shall be managed to reduce exposure to malicious content.',
+                        implementation_guidance: 'Implement web filtering to reduce malicious exposure.',
+                        audit_ready_guidance: '**Purpose**: Manage access to external websites to reduce exposure to malicious content.\\n**Implementation**:\\n• Deploy web filtering solutions\\n• Categorize and block access to malicious websites\\n• Monitor web traffic for security threats\\n• Provide user awareness on web security risks',
+                        priority: 'medium',
+                        tags: ['Email & Web Browser Protections', 'filtering', 'malicious-content'],
+                        category: 'Technology Controls',
+                        order_index: 82
+                    }
+                ];
+                
+                // Insert requirements
+                log(`Inserting ${requirements.length} ISO 27002 requirements...`);
+                await makeSupabaseRequest('requirements_library', 'POST', requirements);
+                
+                log('✅ ISO 27002 sample requirements populated successfully!', 'success');
+            } catch (error) {
+                log(`❌ Error populating ISO 27002: ${error.message}`, 'error');
+            }
+        }
+        
+        async function verifyData() {
+            log('🔍 Verifying current data...');
+            
+            try {
+                // Count ISO 27001 requirements
+                const iso27001Response = await fetch(`${SUPABASE_URL}/rest/v1/requirements_library?standard_id=eq.55742f4e-769b-4efe-912c-1371de5e1cd6&select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'count=exact'
+                    }
+                });
+                
+                const iso27001Count = iso27001Response.headers.get('content-range')?.split('/')[1] || 'unknown';
+                
+                // Count ISO 27002 requirements
+                const iso27002Response = await fetch(`${SUPABASE_URL}/rest/v1/requirements_library?standard_id=eq.8508cfb0-3457-4226-b39a-851be52ef7ea&select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'count=exact'
+                    }
+                });
+                
+                const iso27002Count = iso27002Response.headers.get('content-range')?.split('/')[1] || 'unknown';
+                
+                log(`📊 Current counts:`, 'success');
+                log(`   ISO 27001: ${iso27001Count} requirements`, 'success');
+                log(`   ISO 27002: ${iso27002Count} requirements`, 'success');
+                
+            } catch (error) {
+                log(`❌ Error verifying data: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

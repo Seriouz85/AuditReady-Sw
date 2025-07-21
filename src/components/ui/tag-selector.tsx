@@ -106,9 +106,71 @@ export function TagSelector({
     onChange(selectedTags.filter((id) => id !== categoryId));
   };
 
-  // Find category by id
+  // Find category by id or name (similar to RequirementTable logic)
   const getCategory = (categoryId: string): UnifiedCategory | undefined => {
-    return unifiedCategories.find((cat) => cat.id === categoryId);
+    // First try to find by ID
+    let category = unifiedCategories.find((cat) => cat.id === categoryId);
+    if (category) return category;
+    
+    // If not found by ID, try to find by name (for cases where categories are stored as names)
+    category = unifiedCategories.find((cat) => cat.name === categoryId);
+    if (category) return category;
+    
+    // Handle demo/mock data with category names directly (not IDs)
+    if (categoryId && !categoryId.startsWith('tag-') && !categoryId.match(/^\d+$/)) {
+      // Create a temporary category object for display
+      return {
+        id: categoryId,
+        name: categoryId,
+        sort_order: 0
+      };
+    }
+    
+    // Handle demo/mock data with old tag format
+    if (categoryId.startsWith('tag-')) {
+      const name = categoryId.replace('tag-', '').replace(/-/g, ' ');
+      const displayName = name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return {
+        id: categoryId,
+        name: displayName,
+        sort_order: 0
+      };
+    }
+    
+    return undefined;
+  };
+
+  // Generate consistent colors based on category name (matches RequirementTable logic)
+  const getCategoryColor = (categoryName: string): string => {
+    const colors = [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'bg-green-100 text-green-800 border-green-200', 
+      'bg-purple-100 text-purple-800 border-purple-200',
+      'bg-orange-100 text-orange-800 border-orange-200',
+      'bg-pink-100 text-pink-800 border-pink-200',
+      'bg-indigo-100 text-indigo-800 border-indigo-200',
+      'bg-teal-100 text-teal-800 border-teal-200',
+      'bg-red-100 text-red-800 border-red-200',
+      'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'bg-cyan-100 text-cyan-800 border-cyan-200',
+      'bg-emerald-100 text-emerald-800 border-emerald-200',
+      'bg-violet-100 text-violet-800 border-violet-200',
+      'bg-amber-100 text-amber-800 border-amber-200',
+      'bg-lime-100 text-lime-800 border-lime-200',
+      'bg-sky-100 text-sky-800 border-sky-200',
+      'bg-rose-100 text-rose-800 border-rose-200',
+      'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
+      'bg-slate-100 text-slate-800 border-slate-200',
+      'bg-stone-100 text-stone-800 border-stone-200',
+      'bg-zinc-100 text-zinc-800 border-zinc-200',
+      'bg-neutral-100 text-neutral-800 border-neutral-200'
+    ];
+    
+    let hash = 0;
+    for (let i = 0; i < categoryName.length; i++) {
+      hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
   };
 
   return (
@@ -130,8 +192,8 @@ export function TagSelector({
           return (
             <Badge
               key={category.id}
-              variant="secondary"
-              className="pr-1"
+              variant="outline"
+              className={`pr-1 text-xs border ${getCategoryColor(category.name)}`}
             >
               {category.name}
               <Button

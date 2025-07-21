@@ -179,6 +179,9 @@ export class RequirementsService {
           priority: (orgReq.requirement.priority || 'medium') as RequirementPriority,
           section: orgReq.requirement.category || 'General',
           tags: orgReq.tags || [],
+          // TEMPORARY FIX: Use tags as categories if categories column doesn't exist
+          categories: orgReq.categories || orgReq.tags || [],
+          appliesTo: orgReq.applies_to || [], // FIX: Add applies_to from database
           organizationStatus: orgReq.status,
           fulfillmentPercentage: orgReq.fulfillment_percentage || 0,
           evidence: orgReq.evidence,
@@ -186,6 +189,7 @@ export class RequirementsService {
           responsibleParty: orgReq.responsible_party,
           organizationTags: orgReq.tags || [],
           riskLevel: orgReq.risk_level,
+          guidance: orgReq.implementation_guidance || '', // FIX: Add guidance from database
           lastUpdated: orgReq.updated_at,
           createdAt: orgReq.created_at || new Date().toISOString(),
           updatedAt: orgReq.updated_at || new Date().toISOString(),

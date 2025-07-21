@@ -1,0 +1,1 @@
+-- ISO 27001 Requirements INSERT Statements\n-- Generated from July 19th backup\n\n

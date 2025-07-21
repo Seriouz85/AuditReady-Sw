@@ -290,6 +290,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log(`Applied unified category tagging to ${taggedCount} demo requirements`);
       }
 
+      // Populate categories field from existing tags for SaaS readiness (only if categories column exists)
+      try {
+        const categoriesPopulated = await TagInitializationService.populateCategoriesFromTags(demoOrg.id);
+        if (categoriesPopulated > 0) {
+          console.log(`Populated categories field for ${categoriesPopulated} demo requirements`);
+        }
+      } catch (categoriesError) {
+        console.log('Categories column not available, skipping category population');
+      }
+
       // Enhance demo data with realistic status distribution and business rules
       console.log('Enhancing demo data with realistic compliance status distribution...');
       await DemoDataEnhancementService.enhanceDemoData();

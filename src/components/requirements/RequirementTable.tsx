@@ -210,8 +210,8 @@ export function RequirementTable({
                 <TableCell>{req.name}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {/* Display unified categories first */}
-                    {req.categories && req.categories.length > 0 && (
+                    {/* Display categories with consistent color scheme */}
+                    {req.categories && req.categories.length > 0 ? (
                       req.categories.map((categoryId, index) => (
                         <Badge 
                           key={`cat-${index}`} 
@@ -221,27 +221,17 @@ export function RequirementTable({
                           {getCategoryName(categoryId)}
                         </Badge>
                       ))
-                    )}
-                    
-                    {/* Display requirement tags */}
-                    {req.tags && req.tags.length > 0 && (
+                    ) : req.tags && req.tags.length > 0 ? (
                       req.tags.map((tagId, index) => (
                         <Badge 
                           key={`tag-${index}`} 
                           variant="outline" 
-                          className="text-xs"
-                          style={{ 
-                            borderColor: getTagColor(tagId),
-                            color: getTagColor(tagId),
-                            backgroundColor: getTagColor(tagId) + '10'
-                          }}
+                          className={`text-xs border ${getCategoryColor(tagId, index)}`}
                         >
                           {getTagName(tagId)}
                         </Badge>
                       ))
-                    )}
-                    
-                    {(!req.categories || req.categories.length === 0) && (!req.tags || req.tags.length === 0) && (
+                    ) : (
                       <span className="text-muted-foreground text-xs">No categories</span>
                     )}
                   </div>

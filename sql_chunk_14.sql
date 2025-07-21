@@ -1,0 +1,15 @@
+-- Update 8.32: Change management...\nUPDATE requirements_library SET\n  title = 'Change management',\n  description = 'Changes to information processing facilities and information systems shall be subject to change management procedures.',\n  updated_at = NOW()\nWHERE id = '5bef6878-8fda-45ba-9f37-dbd8b26ec36e';
+
+-- Update 8.33: Test information...\nUPDATE requirements_library SET\n  title = 'Test information',\n  description = 'Test information shall be appropriately selected, protected and managed.',\n  updated_at = NOW()\nWHERE id = 'e876ee20-f48e-4efd-a5fd-c2e781a160f0';
+
+-- Update 8.34: Protection of information systems during audit testing...\nUPDATE requirements_library SET\n  title = 'Protection of information systems during audit testing',\n  description = 'Audit tests and other assurance activities involving assessment of operational systems shall be planned and agreed between the tester and appropriate management.',\n  updated_at = NOW()\nWHERE id = '7b5d656b-5a9f-4b09-8589-91f668a28983';
+
+-- Update 7.5: Perform Automated Vulnerability Scans of Internal Enterprise...\nUPDATE requirements_library SET\n  title = 'Perform Automated Vulnerability Scans of Internal Enterprise Assets',\n  description = 'Perform automated vulnerability scans of internal enterprise assets on a quarterly, or more frequent, basis. Conduct such scans from multiple vantage points.',\n  updated_at = NOW()\nWHERE id = 'dbe5996e-fc00-48e5-996e-672a4972d50a';
+
+-- Update 7.6: Perform Automated Vulnerability Scans of Externally-Exposed ...\nUPDATE requirements_library SET\n  title = 'Perform Automated Vulnerability Scans of Externally-Exposed Enterprise Assets',\n  description = 'Perform automated vulnerability scans of externally-exposed enterprise assets using either an internal or external scanning utility. Perform scans on a monthly, or more frequent, basis.',\n  updated_at = NOW()\nWHERE id = '2f920df9-11ea-4199-9e43-d632c2328039';
+
+-- Update 8.30: Outsourced development...\nUPDATE requirements_library SET\n  title = 'Outsourced development',\n  description = 'The organization shall direct, monitor and review the activities related to outsourced system development.',\n  updated_at = NOW()\nWHERE id = '775dae20-1409-4717-a176-bba4dd4bd352';
+
+-- Update 8.10: Retain Audit Logs...\nUPDATE requirements_library SET\n  title = 'Retain Audit Logs',\n  description = 'Retain audit logs across enterprise assets for a minimum of 90 days.',\n  updated_at = NOW()\nWHERE id = 'a062c997-b620-4847-8bc7-ba237f1aed15';
+
+-- Update 5.6: Centralize Account Management...\nUPDATE requirements_library SET\n  title = 'Centralize Account Management',\n  description = 'Centralize account management through a directory service.',\n  updated_at = NOW()\nWHERE id = 'daaa3827-af44-4611-8816-b3d4624b345f';

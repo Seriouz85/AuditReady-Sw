@@ -1,0 +1,15 @@
+-- Update 8.2: Collect Audit Logs...\nUPDATE requirements_library SET\n  title = 'Collect Audit Logs',\n  description = 'Collect audit logs from enterprise assets with a logging configuration in accordance with the audit log management process.',\n  updated_at = NOW()\nWHERE id = '2a73fcb5-4915-4e68-afb4-7bc292d1b012';
+
+-- Update 5.1: Establish and Maintain an Inventory of Accounts...\nUPDATE requirements_library SET\n  title = 'Establish and Maintain an Inventory of Accounts',\n  description = 'Establish and maintain an inventory of all accounts managed in the enterprise. The inventory shall include both user and administrator accounts. The inventory shall include the person or entity the account belongs to, the systems it applies to, and an active or inactive status. Review the inventory quarterly, or more frequently.',\n  updated_at = NOW()\nWHERE id = 'daf8c110-cbca-409b-9fc7-0d735b230d04';
+
+-- Update 5.2: Use Unique Passwords...\nUPDATE requirements_library SET\n  title = 'Use Unique Passwords',\n  description = 'Use unique passwords for all enterprise assets. Best practice implementation includes, at a minimum, an 8-character password for accounts using MFA and a 14-character password for accounts not using MFA.',\n  updated_at = NOW()\nWHERE id = 'ab9213e7-0bb5-4f48-b40f-b43f98c49c9a';
+
+-- Update 5.3: Disable Dormant Accounts...\nUPDATE requirements_library SET\n  title = 'Disable Dormant Accounts',\n  description = 'Delete or disable any dormant accounts after a period of 45 days of inactivity, where supported.',\n  updated_at = NOW()\nWHERE id = '8e3de9eb-3353-488d-98bd-e09539175823';
+
+-- Update 5.29: Information security during disruption...\nUPDATE requirements_library SET\n  title = 'Information security during disruption',\n  description = 'The organization shall plan how to maintain information security at an appropriate level during disruption.',\n  updated_at = NOW()\nWHERE id = '7232a431-3044-4dcf-924f-a69023a1fbbd';
+
+-- Update 5.10: Acceptable use of information and other associated assets...\nUPDATE requirements_library SET\n  title = 'Acceptable use of information and other associated assets',\n  description = 'Rules for the acceptable use and procedures for handling information and other associated assets shall be identified, documented and implemented.',\n  updated_at = NOW()\nWHERE id = '337c9e4e-3949-43c2-ac73-46bbd890dd9f';
+
+-- Update 5.11: Return or disposal of assets...\nUPDATE requirements_library SET\n  title = 'Return or disposal of assets',\n  description = 'Personnel and other users shall return all organizational assets in their possession upon termination of their employment, contract or agreement.',\n  updated_at = NOW()\nWHERE id = '10a9ee0b-9bb1-4894-bbcf-b7f24d77f6b1';
+
+-- Update 5.12: Classification of information...\nUPDATE requirements_library SET\n  title = 'Classification of information',\n  description = 'Information shall be classified according to the information security needs of the organization based on confidentiality, integrity, availability and relevant interested party requirements.',\n  updated_at = NOW()\nWHERE id = 'ddaed303-dc78-45ce-b427-a3f902ba7deb';

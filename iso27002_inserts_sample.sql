@@ -1,0 +1,1 @@
+-- ISO 27002 Requirements INSERT Statements (Sample)\n-- Generated from July 19th backup\n\n

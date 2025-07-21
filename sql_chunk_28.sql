@@ -1,0 +1,15 @@
+-- Update 14.8: Train Workforce on the Dangers of Connecting to and Transmit...\nUPDATE requirements_library SET\n  title = 'Train Workforce on the Dangers of Connecting to and Transmitting Enterprise Data Over Insecure Networks',\n  description = 'Train workforce members on the dangers of connecting to, and transmitting data over, insecure networks for enterprise activities. If the enterprise has remote workers, training must include guidance to ensure that all users securely configure their home network infrastructure.',\n  updated_at = NOW()\nWHERE id = '506639cb-d3a5-4bd5-a3fb-2df55867a290';
+
+-- Update 10.2: Configure Automatic Anti-Malware Signature Updates...\nUPDATE requirements_library SET\n  title = 'Configure Automatic Anti-Malware Signature Updates',\n  description = 'Configure automatic anti-malware signature updates on all enterprise assets.',\n  updated_at = NOW()\nWHERE id = 'cabf7b07-4a3c-440a-98a3-f1c4b9989312';
+
+-- Update 10.1: Deploy and Maintain Anti-Malware Software...\nUPDATE requirements_library SET\n  title = 'Deploy and Maintain Anti-Malware Software',\n  description = 'Deploy and maintain anti-malware software on all enterprise assets.',\n  updated_at = NOW()\nWHERE id = '4bbb5c71-61a7-48b8-8692-65318573bb36';
+
+-- Update 2.5: Allowlist Authorized Software...\nUPDATE requirements_library SET\n  title = 'Allowlist Authorized Software',\n  description = 'Use technical controls, such as application allowlisting, to ensure that only authorized software can execute or be accessed. Reassess bi-annually, or more frequently.',\n  updated_at = NOW()\nWHERE id = 'e4e04181-e2ca-429f-8d92-c009ff0a0fc0';
+
+-- Update 10.6: Centrally Manage Anti-Malware Software...\nUPDATE requirements_library SET\n  title = 'Centrally Manage Anti-Malware Software',\n  description = 'Use a centrally managed anti-malware software to continuously monitor and defend each of the enterprise''s workstations and servers.',\n  updated_at = NOW()\nWHERE id = 'c38e403e-e4ce-4b4f-88ff-cba210b6b94b';
+
+-- Update 10.7: Use Behavior-Based Anti-Malware Software...\nUPDATE requirements_library SET\n  title = 'Use Behavior-Based Anti-Malware Software',\n  description = 'Use behavior-based anti-malware software.',\n  updated_at = NOW()\nWHERE id = 'a19b7116-7c1d-49b0-808a-442c5636bf5f';
+
+-- Update 11.3: Protect Recovery Data...\nUPDATE requirements_library SET\n  title = 'Protect Recovery Data',\n  description = 'Protect recovery data with equivalent controls to the original data. Reference encryption or data separation examples include encryption or air-gapped systems.',\n  updated_at = NOW()\nWHERE id = '223c5cee-f5d9-4b01-89c6-458d372ea84c';
+
+-- Update 13.1: Centralize Security Event Alerting...\nUPDATE requirements_library SET\n  title = 'Centralize Security Event Alerting',\n  description = 'Centralize security event alerting across enterprise assets for log correlation and analysis. Best practice implementation requires the use of a Security Information and Event Management (SIEM) system.',\n  updated_at = NOW()\nWHERE id = 'eee5a303-0610-4cc4-bed8-6a5b33ed409e';
