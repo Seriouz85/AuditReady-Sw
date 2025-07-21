@@ -23,7 +23,8 @@ import {
   TrendingUp,
   Bell,
   Brain,
-  Plug
+  Plug,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -197,6 +198,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     { to: '/app/gap-analysis', icon: <TrendingUp size={20} />, label: 'Gap Analysis' },
     { to: '/app/compliance-monitoring', icon: <Bell size={20} />, label: 'Monitoring & ML Analytics' },
     { to: '/app/activities', icon: <Activity size={20} />, label: t('nav.activities', 'Activities') },
+    { to: '/app/backup-restore', icon: <RotateCcw size={20} />, label: 'Backup & Restore' },
     { to: '/app/applications', icon: <Laptop size={20} />, label: t('nav.applications') },
     { to: '/lms', icon: <GraduationCap size={20} />, label: 'Training' },
     { 

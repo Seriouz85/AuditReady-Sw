@@ -24,6 +24,7 @@ import OrganizationStructurePage from "@/pages/organizations/structure";
 import GapAnalysis from "@/pages/GapAnalysis";
 import ComplianceMonitoring from "@/pages/ComplianceMonitoring";
 import EnterpriseSSO from "@/pages/admin/EnterpriseSSO";
+import { BackupRestore } from "@/pages/BackupRestore";
 
 const Index = () => {
   return (
@@ -38,6 +39,7 @@ const Index = () => {
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/activities" element={<Activities />} />
+        <Route path="/backup-restore" element={<BackupRestore />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/organizations" element={<Organizations />} />
         <Route path="/organizations/chart" element={<OrgChart />} />
