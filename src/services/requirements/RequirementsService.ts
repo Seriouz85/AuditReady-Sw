@@ -106,7 +106,7 @@ export class RequirementsService {
                 category:unified_compliance_categories (
                   name,
                   description,
-                  color
+                  icon
                 )
               )
             )
@@ -186,7 +186,7 @@ export class RequirementsService {
         const unifiedCategoryTags = unifiedCategory ? [{
           id: `unified-category-${unifiedCategory.name}`,
           name: unifiedCategory.name,
-          color: unifiedCategory.color || '#3B82F6',
+          color: '#3B82F6', // Default color since database doesn't have color column
           description: unifiedCategory.description || `Unified compliance category: ${unifiedCategory.name}`,
           category: 'unified-category' as const,
           sort_order: 0
