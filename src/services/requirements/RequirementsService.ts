@@ -100,7 +100,16 @@ export class RequirementsService {
             category,
             priority,
             order_index,
-            audit_ready_guidance
+            audit_ready_guidance,
+            unified_mappings:unified_requirement_mappings (
+              unified_requirement:unified_requirements (
+                category:unified_compliance_categories (
+                  name,
+                  description,
+                  color
+                )
+              )
+            )
           )
         `)
         .eq('organization_id', organizationId);
@@ -169,6 +178,20 @@ export class RequirementsService {
           }
         }
 
+        // Get unified category from database mappings
+        const unifiedCategory = orgReq.requirement?.unified_mappings?.[0]?.unified_requirement?.category;
+        const unifiedCategoryName = unifiedCategory?.name || orgReq.requirement.category || 'General';
+        
+        // Create unified category tag object
+        const unifiedCategoryTags = unifiedCategory ? [{
+          id: `unified-category-${unifiedCategory.name}`,
+          name: unifiedCategory.name,
+          color: unifiedCategory.color || '#3B82F6',
+          description: unifiedCategory.description || `Unified compliance category: ${unifiedCategory.name}`,
+          category: 'unified-category' as const,
+          sort_order: 0
+        }] : [];
+
         return {
           id: orgReq.requirement.id,
           code: orgReq.requirement.control_id,
@@ -177,10 +200,10 @@ export class RequirementsService {
           standardId: orgReq.requirement.standard_id,
           status,
           priority: (orgReq.requirement.priority || 'medium') as RequirementPriority,
-          section: orgReq.requirement.category || 'General',
+          section: unifiedCategoryName, // Use unified category name
           tags: orgReq.tags || [],
-          // TEMPORARY FIX: Use tags as categories if categories column doesn't exist
-          categories: orgReq.categories || orgReq.tags || [],
+          // Use unified category tags if available, fallback to tags
+          categories: unifiedCategoryTags.length > 0 ? unifiedCategoryTags : (orgReq.tags || []),
           appliesTo: orgReq.applies_to || [], // FIX: Add applies_to from database
           organizationStatus: orgReq.status,
           fulfillmentPercentage: orgReq.fulfillment_percentage || 0,
