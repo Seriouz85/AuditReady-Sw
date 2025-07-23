@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit, Activity, User, FileText, AlertCircle, CheckCircle2, Clock3, Settings, Palette, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit, Activity, User, FileText, AlertCircle, CheckCircle2, Clock3, Settings, Palette, X, ChevronLeft, ChevronRight, Move, Sparkles } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
@@ -11,7 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { ModernDashboardCustomization } from "@/components/dashboard/ModernDashboardCustomization";
+import { ModernDashboardSidebar } from "@/components/dashboard/ModernDashboardSidebar";
+import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
 import { getTypographyClasses, getIconClasses, commonPatterns, spacingStandards } from "@/lib/ui-standards";
 
 const Dashboard = () => {
@@ -67,11 +68,20 @@ const Dashboard = () => {
   };
 
   // Handle adding new widget from customization panel
-  const handleAddWidget = (widget: any) => {
-    // Add widget to active widgets
-    if (!activeWidgets.includes(widget.id)) {
-      setActiveWidgets([...activeWidgets, widget.id]);
+  const handleAddWidget = (widgetId: string) => {
+    if (!activeWidgets.includes(widgetId)) {
+      setActiveWidgets([...activeWidgets, widgetId]);
     }
+  };
+
+  // Handle removing widget
+  const handleRemoveWidget = (widgetId: string) => {
+    setActiveWidgets(activeWidgets.filter(id => id !== widgetId));
+  };
+
+  // Handle toggling drag mode
+  const handleToggleDragMode = () => {
+    setIsDragMode(!isDragMode);
   };
 
   const containerVariants = {
@@ -138,7 +148,7 @@ const Dashboard = () => {
       {/* Main Dashboard Content */}
       <motion.div
         className={`pt-0 space-y-4 sm:space-y-6 pb-6 sm:pb-8 px-2 sm:px-0 transition-all duration-300 ${
-          isCustomizationOpen ? 'mr-96' : 'w-full'
+          isCustomizationOpen ? 'mr-[420px]' : 'w-full'
         }`}
         initial="hidden"
         animate="visible"
@@ -222,94 +232,43 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
+      {/* Dynamic Widget Grid */}
       <motion.div
         className={`${commonPatterns.statsGrid} w-full`}
         variants={itemVariants}
       >
-        <div 
-          onClick={() => !isDragMode && navigate("/app/standards")} 
-          className={isDragMode ? "cursor-move" : "cursor-pointer"}
-          draggable={isDragMode}
-          onDragStart={(e) => handleDragStart(e, 'total-standards')}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'total-standards')}
-          onDragEnd={handleDragEnd}
-        >
-          <StatsCard
-            title="Total Standards"
-            value={stats.totalStandards}
-            icon={<Shield size={16} />}
-            description="Active compliance standards"
-            className={`shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 ${
-              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
-            } ${draggedWidget === 'total-standards' ? 'opacity-50' : ''}`}
-            data-card="true"
-          />
-        </div>
-        <div 
-          onClick={() => !isDragMode && navigate("/app/requirements")} 
-          className={isDragMode ? "cursor-move" : "cursor-pointer"}
-          draggable={isDragMode}
-          onDragStart={(e) => handleDragStart(e, 'total-requirements')}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'total-requirements')}
-          onDragEnd={handleDragEnd}
-        >
-          <StatsCard
-            title="Total Requirements"
-            value={stats.totalRequirements}
-            icon={<BookOpen size={16} />}
-            description="Across all standards"
-            className={`shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 ${
-              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
-            } ${draggedWidget === 'total-requirements' ? 'opacity-50' : ''}`}
-            data-card="true"
-          />
-        </div>
-        <div 
-          onClick={() => !isDragMode && navigate("/app/assessments")} 
-          className={isDragMode ? "cursor-move" : "cursor-pointer"}
-          draggable={isDragMode}
-          onDragStart={(e) => handleDragStart(e, 'total-assessments')}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'total-assessments')}
-          onDragEnd={handleDragEnd}
-        >
-          <StatsCard
-            title="Total Assessments"
-            value={stats.totalAssessments}
-            icon={<CheckSquare size={16} />}
-            description="Ongoing and completed"
-            className={`shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 ${
-              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
-            } ${draggedWidget === 'total-assessments' ? 'opacity-50' : ''}`}
-            data-card="true"
-          />
-        </div>
-        <div 
-          onClick={() => !isDragMode && navigate("/app/compliance-monitoring")} 
-          className={isDragMode ? "cursor-move" : "cursor-pointer"}
-          draggable={isDragMode}
-          onDragStart={(e) => handleDragStart(e, 'compliance-score')}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'compliance-score')}
-          onDragEnd={handleDragEnd}
-        >
-          <StatsCard
-            title="Compliance Score"
-            value={`${stats.complianceScore}%`}
-            icon={<BarChart3 size={16} />}
-            trend={{
-              value: 5,
-              isPositive: true
+        {activeWidgets.map((widgetId) => (
+          <DashboardWidget
+            key={widgetId}
+            widgetId={widgetId}
+            isDragMode={isDragMode}
+            onRemove={handleRemoveWidget}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={() => {
+              // Navigate based on widget ID
+              if (!isDragMode) {
+                switch(widgetId) {
+                  case 'total-standards':
+                    navigate('/app/standards');
+                    break;
+                  case 'total-requirements':
+                    navigate('/app/requirements');
+                    break;
+                  case 'total-assessments':
+                    navigate('/app/assessments');
+                    break;
+                  case 'compliance-score':
+                    navigate('/app/compliance-monitoring');
+                    break;
+                  // Add more navigation cases as needed
+                }
+              }
             }}
-            description="Overall compliance rate"
-            className={`shadow-md hover:shadow-lg transition-all bg-gradient-to-br from-background to-blue-50 dark:from-gray-900 dark:to-blue-950/30 border border-border/70 hover:bg-muted/20 dark:hover:bg-slate-800/60 ${
-              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
-            } ${draggedWidget === 'compliance-score' ? 'opacity-50' : ''}`}
-            data-card="true"
           />
-        </div>
+        ))}
       </motion.div>
 
       <motion.div
@@ -384,75 +343,16 @@ const Dashboard = () => {
 
       </motion.div>
 
-      {/* Right Side Panel for Dashboard Customization */}
-      <AnimatePresence>
-        {isCustomizationOpen && (
-          <>
-            {/* Backdrop overlay */}
-            <motion.div
-              className="fixed inset-0 bg-black/20 z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsCustomizationOpen(false)}
-            />
-            
-            {/* Side Panel */}
-            <motion.div
-              className="fixed right-0 top-0 h-full w-96 bg-background border-l border-border shadow-xl z-50 overflow-hidden flex flex-col"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            >
-              {/* Panel Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
-                <div className="flex items-center gap-2">
-                  <Palette className={getIconClasses('sm')} />
-                  <h2 className={getTypographyClasses('card-title')}>Dashboard Customization</h2>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsCustomizationOpen(false)}
-                >
-                  <X className={getIconClasses('sm')} />
-                </Button>
-              </div>
-              
-              {/* Panel Content */}
-              <div className="flex-1 overflow-hidden">
-                <ModernDashboardCustomization
-                  organizationId={organization?.id || 'demo-org'} 
-                  onClose={() => setIsCustomizationOpen(false)}
-                  onAddWidget={handleAddWidget}
-                  activeWidgets={activeWidgets}
-                />
-              </div>
-              
-              {/* Panel Footer */}
-              <div className="p-4 border-t border-border bg-muted/30">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Dashboard Settings</span>
-                  <div className="flex items-center gap-1">
-                    {isDragMode ? (
-                      <>
-                        <Edit className="h-3 w-3" />
-                        <span>Drag mode active</span>
-                      </>
-                    ) : (
-                      <>
-                        <ChevronLeft className="h-3 w-3" />
-                        <span>Enable edit mode to drag</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Modern Dashboard Sidebar */}
+      <ModernDashboardSidebar
+        isOpen={isCustomizationOpen}
+        onClose={() => setIsCustomizationOpen(false)}
+        activeWidgets={activeWidgets}
+        onAddWidget={handleAddWidget}
+        onRemoveWidget={handleRemoveWidget}
+        onToggleDragMode={handleToggleDragMode}
+        isDragMode={isDragMode}
+      />
     </div>
   );
 };
