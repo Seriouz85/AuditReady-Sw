@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   FileText, Download, Eye, Lock, Unlock, Upload, History, 
   Share2, Search, Filter, MoreVertical, Calendar, User,
-  AlertCircle, CheckCircle, Clock, XCircle
+  AlertCircle, CheckCircle, Clock, XCircle, Shield, 
+  AlertTriangle, Scan, Tag, Timer
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,7 @@ import { DocumentWorkflowPanel } from './DocumentWorkflowPanel';
 import { useToast } from '@/hooks/use-toast';
 import { getAccessLevelLabels, getAccessLevelColor } from '@/utils/accessLevels';
 import { useAuth } from '@/contexts/AuthContext';
+import { azurePurviewService, ClassificationLabel, SensitiveDataDetection } from '@/services/classification/AzurePurviewService';
 
 interface DocumentLibraryProps {
   organizationId: string;
@@ -38,18 +40,25 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedClassification, setSelectedClassification] = useState<string>('all');
   const [selectedDocument, setSelectedDocument] = useState<DocumentMetadata | null>(null);
   const [showUploader, setShowUploader] = useState(false);
   const [showVersionViewer, setShowVersionViewer] = useState(false);
   const [showWorkflowPanel, setShowWorkflowPanel] = useState(false);
+  
+  // Classification-related state
+  const [classificationLabels, setClassificationLabels] = useState<ClassificationLabel[]>([]);
+  const [sensitiveDetections, setSensitiveDetections] = useState<Record<string, SensitiveDataDetection>>({});
+  const [classificationLoading, setClassificationLoading] = useState(false);
 
   useEffect(() => {
     loadDocuments();
+    loadClassificationData();
   }, [organizationId]);
 
   useEffect(() => {
     filterDocuments();
-  }, [documents, legacyDocuments, searchQuery, selectedCategory, selectedStatus]);
+  }, [documents, legacyDocuments, searchQuery, selectedCategory, selectedStatus, selectedClassification]);
 
   const loadDocuments = async () => {
     try {
@@ -78,6 +87,29 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
     }
   };
 
+  const loadClassificationData = async () => {
+    try {
+      setClassificationLoading(true);
+      
+      // Load classification labels
+      const labels = await azurePurviewService.syncClassificationLabels(organizationId);
+      setClassificationLabels(labels);
+      
+    } catch (error) {
+      console.error('Error loading classification data:', error);
+      // Don't show toast for classification errors in demo mode
+      if (!isDemo) {
+        toast({
+          title: 'Warning',
+          description: 'Failed to load data classification labels',
+          variant: 'destructive'
+        });
+      }
+    } finally {
+      setClassificationLoading(false);
+    }
+  };
+
   const filterDocuments = () => {
     // Filter enhanced documents
     let filtered = documents;
@@ -86,7 +118,8 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
       filtered = filtered.filter(doc =>
         doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         doc.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        doc.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (doc as any).classification_label?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -96,6 +129,14 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
 
     if (selectedStatus !== 'all') {
       filtered = filtered.filter(doc => doc.status === selectedStatus);
+    }
+
+    if (selectedClassification !== 'all') {
+      if (selectedClassification === 'unclassified') {
+        filtered = filtered.filter(doc => !(doc as any).classification_label);
+      } else {
+        filtered = filtered.filter(doc => (doc as any).classification_label === selectedClassification);
+      }
     }
 
     setFilteredDocuments(filtered);
@@ -224,6 +265,144 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
     }
   };
 
+  // Classification helper functions
+  const getClassificationLabel = (labelId: string): ClassificationLabel | undefined => {
+    return classificationLabels.find(label => label.id === labelId);
+  };
+
+  const getClassificationBadge = (labelId: string | undefined) => {
+    if (!labelId) {
+      return (
+        <Badge variant="outline" className="text-xs">
+          <AlertTriangle className="h-3 w-3 mr-1 text-orange-500" />
+          Unclassified
+        </Badge>
+      );
+    }
+
+    const label = getClassificationLabel(labelId);
+    if (!label) {
+      return (
+        <Badge variant="outline" className="text-xs">
+          {labelId}
+        </Badge>
+      );
+    }
+
+    const confidentialityColors = {
+      'public': 'bg-green-100 text-green-800 border-green-200',
+      'internal': 'bg-blue-100 text-blue-800 border-blue-200',
+      'confidential': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'restricted': 'bg-red-100 text-red-800 border-red-200',
+      'top_secret': 'bg-purple-100 text-purple-800 border-purple-200'
+    };
+
+    return (
+      <Badge 
+        className={`text-xs ${confidentialityColors[label.confidentialityLevel] || 'bg-gray-100 text-gray-800 border-gray-200'}`}
+        style={{ borderColor: label.color }}
+      >
+        <Shield className="h-3 w-3 mr-1" />
+        {label.displayName}
+      </Badge>
+    );
+  };
+
+  const getSensitivityIndicator = (sensitivityScore: number | undefined) => {
+    if (!sensitivityScore) {
+      return null;
+    }
+
+    if (sensitivityScore >= 0.8) {
+      return (
+        <div className="flex items-center space-x-1 text-xs text-red-600">
+          <AlertTriangle className="h-3 w-3" />
+          <span>High Sensitivity</span>
+        </div>
+      );
+    } else if (sensitivityScore >= 0.5) {
+      return (
+        <div className="flex items-center space-x-1 text-xs text-orange-600">
+          <AlertCircle className="h-3 w-3" />
+          <span>Medium Sensitivity</span>
+        </div>
+      );
+    } else if (sensitivityScore > 0) {
+      return (
+        <div className="flex items-center space-x-1 text-xs text-yellow-600">
+          <Clock className="h-3 w-3" />
+          <span>Low Sensitivity</span>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const getRetentionInfo = (retentionDate: string | undefined) => {
+    if (!retentionDate) return null;
+
+    const retention = new Date(retentionDate);
+    const now = new Date();
+    const isOverdue = retention < now;
+    const daysUntilRetention = Math.ceil((retention.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (isOverdue) {
+      return (
+        <div className="flex items-center space-x-1 text-xs text-red-600">
+          <Timer className="h-3 w-3" />
+          <span>Retention Overdue</span>
+        </div>
+      );
+    } else if (daysUntilRetention <= 30) {
+      return (
+        <div className="flex items-center space-x-1 text-xs text-orange-600">
+          <Timer className="h-3 w-3" />
+          <span>{daysUntilRetention} days to retention</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center space-x-1 text-xs text-gray-500">
+        <Timer className="h-3 w-3" />
+        <span>Retain until {retention.toLocaleDateString()}</span>
+      </div>
+    );
+  };
+
+  const handleClassifyDocument = async (document: DocumentMetadata) => {
+    try {
+      setClassificationLoading(true);
+      
+      // For demo purposes, simulate automatic classification
+      // In production, this would scan the actual document content
+      const mockContent = `Document: ${document.name}\nDescription: ${document.description || ''}\nTags: ${document.tags.join(', ')}`;
+      
+      const suggestedLabels = await azurePurviewService.applyAutomaticClassification(
+        organizationId,
+        document.name,
+        mockContent
+      );
+
+      if (suggestedLabels.length > 0) {
+        toast({
+          title: 'Classification Suggestion',
+          description: `Suggested classifications: ${suggestedLabels.join(', ')}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error classifying document:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to classify document',
+        variant: 'destructive'
+      });
+    } finally {
+      setClassificationLoading(false);
+    }
+  };
+
   const totalDocuments = documents.length + legacyDocuments.length;
   const totalSize = documents.reduce((sum, doc) => sum + doc.file_size, 0) + 
                    legacyDocuments.reduce((sum, doc) => sum + doc.size, 0);
@@ -267,7 +446,7 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
       {/* Search and Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="md:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -303,6 +482,27 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
                 {statuses.map(status => (
                   <SelectItem key={status} value={status}>
                     {status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedClassification} onValueChange={setSelectedClassification}>
+              <SelectTrigger>
+                <SelectValue placeholder="Classification" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Classifications</SelectItem>
+                <SelectItem value="unclassified">Unclassified</SelectItem>
+                {classificationLabels.map(label => (
+                  <SelectItem key={label.id} value={label.id}>
+                    <div className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: label.color }}
+                      />
+                      <span>{label.displayName}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -419,6 +619,10 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
                           </>
                         )}
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleClassifyDocument(document)}>
+                        <Scan className="h-4 w-4 mr-2" />
+                        Auto-Classify
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
                         setSelectedDocument(document);
                         setShowWorkflowPanel(true);
@@ -445,15 +649,30 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
                   </span>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <Badge className={getAccessLevelColor(document.access_level as any)}>
-                    {accessLevelLabels[document.access_level as keyof typeof accessLevelLabels] || document.access_level}
-                  </Badge>
+                {/* Classification Information */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    {getClassificationBadge((document as any).classification_label)}
+                    
+                    {document.is_locked && (
+                      <div className="flex items-center space-x-1 text-sm text-amber-600">
+                        <Lock className="h-3 w-3" />
+                        <span>Locked</span>
+                      </div>
+                    )}
+                  </div>
                   
-                  {document.is_locked && (
-                    <div className="flex items-center space-x-1 text-sm text-amber-600">
-                      <Lock className="h-3 w-3" />
-                      <span>Locked</span>
+                  <div className="flex items-center justify-between">
+                    <Badge className={getAccessLevelColor(document.access_level as any)}>
+                      {accessLevelLabels[document.access_level as keyof typeof accessLevelLabels] || document.access_level}
+                    </Badge>
+                    
+                    {getSensitivityIndicator((document as any).sensitivity_score)}
+                  </div>
+                  
+                  {getRetentionInfo((document as any).retention_date) && (
+                    <div className="pt-1 border-t border-gray-100">
+                      {getRetentionInfo((document as any).retention_date)}
                     </div>
                   )}
                 </div>

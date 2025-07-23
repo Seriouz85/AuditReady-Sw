@@ -34,6 +34,7 @@ import { TopNavigation } from '@/components/layout/TopNavigation';
 import { useTranslation } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ZoomToggle } from '@/components/ui/zoom-toggle';
+import { useAuth } from '@/contexts/AuthContext';
 
 type SubNavItem = {
   to: string;
@@ -130,6 +131,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
   const { t } = useTranslation();
+  const { hasPermission, user } = useAuth();
   // const { theme } = useTheme(); // Removed unused variable
 
   // Function to find the parent item based on a sub-item path

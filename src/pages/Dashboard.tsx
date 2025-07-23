@@ -1,22 +1,28 @@
-import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit, Activity, User, FileText, AlertCircle, CheckCircle2, Clock3 } from "lucide-react";
+import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit, Activity, User, FileText, AlertCircle, CheckCircle2, Clock3, Settings, Palette, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
 import { CybersecurityNews } from "@/components/dashboard/CybersecurityNews";
 import { assessments } from "@/data/mockData";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { ModernDashboardCustomization } from "@/components/dashboard/ModernDashboardCustomization";
+import { getTypographyClasses, getIconClasses, commonPatterns, spacingStandards } from "@/lib/ui-standards";
 
 const Dashboard = () => {
   console.log("Dashboard component loaded");
   const navigate = useNavigate();
-  const { user, isPlatformAdmin, isDemo } = useAuth();
+  const { user, isPlatformAdmin, isDemo, organization } = useAuth();
   const { stats, loading, error } = useDashboardData();
+  const [isCustomizationOpen, setIsCustomizationOpen] = useState(false);
+  const [isDragMode, setIsDragMode] = useState(false);
+  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
+  const [activeWidgets, setActiveWidgets] = useState<string[]>(['total-standards', 'total-requirements', 'total-assessments', 'compliance-score']);
 
   // Platform admins should see the Platform Admin Console, not customer dashboard
   useEffect(() => {
@@ -33,6 +39,40 @@ const Dashboard = () => {
     
     const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
     return `Welcome ${displayName}`;
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, widgetId: string) => {
+    if (!isDragMode) return;
+    setDraggedWidget(widgetId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!isDragMode) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetWidgetId: string) => {
+    if (!isDragMode || !draggedWidget) return;
+    e.preventDefault();
+    
+    // Here you would implement the logic to reorder widgets
+    console.log(`Moving widget ${draggedWidget} to position of ${targetWidgetId}`);
+    setDraggedWidget(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedWidget(null);
+  };
+
+  // Handle adding new widget from customization panel
+  const handleAddWidget = (widget: any) => {
+    // Add widget to active widgets
+    if (!activeWidgets.includes(widget.id)) {
+      setActiveWidgets([...activeWidgets, widget.id]);
+    }
   };
 
   const containerVariants = {
@@ -95,21 +135,50 @@ const Dashboard = () => {
   }
 
   return (
-    <motion.div
-      className="pt-0 space-y-4 sm:space-y-6 pb-6 sm:pb-8 w-full px-2 sm:px-0"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div className="flex h-full relative">
+      {/* Main Dashboard Content */}
+      <motion.div
+        className={`pt-0 space-y-4 sm:space-y-6 pb-6 sm:pb-8 px-2 sm:px-0 transition-all duration-300 ${
+          isCustomizationOpen ? 'mr-96' : 'w-full'
+        }`}
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+      <div className={commonPatterns.pageHeader}>
         <div className="flex flex-col">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Compliance Dashboard</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          <h1 className={getTypographyClasses('page-title')}>Compliance Dashboard</h1>
+          <p className={`${getTypographyClasses('muted')} mt-1`}>
             Track your organization's compliance status and assessments across all standards
           </p>
         </div>
-        <div className="mt-1 md:mt-0 py-2 px-3 sm:py-1 sm:px-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm">
-          <h2 className="text-sm sm:text-base font-medium text-blue-800 dark:text-blue-400">{getUserGreeting()}</h2>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={isDragMode ? 'default' : 'outline'} 
+              size="sm" 
+              className={spacingStandards.buttonSpacing}
+              onClick={() => {
+                setIsDragMode(!isDragMode);
+                if (!isDragMode) setIsCustomizationOpen(true);
+              }}
+            >
+              <Edit className={getIconClasses('sm')} />
+              {isDragMode ? 'Lock Layout' : 'Edit Layout'}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={spacingStandards.buttonSpacing}
+              onClick={() => setIsCustomizationOpen(!isCustomizationOpen)}
+            >
+              <Palette className={getIconClasses('sm')} />
+              Customize
+            </Button>
+          </div>
+          <div className="mt-1 md:mt-0 py-2 px-3 sm:py-1 sm:px-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm">
+            <h2 className="text-sm sm:text-base font-medium text-blue-800 dark:text-blue-400">{getUserGreeting()}</h2>
+          </div>
         </div>
       </div>
 
@@ -155,40 +224,78 @@ const Dashboard = () => {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
+        className={`${commonPatterns.statsGrid} w-full`}
         variants={itemVariants}
       >
-        <div onClick={() => navigate("/app/standards")} className="cursor-pointer">
+        <div 
+          onClick={() => !isDragMode && navigate("/app/standards")} 
+          className={isDragMode ? "cursor-move" : "cursor-pointer"}
+          draggable={isDragMode}
+          onDragStart={(e) => handleDragStart(e, 'total-standards')}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, 'total-standards')}
+          onDragEnd={handleDragEnd}
+        >
           <StatsCard
             title="Total Standards"
             value={stats.totalStandards}
             icon={<Shield size={16} />}
             description="Active compliance standards"
-            className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
+            className={`shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 ${
+              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
+            } ${draggedWidget === 'total-standards' ? 'opacity-50' : ''}`}
             data-card="true"
           />
         </div>
-        <div onClick={() => navigate("/app/requirements")} className="cursor-pointer">
+        <div 
+          onClick={() => !isDragMode && navigate("/app/requirements")} 
+          className={isDragMode ? "cursor-move" : "cursor-pointer"}
+          draggable={isDragMode}
+          onDragStart={(e) => handleDragStart(e, 'total-requirements')}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, 'total-requirements')}
+          onDragEnd={handleDragEnd}
+        >
           <StatsCard
             title="Total Requirements"
             value={stats.totalRequirements}
             icon={<BookOpen size={16} />}
             description="Across all standards"
-            className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
+            className={`shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 ${
+              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
+            } ${draggedWidget === 'total-requirements' ? 'opacity-50' : ''}`}
             data-card="true"
           />
         </div>
-        <div onClick={() => navigate("/app/assessments")} className="cursor-pointer">
+        <div 
+          onClick={() => !isDragMode && navigate("/app/assessments")} 
+          className={isDragMode ? "cursor-move" : "cursor-pointer"}
+          draggable={isDragMode}
+          onDragStart={(e) => handleDragStart(e, 'total-assessments')}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, 'total-assessments')}
+          onDragEnd={handleDragEnd}
+        >
           <StatsCard
             title="Total Assessments"
             value={stats.totalAssessments}
             icon={<CheckSquare size={16} />}
             description="Ongoing and completed"
-            className="shadow-md hover:shadow-lg transition-shadow hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70"
+            className={`shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70 ${
+              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
+            } ${draggedWidget === 'total-assessments' ? 'opacity-50' : ''}`}
             data-card="true"
           />
         </div>
-        <div onClick={() => navigate("/app/compliance-monitoring")} className="cursor-pointer">
+        <div 
+          onClick={() => !isDragMode && navigate("/app/compliance-monitoring")} 
+          className={isDragMode ? "cursor-move" : "cursor-pointer"}
+          draggable={isDragMode}
+          onDragStart={(e) => handleDragStart(e, 'compliance-score')}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, 'compliance-score')}
+          onDragEnd={handleDragEnd}
+        >
           <StatsCard
             title="Compliance Score"
             value={`${stats.complianceScore}%`}
@@ -198,7 +305,9 @@ const Dashboard = () => {
               isPositive: true
             }}
             description="Overall compliance rate"
-            className="shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-background to-blue-50 dark:from-gray-900 dark:to-blue-950/30 border border-border/70 hover:bg-muted/20 dark:hover:bg-slate-800/60"
+            className={`shadow-md hover:shadow-lg transition-all bg-gradient-to-br from-background to-blue-50 dark:from-gray-900 dark:to-blue-950/30 border border-border/70 hover:bg-muted/20 dark:hover:bg-slate-800/60 ${
+              isDragMode ? 'ring-2 ring-primary/20 hover:ring-primary/40' : ''
+            } ${draggedWidget === 'compliance-score' ? 'opacity-50' : ''}`}
             data-card="true"
           />
         </div>
@@ -210,30 +319,142 @@ const Dashboard = () => {
       >
         {/* Left Column - Compliance Chart and Tasks */}
         <div className="flex flex-col gap-5 lg:col-span-2">
-          <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden">
+          <motion.div 
+            variants={itemVariants} 
+            className={`shadow-lg rounded-xl overflow-hidden transition-all ${
+              isDragMode ? 'cursor-move ring-2 ring-primary/20 hover:ring-primary/40' : ''
+            } ${draggedWidget === 'compliance-chart' ? 'opacity-50' : ''}`}
+            draggable={isDragMode}
+            onDragStart={(e) => handleDragStart(e, 'compliance-chart')}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, 'compliance-chart')}
+            onDragEnd={handleDragEnd}
+          >
             <ComplianceChart data={stats.complianceBreakdown} />
           </motion.div>
 
-          <motion.div variants={itemVariants}>
+          <motion.div 
+            variants={itemVariants}
+            className={`transition-all ${
+              isDragMode ? 'cursor-move' : ''
+            } ${draggedWidget === 'current-activities' ? 'opacity-50' : ''}`}
+            draggable={isDragMode}
+            onDragStart={(e) => handleDragStart(e, 'current-activities')}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, 'current-activities')}
+            onDragEnd={handleDragEnd}
+          >
             <CurrentActivities />
           </motion.div>
         </div>
 
         {/* Right Column - Cybersecurity News (stretched to the right) */}
-        <motion.div variants={itemVariants} className="lg:col-span-4">
+        <motion.div 
+          variants={itemVariants} 
+          className={`lg:col-span-4 transition-all ${
+            isDragMode ? 'cursor-move ring-2 ring-primary/20 hover:ring-primary/40 rounded-xl' : ''
+          } ${draggedWidget === 'cybersecurity-news' ? 'opacity-50' : ''}`}
+          draggable={isDragMode}
+          onDragStart={(e) => handleDragStart(e, 'cybersecurity-news')}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, 'cybersecurity-news')}
+          onDragEnd={handleDragEnd}
+        >
           <CybersecurityNews />
         </motion.div>
       </motion.div>
 
       {/* Recent Assessments - Now below the news */}
-      <motion.div variants={itemVariants} className="shadow-lg rounded-xl overflow-hidden border border-border/70" data-card="true">
+      <motion.div 
+        variants={itemVariants} 
+        className={`shadow-lg rounded-xl overflow-hidden border border-border/70 transition-all ${
+          isDragMode ? 'cursor-move ring-2 ring-primary/20 hover:ring-primary/40' : ''
+        } ${draggedWidget === 'assessment-progress' ? 'opacity-50' : ''}`}
+        data-card="true"
+        draggable={isDragMode}
+        onDragStart={(e) => handleDragStart(e, 'assessment-progress')}
+        onDragOver={handleDragOver}
+        onDrop={(e) => handleDrop(e, 'assessment-progress')}
+        onDragEnd={handleDragEnd}
+      >
         <AssessmentProgress
           assessments={assessments}
-          onAssessmentClick={(id) => navigate(`/app/assessments/${id}`)}
+          onAssessmentClick={(id) => !isDragMode && navigate(`/app/assessments/${id}`)}
         />
       </motion.div>
 
-    </motion.div>
+      </motion.div>
+
+      {/* Right Side Panel for Dashboard Customization */}
+      <AnimatePresence>
+        {isCustomizationOpen && (
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              className="fixed inset-0 bg-black/20 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCustomizationOpen(false)}
+            />
+            
+            {/* Side Panel */}
+            <motion.div
+              className="fixed right-0 top-0 h-full w-96 bg-background border-l border-border shadow-xl z-50 overflow-hidden flex flex-col"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            >
+              {/* Panel Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
+                <div className="flex items-center gap-2">
+                  <Palette className={getIconClasses('sm')} />
+                  <h2 className={getTypographyClasses('card-title')}>Dashboard Customization</h2>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsCustomizationOpen(false)}
+                >
+                  <X className={getIconClasses('sm')} />
+                </Button>
+              </div>
+              
+              {/* Panel Content */}
+              <div className="flex-1 overflow-hidden">
+                <ModernDashboardCustomization
+                  organizationId={organization?.id || 'demo-org'} 
+                  onClose={() => setIsCustomizationOpen(false)}
+                  onAddWidget={handleAddWidget}
+                  activeWidgets={activeWidgets}
+                />
+              </div>
+              
+              {/* Panel Footer */}
+              <div className="p-4 border-t border-border bg-muted/30">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Dashboard Settings</span>
+                  <div className="flex items-center gap-1">
+                    {isDragMode ? (
+                      <>
+                        <Edit className="h-3 w-3" />
+                        <span>Drag mode active</span>
+                      </>
+                    ) : (
+                      <>
+                        <ChevronLeft className="h-3 w-3" />
+                        <span>Enable edit mode to drag</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

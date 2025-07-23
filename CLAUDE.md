@@ -97,6 +97,12 @@ The user must explicitly say one of these phrases for ANY deletion:
 - ✅ **AI-powered assistance** (Gemini/OpenAI) for compliance
 - ✅ **Role-based access control** with granular permissions
 - ✅ **Organization hierarchy** and supplier management
+- ✅ **Azure Purview integration** for enterprise data governance
+- ✅ **Data classification system** with automatic PII detection and custom labels
+- ✅ **Retention policies** with GDPR/CCPA compliance automation
+- ✅ **Multi-factor authentication** with TOTP and backup codes
+- ✅ **Enhanced backup & restore** with automated scheduling and granular recovery
+- ✅ **Customer dashboard customization** with drag-and-drop widgets and layouts
 
 ### 14. Demo Account System
 - **Demo Email**: `demo@auditready.com`
@@ -111,7 +117,9 @@ The user must explicitly say one of these phrases for ANY deletion:
 - **CIS Controls**: Cybersecurity best practices
 - **NIST Framework**: Cybersecurity framework
 - **SOC 2**: Service Organization Control 2
-- **GDPR**: Data protection compliance
+- **GDPR**: Data protection compliance with automated classification
+- **CCPA**: California Consumer Privacy Act compliance
+- **Microsoft Information Protection**: Azure Purview integration
 
 ### 16. Database Schema Key Tables
 - `organizations` - Multi-tenant organization management
@@ -120,8 +128,15 @@ The user must explicitly say one of these phrases for ANY deletion:
 - `standards` - Compliance framework definitions
 - `requirements` - Individual compliance requirements
 - `courses` - LMS course management
-- `documents` - Document generation and storage
+- `documents` - Document generation and storage with classification
 - `risks` - Risk management and tracking
+- `organization_data_classification_labels` - Data classification labels
+- `organization_sensitive_data_detections` - PII detection results
+- `organization_retention_policies` - Data retention policies
+- `organization_data_policies` - DLP and access control policies
+- `mfa_devices` - Multi-factor authentication devices
+- `mfa_verification_sessions` - MFA verification sessions
+- `sensitive_operations_log` - Audit log for sensitive operations
 
 ### 17. Critical File Locations
 - **Mock Data**: `src/data/mockData.ts` - Demo account data only
@@ -131,6 +146,23 @@ The user must explicitly say one of these phrases for ANY deletion:
 - **API Services**: `src/services/` - Business logic layer
 - **Migrations**: `supabase/migrations/` - Database schema versions
 
+**Enterprise Features**:
+- **Azure Purview Service**: `src/services/classification/AzurePurviewService.ts` - Data classification engine
+- **Data Classification Settings**: `src/components/settings/DataClassificationSettings.tsx` - Classification UI
+- **Customer Dashboard Settings**: `src/components/dashboard/CustomerDashboardSettings.tsx` - Dashboard customization
+- **Enhanced Admin Console**: `src/components/admin/EnhancedAdminConsole.tsx` - Platform admin management
+- **Enhanced Backup Restore**: `src/components/backup/EnhancedBackupRestore.tsx` - Advanced backup features
+- **MFA Components**: `src/components/mfa/` - Multi-factor authentication UI
+- **Backup & Restore Service**: `src/services/backup/BackupRestoreService.ts` - Time-travel data recovery
+
+**UI Standards & Design System**:
+- **UI Standards Library**: `src/lib/ui-standards.ts` - Consistent typography, spacing, icons
+- **Page Header Components**: `src/components/ui/page-header.tsx` - Standardized headers
+- **Status Badge Components**: `src/components/ui/status-badge.tsx` - Consistent status indicators
+- **Typography System**: Standardized text sizes, colors, and spacing
+- **Icon System**: Consistent icon sizes and variants
+- **Layout Patterns**: Reusable layout configurations and spacing
+
 ### 18. Environment Configuration
 **Required Variables**:
 - `VITE_SUPABASE_URL` & `VITE_SUPABASE_ANON_KEY`
@@ -139,13 +171,29 @@ The user must explicitly say one of these phrases for ANY deletion:
 - `VITE_ENTRA_*` for SSO integration
 - `VITE_SENTRY_DSN` for monitoring
 
+**Data Classification Variables** (Optional for Azure Purview integration):
+- `VITE_AZURE_PURVIEW_ENDPOINT` - Azure Purview service endpoint
+- `VITE_AZURE_CLIENT_ID` - Azure application client ID
+- `VITE_AZURE_CLIENT_SECRET` - Azure application secret
+- `VITE_AZURE_TENANT_ID` - Azure Active Directory tenant ID
+
 ### 19. Production Readiness Status
-**Ready ✅**: Core features, multi-tenancy, payments, auth, database
+**Ready ✅**: Core features, multi-tenancy, payments, auth, database, data classification, MFA, backup/restore
 **Needs Work ⚠️**: 
-- Complete 32 TODO items (email notifications, rate limiting)
+- Complete 25 TODO items (email notifications, rate limiting)
 - Enhance test coverage
 - Performance optimization for large datasets
 - Complete monitoring setup
+
+**Recently Completed ✅**:
+- Azure Purview data classification integration with custom labels
+- Multi-factor authentication system with TOTP and backup codes
+- Enhanced backup & restore with automated scheduling and granular recovery
+- Customer dashboard customization with drag-and-drop widgets
+- Platform admin console with multi-tenant management
+- PII detection and automatic classification
+- GDPR/CCPA compliance automation with retention policies
+- Comprehensive audit trails with MFA-protected restore operations
 
 ### 20. Development Priorities
 1. **High Priority**: Email notifications, API rate limiting, test coverage
