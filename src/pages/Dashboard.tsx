@@ -15,7 +15,6 @@ import { ModernDashboardCustomization } from "@/components/dashboard/ModernDashb
 import { getTypographyClasses, getIconClasses, commonPatterns, spacingStandards } from "@/lib/ui-standards";
 
 const Dashboard = () => {
-  console.log("Dashboard component loaded");
   const navigate = useNavigate();
   const { user, isPlatformAdmin, isDemo, organization } = useAuth();
   const { stats, loading, error } = useDashboardData();

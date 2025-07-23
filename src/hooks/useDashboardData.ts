@@ -40,18 +40,14 @@ export function useDashboardData() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching dashboard data for organization:', organization.id);
-
         const standardsService = new StandardsService();
         const requirementsService = new RequirementsService();
 
         // Fetch organization standards
         const orgStandards = await standardsService.getOrganizationStandards(organization.id);
-        console.log('Organization standards:', orgStandards.length);
 
         // Fetch organization requirements (all standards)
         const orgRequirements = await requirementsService.getOrganizationRequirements(organization.id);
-        console.log('Organization requirements:', orgRequirements.length);
 
         // Calculate compliance breakdown
         const breakdown = {
@@ -95,8 +91,6 @@ export function useDashboardData() {
           complianceScore = Math.round(((fulfilledPoints + partialPoints) / totalPossiblePoints) * 100);
         }
 
-        console.log('Compliance breakdown:', breakdown);
-        console.log('Compliance score:', complianceScore);
 
         setStats({
           totalStandards: orgStandards.length,

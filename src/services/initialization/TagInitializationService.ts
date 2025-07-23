@@ -96,7 +96,7 @@ export class TagInitializationService {
   /**
    * Get unified category tags for a requirement based on database mappings
    */
-  static async getUnifiedCategoryTagsForRequirement(requirementId: string): Promise<string[]> {
+  static async getUnifiedCategoryTagsForRequirement(requirementId: string): Promise<UnifiedCategoryTag[]> {
     try {
       // Get unified category mappings for this requirement
       const { data: mappings, error } = await supabase
@@ -107,7 +107,10 @@ export class TagInitializationService {
             category_id,
             category:unified_compliance_categories (
               id,
-              name
+              name,
+              description,
+              color,
+              sort_order
             )
           )
         `)
@@ -123,18 +126,27 @@ export class TagInitializationService {
         return [];
       }
 
-      // Extract category names (not IDs) for direct use as tags
-      const categoryNames = mappings
+      // Convert to UnifiedCategoryTag objects
+      const categoryTags = mappings
         .map((mapping: any) => {
-          const categoryName = mapping.unified_requirement?.category?.name;
-          return categoryName || null;
+          const category = mapping.unified_requirement?.category;
+          if (!category) return null;
+          
+          return {
+            id: `unified-category-${category.id}`,
+            name: category.name || 'Unknown Category',
+            color: category.color || '#3B82F6',
+            description: category.description || `Unified compliance category: ${category.name || 'Unknown'}`,
+            category: 'unified-category' as const,
+            sort_order: category.sort_order || 0
+          } as UnifiedCategoryTag;
         })
-        .filter(Boolean) as string[];
+        .filter(tag => tag !== null) // Remove any null values
+        .filter((tag, index, array) => 
+          array.findIndex(t => t!.id === tag!.id) === index
+        ) as UnifiedCategoryTag[]; // Remove duplicates
 
-      // Remove duplicates
-      const uniqueCategories = [...new Set(categoryNames)];
-      
-      return uniqueCategories;
+      return categoryTags;
     } catch (error) {
       console.error('Error getting unified category tags for requirement:', error);
       return [];
@@ -142,12 +154,20 @@ export class TagInitializationService {
   }
 
 
+
+
   /**
    * Apply unified category tagging to existing requirements
    */
   static async applyUnifiedCategoryTaggingToExistingRequirements(organizationId: string): Promise<number> {
     try {
-      console.log('Applying unified category tagging to existing requirements...');
+      // Skip if this is demo organization and we want to avoid performance issues during login
+      if (organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d') {
+        console.log('Skipping tag application for demo organization during login (performance optimization)');
+        return 0;
+      }
+      
+      console.log('Applying unified category mappings to organization requirements...');
 
       // Get requirements without tags - avoid selecting categories column to prevent errors
       const { data: requirements, error } = await supabase
@@ -183,17 +203,19 @@ export class TagInitializationService {
             continue; // Skip if already has tags or categories
           }
 
-          // Get unified category tags for this requirement
-          const unifiedCategoryTags = await this.getUnifiedCategoryTagsForRequirement(req.requirement_id as string);
+          // Get unified category tags directly from database mappings
+          const categoryTags = await this.getUnifiedCategoryTagsForRequirement(req.requirement_id as string);
           
-          // Only update if we found tags
-          if (unifiedCategoryTags.length > 0) {
+          // Only apply if we have unified category mappings from database
+          const shouldUpdate = categoryTags.length > 0;
+          
+          if (shouldUpdate) {
             // Try to update both tags and categories, fall back to tags only if categories column doesn't exist
-            let updateData: any = { tags: unifiedCategoryTags };
+            let updateData: any = { tags: categoryTags };
             
             // Only add categories if the column exists (check if property exists)
             if ('categories' in req) {
-              updateData.categories = unifiedCategoryTags;
+              updateData.categories = categoryTags;
             }
             
             const { error: updateError } = await supabase
