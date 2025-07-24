@@ -7,13 +7,9 @@ import { Button } from '@/components/ui/button';
 import {
   MoreVertical,
   TrendingUp,
-  TrendingDown,
   Activity,
   Clock,
-  Minus,
   X,
-  Move,
-  Maximize2,
   LucideIcon
 } from 'lucide-react';
 import {
@@ -25,11 +21,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { Progress } from '@/components/ui/progress';
-import { getTypographyClasses, getIconClasses } from '@/lib/ui-standards';
+import { getTypographyClasses } from '@/lib/ui-standards';
+import { useNavigate } from 'react-router-dom';
+import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
+import { CybersecurityNews } from '@/components/dashboard/CybersecurityNews';
+import { AssessmentProgress } from '@/components/dashboard/AssessmentProgress';
+import { assessments } from '@/data/mockData';
 
 // Import widget definitions
 import { 
-  Shield, 
   FileText, 
   CheckCircle2, 
   Award, 
@@ -43,8 +43,12 @@ import {
   Brain,
   Package,
   GitBranch,
-  UserCheck
+  Shield,
+  BookOpen,
+  User,
+  BarChart3
 } from 'lucide-react';
+import { CardContent } from '@/components/ui/card';
 
 interface WidgetConfig {
   id: string;
@@ -61,12 +65,13 @@ interface DashboardWidgetProps {
   widgetId: string;
   isDragMode?: boolean;
   onRemove?: (widgetId: string) => void;
-  onDragStart?: (e: React.DragEvent, widgetId: string) => void;
+  onDragStart?: (e: React.DragEvent<HTMLDivElement>, widgetId: string) => void;
   onDragEnd?: () => void;
-  onDrop?: (e: React.DragEvent, widgetId: string) => void;
-  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent<HTMLDivElement>, widgetId: string) => void;
+  onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
   className?: string;
   onClick?: () => void;
+  realData?: any; // Real data from dashboard hooks/services
 }
 
 // Widget configurations with mock data for demo
@@ -279,6 +284,66 @@ const widgetConfigs: Record<string, WidgetConfig> = {
         { type: 'efficiency', message: 'Consolidate similar requirements', severity: 'low' }
       ]
     }
+  },
+  // Existing Dashboard Components
+  'compliance-chart': {
+    id: 'compliance-chart',
+    type: 'chart',
+    title: 'Compliance Chart',
+    description: 'Overall compliance status breakdown',
+    icon: ShieldCheck,
+    size: 'medium',
+    color: 'green',
+    mockData: { type: 'pie', segments: 4 }
+  },
+  'cybersecurity-news': {
+    id: 'cybersecurity-news',
+    type: 'activity',
+    title: 'Cybersecurity News',
+    description: 'Latest security news and updates',
+    icon: AlertCircle,
+    size: 'large',
+    color: 'red',
+    mockData: { 
+      items: [
+        { title: 'Critical Vulnerability Discovered in OpenSSL Library', time: '9:17 AM', category: 'Vulnerability' },
+        { title: 'NIST Releases Updated Cybersecurity Framework 2.0', time: '5:17 AM', category: 'Framework' },
+        { title: 'New Ransomware Campaign Targets Healthcare Organizations', time: 'Jul 23, 11:17 PM', category: 'Threat Alert' }
+      ]
+    }
+  },
+  'assessment-progress': {
+    id: 'assessment-progress',
+    type: 'table',
+    title: 'Assessment Progress',
+    description: 'Recent compliance assessments and their status',
+    icon: FileCheck,
+    size: 'large',
+    color: 'blue',
+    mockData: { 
+      assessments: [
+        { framework: 'ISO 27001', progress: 75, status: 'in-progress', dueDate: 'Dec 15' },
+        { framework: 'SOC 2', progress: 100, status: 'completed', dueDate: 'Nov 30' },
+        { framework: 'GDPR', progress: 45, status: 'pending', dueDate: 'Jan 20' },
+        { framework: 'HIPAA', progress: 90, status: 'review', dueDate: 'Dec 5' }
+      ]
+    }
+  },
+  'current-activities': {
+    id: 'current-activities',
+    type: 'activity',
+    title: 'Current Activities',
+    description: 'Recent team actions and system updates',
+    icon: Activity,
+    size: 'medium',
+    color: 'orange',
+    mockData: { 
+      items: [
+        { user: 'System', action: 'ISO 27001 Assessment in Progress', description: '12 of 24 requirements completed', time: '2 hours ago', status: 'in-progress' },
+        { user: 'John Doe', action: 'Updated Access Control Policy', description: 'Requirement A.9.1.1 marked as fulfilled', time: '4 hours ago', status: 'completed' },
+        { user: 'Jane Smith', action: 'New Requirements Assigned', description: '5 network security requirements assigned', time: '6 hours ago', status: 'pending' }
+      ]
+    }
   }
 };
 
@@ -301,29 +366,151 @@ export function DashboardWidget({
   onDrop,
   onDragOver,
   className,
-  onClick
+  onClick,
+  realData
 }: DashboardWidgetProps) {
   const config = widgetConfigs[widgetId];
   
   if (!config) {
+    console.error(`No config found for widget: ${widgetId}`);
     return null;
+  }
+
+  console.log(`Rendering widget: ${widgetId}, type: ${config.type}`);
+  
+  // FOR DEBUGGING: Force show compliance chart data
+  if (widgetId === 'compliance-chart') {
+    console.log('COMPLIANCE CHART WIDGET DETECTED!', realData?.complianceBreakdown);
   }
 
   const Icon = config.icon;
 
+  // Function to get real data for widget
+  const getWidgetData = () => {
+    if (!realData) return config.mockData;
+
+    switch (widgetId) {
+      case 'total-standards':
+        return {
+          value: realData.totalStandards || 0,
+          trend: realData.totalStandards > 10 ? '+2' : '0',
+          trendDirection: realData.totalStandards > 10 ? 'up' : 'stable'
+        };
+      case 'total-requirements':
+        return {
+          value: realData.totalRequirements || 0,
+          trend: realData.totalRequirements > 100 ? '+23' : '0',
+          trendDirection: realData.totalRequirements > 100 ? 'up' : 'stable'
+        };
+      case 'total-assessments':
+        return {
+          value: realData.totalAssessments || 0,
+          trend: realData.totalAssessments > 0 ? '+1' : '0',
+          trendDirection: realData.totalAssessments > 0 ? 'up' : 'stable'
+        };
+      case 'compliance-score':
+        return {
+          value: `${realData.complianceScore || 0}%`,
+          trend: realData.complianceScore > 80 ? '+3%' : '0%',
+          trendDirection: realData.complianceScore > 80 ? 'up' : 'stable'
+        };
+      case 'risk-score':
+        const score = realData.complianceScore || 0;
+        return {
+          value: score > 80 ? 'Low' : score > 60 ? 'Medium' : 'High',
+          trend: 'Stable',
+          trendDirection: 'stable'
+        };
+      case 'audit-readiness':
+        const readiness = Math.max(realData.complianceScore || 0, 75);
+        return {
+          value: `${readiness}%`,
+          trend: readiness > 85 ? '+5%' : '0%',
+          trendDirection: readiness > 85 ? 'up' : 'stable'
+        };
+      case 'compliance-gaps':
+        const gaps = realData.complianceBreakdown?.notFulfilled || 0;
+        const critical = Math.floor(gaps * 0.3);
+        return { gaps, critical };
+      default:
+        return config.mockData;
+    }
+  };
+
+  const widgetData = getWidgetData();
+
+  // CRITICAL: Special handling for existing dashboard components MUST come FIRST
+  // before any generic type checking!
+  if (widgetId === 'compliance-chart') {
+    const forceData = {
+      fulfilled: 222,
+      partiallyFulfilled: 55,
+      notFulfilled: 55,
+      notApplicable: 12
+    };
+    
+    return (
+      <motion.div
+        layout
+        className={className}
+        draggable={isDragMode}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
+        whileHover={{ scale: isDragMode ? 1.02 : 1 }}
+        whileDrag={{ scale: 1.05, opacity: 0.8 }}
+      >
+        <ComplianceChart data={realData?.complianceBreakdown || forceData} />
+        {isDragMode && onRemove && (
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-lg z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(widgetId);
+            }}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        )}
+      </motion.div>
+    );
+  }
+
   // Render metric widget
   if (config.type === 'metric') {
-    const { value, trend, trendDirection, isPercentage, isText, isCurrency } = config.mockData;
+    const { value, trend, trendDirection } = widgetData;
     
     return (
       <motion.div
         layout
         className={cn(sizeClasses[config.size], className)}
         draggable={isDragMode}
-        onDragStart={(e) => onDragStart?.(e, widgetId)}
-        onDragEnd={onDragEnd}
-        onDrop={(e) => onDrop?.(e, widgetId)}
-        onDragOver={onDragOver}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
+        onClick={onClick}
         whileHover={{ scale: isDragMode ? 1.02 : 1 }}
         whileDrag={{ scale: 1.05, opacity: 0.8 }}
       >
@@ -332,14 +519,16 @@ export function DashboardWidget({
           value={value}
           icon={<Icon className="h-4 w-4" />}
           description={config.description}
-          trend={trend && trendDirection !== 'stable' ? {
-            value: parseInt(trend.replace(/[^0-9-]/g, '')) || 0,
-            isPositive: trendDirection === 'up'
-          } : undefined}
+          {...(trend && trendDirection !== 'stable' ? {
+            trend: {
+              value: parseInt(trend.replace(/[^0-9-]/g, '')) || 0,
+              isPositive: trendDirection === 'up'
+            }
+          } : {})}
           className={cn(
             "h-full shadow-md hover:shadow-lg transition-all hover:bg-muted/20 dark:hover:bg-slate-800/60 border border-border/70",
-            isDragMode && "cursor-move ring-2 ring-primary/20 hover:ring-primary/40",
-            onClick && !isDragMode && "cursor-pointer"
+            isDragMode && "cursor-move ring-2 ring-primary/20 hover:ring-primary/40 hover:scale-105",
+            onClick && !isDragMode && "cursor-pointer hover:scale-105"
           )}
         />
         {isDragMode && onRemove && (
@@ -366,10 +555,19 @@ export function DashboardWidget({
         layout
         className={cn(sizeClasses[config.size], className)}
         draggable={isDragMode}
-        onDragStart={(e) => onDragStart?.(e, widgetId)}
-        onDragEnd={onDragEnd}
-        onDrop={(e) => onDrop?.(e, widgetId)}
-        onDragOver={onDragOver}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
         whileHover={{ scale: isDragMode ? 1.02 : 1 }}
         whileDrag={{ scale: 1.05, opacity: 0.8 }}
       >
@@ -482,6 +680,149 @@ export function DashboardWidget({
     );
   }
 
+
+  if (widgetId === 'cybersecurity-news') {
+    // Render the actual CybersecurityNews component
+    return (
+      <motion.div
+        layout
+        className={className}
+        draggable={isDragMode}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
+        whileHover={{ scale: isDragMode ? 1.02 : 1 }}
+        whileDrag={{ scale: 1.05, opacity: 0.8 }}
+      >
+        <div className={cn(
+          "transition-all",
+          isDragMode && "cursor-move ring-2 ring-primary/20 hover:ring-primary/40 rounded-xl"
+        )}>
+          <CybersecurityNews />
+        </div>
+        {isDragMode && onRemove && (
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-lg z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(widgetId);
+            }}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        )}
+      </motion.div>
+    );
+  }
+
+  if (widgetId === 'assessment-progress') {
+    // Render the actual AssessmentProgress component
+    return (
+      <motion.div
+        layout
+        className={className}
+        draggable={isDragMode}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
+        whileHover={{ scale: isDragMode ? 1.02 : 1 }}
+        whileDrag={{ scale: 1.05, opacity: 0.8 }}
+      >
+        <div className={cn(
+          "shadow-lg rounded-xl overflow-hidden border border-border/70 transition-all",
+          isDragMode && "cursor-move ring-2 ring-primary/20 hover:ring-primary/40"
+        )}>
+          <AssessmentProgress 
+            assessments={assessments} 
+            onAssessmentClick={(_: string) => !isDragMode && onClick?.()}
+          />
+        </div>
+        {isDragMode && onRemove && (
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-lg z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(widgetId);
+            }}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        )}
+      </motion.div>
+    );
+  }
+
+  // Special handling for current-activities widget (render actual component)
+  if (widgetId === 'current-activities') {
+    // Render the inline CurrentActivities component from Dashboard.tsx
+    return (
+      <motion.div
+        layout
+        className={className}
+        draggable={isDragMode}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
+        whileHover={{ scale: isDragMode ? 1.02 : 1 }}
+        whileDrag={{ scale: 1.05, opacity: 0.8 }}
+      >
+        <div className={cn(
+          "transition-all",
+          isDragMode && "cursor-move"
+        )}>
+          <CurrentActivitiesWidget />
+        </div>
+        {isDragMode && onRemove && (
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-lg z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(widgetId);
+            }}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        )}
+      </motion.div>
+    );
+  }
+
   // Render activity widget
   if (config.type === 'activity') {
     return (
@@ -489,10 +830,19 @@ export function DashboardWidget({
         layout
         className={cn(sizeClasses[config.size], className)}
         draggable={isDragMode}
-        onDragStart={(e) => onDragStart?.(e, widgetId)}
-        onDragEnd={onDragEnd}
-        onDrop={(e) => onDrop?.(e, widgetId)}
-        onDragOver={onDragOver}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
         whileHover={{ scale: isDragMode ? 1.02 : 1 }}
         whileDrag={{ scale: 1.05, opacity: 0.8 }}
       >
@@ -510,7 +860,7 @@ export function DashboardWidget({
           </div>
 
           <div className="space-y-3">
-            {config.mockData.items.map((item: any, index: number) => (
+            {config.mockData?.items?.map((item: any, index: number) => (
               <div key={index} className="flex items-start gap-3 text-sm">
                 <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
                 <div className="flex-1">
@@ -519,7 +869,7 @@ export function DashboardWidget({
                 </div>
                 <span className="text-xs text-muted-foreground">{item.time}</span>
               </div>
-            ))}
+            )) || <p className="text-muted-foreground">No activities to display</p>}
           </div>
 
           {isDragMode && onRemove && (
@@ -547,10 +897,19 @@ export function DashboardWidget({
         layout
         className={cn(sizeClasses[config.size], className)}
         draggable={isDragMode}
-        onDragStart={(e) => onDragStart?.(e, widgetId)}
-        onDragEnd={onDragEnd}
-        onDrop={(e) => onDrop?.(e, widgetId)}
-        onDragOver={onDragOver}
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragStart?.(dragEvent, widgetId);
+        }}
+        {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+        onDrop={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDrop?.(dragEvent, widgetId);
+        }}
+        onDragOver={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          onDragOver?.(dragEvent);
+        }}
         whileHover={{ scale: isDragMode ? 1.02 : 1 }}
         whileDrag={{ scale: 1.05, opacity: 0.8 }}
       >
@@ -608,10 +967,19 @@ export function DashboardWidget({
       layout
       className={cn(sizeClasses[config.size], className)}
       draggable={isDragMode}
-      onDragStart={(e) => onDragStart?.(e, widgetId)}
-      onDragEnd={onDragEnd}
-      onDrop={(e) => onDrop?.(e, widgetId)}
-      onDragOver={onDragOver}
+      onDragStart={(e) => {
+        const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+        onDragStart?.(dragEvent, widgetId);
+      }}
+      {...(onDragEnd ? { onDragEnd: () => onDragEnd() } : {})}
+      onDrop={(e) => {
+        const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+        onDrop?.(dragEvent, widgetId);
+      }}
+      onDragOver={(e) => {
+        const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+        onDragOver?.(dragEvent);
+      }}
       whileHover={{ scale: isDragMode ? 1.02 : 1 }}
       whileDrag={{ scale: 1.05, opacity: 0.8 }}
     >
@@ -630,14 +998,14 @@ export function DashboardWidget({
         </div>
 
         {/* Custom content based on widget type */}
-        {config.type === 'alert' && config.mockData && (
+        {config.type === 'alert' && widgetData && (
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold">{config.mockData.gaps}</p>
+              <p className="text-2xl font-bold">{widgetData.gaps}</p>
               <p className="text-sm text-muted-foreground">Total gaps</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-red-600">{config.mockData.critical}</p>
+              <p className="text-2xl font-bold text-red-600">{widgetData.critical}</p>
               <p className="text-sm text-muted-foreground">Critical</p>
             </div>
           </div>
@@ -678,3 +1046,178 @@ export function DashboardWidget({
     </motion.div>
   );
 }
+
+// Current Activities component that matches RSS feed height
+const CurrentActivitiesWidget = () => {
+  const navigate = useNavigate();
+
+  const activities = [
+    {
+      id: 1,
+      type: 'assessment',
+      title: 'ISO 27001 Assessment in Progress',
+      description: '12 of 24 requirements completed',
+      time: '2 hours ago',
+      status: 'in-progress',
+      icon: <Shield size={16} />,
+      color: 'blue'
+    },
+    {
+      id: 2,
+      type: 'requirement',
+      title: 'Updated Access Control Policy',
+      description: 'Requirement A.9.1.1 marked as fulfilled',
+      time: '4 hours ago',
+      status: 'completed',
+      icon: <CheckCircle2 size={16} />,
+      color: 'green'
+    },
+    {
+      id: 3,
+      type: 'assignment',
+      title: 'New Requirements Assigned',
+      description: '5 network security requirements assigned to you',
+      time: '6 hours ago',
+      status: 'pending',
+      icon: <AlertCircle size={16} />,
+      color: 'amber'
+    },
+    {
+      id: 4,
+      type: 'document',
+      title: 'Generated SOA Document',
+      description: 'Statement of Applicability for ISO 27001',
+      time: '1 day ago',
+      status: 'completed',
+      icon: <FileText size={16} />,
+      color: 'purple'
+    },
+    {
+      id: 5,
+      type: 'review',
+      title: 'Evidence Review Pending',
+      description: 'Risk assessment documentation needs review',
+      time: '1 day ago',
+      status: 'pending',
+      icon: <Clock size={16} />,
+      color: 'orange'
+    },
+    {
+      id: 6,
+      type: 'assessment',
+      title: 'CIS Controls Gap Analysis',
+      description: 'Baseline assessment completed',
+      time: '2 days ago',
+      status: 'completed',
+      icon: <BarChart3 size={16} />,
+      color: 'teal'
+    },
+    {
+      id: 7,
+      type: 'training',
+      title: 'Security Awareness Training',
+      description: 'Completed mandatory cybersecurity module',
+      time: '3 days ago',
+      status: 'completed',
+      icon: <BookOpen size={16} />,
+      color: 'indigo'
+    },
+    {
+      id: 8,
+      type: 'collaboration',
+      title: 'Team Collaboration Session',
+      description: 'Discussed GDPR compliance strategy',
+      time: '4 days ago',
+      status: 'completed',
+      icon: <User size={16} />,
+      color: 'pink'
+    }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'text-green-600 dark:text-green-400';
+      case 'in-progress': return 'text-blue-600 dark:text-blue-400';
+      case 'pending': return 'text-amber-600 dark:text-amber-400';
+      default: return 'text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const getIconBg = (color: string) => {
+    const colors = {
+      blue: 'bg-blue-100 dark:bg-blue-900/50',
+      green: 'bg-green-100 dark:bg-green-900/50',
+      amber: 'bg-amber-100 dark:bg-amber-900/50',
+      purple: 'bg-purple-100 dark:bg-purple-900/50',
+      orange: 'bg-orange-100 dark:bg-orange-900/50',
+      teal: 'bg-teal-100 dark:bg-teal-900/50',
+      indigo: 'bg-indigo-100 dark:bg-indigo-900/50',
+      pink: 'bg-pink-100 dark:bg-pink-900/50'
+    };
+    return colors[color as keyof typeof colors] || colors.blue;
+  };
+
+  return (
+    <Card className="shadow-md hover:shadow-lg transition-all h-[340px] border border-border/70" data-card="true">
+      <CardContent className="p-4 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
+              <Activity size={16} className="text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold">Current Activities</h3>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="px-2 py-1 h-auto text-xs"
+            onClick={() => navigate('/app/activities')}
+          >
+            View All
+          </Button>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+          {activities.map((activity) => (
+            <div 
+              key={activity.id} 
+              className="p-3 border border-border/50 rounded-lg hover:bg-muted/20 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+              onClick={() => {
+                if (activity.type === 'assessment') navigate('/app/assessments');
+                else if (activity.type === 'requirement') navigate('/app/requirements');
+                else if (activity.type === 'document') navigate('/app/documents');
+                else navigate('/app/activities');
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`${getIconBg(activity.color)} p-2 rounded-lg flex-shrink-0`}>
+                  <div className={getStatusColor(activity.status)}>
+                    {activity.icon}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium line-clamp-1">{activity.title}</h4>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{activity.description}</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      activity.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' :
+                      activity.status === 'in-progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' :
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                    }`}>
+                      {activity.status.replace('-', ' ')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

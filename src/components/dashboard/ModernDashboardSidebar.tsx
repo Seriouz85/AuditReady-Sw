@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   X,
   Search,
@@ -6,46 +6,29 @@ import {
   BarChart3,
   Shield,
   Activity,
-  Plus,
   Check,
   TrendingUp,
   Users,
   FileText,
   Target,
   Clock,
-  Database,
   AlertCircle,
   Sparkles,
-  ChevronRight,
-  Lock,
-  Palette,
   Settings2,
-  Eye,
-  EyeOff,
-  Filter,
-  SlidersHorizontal,
-  Zap,
-  Bell,
   CheckCircle2,
   LucideIcon,
   Info,
   Star,
   Layout,
   CircleDollarSign,
-  Building2,
   Calendar,
   FileCheck,
   GitBranch,
   ShieldCheck,
   UserCheck,
   Package,
-  FolderOpen,
-  MessageSquare,
-  Bot,
   Brain,
-  Award,
-  Globe,
-  Briefcase
+  Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -53,17 +36,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { getTypographyClasses, getIconClasses } from '@/lib/ui-standards';
 
 // Widget types
 type WidgetType = 'metric' | 'chart' | 'table' | 'activity' | 'alert' | 'custom';
@@ -98,7 +72,6 @@ interface ModernDashboardSidebarProps {
   onClose: () => void;
   activeWidgets: string[];
   onAddWidget: (widgetId: string) => void;
-  onRemoveWidget: (widgetId: string) => void;
   onToggleDragMode?: () => void;
   isDragMode?: boolean;
 }
@@ -149,8 +122,55 @@ const widgetCategories: WidgetCategory[] = [
   },
 ];
 
-// All available widgets with mock data
+// All available widgets with mock data (including existing dashboard cards)
 const availableWidgets: DashboardWidget[] = [
+  // Existing Dashboard Cards
+  {
+    id: 'compliance-chart',
+    type: 'chart',
+    title: 'Compliance Chart',
+    description: 'Current compliance overview chart',
+    icon: ShieldCheck,
+    size: 'medium',
+    category: 'compliance',
+    color: 'green',
+    mockData: { type: 'pie', segments: 4 }
+  },
+  {
+    id: 'cybersecurity-news', 
+    type: 'activity',
+    title: 'Cybersecurity News',
+    description: 'Latest security news and updates',
+    icon: AlertCircle,
+    size: 'medium',
+    category: 'activity',
+    color: 'blue',
+    mockData: { items: 8, lastUpdate: '1 hour ago' }
+  },
+  {
+    id: 'assessment-progress',
+    type: 'table',
+    title: 'Assessment Progress',
+    description: 'Latest compliance assessments',
+    icon: FileCheck,
+    size: 'large',
+    category: 'compliance',
+    color: 'purple',
+    mockData: { rows: 6, status: 'active' }
+  },
+  {
+    id: 'current-activities',
+    type: 'activity',
+    title: 'Current Activities', 
+    description: 'Ongoing team activities',
+    icon: Activity,
+    size: 'medium',
+    category: 'activity',
+    color: 'orange',
+    mockData: { items: 12, active: 5 }
+  },
+
+  // Original Available Widgets
   // Core Metrics
   {
     id: 'total-standards',
@@ -378,7 +398,6 @@ export function ModernDashboardSidebar({
   onClose,
   activeWidgets,
   onAddWidget,
-  onRemoveWidget,
   onToggleDragMode,
   isDragMode = false
 }: ModernDashboardSidebarProps) {
@@ -388,7 +407,7 @@ export function ModernDashboardSidebar({
   const [showOnlyNew, setShowOnlyNew] = useState(false);
   const [showOnlyPro, setShowOnlyPro] = useState(false);
 
-  // Filter widgets based on search and category
+  // Filter and group widgets by size
   const filteredWidgets = availableWidgets.filter(widget => {
     const matchesSearch = widget.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          widget.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -398,6 +417,14 @@ export function ModernDashboardSidebar({
     
     return matchesSearch && matchesCategory && matchesNew && matchesPro;
   });
+
+  // Group widgets by size (small first, then medium, then large, then full)
+  const groupedWidgets = {
+    small: filteredWidgets.filter(w => w.size === 'small'),
+    medium: filteredWidgets.filter(w => w.size === 'medium'),
+    large: filteredWidgets.filter(w => w.size === 'large'),
+    full: filteredWidgets.filter(w => w.size === 'full')
+  };
 
   const handleAddWidget = (widgetId: string) => {
     const widget = availableWidgets.find(w => w.id === widgetId);
@@ -420,26 +447,147 @@ export function ModernDashboardSidebar({
     });
   };
 
-  const getWidgetIcon = (Icon: LucideIcon, color?: string) => {
+  const getWidgetIcon = (Icon: LucideIcon, color?: string, size: WidgetSize = 'medium') => {
     const colorClasses = {
-      blue: 'text-blue-600 bg-blue-100',
-      green: 'text-green-600 bg-green-100',
-      purple: 'text-purple-600 bg-purple-100',
-      orange: 'text-orange-600 bg-orange-100',
-      red: 'text-red-600 bg-red-100',
-      yellow: 'text-yellow-600 bg-yellow-100',
-      indigo: 'text-indigo-600 bg-indigo-100',
-      pink: 'text-pink-600 bg-pink-100',
-      teal: 'text-teal-600 bg-teal-100',
-      emerald: 'text-emerald-600 bg-emerald-100',
+      blue: 'text-blue-600 bg-gradient-to-br from-blue-100 to-blue-200 border-blue-200/50',
+      green: 'text-green-600 bg-gradient-to-br from-green-100 to-green-200 border-green-200/50',
+      purple: 'text-purple-600 bg-gradient-to-br from-purple-100 to-purple-200 border-purple-200/50',
+      orange: 'text-orange-600 bg-gradient-to-br from-orange-100 to-orange-200 border-orange-200/50',
+      red: 'text-red-600 bg-gradient-to-br from-red-100 to-red-200 border-red-200/50',
+      yellow: 'text-yellow-600 bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-200/50',
+      indigo: 'text-indigo-600 bg-gradient-to-br from-indigo-100 to-indigo-200 border-indigo-200/50',
+      pink: 'text-pink-600 bg-gradient-to-br from-pink-100 to-pink-200 border-pink-200/50',
+      teal: 'text-teal-600 bg-gradient-to-br from-teal-100 to-teal-200 border-teal-200/50',
+      emerald: 'text-emerald-600 bg-gradient-to-br from-emerald-100 to-emerald-200 border-emerald-200/50',
     };
 
-    const classes = color ? colorClasses[color as keyof typeof colorClasses] : 'text-gray-600 bg-gray-100';
+    const classes = color ? colorClasses[color as keyof typeof colorClasses] : 'text-gray-600 bg-gradient-to-br from-gray-100 to-gray-200 border-gray-200/50';
 
     return (
-      <div className={cn("p-2 rounded-lg", classes)}>
-        <Icon className="h-5 w-5" />
+      <div className={cn(
+        "rounded-lg shadow-sm border transition-all duration-200",
+        size === 'small' && "p-1",
+        size === 'medium' && "p-2", 
+        size === 'large' && "p-2.5",
+        size === 'full' && "p-3",
+        classes
+      )}>
+        <Icon className={cn(
+          "drop-shadow-sm",
+          size === 'small' && "h-3 w-3",
+          size === 'medium' && "h-4 w-4",
+          size === 'large' && "h-5 w-5", 
+          size === 'full' && "h-6 w-6"
+        )} />
       </div>
+    );
+  };
+
+  // Render individual widget with improved design
+  const renderWidget = (widget: DashboardWidget) => {
+    const isActive = activeWidgets.includes(widget.id);
+    const Icon = widget.icon;
+
+    return (
+      <motion.div
+        key={widget.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="relative"
+      >
+        {/* Enhanced Widget Card */}
+        <Card
+          className={cn(
+            "cursor-pointer transition-all duration-300 group relative overflow-hidden backdrop-blur-sm",
+            isActive 
+              ? "border-2 border-primary/50 bg-gradient-to-br from-primary/10 to-primary/5 shadow-lg ring-1 ring-primary/20" 
+              : "border border-border/50 bg-gradient-to-br from-card to-muted/10 hover:border-primary/30 hover:shadow-md hover:bg-gradient-to-br hover:from-card hover:to-primary/5"
+          )}
+          onClick={() => !isActive && handleAddWidget(widget.id)}
+        >
+          {/* Widget Preview with Enhanced Design */}
+          <div className="p-3">
+            <div className="mb-3 flex justify-center">
+              <div
+                className={cn(
+                  "relative rounded-xl flex items-center justify-center transition-all duration-300",
+                  "bg-gradient-to-br from-background to-muted/30 border-2",
+                  isActive 
+                    ? "border-primary/40 shadow-lg shadow-primary/20" 
+                    : "border-dashed border-muted-foreground/20 group-hover:border-primary/30 group-hover:shadow-md"
+                )}
+                style={{
+                  // IMPROVED PROPORTIONAL SIZES
+                  width: widget.size === 'small' ? '70px' : 
+                         widget.size === 'medium' ? '110px' : 
+                         widget.size === 'large' ? '150px' : 
+                         widget.size === 'full' ? '180px' : '110px',
+                  height: widget.size === 'small' ? '70px' : '65px',
+                  maxWidth: '100%'
+                }}
+              >
+                {/* Subtle background pattern */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-transparent via-background/50 to-muted/20 opacity-60" />
+                
+                {/* Widget Icon */}
+                <div className="relative z-10 flex flex-col items-center">
+                  {getWidgetIcon(Icon, widget.color, widget.size)}
+                  {widget.size !== 'small' && (
+                    <div className={cn(
+                      "mt-1 text-center text-muted-foreground/60",
+                      widget.size === 'medium' ? "text-[8px]" : "text-[9px]"
+                    )}>
+                      {widget.type}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Active indicator */}
+                {isActive && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                    <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Widget Info */}
+            <div className="text-center space-y-1">
+              <h4 className="text-xs font-semibold leading-tight flex items-center justify-center gap-1 flex-wrap">
+                <span className="truncate">{widget.title}</span>
+                {widget.isNew && (
+                  <Badge variant="secondary" className="text-[7px] bg-green-500/20 text-green-700 border-green-500/30 px-1">
+                    NEW
+                  </Badge>
+                )}
+                {widget.isPro && (
+                  <Badge variant="outline" className="text-[7px] bg-amber-500/20 text-amber-700 border-amber-500/50 px-1">
+                    PRO
+                  </Badge>
+                )}
+              </h4>
+              
+              {widget.size !== 'small' && (
+                <p className="text-[10px] text-muted-foreground line-clamp-1">
+                  {widget.description}
+                </p>
+              )}
+
+              <Badge className={cn("text-[10px] px-1.5 py-0.5 font-medium", 
+                widget.size === 'small' && "bg-blue-100 text-blue-800 border-blue-200",
+                widget.size === 'medium' && "bg-green-100 text-green-800 border-green-200",
+                widget.size === 'large' && "bg-orange-100 text-orange-800 border-orange-200",
+                widget.size === 'full' && "bg-purple-100 text-purple-800 border-purple-200"
+              )}>
+                {widget.size}
+              </Badge>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
     );
   };
 
@@ -458,43 +606,43 @@ export function ModernDashboardSidebar({
 
           {/* Sidebar */}
           <motion.div
-            className="fixed right-0 top-0 h-full w-[420px] bg-background border-l border-border shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-[420px] bg-gradient-to-br from-background via-background to-muted/30 border-l border-border/50 shadow-2xl backdrop-blur-sm z-50 flex flex-col"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
             {/* Header */}
-            <div className="p-6 border-b border-border bg-muted/30">
-              <div className="flex items-center justify-between mb-4">
+            <div className="p-6 border-b border-border/30 bg-gradient-to-r from-primary/5 via-background to-muted/20 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Sparkles className="h-5 w-5 text-primary" />
+                  <div className="p-2.5 bg-gradient-to-br from-primary/20 via-primary/15 to-primary/10 rounded-xl shadow-lg border border-primary/20">
+                    <Settings2 className="h-5 w-5 text-primary drop-shadow-sm" />
                   </div>
                   <div>
-                    <h2 className={getTypographyClasses('section-header')}>Widget Gallery</h2>
-                    <p className="text-sm text-muted-foreground">Customize your dashboard</p>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Widget Gallery</h2>
+                    <p className="text-sm text-muted-foreground/80">Customize your dashboard experience</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  className="hover:bg-muted"
+                  className="h-9 w-9 hover:bg-muted/80 rounded-full hover:shadow-md transition-all duration-200 backdrop-blur-sm"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
 
               {/* Search and Filters */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                   <Input
                     placeholder="Search widgets..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 bg-background"
+                    className="pl-9 bg-background/80 backdrop-blur-sm border-border/50 shadow-sm hover:border-primary/30 focus:border-primary/50 transition-colors"
                   />
                 </div>
                 
@@ -503,7 +651,12 @@ export function ModernDashboardSidebar({
                     variant={showOnlyNew ? "default" : "outline"}
                     size="sm"
                     onClick={() => setShowOnlyNew(!showOnlyNew)}
-                    className="gap-1"
+                    className={cn(
+                      "gap-1.5 shadow-sm transition-all duration-200",
+                      showOnlyNew 
+                        ? "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-primary/25" 
+                        : "hover:bg-muted/80 hover:border-primary/30"
+                    )}
                   >
                     <Sparkles className="h-3 w-3" />
                     New
@@ -512,7 +665,12 @@ export function ModernDashboardSidebar({
                     variant={showOnlyPro ? "default" : "outline"}
                     size="sm"
                     onClick={() => setShowOnlyPro(!showOnlyPro)}
-                    className="gap-1"
+                    className={cn(
+                      "gap-1.5 shadow-sm transition-all duration-200",
+                      showOnlyPro 
+                        ? "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-amber-500/25 text-white" 
+                        : "hover:bg-muted/80 hover:border-amber-400/50"
+                    )}
                   >
                     <Star className="h-3 w-3" />
                     Pro
@@ -522,10 +680,15 @@ export function ModernDashboardSidebar({
                       variant={isDragMode ? "default" : "outline"}
                       size="sm"
                       onClick={onToggleDragMode}
-                      className="gap-1 ml-auto"
+                      className={cn(
+                        "gap-1.5 ml-auto shadow-sm transition-all duration-200",
+                        isDragMode 
+                          ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-green-500/25" 
+                          : "hover:bg-muted/80 hover:border-green-400/50"
+                      )}
                     >
                       <Layout className="h-3 w-3" />
-                      {isDragMode ? 'Exit Arrange' : 'Arrange'}
+                      {isDragMode ? 'Lock' : 'Arrange'}
                     </Button>
                   )}
                 </div>
@@ -533,244 +696,127 @@ export function ModernDashboardSidebar({
             </div>
 
             {/* Categories */}
-            <div className="px-4 py-4 border-b border-border bg-muted/10">
-              <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/50">
-                <div className="flex gap-2 min-w-max pb-2" style={{ width: 'max-content' }}>
-                  {widgetCategories.map((category) => {
-                    const Icon = category.icon;
-                    const isActive = selectedCategory === category.id;
-                    const categoryCount = category.id === 'all' 
-                      ? availableWidgets.length 
-                      : availableWidgets.filter(w => w.category === category.id).length;
+            <div className="px-5 py-4 border-b border-border/30 bg-gradient-to-r from-muted/10 to-muted/5">
+              <div className="grid grid-cols-2 gap-2.5">
+                {widgetCategories.map((category) => {
+                  const Icon = category.icon;
+                  const isActive = selectedCategory === category.id;
+                  const categoryCount = category.id === 'all' 
+                    ? availableWidgets.length 
+                    : availableWidgets.filter(w => w.category === category.id).length;
 
-                    return (
-                      <Button
-                        key={category.id}
-                        variant={isActive ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedCategory(category.id)}
+                  return (
+                    <Button
+                      key={category.id}
+                      variant={isActive ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={cn(
+                        "gap-2 whitespace-nowrap transition-all duration-200 shadow-sm backdrop-blur-sm justify-start",
+                        isActive && "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-primary/20 scale-105",
+                        !isActive && "hover:bg-muted/80 hover:border-primary/30 hover:shadow-md"
+                      )}
+                    >
+                      <Icon className={cn("h-4 w-4", category.color)} />
+                      <span className="truncate flex-1">{category.name}</span>
+                      <Badge 
+                        variant={isActive ? "outline" : "secondary"} 
                         className={cn(
-                          "gap-2 whitespace-nowrap transition-all",
-                          isActive && "shadow-sm"
+                          "h-5 px-1.5 text-xs font-medium transition-colors flex-shrink-0",
+                          isActive && "bg-white/20 border-white/30 text-white"
                         )}
                       >
-                        <Icon className={cn("h-4 w-4", category.color)} />
-                        {category.name}
-                        <Badge variant="secondary" className="ml-1 h-5 px-1.5">
-                          {categoryCount}
-                        </Badge>
-                      </Button>
-                    );
-                  })}
-                </div>
+                        {categoryCount}
+                      </Badge>
+                    </Button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Widget List */}
-            <ScrollArea className="flex-1 px-4 py-4">
-              <div className="space-y-3">
-                {filteredWidgets.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="p-3 bg-muted rounded-full w-fit mx-auto mb-3">
-                      <Search className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <p className="text-muted-foreground">No widgets found</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Try adjusting your search or filters
-                    </p>
+            {/* Widget Grid - Grouped by Size */}
+            <ScrollArea className="flex-1 px-5 py-4">
+              {filteredWidgets.length === 0 ? (
+                <div className="text-center py-12 w-full">
+                  <div className="p-3 bg-muted rounded-full w-fit mx-auto mb-3">
+                    <Search className="h-6 w-6 text-muted-foreground" />
                   </div>
-                ) : (
-                  filteredWidgets.map((widget) => {
-                    const isActive = activeWidgets.includes(widget.id);
-                    const Icon = widget.icon;
+                  <p className="text-muted-foreground">No widgets found</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Try adjusting your search or filters
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Small Widgets */}
+                  {groupedWidgets.small.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                        Small Widgets ({groupedWidgets.small.length})
+                      </h3>
+                      <div className="grid grid-cols-3 gap-2">
+                        {groupedWidgets.small.map((widget) => renderWidget(widget))}
+                      </div>
+                    </div>
+                  )}
 
-                    return (
-                      <motion.div
-                        key={widget.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Card
-                          className={cn(
-                            "cursor-pointer transition-all hover:shadow-md border-2",
-                            // Different sizes based on widget size
-                            widget.size === 'small' && "p-3 h-20",
-                            widget.size === 'medium' && "p-4 h-28", 
-                            widget.size === 'large' && "p-5 h-36",
-                            widget.size === 'full' && "p-6 h-40",
-                            isActive 
-                              ? "border-primary bg-primary/5" 
-                              : "border-transparent hover:border-border"
-                          )}
-                          onClick={() => !isActive && handleAddWidget(widget.id)}
-                        >
-                          <div className={cn(
-                            "flex gap-3",
-                            widget.size === 'small' ? "items-center" : "items-start"
-                          )}>
-                            <div className={cn(
-                              "flex-shrink-0",
-                              widget.size === 'small' && "scale-75"
-                            )}>
-                              {getWidgetIcon(Icon, widget.color)}
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1">
-                                  <h4 className={cn(
-                                    "font-medium flex items-center gap-2 mb-1",
-                                    widget.size === 'small' ? "text-sm" : "text-base"
-                                  )}>
-                                    {widget.title}
-                                    {widget.isNew && (
-                                      <Badge variant="secondary" className={cn(
-                                        widget.size === 'small' ? "text-xs scale-75" : "text-xs"
-                                      )}>
-                                        NEW
-                                      </Badge>
-                                    )}
-                                    {widget.isPro && (
-                                      <Badge variant="outline" className={cn(
-                                        widget.size === 'small' ? "text-xs scale-75" : "text-xs"
-                                      )}>
-                                        PRO
-                                      </Badge>
-                                    )}
-                                  </h4>
-                                  <p className={cn(
-                                    "text-muted-foreground",
-                                    widget.size === 'small' ? "text-xs" : "text-sm"
-                                  )}>
-                                    {widget.description}
-                                  </p>
-                                </div>
+                  {/* Medium Widgets */}
+                  {groupedWidgets.medium.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        Medium Widgets ({groupedWidgets.medium.length})
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        {groupedWidgets.medium.map((widget) => renderWidget(widget))}
+                      </div>
+                    </div>
+                  )}
 
-                                {isActive ? (
-                                  <div className="flex items-center gap-1 text-primary">
-                                    <Check className="h-4 w-4" />
-                                    <span className="text-xs font-medium">Added</span>
-                                  </div>
-                                ) : (
-                                  <TooltipProvider>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <Button
-                                          size="icon"
-                                          variant="ghost"
-                                          className="h-8 w-8 hover:bg-primary/10"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleAddWidget(widget.id);
-                                          }}
-                                        >
-                                          <Plus className="h-4 w-4" />
-                                        </Button>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>Add to dashboard</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
-                                )}
-                              </div>
+                  {/* Large Widgets */}
+                  {groupedWidgets.large.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                        Large Widgets ({groupedWidgets.large.length})
+                      </h3>
+                      <div className="grid grid-cols-1 gap-3">
+                        {groupedWidgets.large.map((widget) => renderWidget(widget))}
+                      </div>
+                    </div>
+                  )}
 
-                              {/* Widget Preview/Mock Data - Sized according to widget */}
-                              {widget.mockData && widget.size !== 'small' && (
-                                <div className={cn(
-                                  "mt-3 bg-muted/50 rounded-lg",
-                                  widget.size === 'medium' && "p-2 text-xs",
-                                  widget.size === 'large' && "p-3 text-sm", 
-                                  widget.size === 'full' && "p-4 text-sm"
-                                )}>
-                                  {widget.type === 'metric' && (
-                                    <div className="flex items-baseline justify-between">
-                                      <span className={cn(
-                                        "font-bold",
-                                        widget.size === 'medium' && "text-lg",
-                                        widget.size === 'large' && "text-xl",
-                                        widget.size === 'full' && "text-2xl"
-                                      )}>{widget.mockData.value}</span>
-                                      {widget.mockData.trend && (
-                                        <span className={cn(
-                                          "flex items-center gap-1",
-                                          widget.size === 'medium' && "text-xs",
-                                          widget.size === 'large' && "text-sm",
-                                          widget.size === 'full' && "text-sm",
-                                          widget.mockData.trendDirection === 'up' ? 'text-green-600' : 
-                                          widget.mockData.trendDirection === 'down' ? 'text-red-600' : 
-                                          'text-gray-600'
-                                        )}>
-                                          {widget.mockData.trend}
-                                          {widget.mockData.trendDirection === 'up' && '↑'}
-                                          {widget.mockData.trendDirection === 'down' && '↓'}
-                                        </span>
-                                      )}
-                                    </div>
-                                  )}
-                                  {widget.type === 'chart' && (
-                                    <div className="text-muted-foreground">
-                                      {widget.mockData.type} chart • {widget.mockData.dataPoints || widget.mockData.segments || widget.mockData.areas || widget.mockData.items} data points
-                                    </div>
-                                  )}
-                                  {widget.type === 'activity' && (
-                                    <div className="text-muted-foreground">
-                                      {widget.mockData.items} items • Last update: {widget.mockData.lastUpdate}
-                                    </div>
-                                  )}
-                                  {widget.type === 'table' && (
-                                    <div className="text-muted-foreground">
-                                      {widget.mockData.rows} rows • Next: {widget.mockData.nextAudit}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Metadata - Only show for larger widgets */}
-                              {widget.size !== 'small' && (
-                                <div className={cn(
-                                  "flex items-center gap-4 mt-3 text-muted-foreground",
-                                  widget.size === 'medium' && "text-xs",
-                                  widget.size === 'large' && "text-xs",
-                                  widget.size === 'full' && "text-sm"
-                                )}>
-                                {widget.dataSource && (
-                                  <span className="flex items-center gap-1">
-                                    <Database className="h-3 w-3" />
-                                    {widget.dataSource}
-                                  </span>
-                                )}
-                                {widget.refreshInterval && (
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    Updates every {widget.refreshInterval}s
-                                  </span>
-                                )}
-                              </div>
-                              )}
-                            </div>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    );
-                  })
-                )}
-              </div>
+                  {/* Full Width Widgets */}
+                  {groupedWidgets.full.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                        Full Width Widgets ({groupedWidgets.full.length})
+                      </h3>
+                      <div className="grid grid-cols-1 gap-3">
+                        {groupedWidgets.full.map((widget) => renderWidget(widget))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </ScrollArea>
 
             {/* Footer */}
-            <div className="p-3 border-t border-border bg-muted/30">
+            <div className="p-4 border-t border-border/30 bg-gradient-to-r from-muted/20 via-background to-muted/20 backdrop-blur-sm">
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Info className="h-4 w-4" />
-                  <span>{activeWidgets.length} widgets active</span>
+                <div className="flex items-center gap-2 text-muted-foreground/80">
+                  <div className="bg-primary/10 p-1 rounded-full">
+                    <Info className="h-3 w-3 text-primary" />
+                  </div>
+                  <span className="font-medium">{activeWidgets.length} widgets active</span>
                 </div>
                 <Button
                   variant="default"
                   size="sm"
                   onClick={onClose}
-                  className="gap-2"
+                  className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/25 transition-all duration-200"
                 >
                   <Check className="h-4 w-4" />
                   Done

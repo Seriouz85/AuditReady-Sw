@@ -1,14 +1,11 @@
-import { BarChart3, BookOpen, CheckSquare, Shield, TrendingUp, Calendar, Clock, Edit, Activity, User, FileText, AlertCircle, CheckCircle2, Clock3, Settings, Palette, X, ChevronLeft, ChevronRight, Move, Sparkles } from "lucide-react";
+import { TrendingUp, Calendar, Clock, Settings2, Lock } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
-import { AssessmentProgress } from "@/components/dashboard/AssessmentProgress";
-import { CybersecurityNews } from "@/components/dashboard/CybersecurityNews";
-import { assessments } from "@/data/mockData";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ModernDashboardSidebar } from "@/components/dashboard/ModernDashboardSidebar";
@@ -22,7 +19,13 @@ const Dashboard = () => {
   const [isCustomizationOpen, setIsCustomizationOpen] = useState(false);
   const [isDragMode, setIsDragMode] = useState(false);
   const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
-  const [activeWidgets, setActiveWidgets] = useState<string[]>(['total-standards', 'total-requirements', 'total-assessments', 'compliance-score']);
+  const [autoScrollInterval, setAutoScrollInterval] = useState<NodeJS.Timeout | null>(null);
+  const [activeWidgets, setActiveWidgets] = useState<string[]>([
+    // Existing Dashboard Cards (already on dashboard)
+    'compliance-chart', 'cybersecurity-news', 'assessment-progress', 'current-activities',
+    // Default metric widgets
+    'total-standards', 'total-requirements', 'total-assessments', 'compliance-score'
+  ]);
 
   // Platform admins should see the Platform Admin Console, not customer dashboard
   useEffect(() => {
@@ -31,6 +34,13 @@ const Dashboard = () => {
       navigate("/admin", { replace: true });
     }
   }, [isPlatformAdmin, navigate]);
+
+  // Cleanup auto-scroll on component unmount
+  useEffect(() => {
+    return () => {
+      stopAutoScroll();
+    };
+  }, []);
 
   const getUserGreeting = () => {
     if (isDemo) {
@@ -41,11 +51,57 @@ const Dashboard = () => {
     return `Welcome ${displayName}`;
   };
 
+  // Auto-scroll state
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Auto-scroll helper functions
+  const handleMouseMove = (e: MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const startAutoScroll = () => {
+    const scrollThreshold = 80; // pixels from edge to start scrolling
+    const scrollSpeed = 8; // pixels per scroll
+    
+    const handleAutoScroll = () => {
+      const mouseY = mousePosition.y;
+      const windowHeight = window.innerHeight;
+      
+      if (mouseY < scrollThreshold && mouseY > 0) {
+        // Scroll up
+        window.scrollBy(0, -scrollSpeed);
+      } else if (mouseY > windowHeight - scrollThreshold && mouseY < windowHeight) {
+        // Scroll down
+        window.scrollBy(0, scrollSpeed);
+      }
+    };
+    
+    if (!autoScrollInterval) {
+      // Add mouse move listener
+      document.addEventListener('mousemove', handleMouseMove);
+      const interval = setInterval(handleAutoScroll, 16); // ~60fps
+      setAutoScrollInterval(interval);
+    }
+  };
+
+  const stopAutoScroll = () => {
+    if (autoScrollInterval) {
+      // Remove mouse move listener
+      document.removeEventListener('mousemove', handleMouseMove);
+      clearInterval(autoScrollInterval);
+      setAutoScrollInterval(null);
+    }
+  };
+
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, widgetId: string) => {
     if (!isDragMode) return;
     setDraggedWidget(widgetId);
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Initialize mouse position and start auto-scroll
+    setMousePosition({ x: e.clientX, y: e.clientY });
+    startAutoScroll();
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -55,15 +111,29 @@ const Dashboard = () => {
   };
 
   const handleDrop = (e: React.DragEvent, targetWidgetId: string) => {
-    if (!isDragMode || !draggedWidget) return;
+    if (!isDragMode || !draggedWidget || draggedWidget === targetWidgetId) return;
     e.preventDefault();
     
-    // Here you would implement the logic to reorder widgets
-    console.log(`Moving widget ${draggedWidget} to position of ${targetWidgetId}`);
+    // Stop auto-scrolling
+    stopAutoScroll();
+    
+    // Reorder widgets by moving dragged widget to target position
+    const draggedIndex = activeWidgets.indexOf(draggedWidget);
+    const targetIndex = activeWidgets.indexOf(targetWidgetId);
+    
+    if (draggedIndex === -1 || targetIndex === -1) return;
+    
+    const newWidgets = [...activeWidgets];
+    newWidgets.splice(draggedIndex, 1); // Remove dragged widget
+    newWidgets.splice(targetIndex, 0, draggedWidget); // Insert at target position
+    
+    setActiveWidgets(newWidgets);
     setDraggedWidget(null);
   };
 
   const handleDragEnd = () => {
+    // Stop auto-scrolling
+    stopAutoScroll();
     setDraggedWidget(null);
   };
 
@@ -164,26 +234,28 @@ const Dashboard = () => {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Button 
-              variant={isDragMode ? 'default' : 'outline'} 
+              variant="ghost" 
               size="sm" 
-              className={spacingStandards.buttonSpacing}
-              onClick={() => {
-                setIsDragMode(!isDragMode);
-                if (!isDragMode) setIsCustomizationOpen(true);
-              }}
-            >
-              <Edit className={getIconClasses('sm')} />
-              {isDragMode ? 'Lock Layout' : 'Edit Layout'}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className={spacingStandards.buttonSpacing}
+              className={cn(
+                spacingStandards.buttonSpacing,
+                "text-muted-foreground hover:text-foreground transition-colors"
+              )}
               onClick={() => setIsCustomizationOpen(!isCustomizationOpen)}
             >
-              <Palette className={getIconClasses('sm')} />
-              Customize
+              <Settings2 className={getIconClasses('sm')} />
+              Customize Dashboard
             </Button>
+            {isDragMode && (
+              <Button 
+                variant="default" 
+                size="sm" 
+                className={spacingStandards.buttonSpacing}
+                onClick={() => setIsDragMode(false)}
+              >
+                <Lock className={getIconClasses('sm')} />
+                Lock Layout
+              </Button>
+            )}
           </div>
           <div className="mt-1 md:mt-0 py-2 px-3 sm:py-1 sm:px-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm">
             <h2 className="text-sm sm:text-base font-medium text-blue-800 dark:text-blue-400">{getUserGreeting()}</h2>
@@ -232,12 +304,13 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      {/* Dynamic Widget Grid */}
+      {/* Dynamic Widget Grid - Metric Widgets + Additional Widgets */}
       <motion.div
         className={`${commonPatterns.statsGrid} w-full`}
         variants={itemVariants}
       >
-        {activeWidgets.map((widgetId) => (
+        {/* First render the 4 core metric widgets */}
+        {activeWidgets.filter(id => ['total-standards', 'total-requirements', 'total-assessments', 'compliance-score'].includes(id)).map((widgetId) => (
           <DashboardWidget
             key={widgetId}
             widgetId={widgetId}
@@ -247,6 +320,7 @@ const Dashboard = () => {
             onDragEnd={handleDragEnd}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
+            realData={stats}
             onClick={() => {
               // Navigate based on widget ID
               if (!isDragMode) {
@@ -263,83 +337,111 @@ const Dashboard = () => {
                   case 'compliance-score':
                     navigate('/app/compliance-monitoring');
                     break;
-                  // Add more navigation cases as needed
                 }
               }
             }}
           />
         ))}
+        
+        {/* Then render any additional widgets added from sidebar */}
+        {(() => {
+          const predefinedLayoutWidgets = [
+            'total-standards', 'total-requirements', 'total-assessments', 'compliance-score',
+            'compliance-chart', 'cybersecurity-news', 'current-activities', 'assessment-progress'
+          ];
+          const additionalWidgets = activeWidgets.filter(id => !predefinedLayoutWidgets.includes(id));
+          
+          return additionalWidgets.map((widgetId) => (
+            <DashboardWidget
+              key={widgetId}
+              widgetId={widgetId}
+              isDragMode={isDragMode}
+              onRemove={handleRemoveWidget}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              realData={stats}
+            />
+          ));
+        })()}
       </motion.div>
 
+      {/* Existing Dashboard Components Layout */}
       <motion.div
         className="grid grid-cols-1 lg:grid-cols-6 gap-5 w-full"
         variants={itemVariants}
       >
-        {/* Left Column - Compliance Chart and Tasks */}
+        {/* Left Column - Compliance Chart and Current Activities */}
         <div className="flex flex-col gap-5 lg:col-span-2">
-          <motion.div 
-            variants={itemVariants} 
-            className={`shadow-lg rounded-xl overflow-hidden transition-all ${
-              isDragMode ? 'cursor-move ring-2 ring-primary/20 hover:ring-primary/40' : ''
-            } ${draggedWidget === 'compliance-chart' ? 'opacity-50' : ''}`}
-            draggable={isDragMode}
-            onDragStart={(e) => handleDragStart(e, 'compliance-chart')}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, 'compliance-chart')}
-            onDragEnd={handleDragEnd}
-          >
-            <ComplianceChart data={stats.complianceBreakdown} />
-          </motion.div>
+          {/* Compliance Chart */}
+          {activeWidgets.includes('compliance-chart') && (
+            <DashboardWidget
+              key="compliance-chart"
+              widgetId="compliance-chart"
+              isDragMode={isDragMode}
+              onRemove={handleRemoveWidget}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              realData={stats}
+            />
+          )}
 
-          <motion.div 
-            variants={itemVariants}
-            className={`transition-all ${
-              isDragMode ? 'cursor-move' : ''
-            } ${draggedWidget === 'current-activities' ? 'opacity-50' : ''}`}
-            draggable={isDragMode}
-            onDragStart={(e) => handleDragStart(e, 'current-activities')}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, 'current-activities')}
-            onDragEnd={handleDragEnd}
-          >
-            <CurrentActivities />
-          </motion.div>
+          {/* Current Activities */}
+          {activeWidgets.includes('current-activities') && (
+            <DashboardWidget
+              key="current-activities"
+              widgetId="current-activities"
+              isDragMode={isDragMode}
+              onRemove={handleRemoveWidget}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              realData={stats}
+            />
+          )}
         </div>
 
-        {/* Right Column - Cybersecurity News (stretched to the right) */}
-        <motion.div 
-          variants={itemVariants} 
-          className={`lg:col-span-4 transition-all ${
-            isDragMode ? 'cursor-move ring-2 ring-primary/20 hover:ring-primary/40 rounded-xl' : ''
-          } ${draggedWidget === 'cybersecurity-news' ? 'opacity-50' : ''}`}
-          draggable={isDragMode}
-          onDragStart={(e) => handleDragStart(e, 'cybersecurity-news')}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'cybersecurity-news')}
-          onDragEnd={handleDragEnd}
-        >
-          <CybersecurityNews />
-        </motion.div>
+        {/* Right Column - Cybersecurity News */}
+        {activeWidgets.includes('cybersecurity-news') && (
+          <div className="lg:col-span-4">
+            <DashboardWidget
+              key="cybersecurity-news"
+              widgetId="cybersecurity-news"
+              isDragMode={isDragMode}
+              onRemove={handleRemoveWidget}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              realData={stats}
+            />
+          </div>
+        )}
       </motion.div>
 
-      {/* Recent Assessments - Now below the news */}
-      <motion.div 
-        variants={itemVariants} 
-        className={`shadow-lg rounded-xl overflow-hidden border border-border/70 transition-all ${
-          isDragMode ? 'cursor-move ring-2 ring-primary/20 hover:ring-primary/40' : ''
-        } ${draggedWidget === 'assessment-progress' ? 'opacity-50' : ''}`}
-        data-card="true"
-        draggable={isDragMode}
-        onDragStart={(e) => handleDragStart(e, 'assessment-progress')}
-        onDragOver={handleDragOver}
-        onDrop={(e) => handleDrop(e, 'assessment-progress')}
-        onDragEnd={handleDragEnd}
-      >
-        <AssessmentProgress
-          assessments={assessments}
-          onAssessmentClick={(id) => !isDragMode && navigate(`/app/assessments/${id}`)}
-        />
-      </motion.div>
+      {/* Assessment Progress - Full Width Below */}
+      {activeWidgets.includes('assessment-progress') && (
+        <motion.div variants={itemVariants} className="w-full">
+          <DashboardWidget
+            key="assessment-progress"
+            widgetId="assessment-progress"
+            isDragMode={isDragMode}
+            onRemove={handleRemoveWidget}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            realData={stats}
+            onClick={() => !isDragMode && navigate('/app/assessments')}
+          />
+        </motion.div>
+      )}
+
+
 
       </motion.div>
 
@@ -357,181 +459,6 @@ const Dashboard = () => {
   );
 };
 
-// Current Activities component that matches RSS feed height
-const CurrentActivities = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  const activities = [
-    {
-      id: 1,
-      type: 'assessment',
-      title: 'ISO 27001 Assessment in Progress',
-      description: '12 of 24 requirements completed',
-      time: '2 hours ago',
-      status: 'in-progress',
-      icon: <Shield size={16} />,
-      color: 'blue'
-    },
-    {
-      id: 2,
-      type: 'requirement',
-      title: 'Updated Access Control Policy',
-      description: 'Requirement A.9.1.1 marked as fulfilled',
-      time: '4 hours ago',
-      status: 'completed',
-      icon: <CheckCircle2 size={16} />,
-      color: 'green'
-    },
-    {
-      id: 3,
-      type: 'assignment',
-      title: 'New Requirements Assigned',
-      description: '5 network security requirements assigned to you',
-      time: '6 hours ago',
-      status: 'pending',
-      icon: <AlertCircle size={16} />,
-      color: 'amber'
-    },
-    {
-      id: 4,
-      type: 'document',
-      title: 'Generated SOA Document',
-      description: 'Statement of Applicability for ISO 27001',
-      time: '1 day ago',
-      status: 'completed',
-      icon: <FileText size={16} />,
-      color: 'purple'
-    },
-    {
-      id: 5,
-      type: 'review',
-      title: 'Evidence Review Pending',
-      description: 'Risk assessment documentation needs review',
-      time: '1 day ago',
-      status: 'pending',
-      icon: <Clock3 size={16} />,
-      color: 'orange'
-    },
-    {
-      id: 6,
-      type: 'assessment',
-      title: 'CIS Controls Gap Analysis',
-      description: 'Baseline assessment completed',
-      time: '2 days ago',
-      status: 'completed',
-      icon: <BarChart3 size={16} />,
-      color: 'teal'
-    },
-    {
-      id: 7,
-      type: 'training',
-      title: 'Security Awareness Training',
-      description: 'Completed mandatory cybersecurity module',
-      time: '3 days ago',
-      status: 'completed',
-      icon: <BookOpen size={16} />,
-      color: 'indigo'
-    },
-    {
-      id: 8,
-      type: 'collaboration',
-      title: 'Team Collaboration Session',
-      description: 'Discussed GDPR compliance strategy',
-      time: '4 days ago',
-      status: 'completed',
-      icon: <User size={16} />,
-      color: 'pink'
-    }
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'text-green-600 dark:text-green-400';
-      case 'in-progress': return 'text-blue-600 dark:text-blue-400';
-      case 'pending': return 'text-amber-600 dark:text-amber-400';
-      default: return 'text-gray-600 dark:text-gray-400';
-    }
-  };
-
-  const getIconBg = (color: string) => {
-    const colors = {
-      blue: 'bg-blue-100 dark:bg-blue-900/50',
-      green: 'bg-green-100 dark:bg-green-900/50',
-      amber: 'bg-amber-100 dark:bg-amber-900/50',
-      purple: 'bg-purple-100 dark:bg-purple-900/50',
-      orange: 'bg-orange-100 dark:bg-orange-900/50',
-      teal: 'bg-teal-100 dark:bg-teal-900/50',
-      indigo: 'bg-indigo-100 dark:bg-indigo-900/50',
-      pink: 'bg-pink-100 dark:bg-pink-900/50'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
-
-  return (
-    <Card className="shadow-md hover:shadow-lg transition-all h-[340px] border border-border/70" data-card="true">
-      <CardContent className="p-4 h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
-              <Activity size={16} className="text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold">Current Activities</h3>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="px-2 py-1 h-auto text-xs"
-            onClick={() => navigate('/app/activities')}
-          >
-            View All
-          </Button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-          {activities.map((activity) => (
-            <div 
-              key={activity.id} 
-              className="p-3 border border-border/50 rounded-lg hover:bg-muted/20 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
-              onClick={() => {
-                if (activity.type === 'assessment') navigate('/app/assessments');
-                else if (activity.type === 'requirement') navigate('/app/requirements');
-                else if (activity.type === 'document') navigate('/app/documents');
-                else navigate('/app/activities');
-              }}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`${getIconBg(activity.color)} p-2 rounded-lg flex-shrink-0`}>
-                  <div className={getStatusColor(activity.status)}>
-                    {activity.icon}
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <h4 className="text-sm font-medium line-clamp-1">{activity.title}</h4>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{activity.description}</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
-                  </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      activity.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' :
-                      activity.status === 'in-progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' :
-                      'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
-                    }`}>
-                      {activity.status.replace('-', ' ')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
 
 
 export default Dashboard;

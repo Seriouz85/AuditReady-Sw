@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { StandardsService } from '@/services/standards/StandardsService';
 import { RequirementsService } from '@/services/requirements/RequirementsService';
+import { MultiTenantAssessmentService } from '@/services/assessments/MultiTenantAssessmentService';
 
 interface DashboardStats {
   totalStandards: number;
@@ -32,7 +33,7 @@ export function useDashboardData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { user, organization } = useAuth();
+  const { user, organization, isDemo } = useAuth();
 
   useEffect(() => {
     if (!organization?.id) return;
@@ -42,12 +43,19 @@ export function useDashboardData() {
         setLoading(true);
         const standardsService = new StandardsService();
         const requirementsService = new RequirementsService();
+        const assessmentService = MultiTenantAssessmentService.getInstance();
 
         // Fetch organization standards
         const orgStandards = await standardsService.getOrganizationStandards(organization.id);
 
         // Fetch organization requirements (all standards)
         const orgRequirements = await requirementsService.getOrganizationRequirements(organization.id);
+
+        // Fetch assessments
+        const assessments = await assessmentService.getAssessments(organization.id, isDemo);
+        
+        // Use ALL assessments for total count, not just ongoing ones
+        const allAssessments = assessments;
 
         // Calculate compliance breakdown
         const breakdown = {
@@ -95,7 +103,7 @@ export function useDashboardData() {
         setStats({
           totalStandards: orgStandards.length,
           totalRequirements: orgRequirements.length,
-          totalAssessments: 0, // TODO: Implement assessments count
+          totalAssessments: allAssessments.length,
           complianceScore,
           complianceBreakdown: breakdown,
         });

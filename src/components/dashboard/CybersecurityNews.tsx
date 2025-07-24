@@ -20,7 +20,7 @@ export const CybersecurityNews = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const handleItemClick = (id: string, url: string) => {
+  const handleItemClick = (id: string) => {
     // Toggle expansion for better UX
     setExpandedItem(expandedItem === id ? null : id);
   };
@@ -89,8 +89,10 @@ export const CybersecurityNews = () => {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-              <CardTitle className="text-lg">Cybersecurity News</CardTitle>
+              <div className="bg-red-100 dark:bg-red-900/50 p-1.5 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
+              </div>
+              <CardTitle className="text-lg font-semibold">Cybersecurity News</CardTitle>
             </div>
             <Button 
               variant="outline" 
@@ -204,7 +206,7 @@ export const CybersecurityNews = () => {
                     hover:bg-muted/20 dark:hover:bg-slate-800/60 transition-all
                     ${expandedItem === item.id ? 'bg-muted/30' : ''}
                   `}
-                  onClick={() => handleItemClick(item.id, item.url)}
+                  onClick={() => handleItemClick(item.id)}
                 >
                   <div className="flex gap-3">
                     {/* Left: Thumbnail */}

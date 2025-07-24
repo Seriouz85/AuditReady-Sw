@@ -3,15 +3,10 @@ import {
   Layout, 
   Grid, 
   BarChart3, 
-  PieChart, 
   TrendingUp, 
   Shield, 
-  Users, 
-  FileText, 
   Clock, 
   Target,
-  Settings,
-  Save,
   RefreshCw,
   Plus,
   Trash2,
@@ -19,9 +14,6 @@ import {
   Move,
   Eye,
   EyeOff,
-  Maximize2,
-  Minimize2,
-  Palette,
   Layers,
   Copy,
   Download,
@@ -39,11 +31,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface DashboardWidget {
@@ -77,21 +67,18 @@ interface DashboardLayout {
 
 interface CustomerDashboardSettingsProps {
   organizationId: string;
-  onClose?: () => void;
   onLayoutChange?: (layout: DashboardLayout) => void;
 }
 
-export function CustomerDashboardSettings({ organizationId, onClose, onLayoutChange }: CustomerDashboardSettingsProps) {
-  const { user, organization } = useAuth();
+export function CustomerDashboardSettings({ organizationId, onLayoutChange }: CustomerDashboardSettingsProps) {
+  const { user } = useAuth();
   const { toast } = useToast();
 
   // State management
   const [layouts, setLayouts] = useState<DashboardLayout[]>([]);
   const [activeLayout, setActiveLayout] = useState<DashboardLayout | null>(null);
-  const [availableWidgets, setAvailableWidgets] = useState<DashboardWidget[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingWidget, setEditingWidget] = useState<DashboardWidget | null>(null);
 
   // Form states
   const [layoutForm, setLayoutForm] = useState({
@@ -102,12 +89,6 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
     refreshRate: 5
   });
 
-  // Theme options
-  const themeOptions = [
-    { value: 'light', label: 'Light', icon: '☀️' },
-    { value: 'dark', label: 'Dark', icon: '🌙' },
-    { value: 'auto', label: 'Auto', icon: '🔄' },
-  ];
 
   // Available widget templates with enhanced metadata
   const widgetTemplates: Partial<DashboardWidget>[] = [
@@ -263,8 +244,10 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
       ];
 
       setLayouts(demoLayouts);
-      setActiveLayout(demoLayouts[0]);
-      setAvailableWidgets(widgetTemplates as DashboardWidget[]);
+      const firstLayout = demoLayouts[0];
+      if (firstLayout) {
+        setActiveLayout(firstLayout);
+      }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       toast({
@@ -318,6 +301,8 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
     if (!activeLayout) return;
 
     const template = widgetTemplates[templateIndex];
+    if (!template) return;
+
     const newWidget: DashboardWidget = {
       ...template,
       id: `widget-${Date.now()}`,
@@ -693,7 +678,7 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
                 </CardHeader>
                 <CardContent className="space-y-2 pt-2">
                   <div className="space-y-2">
-                    {activeLayout.widgets.map((widget, index) => (
+                    {activeLayout.widgets.map((widget) => (
                       <div 
                         key={widget.id}
                         className={cn(
@@ -704,8 +689,8 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
                         )}
                         draggable={widget.isVisible}
                         onDragStart={(e) => {
-                          if (widget.isVisible) {
-                            e.dataTransfer.setData('text/plain', widget.id);
+                          if (widget.isVisible && 'dataTransfer' in e) {
+                            ((e as unknown) as React.DragEvent).dataTransfer.setData('text/plain', widget.id);
                           }
                         }}
                       >
@@ -745,7 +730,12 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
                               variant="ghost"
                               size="sm"
                               className="h-6 w-6 p-0"
-                              onClick={() => setEditingWidget(widget)}
+                              onClick={() => {
+                                toast({
+                                  title: 'Edit Widget',
+                                  description: 'Widget editing functionality coming soon'
+                                });
+                              }}
                             >
                               <Edit2 className="h-3 w-3" />
                             </Button>
@@ -818,79 +808,86 @@ export function CustomerDashboardSettings({ organizationId, onClose, onLayoutCha
               </div>
             </CardHeader>
             <CardContent className="pt-3 px-3 pb-3">
-              <div className="grid grid-cols-1 gap-2">
+              <div className="space-y-3">
                 {widgetTemplates.map((template, index) => (
                   <motion.div 
                     key={`template-${index}`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={cn(
-                      "relative p-3 border rounded-lg transition-all cursor-pointer group",
-                      "hover:border-primary/50 hover:bg-muted/50",
-                      !activeLayout && "opacity-50 cursor-not-allowed"
-                    )}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    className="relative transition-all cursor-pointer group border rounded-lg bg-card hover:border-primary/50 hover:bg-muted/50 p-3"
+                    style={{
+                      // FORCE DIFFERENT SIZES WITH INLINE STYLES
+                      width: template.size === 'small' ? '120px' : 
+                             template.size === 'medium' ? '200px' : 
+                             template.size === 'large' ? '280px' : '200px',
+                      height: template.size === 'small' ? '80px' : 
+                              template.size === 'medium' ? '120px' : 
+                              template.size === 'large' ? '160px' : '120px',
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}
                     draggable={!!activeLayout}
                     onDragStart={(e) => {
-                      if (activeLayout) {
-                        e.dataTransfer.setData('text/plain', `template-${index}`);
+                      if (activeLayout && 'dataTransfer' in e) {
+                        ((e as unknown) as React.DragEvent).dataTransfer.setData('text/plain', `template-${index}`);
                       }
                     }}
                     onClick={() => activeLayout && handleAddWidget(index)}
                   >
-                    {/* Widget Preview */}
-                    <div className="flex items-start gap-3">
-                      <div className={cn(
-                        "p-2 rounded-lg transition-colors",
-                        "bg-primary/10 text-primary group-hover:bg-primary/20"
-                      )}>
-                        {getWidgetIcon(template.type!)}
+                    {/* SIMPLE CLEAN WIDGET PREVIEW - NO CHARTS OR SYMBOLS */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <div style={{
+                        padding: template.size === 'small' ? '4px' : template.size === 'medium' ? '6px' : '8px',
+                        borderRadius: '4px',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        color: 'rgb(59, 130, 246)'
+                      }}>
+                        {React.cloneElement(getWidgetIcon(template.type!) as React.ReactElement, {
+                          style: {
+                            width: template.size === 'small' ? '12px' : template.size === 'medium' ? '16px' : '20px',
+                            height: template.size === 'small' ? '12px' : template.size === 'medium' ? '16px' : '20px'
+                          }
+                        })}
                       </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-1">
-                          <h4 className="text-sm font-medium">{template.title}</h4>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (activeLayout) handleAddWidget(index);
-                            }}
-                            disabled={!activeLayout}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        
-                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                          {template.subtitle}
-                        </p>
-                        
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge className={cn(
-                            "text-xs px-1.5 py-0",
-                            getSizeColor(template.size!)
-                          )}>
-                            {template.size}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs px-1.5 py-0">
-                            <RefreshCw className="h-2.5 w-2.5 mr-1" />
-                            {template.refreshInterval}min
-                          </Badge>
-                          {template.permissions && template.permissions.length > 0 && (
-                            <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                              <Shield className="h-2.5 w-2.5 mr-1" />
-                              {template.permissions.length} perms
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+                      <h4 style={{
+                        fontWeight: '500',
+                        fontSize: template.size === 'small' ? '12px' : template.size === 'medium' ? '14px' : '16px',
+                        flex: 1,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {template.title}
+                      </h4>
+                    </div>
+                    
+                    {/* Subtitle only for larger widgets */}
+                    {template.subtitle && template.size !== 'small' && (
+                      <p style={{
+                        color: '#6b7280',
+                        fontSize: template.size === 'medium' ? '12px' : '14px',
+                        marginBottom: '8px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {template.subtitle}
+                      </p>
+                    )}
+                    
+                    {/* Push to bottom */}
+                    <div style={{ flex: 1 }}></div>
+                    
+                    {/* Size badge at bottom */}
+                    <div style={{ marginTop: 'auto' }}>
+                      <Badge className={cn("text-xs px-1.5 py-0", getSizeColor(template.size!))}>
+                        {template.size}
+                      </Badge>
                     </div>
                     
                     {/* Drag indicator */}
                     {activeLayout && (
-                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Move className="h-3 w-3 text-muted-foreground" />
                       </div>
                     )}
