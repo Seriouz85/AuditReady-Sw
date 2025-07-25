@@ -53,6 +53,8 @@ interface CourseCardProps {
   onDuplicate?: () => void;
   onShare?: () => void;
   className?: string;
+  showEnrollButton?: boolean;
+  isEnrolling?: boolean;
 }
 
 const difficultyConfig = {
@@ -64,6 +66,7 @@ const difficultyConfig = {
 const categoryColors = {
   compliance: 'bg-blue-100 text-blue-800',
   'security-awareness': 'bg-purple-100 text-purple-800',
+  security: 'bg-purple-100 text-purple-800',
   technical: 'bg-orange-100 text-orange-800',
   'data-protection': 'bg-teal-100 text-teal-800',
   governance: 'bg-indigo-100 text-indigo-800',
@@ -91,7 +94,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   onDelete,
   onDuplicate,
   onShare,
-  className = ''
+  className = '',
+  showEnrollButton = false,
+  isEnrolling = false
 }) => {
   const navigate = useNavigate();
   const difficultyStyle = difficultyConfig[difficulty];
@@ -293,16 +298,32 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         <div>
           {typeof progress === 'number' && progress > 0 ? (
             <Button 
-              onClick={() => navigate(`/lms/viewer/${id}`)}
+              onClick={onView}
               className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200 font-medium py-2.5 rounded-xl border-0"
               variant="default"
             >
               <Play className="mr-2 h-4 w-4" />
               Continue Learning
             </Button>
+          ) : showEnrollButton ? (
+            <Button 
+              onClick={onView}
+              disabled={isEnrolling}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 font-medium py-2.5 rounded-xl"
+              variant="default"
+            >
+              {isEnrolling ? (
+                <>Loading...</>
+              ) : (
+                <>
+                  <Play className="mr-2 h-4 w-4" />
+                  Enroll Now
+                </>
+              )}
+            </Button>
           ) : (
             <Button 
-              onClick={() => navigate(`/lms/viewer/${id}`)}
+              onClick={onView}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 font-medium py-2.5 rounded-xl"
               variant="default"
             >

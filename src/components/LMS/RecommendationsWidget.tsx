@@ -33,7 +33,10 @@ interface Recommendation {
 }
 
 interface RecommendationsWidgetProps {
-  recommendations: Recommendation[];
+  recommendations?: Recommendation[];
+  currentCourses?: any[];
+  userProgress?: any[];
+  loading?: boolean;
   isExpanded?: boolean;
   onExpand?: () => void;
   onViewRecommendation?: (id: string) => void;
@@ -42,13 +45,64 @@ interface RecommendationsWidgetProps {
 }
 
 export const RecommendationsWidget: React.FC<RecommendationsWidgetProps> = ({
-  recommendations,
+  recommendations: providedRecommendations,
+  currentCourses = [],
+  userProgress = [],
+  loading = false,
   isExpanded = false,
   onExpand,
   onViewRecommendation,
   onRefresh,
   className = ''
 }) => {
+  // Generate default recommendations if none provided
+  const defaultRecommendations: Recommendation[] = [
+    {
+      id: 'rec-1',
+      type: 'course',
+      title: 'Advanced Cybersecurity Risk Assessment',
+      description: 'Master advanced techniques for identifying and evaluating cybersecurity risks',
+      reason: 'Based on your progress in security fundamentals',
+      duration: 120,
+      rating: 4.8,
+      enrolledCount: 1200,
+      difficulty: 'intermediate',
+      category: 'security',
+      tags: ['Risk Assessment', 'Cybersecurity', 'Compliance'],
+      urgent: false
+    },
+    {
+      id: 'rec-2',
+      type: 'certification',
+      title: 'ISO 27001 Lead Implementer Certification',
+      description: 'Become certified to implement and manage ISO 27001 ISMS',
+      reason: 'Perfect next step after completing ISO fundamentals',
+      duration: 480,
+      rating: 4.9,
+      enrolledCount: 850,
+      difficulty: 'advanced',
+      category: 'compliance',
+      tags: ['ISO 27001', 'Certification', 'ISMS'],
+      urgent: true
+    },
+    {
+      id: 'rec-3',
+      type: 'trending',
+      title: 'AI Security and Privacy Compliance',
+      description: 'Navigate the emerging landscape of AI governance and security',
+      reason: 'Trending topic in cybersecurity compliance',
+      duration: 90,
+      rating: 4.7,
+      enrolledCount: 2100,
+      difficulty: 'intermediate',
+      category: 'emerging-tech',
+      tags: ['AI Security', 'Privacy', 'Emerging Tech'],
+      urgent: false
+    }
+  ];
+
+  const recommendations = providedRecommendations || defaultRecommendations;
+
   const getTypeIcon = (type: Recommendation['type']) => {
     switch (type) {
       case 'course': return BookOpen;

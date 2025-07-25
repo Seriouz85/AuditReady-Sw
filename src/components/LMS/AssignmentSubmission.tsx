@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { RichTextEditor } from './RichTextEditor';
+import { EnhancedRichTextEditor } from './EnhancedRichTextEditor';
 import { 
   Upload, 
   File, 
@@ -343,7 +343,7 @@ export const AssignmentSubmission: React.FC<AssignmentSubmissionProps> = ({
                 <CardTitle className="text-lg">Your Response</CardTitle>
               </CardHeader>
               <CardContent>
-                <RichTextEditor
+                <EnhancedRichTextEditor
                   initialContent={content}
                   onSave={setContent}
                   onCancel={() => {}}

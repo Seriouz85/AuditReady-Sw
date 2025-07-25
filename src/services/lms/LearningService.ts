@@ -7,7 +7,8 @@ import {
   CourseModule,
   Quiz,
   QuizQuestion,
-  UserQuizAttempt
+  UserQuizAttempt,
+  CourseEnrollment
 } from '@/types/lms';
 import { toast } from '@/utils/toast';
 
@@ -171,7 +172,7 @@ export class LearningService {
             id,
             title,
             description,
-            total_duration
+            estimated_duration_minutes
           ),
           learning_content (
             id,
@@ -325,10 +326,10 @@ export class LearningService {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase
-        .from('training_assignments')
+        .from('assignments')
         .insert({
           ...assignment,
-          assigned_by: user.id
+          created_by: user.id
         });
 
       if (error) throw error;
@@ -370,17 +371,39 @@ export class LearningService {
   async submitQuizAttempt(attempt: {
     userId: string;
     quizId: string;
+    enrollmentId: string;
+    organizationId: string;
     answers: Record<string, any>;
     score: number;
+    totalPoints: number;
   }): Promise<boolean> {
     try {
+      // Get current attempt number
+      const { data: existingAttempts } = await supabase
+        .from('quiz_attempts')
+        .select('attempt_number')
+        .eq('user_id', attempt.userId)
+        .eq('quiz_id', attempt.quizId)
+        .order('attempt_number', { ascending: false })
+        .limit(1);
+
+      const nextAttemptNumber = existingAttempts && existingAttempts.length > 0 
+        ? existingAttempts[0].attempt_number + 1 
+        : 1;
+
       const { error } = await supabase
-        .from('user_quiz_attempts')
+        .from('quiz_attempts')
         .insert({
           user_id: attempt.userId,
           quiz_id: attempt.quizId,
+          organization_id: attempt.organizationId,
+          enrollment_id: attempt.enrollmentId,
+          attempt_number: nextAttemptNumber,
+          status: 'completed',
           answers: attempt.answers,
           score: attempt.score,
+          points_earned: Math.round((attempt.score / 100) * attempt.totalPoints),
+          total_points: attempt.totalPoints,
           completed_at: new Date().toISOString()
         });
 
@@ -401,9 +424,9 @@ export class LearningService {
         .eq('learning_path_id', courseId);
 
       const { data: assignmentData } = await supabase
-        .from('training_assignments')
+        .from('assignments')
         .select('*')
-        .eq('learning_path_id', courseId);
+        .eq('learning_content_id', courseId);
 
       // Calculate analytics
       const totalUsers = new Set(progressData?.map(p => p.user_id)).size;
@@ -422,6 +445,75 @@ export class LearningService {
     } catch (error) {
       console.error('Error fetching course analytics:', error);
       return null;
+    }
+  }
+
+  // Course Enrollment Management
+  async enrollUser(userId: string, learningPathId: string, organizationId: string, enrollmentType: 'self' | 'assigned' | 'mandatory' | 'bulk' = 'self'): Promise<boolean> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('course_enrollments')
+        .insert({
+          user_id: userId,
+          learning_path_id: learningPathId,
+          organization_id: organizationId,
+          enrollment_type: enrollmentType,
+          enrolled_by: enrollmentType !== 'self' ? user.id : null
+        });
+
+      if (error) throw error;
+      toast.success('User enrolled successfully');
+      return true;
+    } catch (error) {
+      console.error('Error enrolling user:', error);
+      toast.error('Failed to enroll user');
+      return false;
+    }
+  }
+
+  async getUserEnrollments(userId: string): Promise<CourseEnrollment[]> {
+    try {
+      const { data, error } = await supabase
+        .from('course_enrollments')
+        .select(`
+          *,
+          learning_paths (*)
+        `)
+        .eq('user_id', userId)
+        .order('enrolled_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching enrollments:', error);
+      return [];
+    }
+  }
+
+  async updateEnrollmentProgress(enrollmentId: string, progressData: {
+    progress_percentage?: number;
+    total_time_spent_minutes?: number;
+    last_accessed_at?: string;
+    completion_score?: number;
+    status?: 'enrolled' | 'in_progress' | 'completed' | 'dropped' | 'expired';
+  }): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('course_enrollments')
+        .update({
+          ...progressData,
+          last_accessed_at: progressData.last_accessed_at || new Date().toISOString()
+        })
+        .eq('id', enrollmentId);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error updating enrollment progress:', error);
+      return false;
     }
   }
 

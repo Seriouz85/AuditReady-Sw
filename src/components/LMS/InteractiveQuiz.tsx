@@ -131,6 +131,18 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
   const totalQuestions = questions.length;
   const progress = ((currentQuestionIndex) / totalQuestions) * 100;
 
+  // Complete quiz - defined early to avoid hoisting issues
+  const handleQuizComplete = useCallback(() => {
+    const totalPoints = quizAttempts.reduce((sum, attempt) => 
+      sum + (attempt.isCorrect ? questions.find(q => q.id === attempt.questionId)?.points || 0 : 0), 0
+    );
+    const maxPoints = questions.reduce((sum, q) => sum + q.points, 0);
+    const score = Math.round((totalPoints / maxPoints) * 100);
+    
+    setIsQuizCompleted(true);
+    onComplete?.(score, quizAttempts);
+  }, [quizAttempts, questions, onComplete]);
+
   // Timer effect
   useEffect(() => {
     if (timeRemaining === null) return;
@@ -234,17 +246,6 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
     }
   };
 
-  // Complete quiz
-  const handleQuizComplete = useCallback(() => {
-    const totalPoints = quizAttempts.reduce((sum, attempt) => 
-      sum + (attempt.isCorrect ? questions.find(q => q.id === attempt.questionId)?.points || 0 : 0), 0
-    );
-    const maxPoints = questions.reduce((sum, q) => sum + q.points, 0);
-    const score = Math.round((totalPoints / maxPoints) * 100);
-    
-    setIsQuizCompleted(true);
-    onComplete?.(score, quizAttempts);
-  }, [quizAttempts, questions, onComplete]);
 
   // Restart quiz
   const handleRestartQuiz = () => {

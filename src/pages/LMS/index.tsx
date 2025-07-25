@@ -624,53 +624,51 @@ const TrenningLMS: React.FC = () => {
             <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-2xl">
               <Book className="h-12 w-12 text-gray-300 mb-4" />
               <h3 className="text-xl font-medium mb-2">No courses in progress</h3>
-              <p className="text-muted-foreground text-center mb-6">You haven't started any courses yet. Explore new courses below and start learning!</p>
-              <Button 
-                className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
-                onClick={() => document.getElementById('new-courses')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                Explore Courses
+              <p className="text-muted-foreground mb-4">Start a new course to begin your learning journey</p>
+              <Button onClick={() => navigate('/lms/library')}>
+                Browse Courses
               </Button>
             </div>
           )}
-          </div>
         </div>
-      </Card>
-    </div>
+        </div>
+        </Card>
       
-      {/* New Enrollment Section - Fixed container width */}
-      <div id="new-courses" className="container max-w-7xl mx-auto p-4 md:p-8">
+        {/* Available Courses Section */}
         <Card className="rounded-xl border-0 shadow-md mb-6">
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
-                  <GraduationCap className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center">
+                  <Target className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Available Courses</h2>
-                  <p className="text-sm text-gray-600">Explore new training programs</p>
+                  <h2 className="text-xl font-bold text-gray-900">Recommended Courses</h2>
+                  <p className="text-sm text-gray-600">Curated learning paths for your role</p>
                 </div>
               </div>
-              <Button variant="ghost" className="text-primary hover:text-purple-600" onClick={() => navigate('/lms/library')}>
+              <Button variant="ghost" className="text-primary hover:text-blue-600" onClick={() => navigate('/lms/library')}>
                 View all <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {loading ? (
             // Loading skeletons
             [...Array(3)].map((_, i) => (
-              <Card key={i} className="overflow-hidden rounded-2xl border-0 shadow">
-                <Skeleton className="h-48" />
-                <div className="p-5 space-y-3">
-                  <Skeleton className="h-6 w-3/4" />
+              <div key={i} className="flex flex-col md:flex-row gap-6 bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-2xl">
+                <Skeleton className="md:w-48 h-28 rounded-2xl" />
+                <div className="flex-1 space-y-3">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-8 w-3/4" />
                   <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-3 w-full" />
                 </div>
-              </Card>
+              </div>
             ))
           ) : availableCourses.length > 0 ? (
-            availableCourses.slice(0, 3).map(course => (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {availableCourses.slice(0, 6).map(course => (
               <CourseCard
                 key={course.id}
                 id={course.id}
@@ -680,64 +678,50 @@ const TrenningLMS: React.FC = () => {
                 difficulty={course.difficulty_level as 'beginner' | 'intermediate' | 'advanced'}
                 duration={course.estimated_duration}
                 totalModules={course.total_modules}
+                progress={course.progressPercentage}
                 thumbnailUrl={course.thumbnail_url}
                 isPublished={course.is_published}
                 isMandatory={course.is_mandatory}
                 instructor={demoInstructors[course.created_by as keyof typeof demoInstructors]}
                 tags={course.tags}
                 onView={() => handleEnroll(course.id)}
+                onEdit={() => navigate(`/lms/course/${course.id}/edit`)}
+                showEnrollButton={true}
+                isEnrolling={enrolling === course.id}
               />
-            ))
+              ))}
+            </div>
           ) : (
-            <div className="col-span-3 text-center py-12">
-              <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No courses available</h3>
-              <p className="text-muted-foreground">Check back later for new learning opportunities</p>
+            // No available courses
+            <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-2xl">
+              <FolderOpen className="h-12 w-12 text-gray-300 mb-4" />
+              <h3 className="text-xl font-medium mb-2">No courses available</h3>
+              <p className="text-muted-foreground mb-4">Check back later for new learning opportunities</p>
             </div>
           )}
+        </div>
+        </div>
+        </Card>
+      
+        {/* Side Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <ProgressWidget 
+              analytics={analytics} 
+              loading={loading}
+            />
+          </div>
+          <div className="lg:col-span-2">
+            <RecommendationsWidget 
+              currentCourses={courses}
+              userProgress={userProgress}
+              loading={loading}
+            />
           </div>
         </div>
-      </Card>
-    </div>
-      
-      {/* User Goals Section - Fixed container width */}
-      <div className="container max-w-7xl mx-auto p-4 md:p-8">
-        <div className="flex items-center gap-4 mb-4">
-          <h2 className="text-xl font-semibold flex items-center">Goals</h2>
-          <Button variant="ghost" size="icon" className="h-6 w-6">
-            <Bell className="h-4 w-4 text-muted-foreground" />
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-6 rounded-2xl border-0 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-blue-50 to-indigo-50">
-            <h3 className="font-medium mb-4">Daily Goal: {currentUser.dailyGoal.current}/{currentUser.dailyGoal.total} activities</h3>
-            <div className="mb-2">
-              <Progress value={(currentUser.dailyGoal.current / currentUser.dailyGoal.total) * 100} className="h-4 rounded-full bg-blue-100" />
-            </div>
-          </Card>
-          
-          <Card className="p-6 rounded-2xl border-0 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-orange-50 to-amber-50">
-            <h3 className="font-medium mb-2">Your Learning streak: {currentUser.streak.days} Days</h3>
-            <p className="text-sm text-muted-foreground">{currentUser.streak.dates}</p>
-            <Button variant="link" className="p-0 mt-2 h-auto text-primary">
-              See Detail
-            </Button>
-          </Card>
-        </div>
-      </div>
-      
-      
-      {/* Quick Actions */}
-      <div className="fixed bottom-6 right-6 flex flex-col items-end space-y-4">
-        <Link to="/lms/create/content">
-          <Button className="rounded-full p-6 h-auto w-auto bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all">
-            <Plus className="h-6 w-6" />
-          </Button>
-        </Link>
       </div>
     </div>
   );
 };
 
-export default TrenningLMS; 
+export default TrenningLMS;
