@@ -4,6 +4,7 @@ import './index.css';
 import './styles/react-flow-export.css';
 import App from './App';
 import { sentryService } from '@/services/monitoring/SentryService';
+import { OptimizedDemoDataService } from '@/services/demo/OptimizedDemoDataService';
 
 // Initialize Sentry monitoring
 sentryService.initialize().then((initialized) => {
@@ -13,6 +14,10 @@ sentryService.initialize().then((initialized) => {
     console.log('🔍 Monitoring disabled (development mode)');
   }
 });
+
+// Pre-warm demo data in background (non-blocking)
+// This runs after a delay to not impact initial page load
+OptimizedDemoDataService.prewarmDemoData();
 
 // Runtime cache control for SPA navigation
 const configureCacheHeaders = () => {
