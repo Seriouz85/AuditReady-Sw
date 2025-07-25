@@ -40,7 +40,7 @@ const Dashboard = () => {
     return () => {
       stopAutoScroll();
     };
-  }, []);
+  }, [autoScrollInterval]);
 
   const getUserGreeting = () => {
     if (isDemo) {

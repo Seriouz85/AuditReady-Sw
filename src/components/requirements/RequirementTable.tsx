@@ -4,7 +4,7 @@ import { ComplianceStatusBadge } from "@/components/ui/status-badge";
 import { Requirement, RequirementPriority } from "@/types";
 import { ArrowUpDown, ArrowUp, ArrowDown, Flag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
 interface RequirementTableProps {
@@ -23,11 +23,7 @@ export function RequirementTable({
   const [unifiedCategories, setUnifiedCategories] = useState<any[]>([]);
 
   // Load unified categories (no separate tags table needed)
-  useEffect(() => {
-    loadUnifiedCategories();
-  }, []);
-
-  const loadUnifiedCategories = async () => {
+  const loadUnifiedCategories = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('unified_compliance_categories')
@@ -42,7 +38,11 @@ export function RequirementTable({
     } catch (error) {
       console.error('Error loading unified categories:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadUnifiedCategories();
+  }, [loadUnifiedCategories]);
 
   const getCategoryName = (categoryId: string): string => {
     // Safety check for non-string inputs

@@ -1,34 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Activity, 
-  Users, 
-  Building2, 
-  Shield, 
-  Database, 
-  Server, 
+  Users,
   AlertTriangle, 
   CheckCircle, 
-  Clock, 
-  TrendingUp,
   BarChart3,
-  PieChart,
   Settings,
   RefreshCw,
   Download,
   Search,
-  Filter,
   Eye,
   Ban,
-  UserCheck,
-  Mail,
-  Bell,
-  Zap,
-  Globe,
-  Lock,
-  Unlock,
-  FileText,
-  Key,
-  Monitor
+  Unlock
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,12 +19,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -99,25 +79,11 @@ interface EnhancedAdminConsoleProps {
   organizationId?: string;
 }
 
-export function EnhancedAdminConsole({ organizationId }: EnhancedAdminConsoleProps) {
+export function EnhancedAdminConsole({ organizationId: _organizationId }: EnhancedAdminConsoleProps) {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Restrict access to platform administrators only
-  const isPlatformAdmin = user?.email === 'platform@auditready.com' || process.env.NODE_ENV === 'development';
-  
-  if (!isPlatformAdmin) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Restricted</h2>
-          <p className="text-gray-600">This area is reserved for platform administrators only.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // State management
+  // State management - must be called before any early returns
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
   const [organizations, setOrganizations] = useState<OrganizationSummary[]>([]);
   const [userActivities, setUserActivities] = useState<UserActivity[]>([]);
@@ -125,15 +91,10 @@ export function EnhancedAdminConsole({ organizationId }: EnhancedAdminConsolePro
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTimeRange, setSelectedTimeRange] = useState('24h');
-  const [selectedOrg, setSelectedOrg] = useState<string>('all');
+  // const [selectedOrg, setSelectedOrg] = useState<string>('all');
 
-  useEffect(() => {
-    loadAdminData();
-    const interval = setInterval(loadAdminData, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, [selectedTimeRange]);
-
-  const loadAdminData = async () => {
+  // Load admin data function
+  const loadAdminData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -291,9 +252,9 @@ export function EnhancedAdminConsole({ organizationId }: EnhancedAdminConsolePro
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
-  const handleSuspendOrg = (orgId: string) => {
+  const handleSuspendOrg = useCallback((orgId: string) => {
     setOrganizations(prev => prev.map(org => 
       org.id === orgId 
         ? { ...org, status: org.status === 'suspended' ? 'active' : 'suspended' as any }
@@ -305,9 +266,9 @@ export function EnhancedAdminConsole({ organizationId }: EnhancedAdminConsolePro
       title: org?.status === 'suspended' ? 'Organization Activated' : 'Organization Suspended',
       description: `${org?.name} has been ${org?.status === 'suspended' ? 'activated' : 'suspended'}`
     });
-  };
+  }, [organizations, toast]);
 
-  const handleResolveAlert = (alertId: string) => {
+  const handleResolveAlert = useCallback((alertId: string) => {
     setSystemAlerts(prev => prev.map(alert =>
       alert.id === alertId ? { ...alert, resolved: true } : alert
     ));
@@ -316,7 +277,27 @@ export function EnhancedAdminConsole({ organizationId }: EnhancedAdminConsolePro
       title: 'Alert Resolved',
       description: 'System alert has been marked as resolved'
     });
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadAdminData();
+    const interval = setInterval(loadAdminData, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
+  }, [loadAdminData]);
+
+  // Restrict access to platform administrators only
+  const isPlatformAdmin = user?.email === 'platform@auditready.com' || process.env['NODE_ENV'] === 'development';
+  
+  if (!isPlatformAdmin) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Restricted</h2>
+          <p className="text-gray-600">This area is reserved for platform administrators only.</p>
+        </div>
+      </div>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {

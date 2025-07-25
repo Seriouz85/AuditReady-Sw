@@ -209,16 +209,16 @@ export const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
     document.execCommand(command, false, value);
     editorRef.current?.focus();
     updateContent();
-  }, []);
+  }, [updateContent]);
 
-  const updateContent = () => {
+  const updateContent = useCallback(() => {
     if (editorRef.current) {
       const newContent = editorRef.current.innerHTML;
       setContent(newContent);
       setHasUnsavedChanges(true);
       updateCounts();
     }
-  };
+  }, []);
 
   const isCommandActive = (command: string): boolean => {
     return document.queryCommandState(command);

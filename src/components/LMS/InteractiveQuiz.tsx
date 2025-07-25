@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -145,7 +145,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeRemaining]);
+  }, [timeRemaining, handleQuizComplete]);
 
   // Progress tracking
   useEffect(() => {
@@ -235,7 +235,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
   };
 
   // Complete quiz
-  const handleQuizComplete = () => {
+  const handleQuizComplete = useCallback(() => {
     const totalPoints = quizAttempts.reduce((sum, attempt) => 
       sum + (attempt.isCorrect ? questions.find(q => q.id === attempt.questionId)?.points || 0 : 0), 0
     );
@@ -244,7 +244,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
     
     setIsQuizCompleted(true);
     onComplete?.(score, quizAttempts);
-  };
+  }, [quizAttempts, questions, onComplete]);
 
   // Restart quiz
   const handleRestartQuiz = () => {

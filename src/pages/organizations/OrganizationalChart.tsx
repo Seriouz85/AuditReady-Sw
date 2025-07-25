@@ -603,7 +603,7 @@ const OrganizationalChart: React.FC = () => {
         (node.email && node.email.toLowerCase().includes(searchTerm.toLowerCase()));
         
       const matchesDepartment = departmentFilter === '' || 
-        (node.data?.department === departmentFilter);
+        (node['data'] && 'department' in node['data'] && node['data']['department'] === departmentFilter);
         
       return matchesSearch && matchesDepartment;
     });
@@ -628,7 +628,7 @@ const OrganizationalChart: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+            <Select value={departmentFilter || 'all'} onValueChange={(value) => setDepartmentFilter(value === 'all' ? '' : value)}>
               <SelectTrigger className="h-9 w-full sm:w-[180px]">
                 <div className="flex items-center gap-2">
                   <Filter className="h-3.5 w-3.5 text-slate-400" />
@@ -636,7 +636,7 @@ const OrganizationalChart: React.FC = () => {
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Departments</SelectItem>
+                <SelectItem value="all">All Departments</SelectItem>
                 {departmentOptions.map(dept => (
                   <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                 ))}
@@ -717,12 +717,12 @@ const OrganizationalChart: React.FC = () => {
                     </div>
                     <div>
                       <Label htmlFor="node-department">Department</Label>
-                      <Select value={newNodeDepartment} onValueChange={setNewNodeDepartment}>
+                      <Select value={newNodeDepartment || 'none'} onValueChange={(value) => setNewNodeDepartment(value === 'none' ? '' : value)}>
                         <SelectTrigger id="node-department" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20">
                           <SelectValue placeholder="Select department..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {departmentOptions.map(dept => (
                             <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                           ))}
@@ -732,12 +732,12 @@ const OrganizationalChart: React.FC = () => {
                   </div>
                   <div>
                     <Label htmlFor="parent-node">Reports To (Optional)</Label>
-                    <Select value={selectedParentId} onValueChange={setSelectedParentId}>
+                    <Select value={selectedParentId || 'none'} onValueChange={(value) => setSelectedParentId(value === 'none' ? '' : value)}>
                       <SelectTrigger id="parent-node" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20">
                         <SelectValue placeholder="Select manager..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Manager (Top Level)</SelectItem>
+                        <SelectItem value="none">No Manager (Top Level)</SelectItem>
                         {nodes.map((node) => (
                           <SelectItem key={node.id} value={node.id}>
                             {node.name} ({node.role})
@@ -775,10 +775,10 @@ const OrganizationalChart: React.FC = () => {
                         <div className="min-w-0 flex-1">
                           <div className="font-medium truncate">{node.name}</div>
                           <div className="text-sm text-muted-foreground truncate">{node.role}</div>
-                          {node.data?.department && (
+                          {node['data']?.['department'] && (
                             <div className="text-xs px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 
                                           dark:text-slate-300 rounded-full self-start mt-1 inline-block">
-                              {node.data.department}
+                              {node['data']['department']}
                             </div>
                           )}
                         </div>

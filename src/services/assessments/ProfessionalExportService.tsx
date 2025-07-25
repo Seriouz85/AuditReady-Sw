@@ -461,13 +461,42 @@ export class ProfessionalExportService {
       );
     }
 
+    // Assessment Methods
+    if (assessment.methods && assessment.methods.length > 0) {
+      sections.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: '2. Assessment Methods',
+              bold: true,
+              size: 20,
+              color: '6366F1',
+              font: 'Arial'
+            })
+          ],
+          spacing: { after: 120 }
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: assessment.methods.join(', '),
+              size: 18,
+              color: '334155',
+              font: 'Arial'
+            })
+          ],
+          spacing: { after: 300 }
+        })
+      );
+    }
+
     // Evidence
     if (assessment.evidence) {
       sections.push(
         new Paragraph({
           children: [
             new TextRun({
-              text: '2. Evidence Collection',
+              text: '3. Evidence Collection',
               bold: true,
               size: 20,
               color: '15803D',
@@ -496,7 +525,7 @@ export class ProfessionalExportService {
         new Paragraph({
           children: [
             new TextRun({
-              text: '3. Attached Evidence Documents',
+              text: '4. Attached Evidence Documents',
               bold: true,
               size: 20,
               color: 'B45309',

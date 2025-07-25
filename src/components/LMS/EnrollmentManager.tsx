@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,9 +86,9 @@ export const EnrollmentManager: React.FC<EnrollmentManagerProps> = ({
     if (organization) {
       loadData();
     }
-  }, [organization, selectedCourse]);
+  }, [organization, selectedCourse, loadData]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!organization) return;
     
     try {
@@ -123,7 +123,7 @@ export const EnrollmentManager: React.FC<EnrollmentManagerProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [organization, isDemo, selectedCourse]);
   
   const loadDemoData = () => {
     // Demo courses
