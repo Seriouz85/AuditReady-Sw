@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Assessment, Requirement, Standard } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Download, FileText, Filter, X, FileImage, Database } from 'lucide-react';
@@ -43,7 +42,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const [activeStandardId, setActiveStandardId] = useState<string | undefined>(
-    standard?.id || (standards && standards.length > 0 ? standards[0].id : undefined)
+    standard?.id || (standards && standards.length > 0 ? standards[0]?.id : undefined)
   );
   const [isExporting, setIsExporting] = useState<{
     pdf: boolean;
@@ -56,7 +55,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
   });
 
   // Prepare data for unified template
-  const allStandards = standards || (standard ? [standard] : []);
+  const allStandards = useMemo(() => standards || (standard ? [standard] : []), [standards, standard]);
   const exportService = ProfessionalExportService.getInstance();
   
   const unifiedData = useMemo(() => {
@@ -65,7 +64,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
       requirements,
       allStandards,
       {
-        activeStandardId,
+        ...(activeStandardId && { activeStandardId }),
         format: 'preview',
         showHeader: true,
         showSummary: true,
@@ -103,7 +102,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
         requirements,
         allStandards,
         { 
-          activeStandardId,
+          ...(activeStandardId && { activeStandardId }),
           onProgress: (progress) => {
             console.log('PDF Export Progress:', progress);
           }
@@ -132,7 +131,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
         requirements,
         allStandards,
         { 
-          activeStandardId,
+          ...(activeStandardId && { activeStandardId }),
           onProgress: (progress) => {
             console.log('Word Export Progress:', progress);
           }
@@ -160,7 +159,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
         requirements,
         allStandards,
         { 
-          activeStandardId,
+          ...(activeStandardId && { activeStandardId }),
           onProgress: (progress) => {
             console.log('CSV Export Progress:', progress);
           }
@@ -198,7 +197,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
           {allStandards.length > 1 && (
             <div className="flex items-center gap-2 mr-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <Select value={activeStandardId} onValueChange={setActiveStandardId}>
+              <Select value={activeStandardId || 'all'} onValueChange={(value) => setActiveStandardId(value === 'all' ? '' : value)}>
                 <SelectTrigger className="w-[200px] h-9">
                   <SelectValue placeholder="Filter by standard" />
                 </SelectTrigger>
@@ -208,7 +207,7 @@ export const NewAssessmentReport: React.FC<NewAssessmentReportProps> = ({
                       {std.name} {std.version}
                     </SelectItem>
                   ))}
-                  <SelectItem value="">All Standards</SelectItem>
+                  <SelectItem value="all">All Standards</SelectItem>
                 </SelectContent>
               </Select>
             </div>

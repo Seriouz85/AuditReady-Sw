@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { StandardsService } from '@/services/standards/StandardsService';
 import { RequirementsService } from '@/services/requirements/RequirementsService';
+import { MultiTenantAssessmentService } from '@/services/assessments/MultiTenantAssessmentService';
 
 interface DashboardStats {
   totalStandards: number;
@@ -32,7 +33,7 @@ export function useDashboardData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { user, organization } = useAuth();
+  const { user, organization, isDemo } = useAuth();
 
   useEffect(() => {
     if (!organization?.id) return;
@@ -40,18 +41,21 @@ export function useDashboardData() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching dashboard data for organization:', organization.id);
-
         const standardsService = new StandardsService();
         const requirementsService = new RequirementsService();
+        const assessmentService = MultiTenantAssessmentService.getInstance();
 
         // Fetch organization standards
         const orgStandards = await standardsService.getOrganizationStandards(organization.id);
-        console.log('Organization standards:', orgStandards.length);
 
         // Fetch organization requirements (all standards)
         const orgRequirements = await requirementsService.getOrganizationRequirements(organization.id);
-        console.log('Organization requirements:', orgRequirements.length);
+
+        // Fetch assessments
+        const assessments = await assessmentService.getAssessments(organization.id, isDemo);
+        
+        // Use ALL assessments for total count, not just ongoing ones
+        const allAssessments = assessments;
 
         // Calculate compliance breakdown
         const breakdown = {
@@ -95,13 +99,11 @@ export function useDashboardData() {
           complianceScore = Math.round(((fulfilledPoints + partialPoints) / totalPossiblePoints) * 100);
         }
 
-        console.log('Compliance breakdown:', breakdown);
-        console.log('Compliance score:', complianceScore);
 
         setStats({
           totalStandards: orgStandards.length,
           totalRequirements: orgRequirements.length,
-          totalAssessments: 0, // TODO: Implement assessments count
+          totalAssessments: allAssessments.length,
           complianceScore,
           complianceBreakdown: breakdown,
         });

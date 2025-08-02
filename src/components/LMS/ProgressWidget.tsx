@@ -30,7 +30,9 @@ interface ProgressData {
 }
 
 interface ProgressWidgetProps {
-  data: ProgressData;
+  data?: ProgressData;
+  analytics?: any;
+  loading?: boolean;
   isExpanded?: boolean;
   onExpand?: () => void;
   onViewAll?: () => void;
@@ -38,14 +40,41 @@ interface ProgressWidgetProps {
 }
 
 export const ProgressWidget: React.FC<ProgressWidgetProps> = ({
-  data,
+  data: providedData,
+  analytics,
+  loading = false,
   isExpanded = false,
   onExpand,
   onViewAll,
   className = ''
 }) => {
+  // Generate default data if none provided
+  const defaultData: ProgressData = {
+    completed: analytics?.completedCourses || 2,
+    inProgress: analytics?.inProgressCourses || 3,
+    total: analytics?.totalCourses || 6,
+    streak: 7,
+    weeklyGoal: 5,
+    weeklyProgress: 3,
+    upcomingDeadlines: [
+      {
+        id: '1',
+        title: 'ISO 27001 Assessment Due',
+        dueDate: '2024-01-15',
+        isUrgent: true
+      },
+      {
+        id: '2',
+        title: 'Security Awareness Training',
+        dueDate: '2024-01-20',
+        isUrgent: false
+      }
+    ]
+  };
+
+  const data = providedData || defaultData;
   const completionRate = data.total > 0 ? (data.completed / data.total) * 100 : 0;
-  const weeklyGoalProgress = (data.weeklyProgress / data.weeklyGoal) * 100;
+  const weeklyGoalProgress = data.weeklyGoal > 0 ? (data.weeklyProgress / data.weeklyGoal) * 100 : 0;
 
   const getProgressColor = (percentage: number) => {
     if (percentage >= 80) return 'bg-green-500';

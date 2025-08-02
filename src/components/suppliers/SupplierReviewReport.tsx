@@ -263,8 +263,8 @@ export const SupplierReviewReport = ({
               <div className="flex items-center gap-2 mr-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select 
-                  value={activeStandardId || ''}
-                  onValueChange={(value) => setActiveStandardId(value || undefined)}
+                  value={activeStandardId || 'all'}
+                  onValueChange={(value) => setActiveStandardId(value === 'all' ? undefined : value)}
                 >
                   <SelectTrigger className="w-[180px] h-9">
                     <SelectValue placeholder="Filter by standard" />
@@ -276,7 +276,7 @@ export const SupplierReviewReport = ({
                           {std.name} {std.version}
                         </SelectItem>
                       ))}
-                      {selectedStandards.length > 1 && <SelectItem value="">All Selected Standards</SelectItem>}
+                      {selectedStandards.length > 1 && <SelectItem value="all">All Selected Standards</SelectItem>}
                     </SelectGroup>
                   </SelectContent>
                 </Select>

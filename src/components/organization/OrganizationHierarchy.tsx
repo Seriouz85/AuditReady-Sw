@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -8,27 +8,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/utils/toast';
 import { 
   organizationHierarchyService, 
   Department, 
-  Team, 
   OrganizationChart,
   DepartmentStats 
 } from '@/services/organization/OrganizationHierarchyService';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
-  Building2, Users, Plus, Settings, BarChart3, 
-  Briefcase, MapPin, DollarSign, User, Crown,
-  ChevronRight, ChevronDown, Edit, Trash2,
-  UserPlus, Calendar, Mail
+  Building2, Users, Plus, Settings,
+  MapPin, DollarSign, Crown,
+  ChevronRight, ChevronDown, Edit,
+  Calendar
 } from 'lucide-react';
 
 interface OrganizationHierarchyProps {
   organizationId?: string;
-  viewMode?: 'chart' | 'list' | 'teams';
+  viewMode?: 'chart' | 'list' | 'teams' | 'stats';
 }
 
 export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
@@ -60,11 +59,7 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
 
   const orgId = organizationId || organization?.id || 'demo-org';
 
-  useEffect(() => {
-    loadOrganizationData();
-  }, [orgId]);
-
-  const loadOrganizationData = async () => {
+  const loadOrganizationData = useCallback(async () => {
     try {
       setLoading(true);
       const chart = await organizationHierarchyService.getOrganizationChart(orgId);
@@ -89,7 +84,11 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
+
+  useEffect(() => {
+    loadOrganizationData();
+  }, [loadOrganizationData]);
 
   const handleCreateDepartment = async () => {
     if (!createDeptForm.name.trim()) {
@@ -103,14 +102,28 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
     }
 
     try {
-      const result = await organizationHierarchyService.createDepartment({
+      const departmentParams: any = {
         organizationId: orgId,
         name: createDeptForm.name,
-        description: createDeptForm.description,
-        parentDepartmentId: createDeptForm.parentDepartmentId || undefined,
-        location: createDeptForm.location,
-        budget: createDeptForm.budget ? parseFloat(createDeptForm.budget) : undefined
-      });
+      };
+      
+      if (createDeptForm.description.trim()) {
+        departmentParams.description = createDeptForm.description;
+      }
+      
+      if (createDeptForm.parentDepartmentId) {
+        departmentParams.parentDepartmentId = createDeptForm.parentDepartmentId;
+      }
+      
+      if (createDeptForm.location.trim()) {
+        departmentParams.location = createDeptForm.location;
+      }
+      
+      if (createDeptForm.budget) {
+        departmentParams.budget = parseFloat(createDeptForm.budget);
+      }
+
+      const result = await organizationHierarchyService.createDepartment(departmentParams);
 
       if (result.success) {
         toast.success('Department created successfully');
@@ -172,9 +185,9 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
 
   const renderDepartmentNode = (department: Department, level = 0) => {
     const isExpanded = expandedDepartments.has(department.id);
-    const hasChildren = orgChart?.hierarchy[department.id]?.children.length > 0;
+    const hasChildren = (orgChart?.hierarchy[department.id]?.children?.length || 0) > 0;
     const departmentTeams = orgChart?.teams.filter(team => team.department_id === department.id) || [];
-    const departmentUsers = orgChart?.users.filter(user => user.department_id === department.id) || [];
+    // const departmentUsers = orgChart?.users.filter(user => user.department_id === department.id) || [];
     const stats = departmentStats[department.id];
 
     return (
@@ -244,7 +257,7 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
                 </div>
               )}
               
-              {stats && (
+              {stats && stats.compliance_score !== undefined && (
                 <Badge 
                   variant={stats.compliance_score > 80 ? "default" : stats.compliance_score > 60 ? "secondary" : "destructive"}
                   className="text-xs"
@@ -415,7 +428,7 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
             </CardTitle>
             
             <div className="flex items-center gap-2">
-              <Tabs value={activeView} onValueChange={setActiveView}>
+              <Tabs value={activeView} onValueChange={(value) => setActiveView(value as 'chart' | 'list' | 'teams' | 'stats')}>
                 <TabsList>
                   <TabsTrigger value="chart">Chart</TabsTrigger>
                   <TabsTrigger value="teams">Teams</TabsTrigger>
@@ -463,14 +476,14 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
                     <div>
                       <Label htmlFor="parent-dept">Parent Department</Label>
                       <Select 
-                        value={createDeptForm.parentDepartmentId} 
-                        onValueChange={(value) => setCreateDeptForm({ ...createDeptForm, parentDepartmentId: value })}
+                        value={createDeptForm.parentDepartmentId || 'none'} 
+                        onValueChange={(value) => setCreateDeptForm({ ...createDeptForm, parentDepartmentId: value === 'none' ? '' : value })}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select parent department (optional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">No parent department</SelectItem>
+                          <SelectItem value="none">No parent department</SelectItem>
                           {orgChart?.departments.map(dept => (
                             <SelectItem key={dept.id} value={dept.id}>
                               {dept.name}
@@ -640,8 +653,8 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Compliance:</span>
-                            <Badge variant={stats.compliance_score > 80 ? "default" : "secondary"}>
-                              {stats.compliance_score}%
+                            <Badge variant={stats.compliance_score && stats.compliance_score > 80 ? "default" : "secondary"}>
+                              {stats.compliance_score || 0}%
                             </Badge>
                           </div>
                         </div>
@@ -728,13 +741,13 @@ export const OrganizationHierarchy: React.FC<OrganizationHierarchyProps> = ({
                   <div>
                     <Label className="text-sm font-medium">Statistics</Label>
                     <div className="mt-2 space-y-2">
-                      {Object.entries(departmentStats[selectedDepartment.id]).map(([key, value]) => (
+                      {Object.entries(departmentStats[selectedDepartment.id] || {}).map(([key, value]) => (
                         <div key={key} className="flex justify-between text-sm">
                           <span className="capitalize">{key.replace('_', ' ')}:</span>
                           <span className="font-medium">
                             {typeof value === 'number' ? 
                               (key.includes('score') || key.includes('utilization') ? `${value}%` : value.toLocaleString())
-                              : value}
+                              : String(value)}
                           </span>
                         </div>
                       ))}

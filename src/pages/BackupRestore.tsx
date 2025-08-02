@@ -23,6 +23,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { backupRestoreService, AuditEntry, RestorePoint, UserActivity } from '@/services/backup/BackupRestoreService';
+import { MFAVerificationDialog } from '@/components/mfa/MFAVerificationDialog';
 import { format, parseISO } from 'date-fns';
 import { toast } from '@/utils/toast';
 
@@ -128,17 +129,31 @@ const UserActivityCard = ({ activity }: { activity: UserActivity }) => {
 };
 
 export const BackupRestore = () => {
-  const { organization, hasPermission } = useAuth();
+  const { organization, hasPermission, user } = useAuth();
   const [activeTab, setActiveTab] = useState('activity');
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
   const [restorePoints, setRestorePoints] = useState<RestorePoint[]>([]);
   const [userActivities, setUserActivities] = useState<UserActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState('24h');
+  
+  // MFA state
+  const [mfaSessionId, setMfaSessionId] = useState<string>('');
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [pendingRestore, setPendingRestore] = useState<{
+    type: string;
+    target: any;
+  } | null>(null);
+  const [mfaRequiredMethods, setMfaRequiredMethods] = useState<string[]>([]);
+  const [mfaOperationDescription, setMfaOperationDescription] = useState('');
 
-  // Check permissions
-  const canRestore = hasPermission('restore_data') || hasPermission('admin');
-  const canViewAudit = hasPermission('view_audit_trail') || hasPermission('admin');
+  // Check if this is demo account
+  const isDemoAccount = user?.email === 'demo@auditready.com' || 
+    organization?.id === '34adc4bb-d1e7-43bd-8249-89c76520533d';
+
+  // Check permissions (allow demo account full access)
+  const canRestore = isDemoAccount || hasPermission('restore_data') || hasPermission('admin');
+  const canViewAudit = isDemoAccount || hasPermission('view_audit_trail') || hasPermission('admin');
 
   useEffect(() => {
     if (organization?.id) {
@@ -221,22 +236,85 @@ export const BackupRestore = () => {
 
       if (!confirmed) return;
 
-      // Perform restore
+      // Perform restore with MFA verification
       const result = await backupRestoreService.performRestore({
         organizationId: organization!.id,
         restoreType: type as any,
         targetTimestamp: target.timestamp,
         reason: 'User requested restore'
-      });
+      }, undefined, mfaSessionId || undefined);
+
+      if (result.success) {
+        toast.success(`Successfully restored ${result.restoredCount} changes`);
+        loadData(); // Reload data
+        
+        // Clear MFA session
+        setMfaSessionId('');
+        setMfaRequired(false);
+        setPendingRestore(null);
+      }
+    } catch (error: any) {
+      console.error('Restore error:', error);
+      
+      // Check if MFA is required
+      if (error.message?.includes('MFA_REQUIRED:')) {
+        const parts = error.message.split(':');
+        const sessionId = parts[1];
+        const errorMsg = parts[2];
+        
+        // Set up MFA verification
+        setMfaSessionId(sessionId);
+        setMfaRequired(true);
+        setPendingRestore({ type, target });
+        setMfaOperationDescription(`Restore ${type === 'TIME_POINT' ? 'to point in time' : 'operation'}: ${target.label || format(parseISO(target.timestamp), 'MMM d, yyyy HH:mm')}`);
+        
+        // Parse required methods from error or default
+        setMfaRequiredMethods(['totp', 'backup_codes']);
+        
+        return;
+      }
+      
+      toast.error('Failed to perform restore operation');
+    }
+  };
+
+  // Handle MFA verification completion
+  const handleMFAVerified = async () => {
+    if (!pendingRestore) return;
+    
+    try {
+      // Retry the restore operation with the verified MFA session
+      const result = await backupRestoreService.performRestore({
+        organizationId: organization!.id,
+        restoreType: pendingRestore.type as any,
+        targetTimestamp: pendingRestore.target.timestamp,
+        reason: 'User requested restore (MFA verified)'
+      }, undefined, mfaSessionId);
 
       if (result.success) {
         toast.success(`Successfully restored ${result.restoredCount} changes`);
         loadData(); // Reload data
       }
     } catch (error) {
-      console.error('Restore error:', error);
-      toast.error('Failed to perform restore operation');
+      console.error('Restore error after MFA:', error);
+      toast.error('Failed to perform restore operation after MFA verification');
+    } finally {
+      // Clean up MFA state
+      setMfaRequired(false);
+      setMfaSessionId('');
+      setPendingRestore(null);
+      setMfaOperationDescription('');
+      setMfaRequiredMethods([]);
     }
+  };
+
+  // Handle MFA dialog close
+  const handleMFAClose = () => {
+    setMfaRequired(false);
+    setMfaSessionId('');
+    setPendingRestore(null);
+    setMfaOperationDescription('');
+    setMfaRequiredMethods([]);
   };
 
   if (!canViewAudit) {
@@ -287,8 +365,20 @@ export const BackupRestore = () => {
         </div>
       </div>
 
+      {/* Demo Notice */}
+      {isDemoAccount && (
+        <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50">
+          <Shield className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-800 dark:text-blue-200">Demo Mode Active</AlertTitle>
+          <AlertDescription className="text-blue-700 dark:text-blue-300">
+            You're viewing demonstration data showcasing our enterprise data governance capabilities. 
+            In production, this would show your organization's actual audit trails and restore points.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Security Notice */}
-      {canRestore && (
+      {canRestore && !isDemoAccount && (
         <Alert>
           <Shield className="h-4 w-4" />
           <AlertTitle>Security Notice</AlertTitle>
@@ -421,6 +511,16 @@ export const BackupRestore = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* MFA Verification Dialog */}
+      <MFAVerificationDialog
+        isOpen={mfaRequired}
+        onClose={handleMFAClose}
+        onVerified={handleMFAVerified}
+        sessionId={mfaSessionId}
+        operationDescription={mfaOperationDescription}
+        requiredMethods={mfaRequiredMethods}
+      />
     </motion.div>
   );
 };

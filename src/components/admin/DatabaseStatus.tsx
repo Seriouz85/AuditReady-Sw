@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -54,7 +54,7 @@ export const DatabaseStatus: React.FC = () => {
     }
   };
 
-  const checkDatabaseStatus = async () => {
+  const checkDatabaseStatus = useCallback(async () => {
     setLoading(true);
     setConnectionStatus('checking');
     
@@ -83,11 +83,11 @@ export const DatabaseStatus: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkDatabaseStatus();
-  }, []);
+  }, [checkDatabaseStatus]);
 
   const accessibleTables = tableStatuses.filter(t => t.accessible).length;
   const totalTables = tableStatuses.length;

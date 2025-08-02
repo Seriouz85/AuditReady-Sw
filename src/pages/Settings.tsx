@@ -23,6 +23,7 @@ import {
   Key, Activity, Trash2, Edit, Eye, Clock, Building2, ExternalLink,
   CheckCircle, XCircle, Loader, ListChecks, Search, Filter, Tag, Mail
 } from "lucide-react";
+import { MFAManager } from '@/components/mfa/MFAManager';
 import { IntegrationIcon } from "@/components/ui/IntegrationIcon";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -30,6 +31,8 @@ import { useRequirementsService } from "@/services/requirements/RequirementsServ
 import { requirementAssignmentService } from "@/services/assignments/RequirementAssignmentService";
 import { RequirementAssignment } from "@/types";
 import { useEntraId } from "@/hooks/useEntraId";
+import { DataClassificationSettings } from "@/components/settings/DataClassificationSettings";
+import { CustomerDashboardSettings } from "@/components/dashboard/CustomerDashboardSettings";
 
 // Demo data for demo accounts only
 const demoUsers = [
@@ -861,12 +864,14 @@ const Settings = () => {
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="overflow-x-auto pb-2 -mx-2 px-2">
-          <TabsList className="grid w-max grid-cols-8 gap-1 p-1 h-auto bg-muted/50">
+          <TabsList className="grid w-max grid-cols-10 gap-1 p-1 h-auto bg-muted/50">
             <TabsTrigger value="profile" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Profile</TabsTrigger>
             <TabsTrigger value="organization" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Organization</TabsTrigger>
             <TabsTrigger value="users" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Users & Access</TabsTrigger>
             <TabsTrigger value="assignments" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Assignments</TabsTrigger>
             <TabsTrigger value="security" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Security</TabsTrigger>
+            <TabsTrigger value="dashboard" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Dashboard</TabsTrigger>
+            <TabsTrigger value="classification" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Data Classification</TabsTrigger>
             <TabsTrigger value="integrations" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Integrations</TabsTrigger>
             <TabsTrigger value="importing" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Import/Export</TabsTrigger>
             <TabsTrigger value="notifications" className="text-xs px-2 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">Notifications</TabsTrigger>
@@ -1728,58 +1733,12 @@ const Settings = () => {
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Multi-Factor Authentication</CardTitle>
-              <CardDescription>
-                Enhance security with two-factor authentication
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Require MFA for Admin Users</Label>
-                  <p className="text-sm text-muted-foreground">Mandatory 2FA for administrators</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Require MFA for All Users</Label>
-                  <p className="text-sm text-muted-foreground">Organization-wide MFA requirement</p>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Allowed MFA Methods</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <label className="text-sm">Authenticator Apps (Google Authenticator, Authy)</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <label className="text-sm">SMS Text Messages</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" className="rounded" />
-                    <label className="text-sm">Hardware Security Keys (YubiKey)</label>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={() => {
-                toast.success("MFA settings updated successfully");
-                // In production, this would save to the database
-              }}>
-                <Shield className="mr-2 h-4 w-4" />
-                Save MFA Settings
-              </Button>
-            </CardFooter>
-          </Card>
+          <MFAManager onMFAStatusChange={(enabled) => {
+            // Handle MFA status change for any additional UI updates
+            if (enabled) {
+              toast.success("MFA has been successfully enabled for your account");
+            }
+          }} />
 
           <Card>
             <CardHeader>
@@ -1925,6 +1884,16 @@ const Settings = () => {
 
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Dashboard Customization */}
+        <TabsContent value="dashboard" className="space-y-6 mt-6">
+          <CustomerDashboardSettings organizationId={organization?.id || 'demo-org'} />
+        </TabsContent>
+
+        {/* Data Classification */}
+        <TabsContent value="classification" className="space-y-6 mt-6">
+          <DataClassificationSettings organizationId={organization?.id || 'demo-org'} />
         </TabsContent>
 
         {/* Integrations */}

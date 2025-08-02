@@ -204,6 +204,114 @@ Completing physical security assessments at London and Singapore offices. Manage
       startDate: '2024-02-15T09:00:00Z'
     },
     nextDueDate: '2025-02-15T09:00:00Z'
+  },
+  {
+    id: 'assessment-2',
+    name: 'SOC 2 Type II Annual Assessment',
+    standardIds: ['soc-2-type-ii'], 
+    description: 'Annual SOC 2 Type II assessment covering security, availability, and confidentiality controls.',
+    status: 'completed',
+    progress: 100,
+    startDate: '2024-01-10T08:00:00Z',
+    endDate: '2024-03-15T17:00:00Z',
+    assessorName: 'Sarah Johnson',
+    assessorId: 'user-2',
+    notes: 'Successfully completed SOC 2 Type II assessment with no significant findings. All controls operating effectively.',
+    evidence: 'Control testing documentation, system walkthroughs, and compliance evidence collected.',
+    methods: ['Document Review', 'Interviews', 'Control Testing'],
+    updatedAt: '2024-03-15T17:00:00Z',
+    createdAt: '2024-01-10T08:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-01-10T08:00:00Z'
+    },
+    nextDueDate: '2025-01-10T08:00:00Z'
+  },
+  {
+    id: 'assessment-3',
+    name: 'GDPR Compliance Review - Q1 2024',
+    standardIds: ['gdpr-2018'], 
+    description: 'Quarterly GDPR compliance review focusing on data processing activities and privacy controls.',
+    status: 'in-progress',
+    progress: 45,
+    startDate: '2024-03-01T09:00:00Z',
+    assessorName: 'Elena Rodriguez',
+    assessorId: 'user-3',
+    notes: 'Reviewing data processing activities and privacy impact assessments. Found some gaps in consent management.',
+    evidence: 'Privacy policy documentation, data mapping records, consent logs.',
+    methods: ['Document Review', 'Data Analysis & Statistics', 'Process Walkthrough'],
+    updatedAt: '2024-03-20T15:30:00Z',
+    createdAt: '2024-03-01T09:00:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'quarterly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2024-03-01T09:00:00Z'
+    },
+    nextDueDate: '2024-06-01T09:00:00Z'
+  },
+  {
+    id: 'assessment-4',
+    name: 'CIS Controls Implementation Assessment',
+    standardIds: ['cis-controls-v8'], 
+    description: 'Comprehensive assessment of CIS Controls v8 implementation across IT infrastructure.',
+    status: 'draft',
+    progress: 15,
+    startDate: '2024-03-25T10:00:00Z',
+    assessorName: 'David Park',
+    assessorId: 'user-4',
+    notes: 'Initial planning phase. Gathering asset inventory and security tool configurations.',
+    evidence: 'Asset inventory, security tool configurations, policy documentation.',
+    methods: ['Document Review', 'Technical Testing', 'Interviews'],
+    updatedAt: '2024-03-25T10:00:00Z',
+    createdAt: '2024-03-25T10:00:00Z',
+    isRecurring: false
+  },
+  {
+    id: 'assessment-5',
+    name: 'NIST Cybersecurity Framework Assessment',
+    standardIds: ['nist-csf-2.0'], 
+    description: 'Annual NIST CSF 2.0 maturity assessment evaluating current cybersecurity posture.',
+    status: 'completed',
+    progress: 100,
+    startDate: '2023-11-01T08:30:00Z',
+    endDate: '2024-01-31T16:00:00Z',
+    assessorName: 'Jennifer Wilson',
+    assessorId: 'user-5',
+    notes: 'Completed NIST CSF assessment with overall maturity score of 3.2/5.0. Recommendations provided for improvement.',
+    evidence: 'Maturity assessment questionnaires, gap analysis reports, improvement roadmap.',
+    methods: ['Document Review', 'Interviews', 'Maturity Assessment', 'Gap Analysis'],
+    updatedAt: '2024-01-31T16:00:00Z',
+    createdAt: '2023-11-01T08:30:00Z',
+    isRecurring: true,
+    recurrenceSettings: {
+      frequency: 'yearly',
+      interval: 1,
+      skipWeekends: true,
+      startDate: '2023-11-01T08:30:00Z'
+    },
+    nextDueDate: '2024-11-01T08:30:00Z'
+  },
+  {
+    id: 'assessment-6',
+    name: 'NIS2 Directive Readiness Assessment',
+    standardIds: ['nis2-directive'], 
+    description: 'Preparatory assessment for NIS2 Directive compliance covering essential services.',
+    status: 'in-progress',
+    progress: 28,
+    startDate: '2024-02-20T09:15:00Z',
+    assessorName: 'Thomas Anderson',
+    assessorId: 'user-6',
+    notes: 'Assessing current state against NIS2 requirements. Focus on incident reporting and supply chain security.',
+    evidence: 'Incident response procedures, supply chain documentation, network security assessments.',
+    methods: ['Document Review', 'Gap Analysis', 'Process Walkthrough', 'Technical Assessment'],
+    updatedAt: '2024-03-22T11:45:00Z',
+    createdAt: '2024-02-20T09:15:00Z',
+    isRecurring: false
   }
 ];
 
@@ -232,13 +340,204 @@ export const complianceStats: ComplianceStats = {
 };
 
 // Mock Internal Users
-export const internalUsers: InternalUser[] = [];
+export const internalUsers: InternalUser[] = [
+  {
+    id: 'internal-user-1',
+    name: 'Sarah Mitchell',
+    email: 'sarah.mitchell@democorp.com',
+    department: 'Information Security',
+    title: 'Chief Information Security Officer'
+  },
+  {
+    id: 'internal-user-2',
+    name: 'Michael Chen',
+    email: 'michael.chen@democorp.com',
+    department: 'IT Operations',
+    title: 'IT Director'
+  },
+  {
+    id: 'internal-user-3',
+    name: 'Elena Rodriguez',
+    email: 'elena.rodriguez@democorp.com',
+    department: 'Compliance',
+    title: 'Compliance Manager'
+  },
+  {
+    id: 'internal-user-4',
+    name: 'David Park',
+    email: 'david.park@democorp.com',
+    department: 'Procurement',
+    title: 'Vendor Management Specialist'
+  }
+];
 
 // Mock Suppliers
-export const suppliers: Supplier[] = [];
+export const suppliers: Supplier[] = [
+  {
+    id: 'supplier-1',
+    name: 'CloudSecure Solutions',
+    organizationNumber: 'ORG-556789123',
+    address: '1234 Enterprise Blvd, Seattle, WA 98101',
+    website: 'https://cloudsecure.example.com',
+    category: 'Cloud Security',
+    status: 'active',
+    contact: {
+      name: 'Jennifer Adams',
+      email: 'jennifer.adams@cloudsecure.example.com',
+      phone: '+1-206-555-0198',
+      title: 'Compliance Director'
+    },
+    internalResponsible: {
+      id: 'internal-user-1',
+      name: 'Sarah Mitchell',
+      email: 'sarah.mitchell@democorp.com',
+      department: 'Information Security'
+    },
+    associatedStandards: [
+      {
+        standardId: 'iso-27001',
+        requirementIds: ['iso-27001-A.8.1.1', 'iso-27001-A.8.1.2', 'iso-27001-A.13.1.1'],
+        sentDate: '2024-12-15T10:00:00Z',
+        status: 'completed'
+      },
+      {
+        standardId: 'soc-2',
+        requirementIds: ['soc-2-CC6.1', 'soc-2-CC6.2'],
+        sentDate: '2024-12-20T14:30:00Z',
+        status: 'in-progress'
+      }
+    ],
+    createdAt: '2024-11-01T09:00:00Z',
+    updatedAt: '2024-12-20T16:45:00Z'
+  },
+  {
+    id: 'supplier-2',
+    name: 'DataGuard Analytics',
+    organizationNumber: 'ORG-445678901',
+    address: '5678 Tech Park Dr, Austin, TX 73301',
+    website: 'https://dataguard.example.com',
+    category: 'Data Analytics',
+    status: 'active',
+    contact: {
+      name: 'Robert Kim',
+      email: 'robert.kim@dataguard.example.com',
+      phone: '+1-512-555-0287',
+      title: 'Security Operations Manager'
+    },
+    internalResponsible: {
+      id: 'internal-user-3',
+      name: 'Elena Rodriguez',
+      email: 'elena.rodriguez@democorp.com',
+      department: 'Compliance'
+    },
+    associatedStandards: [
+      {
+        standardId: 'iso-27001',
+        requirementIds: ['iso-27001-A.12.1.1', 'iso-27001-A.12.6.1', 'iso-27001-A.18.1.4'],
+        sentDate: '2024-12-10T08:15:00Z',
+        status: 'completed'
+      }
+    ],
+    createdAt: '2024-10-15T14:20:00Z',
+    updatedAt: '2024-12-18T11:00:00Z'
+  },
+  {
+    id: 'supplier-3',
+    name: 'SecureComm Networks',
+    organizationNumber: 'ORG-334567890',
+    address: '910 Innovation Way, Boston, MA 02101',
+    website: 'https://securecomm.example.com',
+    category: 'Network Infrastructure',
+    status: 'pending-review',
+    contact: {
+      name: 'Amanda Foster',
+      email: 'amanda.foster@securecomm.example.com',
+      phone: '+1-617-555-0376',
+      title: 'Chief Technology Officer'
+    },
+    internalResponsible: {
+      id: 'internal-user-2',
+      name: 'Michael Chen',
+      email: 'michael.chen@democorp.com',
+      department: 'IT Operations'
+    },
+    associatedStandards: [
+      {
+        standardId: 'iso-27001',
+        requirementIds: ['iso-27001-A.13.1.1', 'iso-27001-A.13.2.1'],
+        status: 'draft'
+      }
+    ],
+    createdAt: '2024-12-01T16:30:00Z',
+    updatedAt: '2024-12-22T09:15:00Z'
+  }
+];
 
 // Mock Applications
-export const applications: Application[] = [];
+export const applications: Application[] = [
+  {
+    id: 'app-1',
+    name: 'Enterprise CRM System',
+    description: 'Customer relationship management platform with integrated analytics',
+    organizationNumber: 'APP-789123456',
+    type: 'Web Application',
+    category: 'Customer Management',
+    status: 'active',
+    criticality: 'high',
+    contact: {
+      name: 'James Wilson',
+      email: 'james.wilson@democorp.com',
+      phone: '+1-555-0123',
+      title: 'Application Owner'
+    },
+    internalResponsible: {
+      id: 'internal-user-2',
+      name: 'Michael Chen',
+      email: 'michael.chen@democorp.com',
+      department: 'IT Operations'
+    },
+    associatedStandards: [
+      {
+        standardId: 'iso-27001',
+        requirementIds: ['iso-27001-A.14.1.1', 'iso-27001-A.14.2.1'],
+        status: 'completed'
+      }
+    ],
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-12-20T14:30:00Z'
+  },
+  {
+    id: 'app-2',
+    name: 'Financial Data Warehouse',
+    description: 'Centralized financial data warehouse with strict access controls',
+    organizationNumber: 'APP-678901234',
+    type: 'Database System',
+    category: 'Financial Systems',
+    status: 'active',
+    criticality: 'critical',
+    contact: {
+      name: 'Maria Garcia',
+      email: 'maria.garcia@democorp.com',
+      phone: '+1-555-0234',
+      title: 'Database Administrator'
+    },
+    internalResponsible: {
+      id: 'internal-user-1',
+      name: 'Sarah Mitchell',
+      email: 'sarah.mitchell@democorp.com',
+      department: 'Information Security'
+    },
+    associatedStandards: [
+      {
+        standardId: 'iso-27001',
+        requirementIds: ['iso-27001-A.9.1.1', 'iso-27001-A.9.2.1'],
+        status: 'completed'
+      }
+    ],
+    createdAt: '2023-11-01T09:00:00Z',
+    updatedAt: '2024-12-18T16:45:00Z'
+  }
+];
 
 // Mock Notifications
 export const notifications: Notification[] = [];

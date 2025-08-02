@@ -100,7 +100,16 @@ export class RequirementsService {
             category,
             priority,
             order_index,
-            audit_ready_guidance
+            audit_ready_guidance,
+            unified_mappings:unified_requirement_mappings (
+              unified_requirement:unified_requirements (
+                category:unified_compliance_categories (
+                  name,
+                  description,
+                  icon
+                )
+              )
+            )
           )
         `)
         .eq('organization_id', organizationId);
@@ -117,7 +126,8 @@ export class RequirementsService {
           const requirementIds = standardRequirements.map(req => req.id);
           query = query.in('requirement_id', requirementIds);
         } else {
-          return [];
+          // No requirements in library for this standard
+          return this.getStandardRequirementsWithDefaultStatus(standardId);
         }
       }
 
@@ -131,19 +141,24 @@ export class RequirementsService {
 
       if (error) throw error;
 
-      if (!data) return [];
+      // If no organization-specific requirements exist, fallback to requirements from library
+      if (!data || data.length === 0) {
+        console.log('No organization requirements found, falling back to library requirements');
+        return this.getStandardRequirementsWithDefaultStatus(standardId);
+      }
 
       return data.map(orgReq => {
         // Validate and normalize status value
         const validStatuses: RequirementStatus[] = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
         let status: RequirementStatus = 'not-fulfilled';
         
-        if (orgReq.status && validStatuses.includes(orgReq.status as RequirementStatus)) {
-          status = orgReq.status as RequirementStatus;
+        const orgStatus = (orgReq as any)['status'];
+        if (orgStatus && validStatuses.includes(orgStatus as RequirementStatus)) {
+          status = orgStatus as RequirementStatus;
         } else {
-          console.warn('Invalid requirement status:', orgReq.status, 'for requirement:', orgReq.requirement?.title);
+          console.warn('Invalid requirement status:', orgStatus, 'for requirement:', (orgReq as any)['requirement']?.['title']);
           // Map common variations to valid statuses
-          switch (orgReq.status?.toLowerCase()) {
+          switch (orgStatus?.toLowerCase?.()) {
             case 'complete':
             case 'completed':
             case 'done':
@@ -169,33 +184,55 @@ export class RequirementsService {
           }
         }
 
+        // Safely access requirement data
+        const requirement = (orgReq as any)['requirement'];
+        if (!requirement) {
+          console.warn('No requirement data found for organization requirement');
+          return null;
+        }
+
+        // Get unified category from database mappings
+        const unifiedMappings = requirement['unified_mappings'];
+        const unifiedCategory = unifiedMappings?.[0]?.['unified_requirement']?.['category'];
+        const unifiedCategoryName = unifiedCategory?.['name'] || requirement['category'] || 'General';
+        
+        // Create unified category tag object
+        const unifiedCategoryTags = unifiedCategory ? [{
+          id: `unified-category-${unifiedCategory['name']}`,
+          name: unifiedCategory['name'],
+          color: '#3B82F6', // Default color since database doesn't have color column
+          description: unifiedCategory['description'] || `Unified compliance category: ${unifiedCategory['name']}`,
+          category: 'unified-category' as const,
+          sort_order: 0
+        }] : [];
+
         return {
-          id: orgReq.requirement.id,
-          code: orgReq.requirement.control_id,
-          name: orgReq.requirement.title,
-          description: orgReq.requirement.description,
-          standardId: orgReq.requirement.standard_id,
+          id: requirement['id'],
+          code: requirement['control_id'],
+          name: requirement['title'],
+          description: requirement['description'],
+          standardId: requirement['standard_id'],
           status,
-          priority: (orgReq.requirement.priority || 'medium') as RequirementPriority,
-          section: orgReq.requirement.category || 'General',
-          tags: orgReq.tags || [],
-          // TEMPORARY FIX: Use tags as categories if categories column doesn't exist
-          categories: orgReq.categories || orgReq.tags || [],
-          appliesTo: orgReq.applies_to || [], // FIX: Add applies_to from database
-          organizationStatus: orgReq.status,
-          fulfillmentPercentage: orgReq.fulfillment_percentage || 0,
-          evidence: orgReq.evidence,
-          notes: orgReq.notes,
-          responsibleParty: orgReq.responsible_party,
-          organizationTags: orgReq.tags || [],
-          riskLevel: orgReq.risk_level,
-          guidance: orgReq.implementation_guidance || '', // FIX: Add guidance from database
-          lastUpdated: orgReq.updated_at,
-          createdAt: orgReq.created_at || new Date().toISOString(),
-          updatedAt: orgReq.updated_at || new Date().toISOString(),
-          auditReadyGuidance: orgReq.requirement.audit_ready_guidance
+          priority: (requirement['priority'] || 'medium') as RequirementPriority,
+          section: unifiedCategoryName, // Use unified category name
+          tags: (orgReq as any)['tags'] || [],
+          // Use unified category tags if available, fallback to tags
+          categories: unifiedCategoryTags.length > 0 ? unifiedCategoryTags : ((orgReq as any)['tags'] || []),
+          appliesTo: (orgReq as any)['applies_to'] || [],
+          organizationStatus: (orgReq as any)['status'] as string,
+          fulfillmentPercentage: (orgReq as any)['fulfillment_percentage'] || 0,
+          evidence: (orgReq as any)['evidence'],
+          notes: (orgReq as any)['notes'],
+          responsibleParty: (orgReq as any)['responsible_party'],
+          organizationTags: (orgReq as any)['tags'] || [],
+          riskLevel: (orgReq as any)['risk_level'],
+          guidance: (orgReq as any)['implementation_guidance'] || '',
+          lastUpdated: (orgReq as any)['updated_at'],
+          createdAt: (orgReq as any)['created_at'] || new Date().toISOString(),
+          updatedAt: (orgReq as any)['updated_at'] || new Date().toISOString(),
+          auditReadyGuidance: requirement['audit_ready_guidance']
         };
-      });
+      }).filter(Boolean) as RequirementWithStatus[];
     } catch (error) {
       console.error('Error fetching organization requirements:', error);
       return [];
@@ -300,30 +337,97 @@ export class RequirementsService {
     }
   }
 
-  // Get all requirements for a standard (from library)
-  async getStandardRequirements(standardId: string): Promise<Requirement[]> {
+  // Get all requirements for a standard (from library) with default status  
+  async getStandardRequirementsWithDefaultStatus(standardId?: string): Promise<RequirementWithStatus[]> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('requirements_library')
-        .select('*')
-        .eq('standard_id', standardId)
+        .select(`
+          *,
+          unified_mappings:unified_requirement_mappings (
+            unified_requirement:unified_requirements (
+              category:unified_compliance_categories (
+                name,
+                description,
+                icon
+              )
+            )
+          )
+        `)
         .eq('is_active', true)
         .order('order_index');
 
+      // Filter by standard if specified
+      if (standardId) {
+        query = query.eq('standard_id', standardId);
+      }
+
+      const { data, error } = await query;
+
       if (error) throw error;
 
-      return data?.map(req => ({
+      if (!data || data.length === 0) return [];
+
+      return data.map(req => {
+        // Get unified category from database mappings
+        const unifiedMappings = (req as any)['unified_mappings'];
+        const unifiedCategory = unifiedMappings?.[0]?.['unified_requirement']?.['category'];
+        const unifiedCategoryName = unifiedCategory?.['name'] || (req as any)['category'] || 'General';
+        
+        // Return unified category name as string (as expected by Requirement interface)
+        const categoryNames = unifiedCategory ? [unifiedCategory['name']] : [];
+
+        return {
+          id: (req as any)['id'],
+          code: (req as any)['control_id'],
+          name: (req as any)['title'],
+          description: (req as any)['description'],
+          standardId: (req as any)['standard_id'],
+          status: 'not-fulfilled' as RequirementStatus,
+          priority: ((req as any)['priority'] || 'medium') as RequirementPriority,
+          section: unifiedCategoryName,
+          tags: [],
+          categories: categoryNames,
+          appliesTo: [],
+          organizationStatus: 'not-fulfilled',
+          fulfillmentPercentage: 0,
+          evidence: (req as any)['evidence'] || '',
+          notes: (req as any)['notes'] || '',
+          responsibleParty: (req as any)['responsible_party'] || '',
+          organizationTags: [],
+          riskLevel: (req as any)['risk_level'] || '',
+          guidance: (req as any)['implementation_guidance'] || '',
+          lastUpdated: (req as any)['updated_at'],
+          createdAt: (req as any)['created_at'] || new Date().toISOString(),
+          updatedAt: (req as any)['updated_at'] || new Date().toISOString(),
+          auditReadyGuidance: (req as any)['audit_ready_guidance'] || ''
+        };
+      });
+    } catch (error) {
+      console.error('Error fetching standard requirements with default status:', error);
+      return [];
+    }
+  }
+
+  // Get all requirements for a standard (from library)
+  async getStandardRequirements(standardId: string): Promise<Requirement[]> {
+    try {
+      const requirementsWithStatus = await this.getStandardRequirementsWithDefaultStatus(standardId);
+      
+      return requirementsWithStatus.map(req => ({
         id: req.id,
-        code: req.control_id,
-        name: req.title,
+        code: req.code,
+        name: req.name,
         description: req.description,
-        standardId: req.standard_id,
-        status: 'not-fulfilled' as any, // Default status
-        priority: (req.priority || 'medium') as any,
-        section: req.category || 'General',
-        tags: [],
-        auditReadyGuidance: req.audit_ready_guidance
-      })) || [];
+        standardId: req.standardId,
+        status: req.status,
+        priority: req.priority || 'medium',
+        section: req.section,
+        tags: req.tags || [],
+        createdAt: req.createdAt,
+        updatedAt: req.updatedAt,
+        auditReadyGuidance: req.auditReadyGuidance || ''
+      }));
     } catch (error) {
       console.error('Error fetching standard requirements:', error);
       return [];
@@ -354,7 +458,7 @@ export const useRequirementsService = () => {
   const updateRequirement = async (
     requirementId: string,
     updates: {
-      status?: string;
+      status?: RequirementStatus;
       fulfillmentPercentage?: number;
       evidence?: string;
       notes?: string;

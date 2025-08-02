@@ -1,81 +1,105 @@
-import { cn } from "@/lib/utils";
-import { RequirementStatus } from "@/types";
-import { useTranslation } from "@/lib/i18n";
+/**
+ * Standardized Status Badge Component
+ * Consistent status indicators across the application
+ */
+
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { getStatusBadgeClasses, getIconClasses } from '@/lib/ui-standards';
+import { 
+  CheckCircle2, 
+  Clock, 
+  XCircle, 
+  AlertTriangle, 
+  Info,
+  Minus,
+  LucideIcon
+} from 'lucide-react';
+
+type StatusVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'primary';
 
 interface StatusBadgeProps {
-  status: RequirementStatus;
+  variant: StatusVariant;
+  children: React.ReactNode;
+  icon?: LucideIcon | boolean;
   className?: string;
-  size?: "xs" | "sm" | "md";
-  showLabel?: boolean;
 }
 
+// Default icons for each status variant
+const defaultIcons: Record<StatusVariant, LucideIcon> = {
+  success: CheckCircle2,
+  warning: AlertTriangle,
+  danger: XCircle,
+  info: Info,
+  neutral: Minus,
+  primary: Info,
+};
+
 export function StatusBadge({ 
-  status, 
-  className,
-  size = "sm",
-  showLabel = true
+  variant, 
+  children, 
+  icon = true, 
+  className 
 }: StatusBadgeProps) {
-  const { t } = useTranslation();
-  
-  const statusConfig = {
-    "fulfilled": {
-      label: t('assessment.status.fulfilled', 'Fulfilled'),
-      className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-      icon: "●"
-    },
-    "partially-fulfilled": {
-      label: t('assessment.status.partial', 'Partially Fulfilled'),
-      className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-      icon: "◐"
-    },
-    "not-fulfilled": {
-      label: t('assessment.status.notFulfilled', 'Not Fulfilled'),
-      className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-      icon: "○"
-    },
-    "not-applicable": {
-      label: t('assessment.status.notApplicable', 'Not Applicable'),
-      className: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-400",
-      icon: "—"
-    }
-  };
-
-  const config = statusConfig[status] || statusConfig["not-fulfilled"]; // Fallback to not-fulfilled if status is invalid
-  const sizeClasses = {
-    xs: "px-1.5 py-0.5 text-[10px]",
-    sm: "px-2.5 py-0.5 text-xs",
-    md: "px-3 py-1 text-sm"
-  };
-
-  // Additional safety check
-  if (!config) {
-    console.warn('StatusBadge: Invalid status provided:', status);
-    return (
-      <span className={cn(
-        "inline-flex items-center rounded-full font-medium whitespace-nowrap",
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
-        sizeClasses[size],
-        className
-      )}>
-        {showLabel ? "Unknown" : "?"}
-      </span>
-    );
-  }
+  const IconComponent = typeof icon === 'boolean' 
+    ? (icon ? defaultIcons[variant] : null)
+    : icon;
 
   return (
-    <span 
-      className={cn(
-        "inline-flex items-center rounded-full font-medium whitespace-nowrap",
-        config.className,
-        sizeClasses[size],
-        className
+    <span className={cn(getStatusBadgeClasses(variant), className)}>
+      {IconComponent && (
+        <IconComponent className={cn(getIconClasses('xs'), "mr-1")} />
       )}
-    >
-      {!showLabel ? (
-        <span className="font-bold">{config.icon}</span>
-      ) : (
-        config.label
-      )}
+      {children}
     </span>
   );
 }
+
+// Predefined status badges for common use cases
+export const ComplianceStatusBadge = ({ status }: { status: 'fulfilled' | 'partially-fulfilled' | 'not-fulfilled' | 'not-applicable' }) => {
+  const statusConfig = {
+    'fulfilled': { variant: 'success' as const, text: 'Fulfilled' },
+    'partially-fulfilled': { variant: 'warning' as const, text: 'Partially Fulfilled' },
+    'not-fulfilled': { variant: 'danger' as const, text: 'Not Fulfilled' },
+    'not-applicable': { variant: 'neutral' as const, text: 'Not Applicable' },
+  };
+
+  const config = statusConfig[status];
+  return (
+    <StatusBadge variant={config.variant}>
+      {config.text}
+    </StatusBadge>
+  );
+};
+
+export const AssessmentStatusBadge = ({ status }: { status: 'completed' | 'in-progress' | 'not-started' | 'overdue' }) => {
+  const statusConfig = {
+    'completed': { variant: 'success' as const, text: 'Completed' },
+    'in-progress': { variant: 'info' as const, text: 'In Progress' },
+    'not-started': { variant: 'neutral' as const, text: 'Not Started' },
+    'overdue': { variant: 'danger' as const, text: 'Overdue' },
+  };
+
+  const config = statusConfig[status];
+  return (
+    <StatusBadge variant={config.variant}>
+      {config.text}
+    </StatusBadge>
+  );
+};
+
+export const PriorityBadge = ({ priority }: { priority: 'low' | 'medium' | 'high' | 'critical' }) => {
+  const priorityConfig = {
+    'low': { variant: 'neutral' as const, text: 'Low' },
+    'medium': { variant: 'info' as const, text: 'Medium' },
+    'high': { variant: 'warning' as const, text: 'High' },
+    'critical': { variant: 'danger' as const, text: 'Critical' },
+  };
+
+  const config = priorityConfig[priority];
+  return (
+    <StatusBadge variant={config.variant}>
+      {config.text}
+    </StatusBadge>
+  );
+};

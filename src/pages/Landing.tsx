@@ -20,7 +20,8 @@ import {
   LineChart,
   ClipboardCheck,
   Building2,
-  Crown
+  Crown,
+  Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -592,8 +593,335 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Integrations Section */}
+      {/* Data Governance & Security Section */}
       <section className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>
+              Enterprise Security & Data Governance
+            </Badge>
+            <h2 className={`text-3xl md:text-4xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-4`}>
+              Built by Security Specialists, For Security Specialists
+            </h2>
+            <p className={`text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} max-w-3xl mx-auto`}>
+              Enterprise-grade data governance with multi-factor authentication, time-travel restore capabilities, 
+              and comprehensive audit trails. Because your data security can't be an afterthought.
+            </p>
+          </div>
+
+          {/* Security & Governance Features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10 border-blue-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'} p-3 w-fit mb-4`}>
+                  <Shield className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Multi-Factor Authentication
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  TOTP-based MFA with backup codes and risk-based authentication. Enterprise policies with time-limited sessions protect sensitive operations.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>TOTP & backup codes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Risk-based security</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Enterprise device management</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-green-50 to-green-100/50 border-green-200' : 'bg-gradient-to-br from-green-900/20 to-green-800/10 border-green-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-green-600' : 'bg-green-500'} p-3 w-fit mb-4`}>
+                  <ArrowRight className="h-6 w-6 text-white transform rotate-180" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Time-Travel Data Restore
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Point-in-time recovery with hour/day granularity. Undo user sessions atomically or restore specific records with comprehensive audit trails.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Point-in-time recovery</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Session-based restore</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>99.9% restore reliability</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10 border-purple-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-purple-600' : 'bg-purple-500'} p-3 w-fit mb-4`}>
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Complete Audit Trails
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Comprehensive change tracking with JSONB diff functions. User session management and sensitive operations logging for regulatory compliance.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>JSONB change tracking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>User session trails</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>GDPR/CCPA ready</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 border-orange-200' : 'bg-gradient-to-br from-orange-900/20 to-orange-800/10 border-orange-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-orange-600' : 'bg-orange-500'} p-3 w-fit mb-4`}>
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Custom Dashboard Builder
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Drag-and-drop dashboard customization with role-based widgets. Create executive, analyst, and operational views with real-time data visualization.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-orange-600' : 'text-orange-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Drag-and-drop widgets</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-orange-600' : 'text-orange-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Role-based permissions</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-orange-600' : 'text-orange-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Real-time analytics</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-red-50 to-red-100/50 border-red-200' : 'bg-gradient-to-br from-red-900/20 to-red-800/10 border-red-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-red-600' : 'bg-red-500'} p-3 w-fit mb-4`}>
+                  <Lock className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Azure Purview Integration
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Native Microsoft Information Protection integration with automatic PII detection, custom classification labels, and GDPR/CCPA compliance automation.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-red-600' : 'text-red-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Microsoft Purview sync</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-red-600' : 'text-red-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Custom classification labels</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-red-600' : 'text-red-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>GDPR compliance reports</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-indigo-50 to-indigo-100/50 border-indigo-200' : 'bg-gradient-to-br from-indigo-900/20 to-indigo-800/10 border-indigo-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-indigo-600' : 'bg-indigo-500'} p-3 w-fit mb-4`}>
+                  <Crown className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Platform Admin Console
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Comprehensive multi-tenant management with real-time system monitoring, organization controls, and advanced health metrics for enterprise operations.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Multi-tenant oversight</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Real-time monitoring</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Enterprise operations</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Security Statement */}
+          <div className={`mt-12 p-8 rounded-lg ${theme === 'light' ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200' : 'bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border border-blue-500/30'}`}>
+            <div className="text-center">
+              <div className={`rounded-full ${theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'} p-4 mx-auto mb-4 w-fit`}>
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <h3 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-4`}>
+                Security-First Architecture
+              </h3>
+              <p className={`text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} max-w-3xl mx-auto`}>
+                Built by information security specialists who understand the critical importance of data protection. 
+                Our platform meets SOC 2, ISO 27001, and enterprise compliance requirements because 
+                <strong className={`${theme === 'light' ? 'text-blue-700' : 'text-blue-400'}`}> your data security isn't negotiable</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Backup & Restore Section */}
+      <section className="py-16 sm:py-20 px-3 sm:px-4">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-green-600 border-green-300' : 'text-green-400 border-green-500/30'}`}>
+              Enterprise Data Recovery
+            </Badge>
+            <h2 className={`text-3xl md:text-4xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-4`}>
+              Advanced Backup & Restore System
+            </h2>
+            <p className={`text-lg ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} max-w-3xl mx-auto`}>
+              Comprehensive data protection with automated backup schedules, granular restore options, and real-time progress tracking.
+              Enterprise-grade recovery with MFA-protected operations.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-green-50 to-green-100/50 border-green-200' : 'bg-gradient-to-br from-green-900/20 to-green-800/10 border-green-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-green-600' : 'bg-green-500'} p-3 w-fit mb-4`}>
+                  <Clock className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Automated Scheduling
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Flexible backup schedules from hourly to monthly with intelligent retention policies. Automated cleanup and storage optimization.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Hourly to monthly schedules</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Intelligent retention</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-green-600' : 'text-green-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Storage optimization</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200' : 'bg-gradient-to-br from-blue-900/20 to-blue-800/10 border-blue-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-blue-600' : 'bg-blue-500'} p-3 w-fit mb-4`}>
+                  <ArrowRight className="h-6 w-6 text-white transform rotate-180" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Granular Restore
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Table-level restore options with advanced filtering. Preview changes before restore and selective data recovery with zero downtime.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Table-level granularity</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Preview before restore</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Zero downtime recovery</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10 border-purple-500/30'}`}>
+              <CardContent className="p-6">
+                <div className={`rounded-full ${theme === 'light' ? 'bg-purple-600' : 'bg-purple-500'} p-3 w-fit mb-4`}>
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
+                  Analytics Dashboard
+                </h3>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4`}>
+                  Real-time backup performance metrics, storage analytics, and recovery time objectives. Comprehensive reporting for compliance.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Performance metrics</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Storage analytics</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`h-4 w-4 ${theme === 'light' ? 'text-purple-600' : 'text-purple-500'}`} />
+                    <span className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Compliance reporting</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Backup Security Notice */}
+          <div className={`mt-12 p-6 rounded-lg ${theme === 'light' ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-green-200' : 'bg-gradient-to-r from-emerald-900/20 to-green-900/20 border border-green-500/30'}`}>
+            <div className="flex items-center justify-center gap-4">
+              <div className={`rounded-full ${theme === 'light' ? 'bg-green-600' : 'bg-green-500'} p-3`}>
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-center">
+                <h4 className={`text-lg font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>
+                  MFA-Protected Recovery Operations
+                </h4>
+                <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  All restore operations require multi-factor authentication and are logged for complete audit compliance.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Integrations Section */}
+      <section className={`py-16 sm:py-20 px-3 sm:px-4 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-800/50'}`}>
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <Badge variant="outline" className={`mb-4 ${theme === 'light' ? 'text-blue-600 border-blue-300' : 'text-blue-400 border-blue-500/30'}`}>

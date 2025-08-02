@@ -1,18 +1,16 @@
-import React, { useRef, useState, useMemo } from 'react';
-import { Assessment, Requirement, RequirementStatus, Standard } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useRef, useState } from 'react';
+import { Assessment, Requirement, Standard } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { ComplianceStatusBadge } from '@/components/ui/status-badge';
 import { BarChart3, Download, FileText, Filter, Printer, X, FileImage } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
 import { useTranslation } from '@/lib/i18n';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/utils/toast';
 import { generatePDF } from '@/utils/pdfUtils';
 import { generateWordExport } from '@/utils/wordUtils';
-import { useReactToPrint } from 'react-to-print';
 import { DialogFooter } from '@/components/ui/dialog';
 
 interface AssessmentReportProps {
@@ -34,7 +32,7 @@ const extractAttachmentsFromEvidence = (evidence: string) => {
     
     fileMatches.forEach(match => {
       const parts = match.match(/•\s*([^(]+)\(([^)]+)\)/);
-      if (parts) {
+      if (parts && parts[1] && parts[2]) {
         const filename = parts[1].trim();
         const details = parts[2];
         
@@ -42,12 +40,22 @@ const extractAttachmentsFromEvidence = (evidence: string) => {
         const sizeMatch = details.match(/(\d+\.?\d*\s*[KMGT]?B)/i);
         const typeMatch = filename.match(/\.([a-zA-Z0-9]+)$/);
         
-        attachments.push({
+        const attachment: {filename: string; description: string; size?: string; type?: string} = {
           filename,
           description: details,
-          size: sizeMatch ? sizeMatch[1] : undefined,
-          type: typeMatch ? typeMatch[1].toUpperCase() : 'Document'
-        });
+        };
+        
+        if (sizeMatch?.[1]) {
+          attachment.size = sizeMatch[1];
+        }
+        
+        if (typeMatch?.[1]) {
+          attachment.type = typeMatch[1].toUpperCase();
+        } else {
+          attachment.type = 'Document';
+        }
+        
+        attachments.push(attachment);
       }
     });
   }
@@ -59,7 +67,7 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
   const { t } = useTranslation();
   const reportRef = useRef<HTMLDivElement>(null);
   const [activeStandard, setActiveStandard] = useState<string | undefined>(
-    standard ? standard.id : standards && standards.length > 0 ? standards[0].id : undefined
+    standard ? standard.id : standards && standards.length > 0 ? standards[0]?.id : undefined
   );
   
   const allStandards = standards || (standard ? [standard] : []);
@@ -84,27 +92,6 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
     { name: 'Not Applicable', value: notApplicableCount, color: '#94a3b8' },
   ].filter((item) => item.value > 0);
   
-  // Keep the handlePrint for CSV export and other functionality
-  const handlePrint = useReactToPrint({
-    documentTitle: `${assessment.name} - ${new Date().toLocaleDateString()}`,
-    content: () => reportRef.current,
-    onBeforePrint: () => {
-      document.body.classList.add('printing-assessment');
-      console.log('Preparing to print assessment report');
-    },
-    onAfterPrint: () => {
-      document.body.classList.remove('printing-assessment');
-      toast.success(t('assessment.reportExported'));
-      console.log('Assessment report printed successfully');
-    },
-    pageStyle: `
-      @page {
-        size: portrait;
-        margin: 20mm;
-      }
-    `,
-    removeAfterPrint: true
-  });
 
   const handleExportPDF = async () => {
     try {
@@ -119,16 +106,16 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
           ? assessment.assessorNames.join(', ')
           : assessment.assessorName,
         startDate: assessment.startDate ? new Date(assessment.startDate).toLocaleDateString() : 'N/A',
-        endDate: assessment.endDate ? new Date(assessment.endDate).toLocaleDateString() : undefined,
+        endDate: assessment.endDate ? new Date(assessment.endDate).toLocaleDateString() : 'N/A',
         description: assessment.description,
         
         // Enhanced Assessment Summary Structure (Key requirement)
         assessmentSummary: {
           // 1. Assessment Notes (from notes and evidence tab)
-          assessmentNotes: assessment.notes,
+          assessmentNotes: assessment.notes || '',
           
           // 2. Evidence (same source)
-          evidence: assessment.evidence,
+          evidence: assessment.evidence || '',
           
           // 3. Attachments descriptions - Extract from evidence content
           attachments: assessment.evidence ? extractAttachmentsFromEvidence(assessment.evidence) : []
@@ -146,9 +133,9 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
           code: req.code,
           name: req.name,
           description: req.description,
-          status: req.status,
-          notes: req.notes, // Individual requirement notes
-          evidence: req.evidence // Individual requirement evidence
+          status: String(req.status),
+          ...(req.notes && { notes: req.notes }), // Individual requirement notes
+          ...(req.evidence && { evidence: req.evidence }) // Individual requirement evidence
         })),
         
         // Professional metadata
@@ -193,16 +180,16 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
           ? assessment.assessorNames.join(', ')
           : assessment.assessorName,
         startDate: assessment.startDate ? new Date(assessment.startDate).toLocaleDateString() : 'N/A',
-        endDate: assessment.endDate ? new Date(assessment.endDate).toLocaleDateString() : undefined,
+        endDate: assessment.endDate ? new Date(assessment.endDate).toLocaleDateString() : 'N/A',
         description: assessment.description,
         
         // Enhanced Assessment Summary Structure (Key requirement)
         assessmentSummary: {
           // 1. Assessment Notes (from notes and evidence tab)
-          assessmentNotes: assessment.notes,
+          assessmentNotes: assessment.notes || '',
           
           // 2. Evidence (same source)
-          evidence: assessment.evidence,
+          evidence: assessment.evidence || '',
           
           // 3. Attachments descriptions - Extract from evidence content
           attachments: assessment.evidence ? extractAttachmentsFromEvidence(assessment.evidence) : []
@@ -220,9 +207,9 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
           code: req.code,
           name: req.name,
           description: req.description,
-          status: req.status,
-          notes: req.notes, // Individual requirement notes
-          evidence: req.evidence // Individual requirement evidence
+          status: String(req.status),
+          ...(req.notes && { notes: req.notes }), // Individual requirement notes
+          ...(req.evidence && { evidence: req.evidence }) // Individual requirement evidence
         })),
         
         // Professional metadata
@@ -323,7 +310,7 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
             {allStandards.length > 1 && (
               <div className="flex items-center gap-2 mr-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
-                <Select value={activeStandard} onValueChange={setActiveStandard}>
+                <Select value={activeStandard || 'all'} onValueChange={(value) => setActiveStandard(value === 'all' ? '' : value)}>
                   <SelectTrigger className="w-[180px] h-9">
                     <SelectValue placeholder="Filter by standard" />
                   </SelectTrigger>
@@ -334,7 +321,7 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
                           {std.name} {std.version}
                         </SelectItem>
                       ))}
-                      <SelectItem value="">All Standards</SelectItem>
+                      <SelectItem value="all">All Standards</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -596,8 +583,9 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
                                 .slice(0, 6)
                                 .map((line, index) => {
                                   const match = line.match(/•\s*([^(]+)\(([^)]+)\)/);
-                                  if (match) {
-                                    const [, filename, details] = match;
+                                  if (match && match[1] && match[2]) {
+                                    const filename = match[1];
+                                    const details = match[2];
                                     return (
                                       <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded border text-xs">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
@@ -645,7 +633,7 @@ export const AssessmentReport = ({ assessment, requirements, standard, standards
                                 <h4 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">{t(`requirement.${req.id}.name`, req.name)}</h4>
                               </div>
                             </div>
-                            <StatusBadge status={req.status} />
+                            <ComplianceStatusBadge status={req.status as 'fulfilled' | 'partially-fulfilled' | 'not-fulfilled' | 'not-applicable'} />
                           </div>
                           
                           {/* Description Section */}

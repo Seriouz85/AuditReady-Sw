@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   BarChart3,
   CheckCircle2, 
@@ -254,7 +254,7 @@ export function AssessmentDetail({
   };
   
   // Auto-save functionality
-  const autoSave = async () => {
+  const autoSave = useCallback(async () => {
     if (!hasChanges || readOnly) return;
     
     setAutoSaving(true);
@@ -268,7 +268,7 @@ export function AssessmentDetail({
     } finally {
       setAutoSaving(false);
     }
-  };
+  }, [hasChanges, readOnly, onSave, localAssessment]);
 
   // Trigger auto-save after changes
   useEffect(() => {
@@ -290,7 +290,7 @@ export function AssessmentDetail({
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [hasChanges, localAssessment, readOnly]);
+  }, [hasChanges, localAssessment, readOnly, onSave, autoSave]);
 
   // Save assessment changes manually
   const handleSave = () => {
@@ -1196,10 +1196,44 @@ export function AssessmentDetail({
                   </div>
                   
                   <div className="pt-2">
+                    <input
+                      type="file"
+                      id="evidence-upload"
+                      multiple
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"
+                      className="hidden"
+                      disabled={readOnly || isCompleted}
+                      onChange={(e) => {
+                        const files = e.target.files;
+                        if (files && files.length > 0) {
+                          // Build file list text
+                          const fileList = Array.from(files).map(file => {
+                            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                            return `• ${file.name} (${sizeMB} MB)`;
+                          }).join('\n');
+                          
+                          // Append to evidence field
+                          const currentEvidence = localAssessment.evidence || '';
+                          const separator = currentEvidence.trim() ? '\n\n' : '';
+                          const attachmentHeader = '📎 Attached Evidence Files:\n';
+                          
+                          updateAssessment({ 
+                            evidence: currentEvidence + separator + attachmentHeader + fileList 
+                          });
+                          setHasChanges(true);
+                          
+                          // Clear the input for future uploads
+                          e.target.value = '';
+                          
+                          toast.success(`${files.length} file(s) attached successfully`);
+                        }
+                      }}
+                    />
                     <Button 
                       variant="outline" 
                       className="gap-1"
                       disabled={readOnly || isCompleted}
+                      onClick={() => document.getElementById('evidence-upload')?.click()}
                     >
                       <FilePlus size={14} className="mr-1" />
                       {t('assessment.evidence.attach')}

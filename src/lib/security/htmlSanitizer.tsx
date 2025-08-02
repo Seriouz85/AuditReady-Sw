@@ -157,7 +157,6 @@ export function useSanitizedContent(content: string, type: 'rich' | 'basic' | 's
 /**
  * React component for safely rendering HTML content
  */
-import React from 'react';
 
 interface SafeHTMLProps {
   content: string;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   X, 
   Search, 
@@ -142,7 +142,7 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
   const [activeTab, setActiveTab] = useState<'library' | 'upload' | 'copyright-free'>('library');
 
   // Enhanced demo files with better metadata
-  const demoFiles: MediaFile[] = [
+  const demoFiles: MediaFile[] = useMemo(() => [
     {
       id: 'demo-1',
       filename: 'cybersecurity-intro.mp4',
@@ -191,15 +191,15 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
       uploadedAt: new Date(Date.now() - 172800000).toISOString(),
       organizationId: 'demo-org'
     }
-  ];
+  ], []);
 
   useEffect(() => {
     if (isOpen) {
       loadFiles();
     }
-  }, [isOpen, organization]);
+  }, [isOpen, organization, loadFiles]);
 
-  const loadFiles = async () => {
+  const loadFiles = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -215,7 +215,7 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
     } finally {
       setLoading(false);
     }
-  };
+  }, [isDemo, organization]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

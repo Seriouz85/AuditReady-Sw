@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useState, useEffect } from "react";
@@ -88,13 +88,13 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
 
   return (
     <Card className="shadow-md hover:shadow-lg transition-all h-full border border-border/70" data-card="true">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+      <CardContent className="p-4 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-lg">
               <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <CardTitle className="text-lg font-semibold">Compliance Status</CardTitle>
+            <h3 className="text-lg font-semibold">Compliance Status</h3>
           </div>
           <Button 
             variant="outline" 
@@ -105,9 +105,8 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
             View All
           </Button>
         </div>
-      </CardHeader>
-      
-      <CardContent className="flex flex-col items-center gap-0 pt-0 px-1 pb-2">
+        
+        <div className="flex flex-col items-center gap-0 flex-1">
         {/* Pie Chart Section */}
         <div className="relative w-full max-w-[220px] aspect-square">
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-blue-500/10 rounded-full blur-xl" />
@@ -196,6 +195,7 @@ export function ComplianceChart({ data }: ComplianceChartProps) {
               </div>
             </div>
           ))}
+        </div>
         </div>
       </CardContent>
     </Card>

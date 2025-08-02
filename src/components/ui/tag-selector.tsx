@@ -108,6 +108,11 @@ export function TagSelector({
 
   // Find category by id or name (similar to RequirementTable logic)
   const getCategory = (categoryId: string): UnifiedCategory | undefined => {
+    // Ensure categoryId is a string
+    if (!categoryId || typeof categoryId !== 'string') {
+      return undefined;
+    }
+
     // First try to find by ID
     let category = unifiedCategories.find((cat) => cat.id === categoryId);
     if (category) return category;

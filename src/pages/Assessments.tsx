@@ -72,6 +72,12 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs";
 
 interface ExtendedAssessment extends Assessment {
   isPinned?: boolean;
@@ -570,8 +576,12 @@ const Assessments = () => {
       return;
     }
 
-    // Validate form
-    if (!newAssessment.name || newAssessment.standardIds.length === 0 || newAssessment.assessorIds.length === 0) {
+    // Validate form - check for either organization assessors or manual assessor names
+    const hasAssessors = newAssessment.assessorIds.length > 0 || 
+                        (newAssessment.assessorNames && newAssessment.assessorNames.length > 0) ||
+                        (newAssessment.assessorName && newAssessment.assessorName.trim().length > 0);
+    
+    if (!newAssessment.name || newAssessment.standardIds.length === 0 || !hasAssessors) {
       toast.error(t('assessments.toast.fillRequired'));
       return;
     }
@@ -777,67 +787,95 @@ const Assessments = () => {
                   {t('assessments.form.assessor')} <span className="text-red-500">*</span>
                 </Label>
                 <div className="col-span-3">
-                  <Popover open={assessorPopoverOpen} onOpenChange={setAssessorPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={assessorPopoverOpen}
-                        className="w-full justify-between"
-                      >
-                        {newAssessment.assessorIds.length === 0
-                          ? "Select assessors..."
-                          : getAssessorNames(newAssessment.assessorIds)}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0" align="start">
-                      <Command>
-                        <CommandInput placeholder="Search assessors..." />
-                        <CommandList>
-                          <CommandEmpty>No assessors found.</CommandEmpty>
-                          <CommandGroup>
-                            <CommandItem
-                              onSelect={handleSelectAllAssessors}
-                              className="flex items-center"
-                            >
-                              <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
-                                {newAssessment.assessorIds.length === internalUsers.length && (
-                                  <Check className="h-3 w-3" />
-                                )}
-                              </div>
-                              <span className="font-medium">Select All</span>
-                            </CommandItem>
-                          </CommandGroup>
-                          <CommandSeparator />
-                          <CommandGroup>
-                            {internalUsers.map((user) => (
-                              <CommandItem
-                                key={user.id}
-                                onSelect={() => handleAssessorChange(user.id)}
-                                className="flex items-center"
-                              >
-                                <div className={cn(
-                                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                  newAssessment.assessorIds.includes(user.id) 
-                                    ? "bg-primary text-primary-foreground" 
-                                    : "opacity-50"
-                                )}>
-                                  {newAssessment.assessorIds.includes(user.id) && (
-                                    <Check className="h-3 w-3" />
-                                  )}
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="font-medium">{user.name}</span>
-                                  <span className="text-xs text-muted-foreground">{user.title} • {user.department}</span>
-                                </div>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <Tabs defaultValue="organization" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="organization">Organization Users</TabsTrigger>
+                      <TabsTrigger value="manual">External/Manual Entry</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="organization" className="mt-2">
+                      <Popover open={assessorPopoverOpen} onOpenChange={setAssessorPopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={assessorPopoverOpen}
+                            className="w-full justify-between"
+                          >
+                            {newAssessment.assessorIds.length === 0
+                              ? "Select assessors..."
+                              : getAssessorNames(newAssessment.assessorIds)}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0" align="start">
+                          <Command>
+                            <CommandInput placeholder="Search assessors..." />
+                            <CommandList>
+                              <CommandEmpty>No assessors found.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem
+                                  onSelect={handleSelectAllAssessors}
+                                  className="flex items-center"
+                                >
+                                  <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
+                                    {newAssessment.assessorIds.length === internalUsers.length && (
+                                      <Check className="h-3 w-3" />
+                                    )}
+                                  </div>
+                                  <span className="font-medium">Select All</span>
+                                </CommandItem>
+                              </CommandGroup>
+                              <CommandSeparator />
+                              <CommandGroup>
+                                {internalUsers.map((user) => (
+                                  <CommandItem
+                                    key={user.id}
+                                    onSelect={() => handleAssessorChange(user.id)}
+                                    className="flex items-center"
+                                  >
+                                    <div className={cn(
+                                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                      newAssessment.assessorIds.includes(user.id) 
+                                        ? "bg-primary text-primary-foreground" 
+                                        : "opacity-50"
+                                    )}>
+                                      {newAssessment.assessorIds.includes(user.id) && (
+                                        <Check className="h-3 w-3" />
+                                      )}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium">{user.name}</span>
+                                      <span className="text-xs text-muted-foreground">{user.title} • {user.department}</span>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </TabsContent>
+                    <TabsContent value="manual" className="mt-2">
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Enter assessor names (comma separated)"
+                          value={newAssessment.assessorName}
+                          onChange={(e) => {
+                            const names = e.target.value;
+                            setNewAssessment(prev => ({
+                              ...prev,
+                              assessorName: names,
+                              assessorIds: [], // Clear organization users when using manual entry
+                              assessorNames: names.split(',').map(n => n.trim()).filter(Boolean)
+                            }));
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Enter names separated by commas, e.g., "John Doe, Jane Smith, External Auditor"
+                        </p>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </div>
               </div>
 

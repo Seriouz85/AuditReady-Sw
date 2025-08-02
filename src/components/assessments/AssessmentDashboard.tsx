@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -75,9 +75,9 @@ export const AssessmentDashboard: React.FC = () => {
     if (organization) {
       loadDashboardData();
     }
-  }, [organization, selectedTimeRange]);
+  }, [organization, selectedTimeRange, loadDashboardData]);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -99,7 +99,7 @@ export const AssessmentDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [organization, selectedTimeRange]);
 
   const loadDemoData = () => {
     // Demo metrics

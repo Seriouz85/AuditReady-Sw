@@ -1,10 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { StatusBadge } from "@/components/ui/status-badge";
+import { ComplianceStatusBadge } from "@/components/ui/status-badge";
 // @ts-ignore: Required for type checking
 import { Requirement, RequirementPriority } from "@/types";
 import { ArrowUpDown, ArrowUp, ArrowDown, Flag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
 interface RequirementTableProps {
@@ -23,11 +23,7 @@ export function RequirementTable({
   const [unifiedCategories, setUnifiedCategories] = useState<any[]>([]);
 
   // Load unified categories (no separate tags table needed)
-  useEffect(() => {
-    loadUnifiedCategories();
-  }, []);
-
-  const loadUnifiedCategories = async () => {
+  const loadUnifiedCategories = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('unified_compliance_categories')
@@ -42,9 +38,18 @@ export function RequirementTable({
     } catch (error) {
       console.error('Error loading unified categories:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadUnifiedCategories();
+  }, [loadUnifiedCategories]);
 
   const getCategoryName = (categoryId: string): string => {
+    // Safety check for non-string inputs
+    if (!categoryId || typeof categoryId !== 'string') {
+      return 'General';
+    }
+    
     const category = unifiedCategories.find((cat) => cat.id === categoryId);
     if (category) return category.name;
     
@@ -83,8 +88,8 @@ export function RequirementTable({
     return '#6B7280';
   };
 
-  const getCategoryColor = (categoryId: string, index: number): string => {
-    // Generate consistent colors based on category name
+  const getCategoryColor = (categoryName: string): string => {
+    // Generate consistent colors based on category name - same logic as Requirements page
     const colors = [
       'bg-blue-100 text-blue-800 border-blue-200',
       'bg-green-100 text-green-800 border-green-200', 
@@ -109,8 +114,7 @@ export function RequirementTable({
       'bg-neutral-100 text-neutral-800 border-neutral-200'
     ];
     
-    // Use hash of category name (not ID) for consistent color assignment
-    const categoryName = getCategoryName(categoryId);
+    // Use hash of category name for consistent color assignment (same logic as Requirements page)
     let hash = 0;
     for (let i = 0; i < categoryName.length; i++) {
       hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
@@ -212,21 +216,26 @@ export function RequirementTable({
                   <div className="flex flex-wrap gap-1">
                     {/* Display categories with consistent color scheme */}
                     {req.categories && req.categories.length > 0 ? (
-                      req.categories.map((categoryId, index) => (
-                        <Badge 
-                          key={`cat-${index}`} 
-                          variant="outline" 
-                          className={`text-xs border ${getCategoryColor(categoryId, index)}`}
-                        >
-                          {getCategoryName(categoryId)}
-                        </Badge>
-                      ))
+                      req.categories.map((category, index) => {
+                        // Handle both object categories and string categoryIds
+                        const categoryId = typeof category === 'object' ? category.id : category;
+                        const categoryName = typeof category === 'object' ? category.name : getCategoryName(category);
+                        return (
+                          <Badge 
+                            key={`cat-${index}`} 
+                            variant="outline" 
+                            className={`text-xs border ${getCategoryColor(categoryName)}`}
+                          >
+                            {categoryName}
+                          </Badge>
+                        );
+                      })
                     ) : req.tags && req.tags.length > 0 ? (
                       req.tags.map((tagId, index) => (
                         <Badge 
                           key={`tag-${index}`} 
                           variant="outline" 
-                          className={`text-xs border ${getCategoryColor(tagId, index)}`}
+                          className={`text-xs border ${getCategoryColor(getTagName(tagId))}`}
                         >
                           {getTagName(tagId)}
                         </Badge>
@@ -237,7 +246,7 @@ export function RequirementTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={req.status} />
+                  <ComplianceStatusBadge status={req.status as 'fulfilled' | 'partially-fulfilled' | 'not-fulfilled' | 'not-applicable'} />
                 </TableCell>
                 <TableCell>
                   {getPriorityBadge(req.priority)}

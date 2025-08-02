@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { RichTextEditor } from './RichTextEditor';
+import { EnhancedRichTextEditor } from './EnhancedRichTextEditor';
 import { 
   Upload, 
   File, 
@@ -134,41 +134,7 @@ export const AssignmentSubmission: React.FC<AssignmentSubmissionProps> = ({
     return File;
   };
 
-  // Handle file selection
-  const handleFileSelect = (files: FileList | null) => {
-    if (!files) return;
-    
-    const validFiles = Array.from(files).filter(file => {
-      // Check file type
-      const isValidType = allowedFileTypes.some(type => 
-        file.name.toLowerCase().endsWith(type.toLowerCase())
-      );
-      
-      // Check file size
-      const isValidSize = file.size <= maxFileSize * 1024 * 1024;
-      
-      if (!isValidType) {
-        alert(`File type not allowed: ${file.name}. Allowed types: ${allowedFileTypes.join(', ')}`);
-        return false;
-      }
-      
-      if (!isValidSize) {
-        alert(`File too large: ${file.name}. Maximum size: ${maxFileSize}MB`);
-        return false;
-      }
-      
-      return true;
-    });
-
-    // Check total file count
-    if (uploadedFiles.length + validFiles.length > maxFiles) {
-      alert(`Too many files. Maximum allowed: ${maxFiles}`);
-      return;
-    }
-
-    // Upload files
-    uploadFiles(validFiles);
-  };
+  // Upload files moved before handleFileSelect to avoid hoisting issues
 
   // Upload files simulation
   const uploadFiles = async (files: File[]) => {
@@ -209,6 +175,41 @@ export const AssignmentSubmission: React.FC<AssignmentSubmissionProps> = ({
     e.preventDefault();
     setIsDragging(false);
   }, []);
+
+  const handleFileSelect = useCallback((files: FileList | null) => {
+    if (!files) return;
+    
+    const validFiles = Array.from(files).filter(file => {
+      // Check file type
+      const isValidType = allowedFileTypes.some(type => 
+        file.name.toLowerCase().endsWith(type.toLowerCase())
+      );
+      
+      // Check file size
+      const isValidSize = file.size <= maxFileSize * 1024 * 1024;
+      
+      if (!isValidType) {
+        alert(`File type not allowed: ${file.name}. Allowed types: ${allowedFileTypes.join(', ')}`);
+        return false;
+      }
+      
+      if (!isValidSize) {
+        alert(`File too large: ${file.name}. Maximum size: ${maxFileSize}MB`);
+        return false;
+      }
+      
+      return true;
+    });
+
+    // Check total file count
+    if (uploadedFiles.length + validFiles.length > maxFiles) {
+      alert(`Too many files. Maximum allowed: ${maxFiles}`);
+      return;
+    }
+
+    // Upload files
+    uploadFiles(validFiles);
+  }, [allowedFileTypes, maxFileSize, uploadedFiles.length, maxFiles]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -342,7 +343,7 @@ export const AssignmentSubmission: React.FC<AssignmentSubmissionProps> = ({
                 <CardTitle className="text-lg">Your Response</CardTitle>
               </CardHeader>
               <CardContent>
-                <RichTextEditor
+                <EnhancedRichTextEditor
                   initialContent={content}
                   onSave={setContent}
                   onCancel={() => {}}

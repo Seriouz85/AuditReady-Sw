@@ -163,11 +163,17 @@ class StripeAdminService {
   // Product Management
   async listProducts(): Promise<StripeProduct[]> {
     try {
+      // Skip Edge Function in development/demo mode for faster performance
+      if (process.env['NODE_ENV'] === 'development' || !process.env['VITE_STRIPE_SECRET_KEY']) {
+        console.log('🔍 StripeAdminService: Using mock data (development mode)');
+        return this.getMockProducts();
+      }
+      
       console.log('🔍 StripeAdminService: Attempting to fetch products from Edge Function...');
       
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout')), 5000); // 5 second timeout
+        setTimeout(() => reject(new Error('Request timeout')), 3000); // Reduced to 3 seconds
       });
       
       const requestPromise = supabase.functions.invoke('stripe-admin', {
@@ -249,11 +255,17 @@ class StripeAdminService {
   // Price Management
   async listPrices(productId?: string): Promise<StripePrice[]> {
     try {
+      // Skip Edge Function in development/demo mode for faster performance
+      if (process.env['NODE_ENV'] === 'development' || !process.env['VITE_STRIPE_SECRET_KEY']) {
+        console.log('🔍 StripeAdminService: Using mock prices (development mode)');
+        return this.getMockPrices();
+      }
+      
       console.log('🔍 StripeAdminService: Attempting to fetch prices from Edge Function...');
       
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout')), 5000); // 5 second timeout
+        setTimeout(() => reject(new Error('Request timeout')), 3000); // Reduced to 3 seconds
       });
       
       const requestPromise = supabase.functions.invoke('stripe-admin', {
