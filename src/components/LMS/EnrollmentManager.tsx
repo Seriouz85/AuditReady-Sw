@@ -82,12 +82,6 @@ export const EnrollmentManager: React.FC<EnrollmentManagerProps> = ({
     pendingInvitations: 0
   });
 
-  useEffect(() => {
-    if (organization) {
-      loadData();
-    }
-  }, [organization, selectedCourse, loadData]);
-
   const loadData = useCallback(async () => {
     if (!organization) return;
     
@@ -124,6 +118,12 @@ export const EnrollmentManager: React.FC<EnrollmentManagerProps> = ({
       setLoading(false);
     }
   }, [organization, isDemo, selectedCourse]);
+
+  useEffect(() => {
+    if (organization) {
+      loadData();
+    }
+  }, [organization, selectedCourse, loadData]);
   
   const loadDemoData = () => {
     // Demo courses

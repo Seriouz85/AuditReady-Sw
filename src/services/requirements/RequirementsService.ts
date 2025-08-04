@@ -100,6 +100,7 @@ export class RequirementsService {
             category,
             priority,
             order_index,
+            tags,
             audit_ready_guidance,
             unified_mappings:unified_requirement_mappings (
               unified_requirement:unified_requirements (
@@ -215,7 +216,7 @@ export class RequirementsService {
           status,
           priority: (requirement['priority'] || 'medium') as RequirementPriority,
           section: unifiedCategoryName, // Use unified category name
-          tags: (orgReq as any)['tags'] || [],
+          tags: requirement['tags'] || [], // Get tags from requirements_library
           // Use unified category tags if available, fallback to tags
           categories: unifiedCategoryTags.length > 0 ? unifiedCategoryTags : ((orgReq as any)['tags'] || []),
           appliesTo: (orgReq as any)['applies_to'] || [],
@@ -386,7 +387,7 @@ export class RequirementsService {
           status: 'not-fulfilled' as RequirementStatus,
           priority: ((req as any)['priority'] || 'medium') as RequirementPriority,
           section: unifiedCategoryName,
-          tags: [],
+          tags: (req as any)['tags'] || [], // Get tags from requirements_library
           categories: categoryNames,
           appliesTo: [],
           organizationStatus: 'not-fulfilled',

@@ -443,6 +443,38 @@ export function RequirementDetail({
             </div>
 
 
+            {/* Tags from Standard */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Tags size={16} className="text-muted-foreground" />
+                <span className="text-sm font-medium">Tags from Standard</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info size={14} className="text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-sm p-3 bg-white dark:bg-slate-800 border shadow-lg" side="top" align="start" sideOffset={5}>
+                      <p className="text-sm text-gray-900 dark:text-gray-100">Requirement groups/tags from the standard (read-only display)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="min-h-[40px] flex flex-wrap gap-1 p-2 border border-input bg-background rounded-md">
+                {tags.length > 0 ? (
+                  tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                    >
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">No tags available</span>
+                )}
+              </div>
+            </div>
+
             {/* Applies To Tags */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">

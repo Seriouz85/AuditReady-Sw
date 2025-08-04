@@ -1,6 +1,3 @@
-// React is used for JSX in PDF components below
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { toast } from '@/utils/toast';
