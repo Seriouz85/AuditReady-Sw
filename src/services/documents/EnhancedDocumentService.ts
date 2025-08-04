@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 export interface DocumentVersion {
   id: string;
@@ -123,7 +123,7 @@ export class EnhancedDocumentService {
       const checksum = await this.calculateChecksum(file);
 
       // Create document metadata
-      const documentData: Partial<DocumentMetadata> = {
+      const documentData = {
         organization_id: organizationId,
         name: metadata.name || file.name,
         description: metadata.description,
@@ -143,7 +143,7 @@ export class EnhancedDocumentService {
         compliance_tags: metadata.compliance_tags || [],
         related_assessment_ids: metadata.related_assessment_ids || [],
         related_requirement_ids: metadata.related_requirement_ids || []
-      };
+      } as Partial<DocumentMetadata>;
 
       const { data: docData, error: docError } = await supabase
         .from('document_metadata')
@@ -155,7 +155,7 @@ export class EnhancedDocumentService {
 
       // Create initial version record
       const versionData: Partial<DocumentVersion> = {
-        document_id: docData.id,
+        document_id: docData['id'] as string,
         version_number: 1,
         file_url: uploadData.path,
         file_size: file.size,
@@ -171,9 +171,9 @@ export class EnhancedDocumentService {
         .insert(versionData);
 
       // Log activity
-      await this.logActivity(docData.id, userId, 'created', 'Document created');
+      await this.logActivity(docData['id'] as string, userId, 'created', 'Document created');
 
-      return docData as DocumentMetadata;
+      return docData as unknown as DocumentMetadata;
 
     } catch (error) {
       console.error('Error uploading document:', error);
@@ -200,12 +200,12 @@ export class EnhancedDocumentService {
       if (!document) throw new Error('Document not found');
 
       // Check if document is locked
-      if (document.is_locked && document.locked_by !== userId) {
+      if (document['is_locked'] && document['locked_by'] !== userId) {
         throw new Error('Document is locked by another user');
       }
 
       // Upload new file version
-      const fileName = `${document.organization_id}/${Date.now()}-v${document.current_version + 1}-${file.name}`;
+      const fileName = `${document['organization_id']}/${Date.now()}-v${(document['current_version'] as number) + 1}-${file.name}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('documents')
         .upload(fileName, file);
@@ -213,7 +213,7 @@ export class EnhancedDocumentService {
       if (uploadError) throw uploadError;
 
       const checksum = await this.calculateChecksum(file);
-      const newVersionNumber = document.current_version + 1;
+      const newVersionNumber = (document['current_version'] as number) + 1;
 
       // Mark previous version as not current
       await supabase
@@ -248,7 +248,7 @@ export class EnhancedDocumentService {
         .from('document_metadata')
         .update({
           current_version: newVersionNumber,
-          total_versions: document.total_versions + 1,
+          total_versions: (document['total_versions'] as number) + 1,
           file_size: file.size,
           file_type: file.type,
           modified_by: userId,
@@ -261,7 +261,7 @@ export class EnhancedDocumentService {
       // Log activity
       await this.logActivity(documentId, userId, 'uploaded', `New version uploaded: v${newVersionNumber}`);
 
-      return newVersion as DocumentVersion;
+      return newVersion as unknown as DocumentVersion;
 
     } catch (error) {
       console.error('Error uploading new version:', error);
@@ -315,7 +315,7 @@ export class EnhancedDocumentService {
     const { data, error } = await query.order('updated_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as DocumentMetadata[];
   }
 
   async getDocumentVersions(documentId: string): Promise<DocumentVersion[]> {
@@ -331,7 +331,7 @@ export class EnhancedDocumentService {
       .order('version_number', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as DocumentVersion[];
   }
 
   async downloadDocument(documentId: string, versionNumber?: number): Promise<string> {
@@ -357,7 +357,7 @@ export class EnhancedDocumentService {
       // Create signed URL for download
       const { data: signedUrl, error } = await supabase.storage
         .from('documents')
-        .createSignedUrl(version.file_url, 3600); // 1 hour expiry
+        .createSignedUrl(version['file_url'] as string, 3600); // 1 hour expiry
 
       if (error) throw error;
 
@@ -444,15 +444,15 @@ export class EnhancedDocumentService {
       await supabase
         .from('document_versions')
         .update({ is_current: true })
-        .eq('id', targetVersion.id);
+        .eq('id', (targetVersion as any)['id']);
 
       // Update document metadata
       await supabase
         .from('document_metadata')
         .update({
           current_version: versionNumber,
-          file_size: targetVersion.file_size,
-          file_type: targetVersion.file_type,
+          file_size: (targetVersion as any)['file_size'],
+          file_type: (targetVersion as any)['file_type'],
           modified_by: userId,
           updated_at: new Date().toISOString(),
           status: 'draft',
@@ -519,7 +519,8 @@ export class EnhancedDocumentService {
 
     if (error) throw error;
 
-    await this.logActivity(documentId, userId, decision, notes || `Document ${decision}`);
+    const action = decision === 'changes_requested' ? 'edited' : decision;
+    await this.logActivity(documentId, userId, action, notes || `Document ${decision}`);
     return true;
   }
 
@@ -572,10 +573,10 @@ export class EnhancedDocumentService {
 
     // Convert to search results with basic scoring
     return (data || []).map(doc => ({
-      document: doc as DocumentMetadata,
-      matchType: this.getMatchType(doc, query),
-      score: this.calculateScore(doc, query),
-      highlights: this.getHighlights(doc, query)
+      document: doc as unknown as DocumentMetadata,
+      matchType: this.getMatchType(doc as unknown as DocumentMetadata, query),
+      score: this.calculateScore(doc as unknown as DocumentMetadata, query),
+      highlights: this.getHighlights(doc as unknown as DocumentMetadata, query)
     }));
   }
 
@@ -616,7 +617,7 @@ export class EnhancedDocumentService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as DocumentActivity[];
   }
 
   // Utility Methods
@@ -698,7 +699,7 @@ export class EnhancedDocumentService {
       shared_by: userId,
       shared_with_email: shareWith,
       access_type: accessType,
-      expires_at: expiresAt,
+      ...(expiresAt && { expires_at: expiresAt }),
       password_protected: !!password,
       download_count: 0
     };
@@ -712,7 +713,7 @@ export class EnhancedDocumentService {
     if (error) throw error;
 
     await this.logActivity(documentId, userId, 'edited', `Document shared with ${shareWith}`);
-    return data as DocumentShare;
+    return data as unknown as DocumentShare;
   }
 
   async getDocumentShares(documentId: string): Promise<DocumentShare[]> {
@@ -728,6 +729,6 @@ export class EnhancedDocumentService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as DocumentShare[];
   }
 }

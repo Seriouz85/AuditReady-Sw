@@ -64,10 +64,6 @@ export const DeploymentHistory: React.FC<DeploymentHistoryProps> = ({
   const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
   const [showRollbackDialog, setShowRollbackDialog] = useState(false);
 
-  useEffect(() => {
-    loadDeploymentHistory();
-  }, [environment, loadDeploymentHistory]);
-
   const loadDeploymentHistory = useCallback(async () => {
     try {
       setLoading(true);
@@ -126,6 +122,10 @@ export const DeploymentHistory: React.FC<DeploymentHistoryProps> = ({
       setLoading(false);
     }
   }, [environment]);
+
+  useEffect(() => {
+    loadDeploymentHistory();
+  }, [loadDeploymentHistory]);
 
   const handleRollback = async () => {
     if (!selectedDeployment || !onRollback) return;

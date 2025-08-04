@@ -152,7 +152,7 @@ export class AssessmentDataProcessor {
       if (!acc[req.status]) {
         acc[req.status] = [];
       }
-      acc[req.status].push(req);
+      acc[req.status]!.push(req);
       return acc;
     }, {} as Record<string, Requirement[]>);
   }
@@ -162,7 +162,7 @@ export class AssessmentDataProcessor {
    */
   static extractSectionFromCode(code: string): string {
     const match = code.match(/^([A-Z]+\.?\d*)/);
-    return match ? match[1] : 'Other';
+    return match?.[1] || 'Other';
   }
   
   /**
@@ -184,7 +184,7 @@ export class AssessmentDataProcessor {
       
       fileMatches.forEach(match => {
         const parts = match.match(/•\s*([^(]+)\(([^)]+)\)/);
-        if (parts) {
+        if (parts && parts[1] && parts[2]) {
           const filename = parts[1].trim();
           const details = parts[2];
           
@@ -195,8 +195,8 @@ export class AssessmentDataProcessor {
           attachments.push({
             filename,
             description: details,
-            size: sizeMatch ? sizeMatch[1] : undefined,
-            type: typeMatch ? typeMatch[1].toUpperCase() : 'Document'
+            ...(sizeMatch?.[1] && { size: sizeMatch[1] }),
+            ...(typeMatch?.[1] && { type: typeMatch[1].toUpperCase() }) || { type: 'Document' }
           });
         }
       });
@@ -266,9 +266,9 @@ export class AssessmentDataProcessor {
   /**
    * Get requirement statistics for dashboard displays
    */
-  static getRequirementStatistics(requirements: Requirement[]) {
+  static getRequirementStatistics(requirements: Requirement[], standards: Standard[] = []) {
     const metrics = this.calculateMetrics(requirements);
-    const bySection = this.groupRequirementsBySection(requirements);
+    const bySection = this.groupRequirementsBySection(requirements, standards);
     
     return {
       ...metrics,

@@ -337,10 +337,10 @@ export class EnhancedMermaidAI {
   private extractStepLabel(prompt: string): string {
     // Simple extraction - look for quoted text or text after "add"/"insert"
     const quotedMatch = prompt.match(/"([^"]+)"/);
-    if (quotedMatch) return quotedMatch[1];
+    if (quotedMatch && quotedMatch[1]) return quotedMatch[1];
 
     const addMatch = prompt.match(/add\s+(.+?)(?:\s+to|\s+after|\s+before|$)/i);
-    if (addMatch) return this.capitalizeWords(addMatch[1].trim());
+    if (addMatch && addMatch[1]) return this.capitalizeWords(addMatch[1].trim());
 
     return 'New Step';
   }

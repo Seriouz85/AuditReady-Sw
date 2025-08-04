@@ -190,14 +190,14 @@ const TrenningLMS: React.FC = () => {
   
   // Handler for continuing or starting a course
   const handleCourseAction = async (courseId: string) => {
-    navigate(`/lms/course/${courseId}`);
+    navigate(`/lms/viewer/${courseId}`);
   };
   
   // Handler for enrolling in a new course
   const handleEnroll = async (courseId: string) => {
     if (!user || isDemo) {
       // For demo, just navigate to course
-      navigate(`/lms/course/${courseId}`);
+      navigate(`/lms/viewer/${courseId}`);
       return;
     }
     
@@ -215,7 +215,7 @@ const TrenningLMS: React.FC = () => {
       
       if (success) {
         toast.success('Successfully enrolled in course');
-        navigate(`/lms/course/${courseId}`);
+        navigate(`/lms/viewer/${courseId}`);
       }
     } catch (error) {
       console.error('Error enrolling in course:', error);
@@ -614,7 +614,7 @@ const TrenningLMS: React.FC = () => {
                 isMandatory={course.is_mandatory}
                 instructor={demoInstructors[course.created_by as keyof typeof demoInstructors]}
                 tags={course.tags}
-                onView={() => navigate(`/lms/course/${course.id}`)}
+                onView={() => navigate(`/lms/viewer/${course.id}`)}
                 onEdit={() => navigate(`/lms/course/${course.id}/edit`)}
               />
               ))}

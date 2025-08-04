@@ -80,13 +80,16 @@ export interface RecurrenceSettings {
   endDate?: string;
 }
 
+// Assessment status type
+export type AssessmentStatus = 'draft' | 'in-progress' | 'completed';
+
 // Assessment types
 export interface Assessment {
   id: string;
   name: string;
   description: string;
   standardIds: string[]; // Changed from standardId to support multiple standards
-  status: 'draft' | 'in-progress' | 'completed';
+  status: AssessmentStatus;
   progress: number; // Percentage of completion
   startDate: string;
   endDate?: string;

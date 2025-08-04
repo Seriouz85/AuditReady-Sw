@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Assessment, Requirement, RequirementStatus, Standard } from '@/types';
+import { Assessment, Requirement, RequirementStatus, Standard, StandardType } from '@/types';
 import { standards as allStandards } from '@/data/mockData';
 import { assessmentProgressService, AssessmentStats } from '@/services/assessments/AssessmentProgressService';
 import { StandardsService } from '@/services/standards/StandardsService';
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase'; // TODO: Implement database queries
 import { useAuth } from '@/contexts/AuthContext';
 
 // Remove duplicate interface as it's now imported from the service
@@ -22,7 +22,7 @@ interface UseAssessmentDataReturn {
 }
 
 export function useAssessmentData(initialAssessment: Assessment): UseAssessmentDataReturn {
-  const { isDemo } = useAuth();
+  const { isDemo: _isDemo } = useAuth();
   const [assessment, setAssessment] = useState<Assessment>({...initialAssessment});
   const [assessmentRequirements, setAssessmentRequirements] = useState<Requirement[]>([]);
   const [standards, setStandards] = useState<Standard[]>([]);
@@ -85,11 +85,11 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
             description: 'Standard details not available',
             category: 'General',
             requirements: [],
-            type: 'compliance' as const,
+            type: 'compliance' as StandardType,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           }));
-          setStandards(minimalStandards);
+          setStandards(minimalStandards as Standard[]);
         } else {
           setStandards(fallbackStandards);
         }

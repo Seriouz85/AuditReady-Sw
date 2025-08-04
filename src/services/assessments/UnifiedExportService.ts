@@ -3,6 +3,8 @@ import { UnifiedAssessmentData } from '@/components/assessments/UnifiedAssessmen
 import { AssessmentDataProcessor } from './AssessmentDataProcessor';
 import { OptimizedPdfGenerator } from '@/utils/optimizedPdfUtils';
 import { OptimizedWordGenerator } from '@/utils/optimizedWordUtils';
+import { formatCSVField } from '@/utils/csvUtils';
+// Note: downloadCSV and generateCSVFilename available if needed
 import { toast } from '@/utils/toast';
 
 /**
@@ -192,9 +194,6 @@ export class UnifiedExportService {
     // CSV data rows
     const dataRows = requirements.map(req => {
       const standardName = standards.find(s => s.id === req.standardId)?.name || 'Unknown';
-      
-      // Format CSV fields properly
-      const formatCSVField = (text: string) => `"${(text || '').replace(/"/g, '""')}"`;
       
       return [
         formatCSVField(assessment.name),

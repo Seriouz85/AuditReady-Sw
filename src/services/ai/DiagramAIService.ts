@@ -30,12 +30,9 @@ export interface ProcessFlowRequest {
 
 export class DiagramAIService {
   private static instance: DiagramAIService;
-  private apiEndpoint: string;
-  private apiKey: string;
 
   private constructor() {
-    this.apiEndpoint = process.env.REACT_APP_AI_API_ENDPOINT || '';
-    this.apiKey = process.env.REACT_APP_AI_API_KEY || '';
+    // Note: Environment variables will be accessed when needed
   }
 
   public static getInstance(): DiagramAIService {
@@ -167,7 +164,7 @@ export class DiagramAIService {
    * Template-based diagram generation (fallback for when AI API is not available)
    */
   private async generateFromTemplate(request: DiagramGenerationRequest): Promise<DiagramGenerationResponse> {
-    const { prompt, diagramType = 'flowchart', industry = 'general' } = request;
+    const { prompt, diagramType = 'flowchart', industry: _industry = 'general' } = request;
     
     // Simple keyword-based template selection
     const keywords = prompt.toLowerCase();
@@ -183,7 +180,7 @@ export class DiagramAIService {
     }
   }
 
-  private generateAuditTemplate(prompt: string): DiagramGenerationResponse {
+  private generateAuditTemplate(_prompt: string): DiagramGenerationResponse {
     const mermaidCode = `flowchart TD
     A[Audit Planning] --> B[Risk Assessment]
     B --> C[Control Testing]
@@ -205,7 +202,7 @@ export class DiagramAIService {
     };
   }
 
-  private generateAuthFlowTemplate(prompt: string): DiagramGenerationResponse {
+  private generateAuthFlowTemplate(_prompt: string): DiagramGenerationResponse {
     const mermaidCode = `flowchart TD
     A[User Login] --> B{Credentials Valid?}
     B -->|No| C[Show Error]
@@ -229,7 +226,7 @@ export class DiagramAIService {
     };
   }
 
-  private generateProcessTemplate(prompt: string): DiagramGenerationResponse {
+  private generateProcessTemplate(_prompt: string): DiagramGenerationResponse {
     const mermaidCode = `flowchart TD
     A[Start Process] --> B[Input Validation]
     B --> C{Valid Input?}
@@ -252,7 +249,7 @@ export class DiagramAIService {
     };
   }
 
-  private generateGenericTemplate(prompt: string, diagramType: string): DiagramGenerationResponse {
+  private generateGenericTemplate(_prompt: string, diagramType: string): DiagramGenerationResponse {
     let mermaidCode = '';
     
     switch (diagramType) {

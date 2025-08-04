@@ -751,11 +751,25 @@ const demoCoursePart: Course = {
   ]
 };
 
+// Map demo course IDs to detailed course data
+const demoCourseMap: { [key: string]: Course } = {
+  'demo-1': demoCoursePart,
+  'demo-2': demoCoursePart,
+  'demo-3': demoCoursePart,
+  'demo-4': demoCoursePart,
+  'demo-5': demoCoursePart,
+  'demo-6': demoCoursePart
+};
+
 const CourseViewer: React.FC = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [course] = useState<Course>(demoCoursePart);
-  const [currentModule, setCurrentModule] = useState<CourseModule>(course.sections[1].modules[1]);
+  
+  // Get the course data based on the courseId
+  const courseData = courseId && demoCourseMap[courseId] ? demoCourseMap[courseId] : demoCoursePart;
+  
+  const [course] = useState<Course>(courseData);
+  const [currentModule, setCurrentModule] = useState<CourseModule>(course.sections[0].modules[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [sectionsState, setSectionsState] = useState(course.sections);
   const [showBookmarks, setShowBookmarks] = useState(false);

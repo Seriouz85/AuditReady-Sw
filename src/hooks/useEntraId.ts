@@ -35,8 +35,27 @@ export const useEntraId = () => {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    setConnections(data || []);
-    return data || [];
+    // Type-safe casting - database columns need mapping
+    const typedData = (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      tenantId: item.tenant_id,
+      clientId: item.client_id,
+      clientSecret: item.client_secret,
+      redirectUri: item.redirect_uri,
+      scopes: item.scopes,
+      status: item.status,
+      lastSyncAt: item.last_sync_at,
+      lastSyncStatus: item.last_sync_status,
+      lastTestAt: item.last_test_at,
+      autoSync: item.auto_sync,
+      syncInterval: item.sync_interval,
+      organizationId: item.organization_id,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at
+    })) as EntraIdConnection[];
+    setConnections(typedData);
+    return typedData;
   };
 
   const loadGroupMappings = async () => {
@@ -46,8 +65,20 @@ export const useEntraId = () => {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    setGroupMappings(data || []);
-    return data || [];
+    // Type-safe casting - database columns need mapping
+    const typedData = (data || []).map((item: any) => ({
+      id: item.id,
+      groupId: item.group_id,
+      groupName: item.group_name,
+      auditReadyRole: item.auditready_role,
+      permissions: item.permissions || [],
+      organizationId: item.organization_id,
+      isActive: item.is_active,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at
+    })) as GroupMapping[];
+    setGroupMappings(typedData);
+    return typedData;
   };
 
   const loadSyncReports = async () => {
@@ -58,8 +89,23 @@ export const useEntraId = () => {
       .limit(20);
 
     if (error) throw error;
-    setSyncReports(data || []);
-    return data || [];
+    // Type-safe casting - database columns need mapping
+    const typedData = (data || []).map((item: any) => ({
+      id: item.id,
+      startedAt: item.started_at,
+      completedAt: item.completed_at,
+      status: item.status,
+      totalUsers: item.total_users,
+      usersCreated: item.users_created,
+      usersUpdated: item.users_updated,
+      usersDisabled: item.users_disabled,
+      errors: item.errors,
+      errorDetails: item.error_details,
+      organizationId: item.organization_id,
+      triggeredBy: item.triggered_by
+    })) as SyncReport[];
+    setSyncReports(typedData);
+    return typedData;
   };
 
   // Create new connection
@@ -68,12 +114,17 @@ export const useEntraId = () => {
     setError(null);
 
     try {
+      // Validate required fields
+      if (!connectionData.tenantId || !connectionData.clientId || !connectionData.clientSecret) {
+        throw new Error('Missing required connection parameters');
+      }
+
       // Test connection first
       await entraIdService.initialize({
-        tenantId: connectionData.tenantId!,
-        clientId: connectionData.clientId!,
-        clientSecret: connectionData.clientSecret!,
-        redirectUri: connectionData.redirectUri!,
+        tenantId: connectionData.tenantId,
+        clientId: connectionData.clientId,
+        clientSecret: connectionData.clientSecret,
+        redirectUri: connectionData.redirectUri || `${window.location.origin}/auth/callback/entra`,
         scopes: connectionData.scopes || ['openid', 'profile', 'email', 'User.Read']
       });
 
@@ -84,8 +135,8 @@ export const useEntraId = () => {
           tenant_id: connectionData.tenantId,
           client_id: connectionData.clientId,
           client_secret: connectionData.clientSecret,
-          redirect_uri: connectionData.redirectUri,
-          scopes: connectionData.scopes,
+          redirect_uri: connectionData.redirectUri || `${window.location.origin}/auth/callback/entra`,
+          scopes: connectionData.scopes || ['openid', 'profile', 'email', 'User.Read'],
           status: 'active',
           auto_sync: false,
           sync_interval: 60
@@ -111,9 +162,51 @@ export const useEntraId = () => {
     setError(null);
 
     try {
+      // Convert camelCase to snake_case for database
+      const dbUpdates: Record<string, any> = {};
+      Object.entries(updates).forEach(([key, value]) => {
+        switch (key) {
+          case 'tenantId':
+            dbUpdates['tenant_id'] = value;
+            break;
+          case 'clientId':
+            dbUpdates['client_id'] = value;
+            break;
+          case 'clientSecret':
+            dbUpdates['client_secret'] = value;
+            break;
+          case 'redirectUri':
+            dbUpdates['redirect_uri'] = value;
+            break;
+          case 'lastSyncAt':
+            dbUpdates['last_sync_at'] = value;
+            break;
+          case 'lastSyncStatus':
+            dbUpdates['last_sync_status'] = value;
+            break;
+          case 'lastTestAt':
+            dbUpdates['last_test_at'] = value;
+            break;
+          case 'autoSync':
+            dbUpdates['auto_sync'] = value;
+            break;
+          case 'syncInterval':
+            dbUpdates['sync_interval'] = value;
+            break;
+          case 'organizationId':
+            dbUpdates['organization_id'] = value;
+            break;
+          case 'updatedAt':
+            dbUpdates['updated_at'] = value;
+            break;
+          default:
+            dbUpdates[key] = value;
+        }
+      });
+
       const { data, error } = await supabase
         .from('entra_connections')
-        .update(updates)
+        .update(dbUpdates)
         .eq('id', id)
         .select()
         .single();
@@ -220,9 +313,39 @@ export const useEntraId = () => {
     setError(null);
 
     try {
+      // Convert camelCase to snake_case for database
+      const dbUpdates: Record<string, any> = {};
+      Object.entries(updates).forEach(([key, value]) => {
+        switch (key) {
+          case 'groupId':
+            dbUpdates['group_id'] = value;
+            break;
+          case 'groupName':
+            dbUpdates['group_name'] = value;
+            break;
+          case 'auditReadyRole':
+            dbUpdates['auditready_role'] = value;
+            break;
+          case 'organizationId':
+            dbUpdates['organization_id'] = value;
+            break;
+          case 'isActive':
+            dbUpdates['is_active'] = value;
+            break;
+          case 'createdAt':
+            dbUpdates['created_at'] = value;
+            break;
+          case 'updatedAt':
+            dbUpdates['updated_at'] = value;
+            break;
+          default:
+            dbUpdates[key] = value;
+        }
+      });
+
       const { data, error } = await supabase
         .from('entra_group_mappings')
-        .update(updates)
+        .update(dbUpdates)
         .eq('id', id)
         .select()
         .single();
@@ -309,7 +432,7 @@ export const useEntraId = () => {
           users_disabled: syncResults.disabled,
           errors: syncResults.errors
         })
-        .eq('id', report.id);
+        .eq('id', (report as any).id);
 
       // Update connection last sync
       await updateConnection(connection.id, {

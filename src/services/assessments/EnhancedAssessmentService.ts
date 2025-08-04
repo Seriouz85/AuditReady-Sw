@@ -146,7 +146,7 @@ export class EnhancedAssessmentService {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as unknown as AssessmentTemplate;
   }
 
   async getTemplates(organizationId: string, includePublic = true): Promise<AssessmentTemplate[]> {
@@ -163,7 +163,7 @@ export class EnhancedAssessmentService {
     const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as AssessmentTemplate[];
   }
 
   async getTemplateById(templateId: string): Promise<AssessmentTemplate | null> {
@@ -174,7 +174,7 @@ export class EnhancedAssessmentService {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as unknown as AssessmentTemplate;
   }
 
   // Workflow Management
@@ -186,7 +186,7 @@ export class EnhancedAssessmentService {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as unknown as AssessmentWorkflow;
   }
 
   async getWorkflows(organizationId: string): Promise<AssessmentWorkflow[]> {
@@ -197,7 +197,7 @@ export class EnhancedAssessmentService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as AssessmentWorkflow[];
   }
 
   async advanceWorkflow(assessmentId: string, action: 'approve' | 'reject', comments?: string): Promise<boolean> {
@@ -211,12 +211,12 @@ export class EnhancedAssessmentService {
       .eq('id', assessmentId)
       .single();
 
-    if (!assessment || !assessment.workflow) {
+    if (!assessment || !(assessment as any)['workflow']) {
       throw new Error('Assessment or workflow not found');
     }
 
-    const currentStage = assessment.current_workflow_stage || 0;
-    const workflow = assessment.workflow as AssessmentWorkflow;
+    const currentStage = (assessment as any)['current_workflow_stage'] || 0;
+    const workflow = (assessment as any)['workflow'] as AssessmentWorkflow;
 
     // Record workflow action
     await supabase
@@ -270,7 +270,7 @@ export class EnhancedAssessmentService {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as unknown as AssessmentSchedule;
   }
 
   async getSchedules(organizationId: string, activeOnly = true): Promise<AssessmentSchedule[]> {
@@ -286,7 +286,7 @@ export class EnhancedAssessmentService {
     const { data, error } = await query.order('next_run_date', { ascending: true });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as AssessmentSchedule[];
   }
 
   async runScheduledAssessment(scheduleId: string): Promise<EnhancedAssessment> {
@@ -298,18 +298,23 @@ export class EnhancedAssessmentService {
 
     if (!schedule) throw new Error('Schedule not found');
 
-    // Create assessment from template
+    // Create assessment from template  
+    const templateId = schedule['template_id'] as string;
+    if (!templateId) throw new Error('Schedule template not found');
+    
     const assessment = await this.createAssessmentFromTemplate(
-      schedule.template_id,
+      templateId,
       {
-        name: `${schedule.name} - ${new Date().toLocaleDateString()}`,
-        assigned_team_ids: schedule.assigned_team_ids,
+        name: `${schedule['name'] as string} - ${new Date().toLocaleDateString()}`,
+        assigned_team_ids: schedule['assigned_team_ids'] as string[],
         is_recurring: false // Prevent infinite recursion
       }
     );
 
     // Update schedule next run date
-    const nextDate = this.calculateNextRunDate(schedule.frequency, new Date(schedule.next_run_date));
+    const frequency = schedule['frequency'] as string;
+    const nextRunDate = schedule['next_run_date'] as string;
+    const nextDate = this.calculateNextRunDate(frequency, new Date(nextRunDate));
     await supabase
       .from('assessment_schedules')
       .update({
@@ -352,7 +357,7 @@ export class EnhancedAssessmentService {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as unknown as AssessmentEvidence;
   }
 
   async getEvidenceForAssessment(assessmentId: string): Promise<AssessmentEvidence[]> {
@@ -371,7 +376,7 @@ export class EnhancedAssessmentService {
       .order('collected_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as AssessmentEvidence[];
   }
 
   async verifyEvidence(
@@ -409,7 +414,7 @@ export class EnhancedAssessmentService {
     // Update assessment findings count
     await this.updateAssessmentFindingsCounts(finding.assessment_id);
 
-    return data;
+    return data as unknown as AssessmentFinding;
   }
 
   async getFindingsForAssessment(assessmentId: string): Promise<AssessmentFinding[]> {
@@ -429,7 +434,7 @@ export class EnhancedAssessmentService {
       .order('severity', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as AssessmentFinding[];
   }
 
   async updateFindingStatus(
@@ -480,7 +485,7 @@ export class EnhancedAssessmentService {
     const userId = (await supabase.auth.getUser()).data.user?.id;
     if (!userId) throw new Error('User not authenticated');
 
-    const assessment: Partial<EnhancedAssessment> = {
+    const assessmentData: any = {
       name: overrides?.name || `Assessment from ${template.name}`,
       description: overrides?.description || template.description,
       standard_ids: template.standard_ids,
@@ -489,21 +494,27 @@ export class EnhancedAssessmentService {
       status: 'draft' as AssessmentStatus,
       created_by: userId,
       organization_id: template.organization_id,
+      start_date: new Date().toISOString(),
+      progress: 0,
+      assessor_name: '',
+      assessor_id: userId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       ...overrides
     };
 
     const { data, error } = await supabase
       .from('assessments')
-      .insert(assessment)
+      .insert(assessmentData)
       .select()
       .single();
 
     if (error) throw error;
 
     // Copy requirements from template standards
-    await this.copyRequirementsToAssessment(data.id, template.standard_ids);
+    await this.copyRequirementsToAssessment((data as any).id, template.standard_ids);
 
-    return data as EnhancedAssessment;
+    return data as unknown as EnhancedAssessment;
   }
 
   private async copyRequirementsToAssessment(assessmentId: string, standardIds: string[]): Promise<void> {
@@ -532,22 +543,22 @@ export class EnhancedAssessmentService {
     const { data } = await supabase
       .rpc('calculate_assessment_completion', { assessment_id: assessmentId });
 
-    const { data: findings } = await this.getFindingsForAssessment(assessmentId);
+    const findings = await this.getFindingsForAssessment(assessmentId);
     
     const analytics = {
-      completion: data?.[0] || {},
+      completion: (data as any)?.[0] || {},
       findings: {
         total: findings.length,
         bySeverity: {
-          critical: findings.filter(f => f.severity === 'critical').length,
-          high: findings.filter(f => f.severity === 'high').length,
-          medium: findings.filter(f => f.severity === 'medium').length,
-          low: findings.filter(f => f.severity === 'low').length
+          critical: findings.filter((f: AssessmentFinding) => f.severity === 'critical').length,
+          high: findings.filter((f: AssessmentFinding) => f.severity === 'high').length,
+          medium: findings.filter((f: AssessmentFinding) => f.severity === 'medium').length,
+          low: findings.filter((f: AssessmentFinding) => f.severity === 'low').length
         },
         byStatus: {
-          open: findings.filter(f => f.status === 'open').length,
-          inProgress: findings.filter(f => f.status === 'in-progress').length,
-          closed: findings.filter(f => f.status === 'closed').length
+          open: findings.filter((f: AssessmentFinding) => f.status === 'open').length,
+          inProgress: findings.filter((f: AssessmentFinding) => f.status === 'in-progress').length,
+          closed: findings.filter((f: AssessmentFinding) => f.status === 'closed').length
         }
       }
     };
@@ -556,7 +567,7 @@ export class EnhancedAssessmentService {
     await supabase
       .from('assessment_analytics')
       .insert({
-        organization_id: (await this.getAssessmentById(assessmentId))?.organization_id,
+        organization_id: ((await this.getAssessmentById(assessmentId)) as any)?.organization_id,
         assessment_id: assessmentId,
         metric_type: 'completion_snapshot',
         metric_value: analytics.completion.completion_percentage,
@@ -574,7 +585,7 @@ export class EnhancedAssessmentService {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as unknown as EnhancedAssessment;
   }
 
   // Risk Scoring

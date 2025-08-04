@@ -43,8 +43,8 @@ export const DatabaseStatus: React.FC = () => {
       return {
         name: tableName,
         accessible: !error,
-        error: error?.message
-      };
+        error: error?.message || undefined
+      } as TableStatus;
     } catch (error) {
       return {
         name: tableName,
@@ -161,7 +161,9 @@ export const DatabaseStatus: React.FC = () => {
               {table.accessible ? (
                 <CheckCircle className="h-4 w-4 text-green-600" />
               ) : (
-                <XCircle className="h-4 w-4 text-red-600" title={table.error} />
+                <span title={table.error}>
+                  <XCircle className="h-4 w-4 text-red-600" />
+                </span>
               )}
             </div>
           ))}

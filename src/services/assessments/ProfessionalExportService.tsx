@@ -1,3 +1,5 @@
+// React is used for JSX in PDF components below
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
@@ -6,6 +8,7 @@ import { Assessment, Requirement, Standard } from '@/types';
 import { UnifiedAssessmentData } from '@/components/assessments/UnifiedAssessmentTemplate';
 import { AssessmentDataProcessor } from './AssessmentDataProcessor';
 import { ProfessionalAssessmentDocument } from '@/components/assessments/ProfessionalAssessmentDocument';
+import { formatCSVField } from '@/utils/csvUtils';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType } from 'docx';
 
 export interface ExportProgress {
@@ -70,9 +73,12 @@ export class ProfessionalExportService {
           id,
           name: `Standard ${id.substring(0, 8)}...`, // Show first 8 chars of UUID
           version: 'Unknown',
+          type: 'framework' as const,
           description: 'Standard details not available',
           category: 'Unknown',
-          requirements: []
+          requirements: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }));
         console.warn('Created fallback standards for PDF export');
       }
@@ -163,9 +169,12 @@ export class ProfessionalExportService {
           id,
           name: `Standard ${id.substring(0, 8)}...`, // Show first 8 chars of UUID
           version: 'Unknown',
+          type: 'framework' as const,
           description: 'Standard details not available',
           category: 'Unknown',
-          requirements: []
+          requirements: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }));
         console.warn('Created fallback standards for Word export');
       }
@@ -670,7 +679,7 @@ export class ProfessionalExportService {
       );
 
       // Requirements for this section
-      requirements.forEach((req, index) => {
+      requirements.forEach((req) => {
         const statusColor = this.getWordStatusColor(req.status);
         
         const reqRows = [
@@ -875,9 +884,6 @@ export class ProfessionalExportService {
       const standardName = standard ? `${standard.name} ${standard.version}` : 'Unknown Standard';
       const section = req.section || AssessmentDataProcessor.extractSectionFromCode(req.code);
       
-      // Format CSV fields properly
-      const formatCSVField = (text: string) => `"${(text || '').replace(/"/g, '""')}"`;
-      
       return [
         formatCSVField(assessment.name),
         formatCSVField(standardName),
@@ -906,10 +912,6 @@ export class ProfessionalExportService {
     
     // Combine all data
     return [headerRow, summaryRow, ...dataRows].join("\n");
-  }
-
-  private formatCSVField(text: string): string {
-    return `"${(text || '').replace(/"/g, '""')}"`;
   }
 }
 

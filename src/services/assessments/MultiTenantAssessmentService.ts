@@ -289,14 +289,17 @@ export class MultiTenantAssessmentService {
         if (index >= 0) {
           // Merge stored assessment with mock data, but ensure isRecurring comes from mock data if not set
           const mockAssessment = allAssessments[index];
-          allAssessments[index] = {
-            ...mockAssessment, // Start with mock data (has isRecurring)
-            ...storedAssessment, // Override with stored data (user changes)
-            // Ensure isRecurring is preserved from mock data if not explicitly set in stored data
-            isRecurring: storedAssessment.isRecurring !== undefined ? storedAssessment.isRecurring : mockAssessment.isRecurring,
-            recurrenceSettings: storedAssessment.recurrenceSettings || mockAssessment.recurrenceSettings,
-            nextDueDate: storedAssessment.nextDueDate || mockAssessment.nextDueDate
-          };
+          if (mockAssessment) {
+            const merged = {
+              ...mockAssessment, // Start with mock data (has isRecurring)
+              ...storedAssessment, // Override with stored data (user changes)
+              // Ensure isRecurring is preserved from mock data if not explicitly set in stored data
+              isRecurring: storedAssessment.isRecurring !== undefined ? storedAssessment.isRecurring : mockAssessment.isRecurring,
+              recurrenceSettings: storedAssessment.recurrenceSettings ?? mockAssessment.recurrenceSettings,
+              nextDueDate: storedAssessment.nextDueDate ?? mockAssessment.nextDueDate
+            } as Assessment;
+            allAssessments[index] = merged;
+          }
         } else {
           // This is a user-created assessment, add it as-is
           allAssessments.push(storedAssessment);
@@ -363,7 +366,7 @@ export class MultiTenantAssessmentService {
       ...currentAssessments[index],
       ...updates,
       updatedAt: new Date().toISOString()
-    };
+    } as Assessment;
     
     currentAssessments[index] = updatedAssessment;
     

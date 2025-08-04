@@ -41,7 +41,7 @@ class MultiDomainService {
     // For custom domains like company.auditready.com
     if (hostname.includes('.auditready.com')) {
       const subdomain = hostname.split('.auditready.com')[0];
-      return subdomain === 'app' ? null : subdomain;
+      return subdomain === 'app' ? null : (subdomain || null);
     }
     
     // For fully custom domains

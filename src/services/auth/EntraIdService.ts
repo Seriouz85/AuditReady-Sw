@@ -110,10 +110,15 @@ class EntraIdService {
     }
 
     const data = await response.json();
+    
+    if (!data.access_token) {
+      throw new Error('No access token received from Entra ID');
+    }
+    
     this.accessToken = data.access_token;
     this.tokenExpiry = Date.now() + (data.expires_in * 1000) - 60000; // 1 minute buffer
 
-    return this.accessToken;
+    return this.accessToken!;
   }
 
   /**
@@ -167,7 +172,7 @@ class EntraIdService {
     let nextLink: string | null = `https://graph.microsoft.com/v1.0/users?$select=id,userPrincipalName,displayName,givenName,surname,mail,jobTitle,department,accountEnabled&$top=${pageSize}`;
 
     while (nextLink) {
-      const response = await fetch(nextLink, {
+      const response: Response = await fetch(nextLink, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -179,7 +184,7 @@ class EntraIdService {
         throw new Error(`Failed to get users: ${error}`);
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
       
       for (const user of data.value) {
         users.push({
@@ -253,18 +258,18 @@ class EntraIdService {
             is_active: entraUser.accountEnabled,
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingUser.id);
+          .eq('id', (existingUser as any).id);
 
         if (error) {
           return { success: false, error: error.message, action: 'skipped' };
         }
 
         // Update roles based on group mappings
-        await this.updateUserRoles(existingUser.user_id, entraUser.groups || [], groupMappings);
+        await this.updateUserRoles((existingUser as any).user_id, entraUser.groups || [], groupMappings);
 
         return { 
           success: true, 
-          userId: existingUser.user_id, 
+          userId: (existingUser as any).user_id, 
           action: entraUser.accountEnabled ? 'updated' : 'disabled' 
         };
       }
@@ -401,7 +406,7 @@ class EntraIdService {
         return { success: false, error: error.message, action: 'skipped' };
       }
 
-      return { success: true, userId: userProfile.user_id, action: 'disabled' };
+      return { success: true, userId: (userProfile as any).user_id, action: 'disabled' };
 
     } catch (error) {
       return { 

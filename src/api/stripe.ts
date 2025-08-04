@@ -122,7 +122,7 @@ export const checkSubscriptionStatus = async () => {
     const { data, error } = await supabase
       .from('subscriptions')
       .select('*')
-      .eq('organization_id', orgUser.organization_id)
+      .eq('organization_id', (orgUser as any).organization_id)
       .eq('status', 'active')
       .single();
 
@@ -153,7 +153,7 @@ export const getInvoices = async () => {
     const { data, error } = await supabase
       .from('invoices')
       .select('*')
-      .eq('organization_id', orgUser.organization_id)
+      .eq('organization_id', (orgUser as any).organization_id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

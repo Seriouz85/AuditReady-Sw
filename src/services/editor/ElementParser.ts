@@ -2,14 +2,22 @@
  * Enhanced Mermaid Parser Service
  * Parses Mermaid diagrams and provides full AST manipulation for visual editing
  */
-import { DiagramElement } from '../../components/editor/VisualElementEditor';
 
-export interface ParsedDiagram {
-  elements: DiagramElement[];
-  connections: Connection[];
-  diagramType: string;
-  rawText: string;
-  ast: MermaidAST;
+// Define interfaces locally to avoid import issues
+export interface DiagramElement {
+  id: string;
+  type: 'node' | 'edge';
+  text: string;
+  shape?: 'rectangle' | 'circle' | 'diamond' | 'ellipse' | 'cylinder' | 'hexagon';
+  position?: { x: number; y: number };
+  style?: {
+    fill?: string;
+    stroke?: string;
+    strokeWidth?: number;
+    fontSize?: number;
+    fontWeight?: string;
+  };
+  svgElement?: SVGElement;
 }
 
 export interface Connection {
@@ -19,13 +27,6 @@ export interface Connection {
   type: 'arrow' | 'line' | 'dotted';
   label?: string;
   lineNumber?: number;
-}
-
-export interface MermaidAST {
-  type: string;
-  nodes: MermaidNode[];
-  edges: MermaidEdge[];
-  subgraphs: MermaidSubgraph[];
 }
 
 export interface MermaidNode {
@@ -69,7 +70,7 @@ export interface ParsedDiagram {
   elements: DiagramElement[];
   connections: Connection[];
   diagramType: string;
-  rawText?: string;
+  rawText: string;
 }
 
 export class ElementParser {
@@ -103,7 +104,7 @@ export class ElementParser {
       };
     }
 
-    const diagramType = this.detectDiagramType(lines[0].content);
+    const diagramType = this.detectDiagramType(lines[0]?.content || '');
     const ast: MermaidAST = {
       type: diagramType,
       nodes: [],
@@ -153,9 +154,9 @@ export class ElementParser {
         const shape = this.getShapeFromBrackets(content);
 
         ast.nodes.push({
-          id,
-          text: text.trim(),
-          shape,
+          id: id || '',
+          text: text?.trim() || '',
+          shape: shape || 'rectangle',
           lineNumber
         });
         return;
@@ -165,14 +166,14 @@ export class ElementParser {
       const connectionMatch = content.match(/^\s*(\w+)\s*(-->|---|\-\.\->|===|===>)\s*(\w+)(\s*\|\s*([^\|]+)\s*\|)?/);
       if (connectionMatch) {
         const [, from, arrow, to, , label] = connectionMatch;
-        const type = this.getConnectionType(arrow);
+        const type = this.getConnectionType(arrow || '');
 
         ast.edges.push({
           id: `${from}-${to}-${lineNumber}`,
-          from,
-          to,
+          from: from || '',
+          to: to || '',
           type,
-          label: label?.trim(),
+          ...(label?.trim() && { label: label.trim() }),
           lineNumber
         });
         return;
@@ -183,8 +184,8 @@ export class ElementParser {
       if (subgraphMatch) {
         const [, id, title] = subgraphMatch;
         ast.subgraphs.push({
-          id,
-          title: title.trim(),
+          id: id || '',
+          title: title?.trim() || '',
           nodes: [],
           lineNumber
         });
@@ -201,8 +202,8 @@ export class ElementParser {
       type: 'node' as const,
       text: node.text,
       shape: node.shape,
-      position: node.position,
-      style: node.style
+      ...(node.position && { position: node.position }),
+      ...(node.style && { style: node.style })
     }));
   }
 
@@ -214,9 +215,9 @@ export class ElementParser {
       id: edge.id,
       from: edge.from,
       to: edge.to,
-      type: edge.type,
-      label: edge.label,
-      lineNumber: edge.lineNumber
+      type: edge.type === 'thick' ? 'line' : edge.type as Connection['type'],
+      ...(edge.label && { label: edge.label }),
+      ...(edge.lineNumber !== undefined && { lineNumber: edge.lineNumber })
     }));
   }
 
@@ -306,7 +307,7 @@ export class ElementParser {
       from: fromId,
       to: toId,
       type,
-      label,
+      ...(label && { label }),
       lineNumber: parsed.ast.edges.length + parsed.ast.nodes.length + 2
     });
 
@@ -394,7 +395,7 @@ export class ElementParser {
       const line = lines[i];
 
       // Check if line contains the element
-      if (line.includes(elementId)) {
+      if (line?.includes(elementId)) {
         // Replace the text content while preserving structure
         lines[i] = this.replaceElementText(line, elementId, newText);
       }
@@ -416,13 +417,14 @@ export class ElementParser {
       const rect = node.getBoundingClientRect();
 
       if (textElement) {
+        const style = this.extractElementStyle(node as SVGElement);
         elements.push({
           id: `node-${index}`,
           type: 'node',
           text: textElement.textContent || '',
           position: { x: rect.left, y: rect.top },
           svgElement: node as SVGElement,
-          style: this.extractElementStyle(node as SVGElement)
+          ...(style && { style })
         });
       }
     });
@@ -433,13 +435,14 @@ export class ElementParser {
       const textElement = edge.querySelector('text');
       const rect = edge.getBoundingClientRect();
 
+      const style = this.extractElementStyle(edge as SVGElement);
       elements.push({
         id: `edge-${index}`,
         type: 'edge',
         text: textElement?.textContent || '',
         position: { x: rect.left, y: rect.top },
         svgElement: edge as SVGElement,
-        style: this.extractElementStyle(edge as SVGElement)
+        ...(style && { style })
       });
     });
 
@@ -462,37 +465,6 @@ export class ElementParser {
     return 'flowchart'; // Default
   }
 
-  /**
-   * Parse flowchart diagram
-   */
-  private parseFlowchart(lines: string[], elements: DiagramElement[], connections: Connection[]): void {
-    lines.forEach((line, index) => {
-      // Parse node definitions: A[Text] or A(Text) or A{Text}
-      const nodeMatch = line.match(/(\w+)[\[\(\{]([^\]\)\}]+)[\]\)\}]/);
-      if (nodeMatch) {
-        const [, id, text] = nodeMatch;
-        elements.push({
-          id,
-          type: 'node',
-          text: text.trim(),
-          shape: this.getShapeFromBrackets(line)
-        });
-      }
-
-      // Parse connections: A --> B or A --- B
-      const connectionMatch = line.match(/(\w+)\s*(-->|---|\-\.\->)\s*(\w+)(\|([^\|]+)\|)?/);
-      if (connectionMatch) {
-        const [, from, arrow, to, , label] = connectionMatch;
-        connections.push({
-          id: `conn-${index}`,
-          from,
-          to,
-          type: arrow === '-->' ? 'arrow' : arrow === '---' ? 'line' : 'dotted',
-          label: label?.trim()
-        });
-      }
-    });
-  }
 
   /**
    * Parse sequence diagram into AST
@@ -504,8 +476,8 @@ export class ElementParser {
       if (participantMatch) {
         const [, id, alias] = participantMatch;
         ast.nodes.push({
-          id,
-          text: alias || id,
+          id: id || '',
+          text: alias || id || '',
           shape: 'rectangle',
           lineNumber
         });
@@ -516,14 +488,14 @@ export class ElementParser {
       const messageMatch = content.match(/^\s*(\w+)\s*(->|-->|->>|-->>)\s*(\w+)\s*:\s*(.+)/);
       if (messageMatch) {
         const [, from, arrow, to, message] = messageMatch;
-        const type = arrow.includes('>') ? 'arrow' : 'line';
+        const type: MermaidEdge['type'] = (arrow || '').includes('>') ? 'arrow' : 'line';
 
         ast.edges.push({
           id: `${from}-${to}-${lineNumber}`,
-          from,
-          to,
+          from: from || '',
+          to: to || '',
           type,
-          label: message.trim(),
+          ...(message?.trim() && { label: message.trim() }),
           lineNumber
         });
       }
@@ -540,8 +512,8 @@ export class ElementParser {
       if (classMatch) {
         const [, className] = classMatch;
         ast.nodes.push({
-          id: className,
-          text: className,
+          id: className || '',
+          text: className || '',
           shape: 'rectangle',
           lineNumber
         });
@@ -554,8 +526,8 @@ export class ElementParser {
         const [, from, , to] = relationMatch;
         ast.edges.push({
           id: `${from}-${to}-${lineNumber}`,
-          from,
-          to,
+          from: from || '',
+          to: to || '',
           type: 'arrow',
           lineNumber
         });
@@ -563,74 +535,8 @@ export class ElementParser {
     });
   }
 
-  /**
-   * Parse sequence diagram (legacy)
-   */
-  private parseSequenceDiagram(lines: string[], elements: DiagramElement[], connections: Connection[]): void {
-    lines.forEach((line, index) => {
-      // Parse participant definitions
-      const participantMatch = line.match(/participant\s+(\w+)(?:\s+as\s+(.+))?/);
-      if (participantMatch) {
-        const [, id, alias] = participantMatch;
-        elements.push({
-          id,
-          type: 'node',
-          text: alias || id
-        });
-      }
 
-      // Parse messages
-      const messageMatch = line.match(/(\w+)\s*(->|-->|->>|-->>)\s*(\w+)\s*:\s*(.+)/);
-      if (messageMatch) {
-        const [, from, arrow, to, message] = messageMatch;
-        connections.push({
-          id: `msg-${index}`,
-          from,
-          to,
-          type: arrow.includes('>') ? 'arrow' : 'line',
-          label: message.trim()
-        });
-      }
-    });
-  }
 
-  /**
-   * Parse class diagram
-   */
-  private parseClassDiagram(lines: string[], elements: DiagramElement[], connections: Connection[]): void {
-    lines.forEach((line, index) => {
-      // Parse class definitions
-      const classMatch = line.match(/class\s+(\w+)\s*\{([^}]*)\}/);
-      if (classMatch) {
-        const [, className, content] = classMatch;
-        elements.push({
-          id: className,
-          type: 'node',
-          text: className
-        });
-      }
-
-      // Parse relationships
-      const relationMatch = line.match(/(\w+)\s*(-->|<\|--|o--|\|\|--)\s*(\w+)/);
-      if (relationMatch) {
-        const [, from, relation, to] = relationMatch;
-        connections.push({
-          id: `rel-${index}`,
-          from,
-          to,
-          type: 'arrow'
-        });
-      }
-    });
-  }
-
-  /**
-   * Parse generic diagram
-   */
-  private parseGenericDiagram(lines: string[], elements: DiagramElement[], connections: Connection[]): void {
-    // Fallback to flowchart parsing
-    this.parseFlowchart(lines, elements, connections);
-  }
 
   /**
    * Get shape from bracket type
@@ -646,16 +552,28 @@ export class ElementParser {
   /**
    * Extract style from SVG element
    */
-  private extractElementStyle(element: SVGElement): DiagramElement['style'] {
+  private extractElementStyle(element: SVGElement): DiagramElement['style'] | undefined {
     const computedStyle = window.getComputedStyle(element);
 
-    return {
-      fill: computedStyle.fill !== 'none' ? computedStyle.fill : undefined,
-      stroke: computedStyle.stroke !== 'none' ? computedStyle.stroke : undefined,
-      strokeWidth: computedStyle.strokeWidth ? parseFloat(computedStyle.strokeWidth) : undefined,
-      fontSize: computedStyle.fontSize ? parseFloat(computedStyle.fontSize) : undefined,
-      fontWeight: computedStyle.fontWeight || undefined
-    };
+    const style: DiagramElement['style'] = {};
+    
+    if (computedStyle.fill !== 'none') {
+      style.fill = computedStyle.fill;
+    }
+    if (computedStyle.stroke !== 'none') {
+      style.stroke = computedStyle.stroke;
+    }
+    if (computedStyle.strokeWidth) {
+      style.strokeWidth = parseFloat(computedStyle.strokeWidth);
+    }
+    if (computedStyle.fontSize) {
+      style.fontSize = parseFloat(computedStyle.fontSize);
+    }
+    if (computedStyle.fontWeight) {
+      style.fontWeight = computedStyle.fontWeight;
+    }
+
+    return Object.keys(style).length > 0 ? style : undefined;
   }
 
   /**
@@ -715,21 +633,6 @@ export class ElementParser {
     }
   }
 
-  /**
-   * Generate connection text
-   */
-  private generateConnectionText(connection: Connection, elements: DiagramElement[]): string {
-    const arrow = connection.type === 'arrow' ? '-->' :
-                 connection.type === 'dotted' ? '-..->' : '---';
-
-    let result = `    ${connection.from} ${arrow} ${connection.to}`;
-
-    if (connection.label) {
-      result += ` |${connection.label}|`;
-    }
-
-    return result;
-  }
 
   /**
    * Get brackets for shape
@@ -759,7 +662,8 @@ export class ElementParser {
     for (const pattern of patterns) {
       if (pattern.test(line)) {
         return line.replace(pattern, (match) => {
-          const openBracket = match.substring(elementId.length, match.length - (match.length - elementId.length - 1));
+          const openBracketIndex = elementId.length;
+          const openBracket = match.substring(openBracketIndex, openBracketIndex + 1);
           const closeBracket = match.charAt(match.length - 1);
           return `${elementId}${openBracket}${newText}${closeBracket}`;
         });

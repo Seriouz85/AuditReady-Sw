@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 // Core pages that should load immediately
@@ -17,7 +17,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const EmailVerification = lazy(() => import("./pages/EmailVerification"));
 const PricingAssessment = lazy(() => import("./pages/PricingAssessment"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-const EnhancedOnboarding = lazy(() => import("./pages/EnhancedOnboarding"));
+// const EnhancedOnboarding = lazy(() => import("./pages/EnhancedOnboarding"));
 const EnhancedOnboardingFlow = lazy(() => import("./pages/EnhancedOnboardingFlow"));
 const GuidedStandardImport = lazy(() => import("./pages/GuidedStandardImport"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));

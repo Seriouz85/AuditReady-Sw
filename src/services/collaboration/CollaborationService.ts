@@ -339,7 +339,7 @@ export class CollaborationService {
   /**
    * Connect to WebSocket server
    */
-  private connectWebSocket(sessionId: string): void {
+  private connectWebSocket(_sessionId: string): void {
     try {
       // In a real implementation, this would connect to your WebSocket server
       // For demo purposes, we'll simulate WebSocket behavior
@@ -454,11 +454,13 @@ export class CollaborationService {
         const otherUsers = this.currentSession.users.filter(u => u.id !== this.currentUser?.id);
         if (otherUsers.length > 0) {
           const randomUser = otherUsers[Math.floor(Math.random() * otherUsers.length)];
-          randomUser.cursor = {
-            x: Math.random() * 800,
-            y: Math.random() * 600
-          };
-          this.emit('cursor-moved', { user: randomUser, position: randomUser.cursor });
+          if (randomUser) {
+            randomUser.cursor = {
+              x: Math.random() * 800,
+              y: Math.random() * 600
+            };
+            this.emit('cursor-moved', { user: randomUser, position: randomUser.cursor });
+          }
         }
       }
     }, 2000);
@@ -472,7 +474,7 @@ export class CollaborationService {
       '#3b82f6', '#ef4444', '#22c55e', '#f59e0b', 
       '#8b5cf6', '#06b6d4', '#ec4899', '#84cc16'
     ];
-    return colors[Math.floor(Math.random() * colors.length)];
+    return colors[Math.floor(Math.random() * colors.length)] || '#3b82f6';
   }
 
   /**
@@ -481,8 +483,8 @@ export class CollaborationService {
   public static createUser(name: string, email: string): User {
     return {
       id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name,
-      email,
+      name: name || 'Unknown User',
+      email: email || '',
       color: CollaborationService.generateUserColor()
     };
   }
@@ -576,12 +578,12 @@ export class CollaborationService {
         id: `comment-${Date.now()}`,
         content: params.content,
         author_id: user.id,
-        author_name: user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown User',
-        author_avatar: user.user_metadata?.avatar_url,
+        author_name: user.user_metadata?.['name'] || user.email?.split('@')[0] || 'Unknown User',
+        author_avatar: user.user_metadata?.['avatar_url'] || '',
         resource_type: params.resourceType as any,
         resource_id: params.resourceId,
-        parent_comment_id: params.parentCommentId,
-        mentions: [...mentions, ...(params.mentions || [])],
+        parent_comment_id: params.parentCommentId || '',
+        mentions: [...mentions.filter((m): m is string => typeof m === 'string'), ...(params.mentions || [])],
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_edited: false
@@ -591,8 +593,9 @@ export class CollaborationService {
       // await supabase.from('comments').insert(newComment);
 
       // Create mentions notifications
-      if (mentions.length > 0) {
-        await this.createMentionNotifications(newComment, mentions);
+      const validMentions = mentions.filter((m): m is string => typeof m === 'string');
+      if (validMentions.length > 0) {
+        await this.createMentionNotifications(newComment, validMentions);
       }
 
       // Log activity
@@ -604,7 +607,9 @@ export class CollaborationService {
         target_id: params.resourceId,
         action: 'added_comment',
         description: `commented on ${params.resourceType}`,
-        metadata: { comment_id: newComment.id, mentions }
+        metadata: { comment_id: newComment.id, mentions: validMentions },
+        target_name: 'Comment',
+        is_important: false
       });
 
       return { success: true, comment: newComment };
@@ -618,7 +623,7 @@ export class CollaborationService {
    * Get activity feed for an organization
    */
   public async getActivityFeed(
-    organizationId: string,
+    _organizationId: string,
     limit = 50,
     filters?: {
       types?: string[];
@@ -665,7 +670,7 @@ export class CollaborationService {
           type: 'collaboration',
           actor_id: this.currentUser?.id || 'demo-user',
           actor_name: this.currentUser?.name || 'Demo User',
-          actor_avatar: this.currentUser?.avatar,
+          actor_avatar: this.currentUser?.avatar || '',
           target_type: 'diagram',
           target_id: this.currentSession?.diagramId || 'diagram-1',
           target_name: 'Compliance Flow Diagram',
@@ -713,7 +718,7 @@ export class CollaborationService {
           presenceData.push({
             user_id: user.id,
             user_name: user.name,
-            user_avatar: user.avatar,
+            user_avatar: user.avatar || '',
             resource_type: resourceType,
             resource_id: resourceId,
             last_seen: new Date().toISOString(),
@@ -746,8 +751,8 @@ export class CollaborationService {
    * Get collaboration statistics
    */
   public async getCollaborationStats(
-    organizationId: string,
-    timeRange: 'week' | 'month' | 'quarter' = 'week'
+    _organizationId: string,
+    _timeRange: 'week' | 'month' | 'quarter' = 'week'
   ): Promise<CollaborationStats> {
     try {
       // In production, calculate from actual data
@@ -822,7 +827,7 @@ export class CollaborationService {
   /**
    * Create mention notifications
    */
-  private async createMentionNotifications(comment: Comment, mentionedUsers: string[]): Promise<void> {
+  private async createMentionNotifications(_comment: Comment, mentionedUsers: string[]): Promise<void> {
     try {
       // In production, create mention records and send notifications
       for (const mentionedUser of mentionedUsers) {
@@ -863,7 +868,7 @@ export class CollaborationService {
   public subscribeToComments(
     resourceType: string,
     resourceId: string,
-    callback: (comment: Comment) => void
+    _callback: (comment: Comment) => void
   ): () => void {
     // In production, set up real-time subscription
     // For demo, return a no-op unsubscribe function
@@ -878,7 +883,7 @@ export class CollaborationService {
    */
   public subscribeToActivityFeed(
     organizationId: string,
-    callback: (activity: ActivityFeedItem) => void
+    _callback: (activity: ActivityFeedItem) => void
   ): () => void {
     // In production, set up real-time activity feed subscription
     // For demo, return a no-op unsubscribe function

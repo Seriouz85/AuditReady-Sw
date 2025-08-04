@@ -106,9 +106,13 @@ export interface EntraIdConnection {
   name: string;
   tenantId: string;
   clientId: string;
+  clientSecret?: string; // Optional for security - not always exposed
+  redirectUri?: string; // Optional redirect URI
+  scopes?: string[]; // Optional scopes configuration
   status: 'active' | 'inactive' | 'error';
   lastSyncAt?: string;
   lastSyncStatus?: 'success' | 'failed';
+  lastTestAt?: string; // For connection testing
   autoSync: boolean;
   syncInterval: number; // minutes
   organizationId: string;

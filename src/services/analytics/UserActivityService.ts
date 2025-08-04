@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase'; // Currently unused
 
 export interface ActivityEvent {
   id: string;
@@ -177,6 +177,9 @@ class UserActivityService {
         is_active: false
       };
 
+      // Update the session (in production, this would save to database)
+      this.currentSession = updatedSession;
+
       // In production, update database
       // await supabase.from('user_sessions')
       //   .update({
@@ -236,10 +239,10 @@ class UserActivityService {
         user_id: params.userId,
         organization_id: params.organizationId,
         event_type: params.eventType as any,
-        resource_type: params.resourceType,
-        resource_id: params.resourceId,
-        resource_name: params.resourceName,
-        action_details: params.actionDetails,
+        resource_type: params.resourceType || 'unknown',
+        resource_id: params.resourceId || '',
+        resource_name: params.resourceName || '',
+        action_details: params.actionDetails || {},
         session_id: params.sessionId || this.currentSession?.id || 'unknown',
         ip_address: await this.getClientIP(),
         user_agent: navigator.userAgent,
@@ -288,8 +291,8 @@ class UserActivityService {
   // Analytics and reporting
   async getUserActivityStats(
     userId: string, 
-    organizationId: string,
-    timeRange: 'day' | 'week' | 'month' | 'year' = 'month'
+    _organizationId: string,
+    _timeRange: 'day' | 'week' | 'month' | 'year' = 'month'
   ): Promise<UserActivityStats> {
     try {
       // In production, query actual data
@@ -323,8 +326,8 @@ class UserActivityService {
   }
 
   async getOrganizationActivityStats(
-    organizationId: string,
-    timeRange: 'day' | 'week' | 'month' | 'year' = 'month'
+    _organizationId: string,
+    _timeRange: 'day' | 'week' | 'month' | 'year' = 'month'
   ): Promise<OrganizationActivityStats> {
     try {
       // In production, aggregate actual data
@@ -350,7 +353,7 @@ class UserActivityService {
           low: 12
         },
         activity_trends: Array.from({ length: 30 }, (_, i) => ({
-          date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || '',
           active_users: Math.floor(Math.random() * 15) + 8,
           sessions: Math.floor(Math.random() * 25) + 15,
           page_views: Math.floor(Math.random() * 150) + 100
@@ -523,7 +526,7 @@ class UserActivityService {
   async getUserSessions(
     userId: string,
     organizationId: string,
-    timeRange: 'day' | 'week' | 'month' = 'week'
+    _timeRange: 'day' | 'week' | 'month' = 'week'
   ): Promise<UserSession[]> {
     try {
       // In production, query actual sessions

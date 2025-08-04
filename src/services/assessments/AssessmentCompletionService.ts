@@ -38,7 +38,7 @@ export class AssessmentCompletionService {
    */
   async completeAssessment(
     assessmentId: string,
-    completionData: Partial<AssessmentCompletionData> = {}
+    _completionData: Partial<AssessmentCompletionData> = {}
   ): Promise<NotesTransferResult> {
     const completionDate = new Date().toISOString();
     const errors: string[] = [];
@@ -90,28 +90,38 @@ export class AssessmentCompletionService {
       if (assessmentRequirements && assessmentRequirements.length > 0) {
         for (const assessmentReq of assessmentRequirements) {
           try {
-            // Prepare the notes transfer
+            // Prepare the notes transfer with type safety
+            const assessmentName = typeof updatedAssessment === 'object' && updatedAssessment !== null && 'name' in updatedAssessment 
+              ? String(updatedAssessment['name']) : 'Unknown Assessment';
+            const requirementNotes = typeof assessmentReq === 'object' && assessmentReq !== null && 'notes' in assessmentReq 
+              ? String(assessmentReq.notes || '') : '';
+            const requirementStatus = typeof assessmentReq === 'object' && assessmentReq !== null && 'status' in assessmentReq 
+              ? String(assessmentReq.status || 'unknown') : 'unknown';
+            
             const transferNotes = this.formatTransferNotes(
-              updatedAssessment.name,
-              assessmentReq.notes,
+              assessmentName,
+              requirementNotes,
               completionDate,
-              assessmentReq.status
+              requirementStatus
             );
 
             // Get current requirement notes
+            const requirementId = (assessmentReq as any).requirement_id as string;
             const { data: currentReq, error: fetchError } = await supabase
               .from('requirements_library')
               .select('notes')
-              .eq('id', assessmentReq.requirement_id)
+              .eq('id', requirementId)
               .single();
 
             if (fetchError) {
-              errors.push(`Failed to fetch requirement ${assessmentReq.requirement_id}: ${fetchError.message}`);
+              errors.push(`Failed to fetch requirement ${requirementId}: ${fetchError.message}`);
               continue;
             }
 
-            // Append new notes to existing notes
-            const updatedNotes = this.appendNotes(currentReq.notes || '', transferNotes);
+            // Append new notes to existing notes with type safety
+            const currentNotes = typeof currentReq === 'object' && currentReq !== null && 'notes' in currentReq 
+              ? String(currentReq.notes || '') : '';
+            const updatedNotes = this.appendNotes(currentNotes, transferNotes);
 
             // Update the requirement notes
             const { error: updateError } = await supabase
@@ -120,10 +130,10 @@ export class AssessmentCompletionService {
                 notes: updatedNotes,
                 updated_at: completionDate
               })
-              .eq('id', assessmentReq.requirement_id);
+              .eq('id', String(assessmentReq['requirement_id'] || ''));
 
             if (updateError) {
-              errors.push(`Failed to update requirement ${assessmentReq.requirement_id}: ${updateError.message}`);
+              errors.push(`Failed to update requirement ${requirementId}: ${updateError.message}`);
               continue;
             }
 
@@ -132,14 +142,14 @@ export class AssessmentCompletionService {
             // Log the transfer for audit purposes
             await this.logNotesTransfer(
               assessmentId,
-              assessmentReq.requirement_id,
-              assessmentReq.notes,
+              requirementId,
+              requirementNotes,
               completionDate
             );
 
           } catch (reqError) {
             const errorMessage = reqError instanceof Error ? reqError.message : 'Unknown error';
-            errors.push(`Error processing requirement ${assessmentReq.requirement_id}: ${errorMessage}`);
+            errors.push(`Error processing requirement ${(assessmentReq as any).requirement_id}: ${errorMessage}`);
           }
         }
       }
@@ -330,16 +340,20 @@ ${notes}
         .like('comment', 'Notes transferred to requirement%')
         .order('created_at', { ascending: false });
 
+      const completionDate = typeof assessment === 'object' && assessment !== null && 'end_date' in assessment && assessment['end_date']
+        ? String(assessment['end_date']) : undefined;
+      
       return {
-        isCompleted: assessment?.status === 'completed',
-        completionDate: assessment?.end_date,
-        transferredCount: transferComments?.length || 0,
-        transferHistory: transferComments?.map(comment => ({
-          requirementId: comment.requirement_id,
-          requirementName: (comment as any).requirements_library?.name || 'Unknown',
-          transferDate: comment.created_at,
-          notes: comment.comment
-        })) || []
+        isCompleted: typeof assessment === 'object' && assessment !== null && 'status' in assessment 
+          ? assessment.status === 'completed' : false,
+        ...(completionDate && { completionDate }),
+        transferredCount: Array.isArray(transferComments) ? transferComments.length : 0,
+        transferHistory: Array.isArray(transferComments) ? transferComments.map((comment: any) => ({
+          requirementId: String(comment.requirement_id || ''),
+          requirementName: String(comment.requirements_library?.name || 'Unknown'),
+          transferDate: String(comment.created_at || ''),
+          notes: String(comment.comment || '')
+        })) : []
       };
     } catch (error) {
       console.error('Failed to get completion status:', error);

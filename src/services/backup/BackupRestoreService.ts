@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { format, parseISO, subDays, subHours } from 'date-fns';
+import { format, subDays, subHours } from 'date-fns';
 import { mfaService, MFAVerificationRequest } from '@/services/auth/MFAService';
 import { toast } from '@/hooks/use-toast';
 
@@ -98,28 +98,30 @@ export class BackupRestoreService {
       }
 
       // Determine risk level based on operation
-      let riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'medium';
+      let riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
       
-      if (operationType === 'delete_data' || operationType === 'bulk_operations') {
+      if (operationType === 'delete_data') {
         riskLevel = 'critical';
       } else if (operationType === 'restore_data' && (operationDetails.recordCount || 0) > 10) {
         riskLevel = 'high';
       } else if (operationType === 'export_data' && operationDetails.scope === 'all') {
         riskLevel = 'high';
+      } else if (operationType === 'restore_data' || operationType === 'export_data') {
+        riskLevel = 'medium';
       }
 
       // Check if user has MFA enabled for high/critical operations
       const hasMFA = await mfaService.hasMFAEnabled(user.id);
       
-      if (!hasMFA && riskLevel !== 'low') {
+      if (!hasMFA && (riskLevel === 'high' || riskLevel === 'critical')) {
         return { 
           verified: false, 
           error: 'Multi-factor authentication required for this operation. Please enable MFA in your security settings.' 
         };
       }
 
-      // For low-risk operations without MFA, allow with password only
-      if (riskLevel === 'low' && !hasMFA) {
+      // For low/medium-risk operations without MFA, allow with password only
+      if (!hasMFA && (riskLevel === 'low' || riskLevel === 'medium')) {
         await this.logSensitiveOperation(
           user.id,
           organizationId,
@@ -134,9 +136,13 @@ export class BackupRestoreService {
         return { verified: true };
       }
 
+      // Map operation type to valid MFA operation types
+      const validOperationType: 'restore_data' | 'export_data' | 'delete_data' | 'user_management' = 
+        operationType === 'bulk_operations' ? 'user_management' : operationType as any;
+
       // Request MFA verification
       const verificationRequest: MFAVerificationRequest = {
-        operation_type: operationType,
+        operation_type: validOperationType,
         operation_details: {
           target: operationDetails.target,
           scope: operationDetails.scope,
@@ -323,7 +329,7 @@ export class BackupRestoreService {
       const startDate = subDays(new Date(), days).toISOString();
       
       // Get daily summaries
-      const { data, error } = await supabase.rpc('get_restore_points', {
+      const { data: _data, error } = await supabase.rpc('get_restore_points', {
         p_organization_id: organizationId,
         p_start_date: startDate
       });
@@ -365,7 +371,7 @@ export class BackupRestoreService {
   // Get user activity summary
   async getUserActivity(
     organizationId: string,
-    options: {
+    _options: {
       startDate?: string;
       endDate?: string;
       userId?: string;
@@ -397,9 +403,10 @@ export class BackupRestoreService {
       // Group audit entries by session
       const sessionMap = new Map<string, any[]>();
       
-      data?.forEach(session => {
-        if (!sessionMap.has(session.id)) {
-          sessionMap.set(session.id, []);
+      data?.forEach((session: any) => {
+        const sessionId = String(session?.id || '');
+        if (!sessionMap.has(sessionId)) {
+          sessionMap.set(sessionId, []);
         }
         // Note: This would need adjustment based on actual query structure
       });
@@ -414,12 +421,6 @@ export class BackupRestoreService {
   // Preview what would be restored
   async previewRestore(request: RestoreRequest): Promise<RestorePreview> {
     try {
-      const preview: RestorePreview = {
-        affectedRecords: [],
-        totalChanges: 0,
-        warnings: []
-      };
-
       switch (request.restoreType) {
         case 'TIME_POINT':
           if (!request.targetTimestamp) {
@@ -587,7 +588,7 @@ export class BackupRestoreService {
         .update({
           changes_summary: { restoredCount: result.restoredCount, errors: result.errors }
         })
-        .eq('id', restoreSession.id);
+        .eq('id', (restoreSession as any)['id']);
 
       // Log successful operation
       await this.logSensitiveOperation(
@@ -603,7 +604,7 @@ export class BackupRestoreService {
         },
         mfaSessionId,
         mfaSessionId ? 'mfa_verified' : 'password_only',
-        request.restoreType === 'BULK' ? 'critical' : 'high',
+        'high',
         'success'
       );
 
@@ -613,7 +614,7 @@ export class BackupRestoreService {
       
       // Log failed operation
       const user = (await supabase.auth.getUser()).data.user;
-      if (user && !error.message?.includes('MFA_REQUIRED')) {
+      if (user && !(error as any)?.message?.includes('MFA_REQUIRED')) {
         await this.logSensitiveOperation(
           user.id,
           request.organizationId,
@@ -622,7 +623,7 @@ export class BackupRestoreService {
           {
             restore_type: request.restoreType,
             reason: request.reason,
-            error: error.message
+            error: (error as any)?.message || 'Unknown error'
           },
           mfaSessionId,
           mfaSessionId ? 'mfa_verified' : 'password_only',
@@ -664,7 +665,7 @@ export class BackupRestoreService {
 
   private async validateRestorePermission(
     organizationId: string,
-    restoreType: string
+    _restoreType: string
   ): Promise<boolean> {
     // Check if user has restore permissions
     const { data: { user } } = await supabase.auth.getUser();
@@ -681,13 +682,13 @@ export class BackupRestoreService {
     if (!orgUser) return false;
 
     // Check if role has restore permission
-    const permissions = orgUser.role?.permissions || [];
+    const permissions = (orgUser as any)?.role?.permissions || [];
     return permissions.includes('restore_data') || permissions.includes('admin');
   }
 
   private async previewTimePointRestore(
-    organizationId: string,
-    targetTimestamp: string
+    _organizationId: string,
+    _targetTimestamp: string
   ): Promise<RestorePreview> {
     // Implementation for time point restore preview
     // This would query the audit trail and calculate what would change
@@ -699,8 +700,8 @@ export class BackupRestoreService {
   }
 
   private async previewSessionRestore(
-    organizationId: string,
-    sessionId: string
+    _organizationId: string,
+    _sessionId: string
   ): Promise<RestorePreview> {
     // Implementation for session restore preview
     return {
@@ -711,8 +712,8 @@ export class BackupRestoreService {
   }
 
   private async previewRecordRestore(
-    organizationId: string,
-    targetRecords: any[]
+    _organizationId: string,
+    _targetRecords: any[]
   ): Promise<RestorePreview> {
     // Implementation for record restore preview
     return {
@@ -723,24 +724,24 @@ export class BackupRestoreService {
   }
 
   private async restoreToTimePoint(
-    organizationId: string,
-    targetTimestamp: string
+    _organizationId: string,
+    _targetTimestamp: string
   ): Promise<{ success: boolean; restoredCount: number; errors?: string[] }> {
     // Implementation for time point restore
     return { success: true, restoredCount: 0 };
   }
 
   private async restoreUserSession(
-    organizationId: string,
-    sessionId: string
+    _organizationId: string,
+    _sessionId: string
   ): Promise<{ success: boolean; restoredCount: number; errors?: string[] }> {
     // Implementation for session restore
     return { success: true, restoredCount: 0 };
   }
 
   private async restoreRecords(
-    organizationId: string,
-    targetRecords: any[]
+    _organizationId: string,
+    _targetRecords: any[]
   ): Promise<{ success: boolean; restoredCount: number; errors?: string[] }> {
     // Implementation for record restore
     return { success: true, restoredCount: 0 };

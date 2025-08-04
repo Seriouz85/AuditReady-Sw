@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { adminService } from '@/services/admin/AdminService';
 import { toast } from '@/utils/toast';
@@ -18,12 +18,12 @@ import {
   Plus, 
   Trash2, 
   Save, 
-  AlertTriangle,
+  // AlertTriangle,
   CheckCircle,
   BookOpen,
   FileText,
-  Upload,
-  Download,
+  // Upload,
+  // Download,
   Info
 } from 'lucide-react';
 

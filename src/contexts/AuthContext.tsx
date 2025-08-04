@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import { toast } from '@/utils/toast';
+// import { toast } from '@/utils/toast'; // TODO: Add toast notifications
 import { documentUploadService } from '@/services/documents/DocumentUploadService';
 import { TagInitializationService } from '@/services/initialization/TagInitializationService';
 import { OptimizedDemoDataService } from '@/services/demo/OptimizedDemoDataService';
@@ -194,14 +194,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (orgUserData) {
-        setOrganizationUser(orgUserData);
-        setOrganization(orgUserData.organization);
-        setUserRole(orgUserData.role);
+        // Cast to any to avoid type issues with database relations
+        const typedOrgUserData = orgUserData as any;
+        
+        setOrganizationUser(typedOrgUserData);
+        
+        // Handle organization data with fallback
+        if (typedOrgUserData.organization && typeof typedOrgUserData.organization === 'object' && !('error' in typedOrgUserData.organization)) {
+          setOrganization(typedOrgUserData.organization);
+        } else {
+          console.warn('Organization data not properly loaded, will fetch separately');
+          // Fetch organization separately if relation failed
+          const { data: orgData } = await supabase
+            .from('organizations')
+            .select('*')
+            .eq('id', typedOrgUserData.organization_id)
+            .single();
+          if (orgData) {
+            setOrganization(orgData as unknown as Organization);
+          }
+        }
+        
+        // Handle role data with fallback
+        if (typedOrgUserData.role && typeof typedOrgUserData.role === 'object' && !('error' in typedOrgUserData.role)) {
+          setUserRole(typedOrgUserData.role);
+        } else {
+          console.warn('Role data not properly loaded, will fetch separately');
+          // Fetch role separately if relation failed
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('*')
+            .eq('id', typedOrgUserData.role_id)
+            .single();
+          if (roleData) {
+            setUserRole(roleData as unknown as UserRole);
+          }
+        }
 
         // Initialize unified category tags for the organization
         try {
           await TagInitializationService.initializeUnifiedCategoryTags();
-          console.log('Initialized unified category tags for organization:', orgUserData.organization.id);
+          const orgId = typedOrgUserData.organization?.id || typedOrgUserData.organization_id;
+          console.log('Initialized unified category tags for organization:', orgId);
         } catch (tagError) {
           console.warn('Failed to initialize unified category tags for organization:', tagError);
           // Don't block user login if tag initialization fails
@@ -212,7 +246,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await supabase
             .from('organization_users')
             .update({ last_login_at: new Date().toISOString() })
-            .eq('id', orgUserData.id);
+            .eq('id', typedOrgUserData.id);
         } catch (updateError) {
           console.warn('Failed to update last login:', updateError);
         }
@@ -343,10 +377,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           .single();
           
         if (stats) {
+          const typedStats = stats as any; // Cast to handle unknown types
           console.log('Demo data statistics (from view):', {
-            fulfilled: Math.round((stats.fulfilled / stats.total_requirements) * 100) + '%',
-            partiallyFulfilled: Math.round((stats.partially_fulfilled / stats.total_requirements) * 100) + '%',
-            notFulfilled: Math.round((stats.not_fulfilled / stats.total_requirements) * 100) + '%'
+            fulfilled: Math.round((typedStats.fulfilled / typedStats.total_requirements) * 100) + '%',
+            partiallyFulfilled: Math.round((typedStats.partially_fulfilled / typedStats.total_requirements) * 100) + '%',
+            notFulfilled: Math.round((typedStats.not_fulfilled / typedStats.total_requirements) * 100) + '%'
           });
         }
       } catch (viewError) {
