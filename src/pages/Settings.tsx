@@ -33,6 +33,7 @@ import { RequirementAssignment } from "@/types";
 import { useEntraId } from "@/hooks/useEntraId";
 import { DataClassificationSettings } from "@/components/settings/DataClassificationSettings";
 import { CustomerDashboardSettings } from "@/components/dashboard/CustomerDashboardSettings";
+import { AzureIntegrationCard } from "@/components/settings/AzureIntegrationCard";
 
 // Demo data for demo accounts only
 const demoUsers = [
@@ -2148,22 +2149,7 @@ const Settings = () => {
                   </Button>
                 </div>
 
-                <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-center gap-3 mb-2">
-                    <IntegrationIcon provider="azure" size="medium" />
-                    <div>
-                      <h4 className="font-semibold">Microsoft Azure</h4>
-                      <p className="text-xs text-muted-foreground">Cloud Security</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Connect with Azure for security monitoring
-                  </p>
-                  <Button size="sm" variant="outline" className="w-full">
-                    <UserPlus className="w-3 h-3 mr-1" />
-                    Connect
-                  </Button>
-                </div>
+                <AzureIntegrationCard organizationId={organization?.id || 'demo-org'} />
 
                 <div className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex items-center gap-3 mb-2">
@@ -2284,6 +2270,7 @@ const Settings = () => {
                   </Button>
                 </div>
               </div>
+
 
               <div className="mt-6 p-4 bg-muted rounded-lg">
                 <div className="flex items-center gap-2 mb-2">

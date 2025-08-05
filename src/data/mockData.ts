@@ -1,4 +1,5 @@
 import { Standard, Requirement, Assessment, ComplianceStats, Tag, InternalUser, Supplier, Application, Notification } from '@/types';
+import { EnhancedApplication } from '@/types/applications';
 
 // Mock Tags
 export const tags: Tag[] = [
@@ -368,6 +369,62 @@ export const internalUsers: InternalUser[] = [
     email: 'david.park@democorp.com',
     department: 'Procurement',
     title: 'Vendor Management Specialist'
+  },
+  {
+    id: 'internal-user-5',
+    name: 'Jennifer Harrison',
+    email: 'jennifer.harrison@democorp.com',
+    department: 'Enterprise Architecture',
+    title: 'Principal Solutions Architect'
+  },
+  {
+    id: 'internal-user-6',
+    name: 'Robert Kumar',
+    email: 'robert.kumar@democorp.com',
+    department: 'Database Administration',
+    title: 'Senior Database Administrator'
+  },
+  {
+    id: 'internal-user-7',
+    name: 'Lisa Thompson',
+    email: 'lisa.thompson@democorp.com',
+    department: 'DevOps',
+    title: 'DevOps Engineering Manager'
+  },
+  {
+    id: 'internal-user-8',
+    name: 'Marcus Williams',
+    email: 'marcus.williams@democorp.com',
+    department: 'Finance',
+    title: 'Finance Systems Manager'
+  },
+  {
+    id: 'internal-user-9',
+    name: 'Amanda Foster',
+    email: 'amanda.foster@democorp.com',
+    department: 'Human Resources',
+    title: 'HR Technology Director'
+  },
+  {
+    id: 'internal-user-10',
+    name: 'Daniel Lee',
+    email: 'daniel.lee@democorp.com',
+    department: 'Customer Success',
+    title: 'Customer Platform Manager'
+  },
+  {
+    id: 'internal-user-11',
+    name: 'Rachel Green',
+    email: 'rachel.green@democorp.com',
+    department: 'Cloud Engineering',
+    title: 'Cloud Infrastructure Architect'
+  },
+  {
+    id: 'internal-user-12',
+    name: 'Kevin Zhang',
+    email: 'kevin.zhang@democorp.com',
+    department: 'Mobile Development',
+    title: 'Mobile Engineering Lead'
   }
 ];
 
@@ -473,22 +530,134 @@ export const suppliers: Supplier[] = [
   }
 ];
 
-// Mock Applications
-export const applications: Application[] = [
+// Enhanced Applications - Comprehensive Demo Data
+export const enhancedApplications: EnhancedApplication[] = [
+  // MANUAL APPLICATIONS - Traditional manually managed applications
   {
-    id: 'app-1',
-    name: 'Enterprise CRM System',
-    description: 'Customer relationship management platform with integrated analytics',
-    organizationNumber: 'APP-789123456',
+    id: 'app-manual-1',
+    name: 'Legacy HR Management System',
+    description: 'Core HR system managing employee records, payroll, and benefits administration for 2,800+ employees across 12 global offices',
+    organizationNumber: 'APP-HR-001',
+    type: 'Enterprise Application',
+    category: 'Human Resources',
+    status: 'active',
+    criticality: 'critical',
+    syncMode: 'manual',
+    contact: {
+      name: 'Patricia Williams',
+      email: 'patricia.williams@democorp.com',
+      phone: '+1-555-0156',
+      title: 'HR Systems Manager'
+    },
+    internalResponsible: {
+      id: 'internal-user-9',
+      name: 'Amanda Foster',
+      email: 'amanda.foster@democorp.com',
+      department: 'Human Resources'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-manual-1-1',
+        requirementId: 'iso-27001-A.9.1.1',
+        applicationId: 'app-manual-1',
+        status: 'fulfilled',
+        isAutoAnswered: false,
+        evidence: 'Role-based access control implemented with quarterly access reviews. Last review completed March 2024.',
+        justification: 'Comprehensive RBAC system with segregation of duties for sensitive HR functions.',
+        responsibleParty: 'Amanda Foster',
+        lastAssessmentDate: '2024-03-15T10:00:00Z',
+        lastModifiedBy: 'Elena Rodriguez',
+        lastModifiedAt: '2024-03-15T14:30:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-15T09:00:00Z',
+        updatedAt: '2024-03-15T14:30:00Z'
+      },
+      {
+        id: 'rf-manual-1-2',
+        requirementId: 'iso-27001-A.18.1.4',
+        applicationId: 'app-manual-1',
+        status: 'partially_fulfilled',
+        isAutoAnswered: false,
+        evidence: 'Privacy impact assessment completed in 2023. Annual update scheduled for Q2 2024.',
+        justification: 'Core privacy controls in place, minor updates needed for new features.',
+        responsibleParty: 'Amanda Foster',
+        lastAssessmentDate: '2024-02-20T10:00:00Z',
+        lastModifiedBy: 'Elena Rodriguez',
+        lastModifiedAt: '2024-02-20T15:45:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-15T09:00:00Z',
+        updatedAt: '2024-02-20T15:45:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.9.1.1', 'iso-27001-A.18.1.4', 'iso-27001-A.12.1.1'],
+    lastReviewDate: '2024-03-15T10:00:00Z',
+    nextReviewDate: '2024-09-15T10:00:00Z',
+    complianceScore: 85,
+    createdAt: '2023-06-15T10:00:00Z',
+    updatedAt: '2024-03-15T14:30:00Z'
+  },
+  {
+    id: 'app-manual-2',
+    name: 'Customer Support Portal',
+    description: 'Customer-facing support portal with ticketing system, knowledge base, and live chat functionality serving 15,000+ active customers',
+    organizationNumber: 'APP-CS-001',
     type: 'Web Application',
-    category: 'Customer Management',
+    category: 'Customer Service',
     status: 'active',
     criticality: 'high',
+    syncMode: 'manual',
     contact: {
-      name: 'James Wilson',
-      email: 'james.wilson@democorp.com',
-      phone: '+1-555-0123',
-      title: 'Application Owner'
+      name: 'Thomas Rodriguez',
+      email: 'thomas.rodriguez@democorp.com',
+      phone: '+1-555-0189',
+      title: 'Customer Success Engineering Lead'
+    },
+    internalResponsible: {
+      id: 'internal-user-10',
+      name: 'Daniel Lee',
+      email: 'daniel.lee@democorp.com',
+      department: 'Customer Success'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-manual-2-1',
+        requirementId: 'iso-27001-A.14.1.3',
+        applicationId: 'app-manual-2',
+        status: 'fulfilled',
+        isAutoAnswered: false,
+        evidence: 'Secure development lifecycle implemented with code reviews, security testing, and vulnerability scanning.',
+        justification: 'Comprehensive secure development practices following OWASP guidelines.',
+        responsibleParty: 'Daniel Lee',
+        lastAssessmentDate: '2024-03-10T14:00:00Z',
+        lastModifiedBy: 'Sarah Mitchell',
+        lastModifiedAt: '2024-03-10T16:20:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-20T09:00:00Z',
+        updatedAt: '2024-03-10T16:20:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.14.1.3', 'iso-27001-A.13.1.1', 'iso-27001-A.8.1.1'],
+    lastReviewDate: '2024-03-10T14:00:00Z',
+    nextReviewDate: '2024-09-10T14:00:00Z',
+    complianceScore: 92,
+    createdAt: '2023-08-20T10:00:00Z',
+    updatedAt: '2024-03-10T16:20:00Z'
+  },
+  {
+    id: 'app-manual-3',
+    name: 'Manufacturing Execution System',
+    description: 'Real-time manufacturing execution system controlling production lines, quality control, and inventory tracking across 4 manufacturing facilities',
+    organizationNumber: 'APP-MFG-001',
+    type: 'Industrial Control System',
+    category: 'Manufacturing',
+    status: 'active',
+    criticality: 'critical',
+    syncMode: 'manual',
+    contact: {
+      name: 'William Chang',
+      email: 'william.chang@democorp.com',
+      phone: '+1-555-0267',
+      title: 'Manufacturing IT Director'
     },
     internalResponsible: {
       id: 'internal-user-2',
@@ -496,48 +665,601 @@ export const applications: Application[] = [
       email: 'michael.chen@democorp.com',
       department: 'IT Operations'
     },
-    associatedStandards: [
+    requirementFulfillments: [
       {
-        standardId: 'iso-27001',
-        requirementIds: ['iso-27001-A.14.1.1', 'iso-27001-A.14.2.1'],
-        status: 'completed'
+        id: 'rf-manual-3-1',
+        requirementId: 'iso-27001-A.11.2.1',
+        applicationId: 'app-manual-3',
+        status: 'fulfilled',
+        isAutoAnswered: false,
+        evidence: 'Equipment maintenance procedures documented and followed. Regular maintenance logs maintained.',
+        justification: 'Comprehensive maintenance program with predictive maintenance capabilities.',
+        responsibleParty: 'Michael Chen',
+        lastAssessmentDate: '2024-02-28T10:00:00Z',
+        lastModifiedBy: 'Michael Chen',
+        lastModifiedAt: '2024-02-28T14:30:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-10T09:00:00Z',
+        updatedAt: '2024-02-28T14:30:00Z'
       }
     ],
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-12-20T14:30:00Z'
+    associatedRequirements: ['iso-27001-A.11.2.1', 'iso-27001-A.13.1.1', 'iso-27001-A.12.1.2'],
+    lastReviewDate: '2024-02-28T10:00:00Z',
+    nextReviewDate: '2024-08-28T10:00:00Z',
+    complianceScore: 88,
+    createdAt: '2023-05-10T10:00:00Z',
+    updatedAt: '2024-02-28T14:30:00Z'
+  },
+
+  // AZURE-SYNCED APPLICATIONS - Modern cloud applications with auto-answered requirements
+  {
+    id: 'app-azure-1',
+    name: 'Customer Data Platform',
+    description: 'Azure-hosted customer analytics platform with real-time data processing, machine learning insights, and comprehensive customer 360-degree view',
+    organizationNumber: 'APP-CDP-001',
+    type: 'Cloud Application',
+    category: 'Analytics & Data',
+    status: 'active',
+    criticality: 'high',
+    syncMode: 'azure',
+    azureSyncMetadata: {
+      lastSyncDate: '2024-03-25T08:30:00Z',
+      syncVersion: '2.1.3',
+      azureResourceId: '/subscriptions/12345678-1234-1234-1234-123456789abc/resourceGroups/production-rg/providers/Microsoft.Web/sites/customer-data-platform',
+      azureSubscriptionId: '12345678-1234-1234-1234-123456789abc',
+      azureResourceGroup: 'production-rg',
+      syncStatus: 'synced',
+      dataSource: 'Azure Security Center, Azure Policy',
+      lastSuccessfulSync: '2024-03-25T08:30:00Z',
+      syncFrequency: 'daily',
+      autoAnsweredRequirements: 12,
+      manualOverrides: 2
+    },
+    contact: {
+      name: 'Emily Watson',
+      email: 'emily.watson@democorp.com',
+      phone: '+1-555-0298',
+      title: 'Data Platform Product Owner'
+    },
+    internalResponsible: {
+      id: 'internal-user-11',
+      name: 'Rachel Green',
+      email: 'rachel.green@democorp.com',
+      department: 'Cloud Engineering'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-azure-1-1',
+        requirementId: 'iso-27001-A.8.11',
+        applicationId: 'app-azure-1',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure Security Center',
+        evidence: 'Azure Security Center validates encryption at rest for all storage accounts. AES-256 encryption enabled for all data stores with customer-managed keys.',
+        justification: 'Azure native encryption at rest implemented across all storage tiers with advanced key management.',
+        responsibleParty: 'Rachel Green',
+        lastAssessmentDate: '2024-03-25T08:30:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T08:30:00Z',
+        isManualOverride: false,
+        createdAt: '2024-02-01T10:00:00Z',
+        updatedAt: '2024-03-25T08:30:00Z'
+      },
+      {
+        id: 'rf-azure-1-2',
+        requirementId: 'iso-27001-A.8.12',
+        applicationId: 'app-azure-1',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure Policy',
+        evidence: 'Azure Policy enforces TLS 1.2+ for all data in transit. Application Gateway with WAF and private endpoints configured.',
+        justification: 'Comprehensive encryption in transit using Azure managed services with policy enforcement.',
+        responsibleParty: 'Rachel Green',
+        lastAssessmentDate: '2024-03-25T08:30:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T08:30:00Z',
+        isManualOverride: false,
+        createdAt: '2024-02-01T10:00:00Z',
+        updatedAt: '2024-03-25T08:30:00Z'
+      },
+      {
+        id: 'rf-azure-1-3',
+        requirementId: 'iso-27001-A.9.1.2',
+        applicationId: 'app-azure-1',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'medium',
+        autoAnswerSource: 'Azure Active Directory',
+        evidence: 'Azure AD integration with conditional access policies, MFA enforcement, and privileged identity management.',
+        justification: 'Enterprise-grade identity management with advanced security features.',
+        responsibleParty: 'Rachel Green',
+        lastAssessmentDate: '2024-03-25T08:30:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T08:30:00Z',
+        isManualOverride: true,
+        originalAutoAnswer: 'partially_fulfilled',
+        createdAt: '2024-02-01T10:00:00Z',
+        updatedAt: '2024-03-20T14:15:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.8.11', 'iso-27001-A.8.12', 'iso-27001-A.9.1.2', 'iso-27001-A.12.3.1'],
+    lastReviewDate: '2024-03-20T14:00:00Z',
+    nextReviewDate: '2024-09-20T14:00:00Z',
+    complianceScore: 94,
+    createdAt: '2024-02-01T10:00:00Z',
+    updatedAt: '2024-03-25T08:30:00Z'
   },
   {
-    id: 'app-2',
-    name: 'Financial Data Warehouse',
-    description: 'Centralized financial data warehouse with strict access controls',
-    organizationNumber: 'APP-678901234',
-    type: 'Database System',
+    id: 'app-azure-2',
+    name: 'Enterprise API Gateway',
+    description: 'Azure API Management service providing secure, scalable API gateway for microservices architecture with developer portal and analytics',
+    organizationNumber: 'APP-API-001',
+    type: 'API Gateway',
+    category: 'Integration & APIs',
+    status: 'active',
+    criticality: 'critical',
+    syncMode: 'azure',
+    azureSyncMetadata: {
+      lastSyncDate: '2024-03-25T09:15:00Z',
+      syncVersion: '2.1.3',
+      azureResourceId: '/subscriptions/12345678-1234-1234-1234-123456789abc/resourceGroups/api-rg/providers/Microsoft.ApiManagement/service/enterprise-apim',
+      azureSubscriptionId: '12345678-1234-1234-1234-123456789abc',
+      azureResourceGroup: 'api-rg',
+      syncStatus: 'synced',
+      dataSource: 'Azure Security Center, Azure Monitor',
+      lastSuccessfulSync: '2024-03-25T09:15:00Z',
+      syncFrequency: 'daily',
+      autoAnsweredRequirements: 15,
+      manualOverrides: 1
+    },
+    contact: {
+      name: 'Alex Thompson',
+      email: 'alex.thompson@democorp.com',
+      phone: '+1-555-0245',
+      title: 'API Platform Architect'
+    },
+    internalResponsible: {
+      id: 'internal-user-5',
+      name: 'Jennifer Harrison',
+      email: 'jennifer.harrison@democorp.com',
+      department: 'Enterprise Architecture'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-azure-2-1',
+        requirementId: 'iso-27001-A.13.1.1',
+        applicationId: 'app-azure-2',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure Security Center',
+        evidence: 'Network security groups, Azure Firewall, and DDoS protection configured. Network segmentation implemented with virtual networks.',
+        justification: 'Enterprise-grade network security with Azure native protections and monitoring.',
+        responsibleParty: 'Jennifer Harrison',
+        lastAssessmentDate: '2024-03-25T09:15:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T09:15:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-03-25T09:15:00Z'
+      },
+      {
+        id: 'rf-azure-2-2',
+        requirementId: 'iso-27001-A.14.2.2',
+        applicationId: 'app-azure-2',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure DevOps',
+        evidence: 'Secure CI/CD pipeline with Azure DevOps, code scanning, dependency checking, and deployment approvals.',
+        justification: 'Comprehensive secure development and deployment practices with automated security validation.',
+        responsibleParty: 'Jennifer Harrison',
+        lastAssessmentDate: '2024-03-25T09:15:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T09:15:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-03-25T09:15:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.13.1.1', 'iso-27001-A.14.2.2', 'iso-27001-A.12.6.1', 'iso-27001-A.8.11'],
+    lastReviewDate: '2024-03-22T10:00:00Z',
+    nextReviewDate: '2024-09-22T10:00:00Z',
+    complianceScore: 96,
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-03-25T09:15:00Z'
+  },
+  {
+    id: 'app-azure-3',
+    name: 'Financial Data Lake',
+    description: 'Azure Data Lake Analytics solution for financial reporting, regulatory compliance, and business intelligence with petabyte-scale data processing',
+    organizationNumber: 'APP-FDL-001',
+    type: 'Data Lake',
     category: 'Financial Systems',
     status: 'active',
     criticality: 'critical',
+    syncMode: 'azure',
+    azureSyncMetadata: {
+      lastSyncDate: '2024-03-25T07:45:00Z',
+      syncVersion: '2.1.3',
+      azureResourceId: '/subscriptions/12345678-1234-1234-1234-123456789abc/resourceGroups/finance-rg/providers/Microsoft.DataLakeStore/accounts/finance-datalake',
+      azureSubscriptionId: '12345678-1234-1234-1234-123456789abc',
+      azureResourceGroup: 'finance-rg',
+      syncStatus: 'synced',
+      dataSource: 'Azure Security Center, Azure Purview',
+      lastSuccessfulSync: '2024-03-25T07:45:00Z',
+      syncFrequency: 'daily',
+      autoAnsweredRequirements: 18,
+      manualOverrides: 0
+    },
     contact: {
-      name: 'Maria Garcia',
-      email: 'maria.garcia@democorp.com',
-      phone: '+1-555-0234',
-      title: 'Database Administrator'
+      name: 'Diana Foster',
+      email: 'diana.foster@democorp.com',
+      phone: '+1-555-0312',
+      title: 'Chief Data Officer'
     },
     internalResponsible: {
-      id: 'internal-user-1',
-      name: 'Sarah Mitchell',
-      email: 'sarah.mitchell@democorp.com',
-      department: 'Information Security'
+      id: 'internal-user-8',
+      name: 'Marcus Williams',
+      email: 'marcus.williams@democorp.com',
+      department: 'Finance'
     },
-    associatedStandards: [
+    requirementFulfillments: [
       {
-        standardId: 'iso-27001',
-        requirementIds: ['iso-27001-A.9.1.1', 'iso-27001-A.9.2.1'],
-        status: 'completed'
+        id: 'rf-azure-3-1',
+        requirementId: 'iso-27001-A.12.3.1',
+        applicationId: 'app-azure-3',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure Backup',
+        evidence: 'Azure Backup configured with geo-redundant storage, point-in-time recovery, and automated backup verification.',
+        justification: 'Comprehensive backup and recovery solution meeting enterprise RPO/RTO requirements.',
+        responsibleParty: 'Marcus Williams',
+        lastAssessmentDate: '2024-03-25T07:45:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T07:45:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-20T10:00:00Z',
+        updatedAt: '2024-03-25T07:45:00Z'
+      },
+      {
+        id: 'rf-azure-3-2',
+        requirementId: 'iso-27001-A.18.1.4',
+        applicationId: 'app-azure-3',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure Purview',
+        evidence: 'Azure Purview data governance with automated data classification, lineage tracking, and privacy compliance monitoring.',
+        justification: 'Enterprise data governance platform with built-in privacy and regulatory compliance capabilities.',
+        responsibleParty: 'Marcus Williams',
+        lastAssessmentDate: '2024-03-25T07:45:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T07:45:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-20T10:00:00Z',
+        updatedAt: '2024-03-25T07:45:00Z'
       }
     ],
-    createdAt: '2023-11-01T09:00:00Z',
-    updatedAt: '2024-12-18T16:45:00Z'
+    associatedRequirements: ['iso-27001-A.12.3.1', 'iso-27001-A.18.1.4', 'iso-27001-A.8.11', 'iso-27001-A.9.1.1'],
+    lastReviewDate: '2024-03-24T14:00:00Z',
+    nextReviewDate: '2024-09-24T14:00:00Z',
+    complianceScore: 98,
+    createdAt: '2024-01-20T10:00:00Z',
+    updatedAt: '2024-03-25T07:45:00Z'
+  },
+  {
+    id: 'app-azure-4',
+    name: 'Mobile Customer App',
+    description: 'React Native mobile application with Azure backend services, providing customer self-service, account management, and real-time notifications',
+    organizationNumber: 'APP-MOB-001',
+    type: 'Mobile Application',
+    category: 'Customer Engagement',
+    status: 'active',
+    criticality: 'high',
+    syncMode: 'azure',
+    azureSyncMetadata: {
+      lastSyncDate: '2024-03-25T10:20:00Z',
+      syncVersion: '2.1.3',
+      azureResourceId: '/subscriptions/12345678-1234-1234-1234-123456789abc/resourceGroups/mobile-rg/providers/Microsoft.Web/sites/customer-mobile-api',
+      azureSubscriptionId: '12345678-1234-1234-1234-123456789abc',
+      azureResourceGroup: 'mobile-rg',
+      syncStatus: 'synced',
+      dataSource: 'Azure Security Center, App Center',
+      lastSuccessfulSync: '2024-03-25T10:20:00Z',
+      syncFrequency: 'daily',
+      autoAnsweredRequirements: 10,
+      manualOverrides: 3
+    },
+    contact: {
+      name: 'Jordan Kim',
+      email: 'jordan.kim@democorp.com',
+      phone: '+1-555-0387',
+      title: 'Mobile Product Manager'
+    },
+    internalResponsible: {
+      id: 'internal-user-12',
+      name: 'Kevin Zhang',
+      email: 'kevin.zhang@democorp.com',
+      department: 'Mobile Development'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-azure-4-1',
+        requirementId: 'iso-27001-A.14.1.2',
+        applicationId: 'app-azure-4',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'medium',
+        autoAnswerSource: 'Azure DevOps, App Center',
+        evidence: 'Secure development lifecycle with Azure DevOps, App Center security scanning, and mobile-specific security testing.',
+        justification: 'Comprehensive mobile security development with platform-specific security measures.',
+        responsibleParty: 'Kevin Zhang',
+        lastAssessmentDate: '2024-03-25T10:20:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-25T10:20:00Z',
+        isManualOverride: true,
+        originalAutoAnswer: 'partially_fulfilled',
+        createdAt: '2024-02-10T10:00:00Z',
+        updatedAt: '2024-03-18T16:30:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.14.1.2', 'iso-27001-A.13.1.3', 'iso-27001-A.8.12'],
+    lastReviewDate: '2024-03-18T16:00:00Z',
+    nextReviewDate: '2024-09-18T16:00:00Z',
+    complianceScore: 89,
+    createdAt: '2024-02-10T10:00:00Z',
+    updatedAt: '2024-03-25T10:20:00Z'
+  },
+  {
+    id: 'app-azure-5',
+    name: 'IoT Sensor Network',
+    description: 'Azure IoT Hub solution managing 50,000+ industrial sensors across manufacturing facilities, with real-time monitoring and predictive analytics',
+    organizationNumber: 'APP-IOT-001',
+    type: 'IoT Platform',
+    category: 'Industrial IoT',
+    status: 'active',
+    criticality: 'high',
+    syncMode: 'azure',
+    azureSyncMetadata: {
+      lastSyncDate: '2024-03-24T23:30:00Z',
+      syncVersion: '2.1.3',
+      azureResourceId: '/subscriptions/12345678-1234-1234-1234-123456789abc/resourceGroups/iot-rg/providers/Microsoft.Devices/IotHubs/enterprise-iot-hub',
+      azureSubscriptionId: '12345678-1234-1234-1234-123456789abc',
+      azureResourceGroup: 'iot-rg',
+      syncStatus: 'error',
+      syncErrors: ['Certificate validation timeout for device authentication'],
+      dataSource: 'Azure IoT Hub, Azure Security Center',
+      lastSuccessfulSync: '2024-03-23T23:30:00Z',
+      syncFrequency: 'daily',
+      autoAnsweredRequirements: 8,
+      manualOverrides: 1
+    },
+    contact: {
+      name: 'Chen Liu',
+      email: 'chen.liu@democorp.com',
+      phone: '+1-555-0401',
+      title: 'IoT Solutions Architect'
+    },
+    internalResponsible: {
+      id: 'internal-user-7',
+      name: 'Lisa Thompson',
+      email: 'lisa.thompson@democorp.com',
+      department: 'DevOps'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-azure-5-1',
+        requirementId: 'iso-27001-A.13.1.3',
+        applicationId: 'app-azure-5',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure IoT Hub',
+        evidence: 'Device-to-cloud and cloud-to-device messaging with TLS 1.2, device certificates, and network isolation.',
+        justification: 'Enterprise IoT security with certificate-based device authentication and encrypted communications.',
+        responsibleParty: 'Lisa Thompson',
+        lastAssessmentDate: '2024-03-23T23:30:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-23T23:30:00Z',
+        isManualOverride: false,
+        createdAt: '2024-02-05T10:00:00Z',
+        updatedAt: '2024-03-23T23:30:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.13.1.3', 'iso-27001-A.11.2.1', 'iso-27001-A.8.11'],
+    lastReviewDate: '2024-03-15T14:00:00Z',
+    nextReviewDate: '2024-09-15T14:00:00Z',
+    complianceScore: 91,
+    createdAt: '2024-02-05T10:00:00Z',
+    updatedAt: '2024-03-24T23:30:00Z'
+  },
+  {
+    id: 'app-azure-6',
+    name: 'Document Management System',
+    description: 'SharePoint Online and Azure-based document management with advanced search, version control, and compliance features for enterprise content',
+    organizationNumber: 'APP-DMS-001',
+    type: 'Document Management',
+    category: 'Content Management',
+    status: 'active',
+    criticality: 'medium',
+    syncMode: 'azure',
+    azureSyncMetadata: {
+      lastSyncDate: '2024-03-25T06:00:00Z',
+      syncVersion: '2.1.3',
+      azureResourceId: '/subscriptions/12345678-1234-1234-1234-123456789abc/resourceGroups/sharepoint-rg/providers/Microsoft.SharePoint/sites/enterprise-docs',
+      azureSubscriptionId: '12345678-1234-1234-1234-123456789abc',
+      azureResourceGroup: 'sharepoint-rg',
+      syncStatus: 'pending',
+      dataSource: 'Microsoft 365 Compliance Center, Azure Information Protection',
+      lastSuccessfulSync: '2024-03-24T06:00:00Z',
+      syncFrequency: 'daily',
+      autoAnsweredRequirements: 14,
+      manualOverrides: 0
+    },
+    contact: {
+      name: 'Susan Brown',
+      email: 'susan.brown@democorp.com',
+      phone: '+1-555-0456',
+      title: 'Knowledge Management Director'
+    },
+    internalResponsible: {
+      id: 'internal-user-2',
+      name: 'Michael Chen',
+      email: 'michael.chen@democorp.com',
+      department: 'IT Operations'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-azure-6-1',
+        requirementId: 'iso-27001-A.8.2.1',
+        applicationId: 'app-azure-6',
+        status: 'fulfilled',
+        isAutoAnswered: true,
+        confidenceLevel: 'high',
+        autoAnswerSource: 'Azure Information Protection',
+        evidence: 'Automated data classification with Azure Information Protection, sensitivity labels, and data loss prevention policies.',
+        justification: 'Enterprise data protection with automated classification and rights management.',
+        responsibleParty: 'Michael Chen',
+        lastAssessmentDate: '2024-03-24T06:00:00Z',
+        lastModifiedBy: 'Azure Sync Service',
+        lastModifiedAt: '2024-03-24T06:00:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-25T10:00:00Z',
+        updatedAt: '2024-03-24T06:00:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.8.2.1', 'iso-27001-A.8.3.2', 'iso-27001-A.18.1.4'],
+    lastReviewDate: '2024-03-20T10:00:00Z',
+    nextReviewDate: '2024-09-20T10:00:00Z',
+    complianceScore: 93,
+    createdAt: '2024-01-25T10:00:00Z',
+    updatedAt: '2024-03-25T06:00:00Z'
+  },
+  
+  // ADDITIONAL MANUAL APPLICATIONS - Show variety across different business domains
+  {
+    id: 'app-manual-4',
+    name: 'Legacy Accounting System',
+    description: 'Core financial accounting system handling general ledger, accounts payable/receivable, and financial reporting for enterprise operations',
+    organizationNumber: 'APP-ACC-001',
+    type: 'ERP System',
+    category: 'Financial Systems',
+    status: 'under-review',
+    criticality: 'critical',
+    syncMode: 'manual',
+    contact: {
+      name: 'Robert Martinez',
+      email: 'robert.martinez@democorp.com',
+      phone: '+1-555-0278',
+      title: 'Finance Systems Administrator'
+    },
+    internalResponsible: {
+      id: 'internal-user-8',
+      name: 'Marcus Williams',
+      email: 'marcus.williams@democorp.com',
+      department: 'Finance'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-manual-4-1',
+        requirementId: 'iso-27001-A.12.1.2',
+        applicationId: 'app-manual-4',
+        status: 'not_fulfilled',
+        isAutoAnswered: false,
+        evidence: 'System lacks comprehensive change management procedures. Ad-hoc updates without proper approval workflow.',
+        justification: 'Legacy system requires modernization of change management practices.',
+        responsibleParty: 'Marcus Williams',
+        lastAssessmentDate: '2024-03-10T10:00:00Z',
+        lastModifiedBy: 'Elena Rodriguez',
+        lastModifiedAt: '2024-03-10T14:20:00Z',
+        isManualOverride: false,
+        createdAt: '2024-02-15T09:00:00Z',
+        updatedAt: '2024-03-10T14:20:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.12.1.2', 'iso-27001-A.9.1.1', 'iso-27001-A.12.3.1'],
+    lastReviewDate: '2024-03-10T10:00:00Z',
+    nextReviewDate: '2024-06-10T10:00:00Z',
+    complianceScore: 65,
+    createdAt: '2021-03-15T10:00:00Z',
+    updatedAt: '2024-03-10T14:20:00Z'
+  },
+  {
+    id: 'app-manual-5',
+    name: 'Inventory Management System',
+    description: 'Warehouse and inventory management system tracking 100,000+ SKUs across 8 distribution centers with real-time stock levels',
+    organizationNumber: 'APP-INV-001',
+    type: 'Inventory System',
+    category: 'Supply Chain',
+    status: 'active',
+    criticality: 'high',
+    syncMode: 'manual',
+    contact: {
+      name: 'Laura Wilson',
+      email: 'laura.wilson@democorp.com',
+      phone: '+1-555-0334',
+      title: 'Supply Chain Technology Manager'
+    },
+    internalResponsible: {
+      id: 'internal-user-2',
+      name: 'Michael Chen',
+      email: 'michael.chen@democorp.com',
+      department: 'IT Operations'
+    },
+    requirementFulfillments: [
+      {
+        id: 'rf-manual-5-1',
+        requirementId: 'iso-27001-A.8.1.1',
+        applicationId: 'app-manual-5',
+        status: 'fulfilled',
+        isAutoAnswered: false,
+        evidence: 'Comprehensive asset inventory with automated discovery and regular audits. Integration with CMDB for complete visibility.',
+        justification: 'Comprehensive inventory management system with full asset lifecycle tracking.',
+        responsibleParty: 'Michael Chen',
+        lastAssessmentDate: '2024-03-05T10:00:00Z',
+        lastModifiedBy: 'Michael Chen',
+        lastModifiedAt: '2024-03-05T15:30:00Z',
+        isManualOverride: false,
+        createdAt: '2024-01-30T09:00:00Z',
+        updatedAt: '2024-03-05T15:30:00Z'
+      }
+    ],
+    associatedRequirements: ['iso-27001-A.8.1.1', 'iso-27001-A.8.1.2', 'iso-27001-A.12.5.1'],
+    lastReviewDate: '2024-03-05T10:00:00Z',
+    nextReviewDate: '2024-09-05T10:00:00Z',
+    complianceScore: 87,
+    createdAt: '2023-07-20T10:00:00Z',
+    updatedAt: '2024-03-05T15:30:00Z'
   }
 ];
+
+// Legacy Applications array for backward compatibility
+export const applications: Application[] = enhancedApplications.map(app => {
+  const result: Application = {
+    id: app.id,
+    name: app.name,
+    organizationNumber: app.organizationNumber,
+    status: app.status,
+    criticality: app.criticality,
+    contact: app.contact,
+    internalResponsible: app.internalResponsible,
+    associatedRequirements: app.associatedRequirements,
+    createdAt: app.createdAt,
+    updatedAt: app.updatedAt
+  };
+  
+  if (app.description) result.description = app.description;
+  if (app.type) result.type = app.type;
+  if (app.category) result.category = app.category;
+  if (app.lastReviewDate) result.lastReviewDate = app.lastReviewDate;
+  if (app.nextReviewDate) result.nextReviewDate = app.nextReviewDate;
+  
+  return result;
+});
 
 // Mock Notifications
 export const notifications: Notification[] = [];
@@ -553,3 +1275,43 @@ export const dashboardStats = {
 
 // All other mock data arrays are now loaded from database
 // Demo account uses the same data as regular accounts for consistency
+
+/*
+ENHANCED APPLICATION DEMO DATA SUMMARY:
+========================================
+
+📊 Total Applications: 13 (5 Manual + 6 Azure-Synced + 2 Additional Manual)
+
+🏢 MANUAL APPLICATIONS (Traditional):
+• Legacy HR Management System (Critical) - 2,800+ employees, 12 offices
+• Customer Support Portal (High) - 15,000+ customers, ticketing system
+• Manufacturing Execution System (Critical) - 4 facilities, production control
+• Legacy Accounting System (Critical/Under Review) - Financial ERP with gaps
+• Inventory Management System (High) - 100,000+ SKUs, 8 distribution centers
+
+☁️ AZURE-SYNCED APPLICATIONS (Modern Cloud):
+• Customer Data Platform (High) - Azure analytics with ML insights
+• Enterprise API Gateway (Critical) - Azure APIM with 15 auto-answered requirements
+• Financial Data Lake (Critical) - Petabyte-scale analytics with 18 auto-answered requirements
+• Mobile Customer App (High) - React Native with Azure backend
+• IoT Sensor Network (High) - 50,000+ sensors with sync error example
+• Document Management System (Medium) - SharePoint Online with AIP classification
+
+🎯 KEY DEMO FEATURES SHOWCASED:
+• Diverse application portfolio across business domains
+• Realistic Azure resource metadata and sync statuses
+• Auto-answered requirements with different confidence levels
+• Manual overrides demonstrating hybrid management
+• Comprehensive requirement fulfillments with detailed evidence
+• Various sync statuses (synced, error, pending) for realistic scenarios
+• High compliance scores for Azure apps (89-98%) vs manual (65-92%)
+• Enterprise-scale descriptions and contact information
+• Varied criticality levels and review schedules
+
+💡 BUSINESS VALUE DEMONSTRATION:
+• Shows efficiency gains from Azure sync automation
+• Demonstrates comprehensive compliance coverage
+• Highlights manual vs automated requirement management
+• Showcases enterprise-grade security and governance
+• Proves scalability across different application types
+*/
