@@ -33,7 +33,7 @@ interface InlineContentEditorProps {
   type: 'text' | 'video' | 'quiz';
   content: string;
   title: string;
-  onSave: (content: string, title?: string) => void;
+  onSave: (content: string) => void;
   onCancel: () => void;
   isOpen: boolean;
 }
@@ -42,9 +42,9 @@ interface QuizQuestion {
   id: string;
   question: string;
   options: string[];
-  correctAnswer: number;
+  correctAnswer: number | number[]; // Support both single and multiple correct answers
   explanation?: string;
-  type: 'multiple-choice' | 'true-false' | 'text';
+  type: 'multiple-choice' | 'multiple-select' | 'true-false' | 'text';
   points: number;
 }
 
@@ -139,7 +139,7 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
       }
       
       await new Promise(resolve => setTimeout(resolve, 500)); // Simulate save
-      onSave(finalContent, moduleTitle);
+      onSave(finalContent);
       toast.success('Content saved successfully');
     } catch (error) {
       toast.error('Failed to save content');
@@ -181,7 +181,7 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
       id: Date.now().toString(),
       question: '',
       options: ['', '', '', ''],
-      correctAnswer: 0,
+      correctAnswer: 0, // Default to single answer
       type: 'multiple-choice',
       points: 1
     };
@@ -226,69 +226,60 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
   if (!isOpen) return null;
 
   return (
-    <Card className="w-full max-w-4xl mx-auto border-0 shadow-lg">
-      <div className="border-b p-4 bg-gray-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Input
-              value={moduleTitle}
-              onChange={(e) => setModuleTitle(e.target.value)}
-              className="text-lg font-semibold border-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter module title"
-            />
-            <Badge variant="outline" className="capitalize">
-              {type.replace('-', ' ')}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onCancel}>
-              <X className="h-4 w-4 mr-1" />
-              Cancel
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowMediaBrowser(true)}
-              className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
-            >
-              <Upload className="h-4 w-4 mr-1" />
-              Media Library
-            </Button>
-            <Button 
-              size="sm" 
-              onClick={handleSave}
-              disabled={isSaving}
-              className="bg-blue-500 hover:bg-blue-600"
-            >
-              {isSaving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-1" />
-                  Save
-                </>
-              )}
-            </Button>
-          </div>
+    <div className="w-full">
+      {/* Action Bar */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="capitalize">
+            {type.replace('-', ' ')}
+          </Badge>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={onCancel}>
+            <X className="h-4 w-4 mr-1" />
+            Cancel
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowMediaBrowser(true)}
+            className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            Media Library
+          </Button>
+          <Button 
+            size="sm" 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            {isSaving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-1" />
+                Save
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
-      <div className="p-6">
+      <div>
         {type === 'text' && (
-          <div className="space-y-4">
-            <EnhancedRichTextEditor
-              initialContent={textContent}
-              onSave={setTextContent}
-              onCancel={() => {}}
-              placeholder="Enter your text content here..."
-              height="400px"
-              autoSave={false}
-              showWordCount={true}
-            />
-          </div>
+          <EnhancedRichTextEditor
+            initialContent={textContent}
+            onSave={setTextContent}
+            onCancel={() => {}}
+            placeholder="Enter your text content here..."
+            height="500px"
+            autoSave={false}
+            showWordCount={true}
+          />
         )}
 
         {type === 'quiz' && (
@@ -335,15 +326,18 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
                           <Label>Question Type</Label>
                           <Select 
                             value={question.type} 
-                            onValueChange={(value: 'multiple-choice' | 'true-false' | 'text') => 
-                              updateQuizQuestion(question.id, { type: value })
-                            }
+                            onValueChange={(value: 'multiple-choice' | 'multiple-select' | 'true-false' | 'text') => {
+                              // Reset correctAnswer when changing type
+                              const correctAnswer = value === 'multiple-select' ? [] : 0;
+                              updateQuizQuestion(question.id, { type: value, correctAnswer });
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
+                              <SelectItem value="multiple-choice">Multiple Choice (Single Answer)</SelectItem>
+                              <SelectItem value="multiple-select">Multiple Select (Multiple Answers)</SelectItem>
                               <SelectItem value="true-false">True/False</SelectItem>
                               <SelectItem value="text">Text Answer</SelectItem>
                             </SelectContent>
@@ -362,7 +356,7 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
 
                       {question.type === 'multiple-choice' && (
                         <div className="space-y-2">
-                          <Label>Answer Options</Label>
+                          <Label>Answer Options (Select one correct answer)</Label>
                           {question.options.map((option, optionIndex) => (
                             <div key={optionIndex} className="flex items-center gap-2">
                               <input
@@ -384,6 +378,44 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
                               />
                             </div>
                           ))}
+                        </div>
+                      )}
+
+                      {question.type === 'multiple-select' && (
+                        <div className="space-y-2">
+                          <Label>Answer Options (Select all correct answers)</Label>
+                          {question.options.map((option, optionIndex) => (
+                            <div key={optionIndex} className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={Array.isArray(question.correctAnswer) && question.correctAnswer.includes(optionIndex)}
+                                onChange={(e) => {
+                                  const currentAnswers = Array.isArray(question.correctAnswer) ? question.correctAnswer : [];
+                                  let newAnswers;
+                                  if (e.target.checked) {
+                                    newAnswers = [...currentAnswers, optionIndex];
+                                  } else {
+                                    newAnswers = currentAnswers.filter(idx => idx !== optionIndex);
+                                  }
+                                  updateQuizQuestion(question.id, { correctAnswer: newAnswers });
+                                }}
+                                className="mt-1"
+                              />
+                              <Input
+                                value={option}
+                                onChange={(e) => {
+                                  const newOptions = [...question.options];
+                                  newOptions[optionIndex] = e.target.value;
+                                  updateQuizQuestion(question.id, { options: newOptions });
+                                }}
+                                placeholder={`Option ${optionIndex + 1}`}
+                                className="flex-1"
+                              />
+                            </div>
+                          ))}
+                          <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                            💡 Tip: Check all correct answers. Students will need to select all correct options to get points.
+                          </div>
                         </div>
                       )}
 
@@ -613,6 +645,6 @@ export const InlineContentEditor: React.FC<InlineContentEditorProps> = ({
         onSelect={handleMediaSelect}
         filterType={type === 'video' ? 'video' : 'all'}
       />
-    </Card>
+    </div>
   );
 };

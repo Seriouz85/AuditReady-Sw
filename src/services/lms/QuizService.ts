@@ -179,14 +179,17 @@ export class QuizService {
 
       // Save attempt to database
       const { data: attempt, error } = await supabase
-        .from('user_quiz_attempts')
+        .from('quiz_attempts')
         .insert({
           user_id: data.userId,
           quiz_id: data.quizId,
+          organization_id: data.organizationId || 'demo-org', // TODO: Get from context
+          enrollment_id: data.enrollmentId || null, // TODO: Get from enrollment
+          attempt_number: 1, // TODO: Calculate proper attempt number
+          status: 'completed',
           answers: data.answers,
           score,
-          passed,
-          time_taken_minutes: Math.round(data.timeSpent),
+          time_spent_minutes: Math.round(data.timeSpent),
           completed_at: new Date().toISOString()
         })
         .select()
@@ -259,7 +262,7 @@ export class QuizService {
   async getUserQuizAttempts(userId: string, quizId?: string): Promise<UserQuizAttempt[]> {
     try {
       let query = supabase
-        .from('user_quiz_attempts')
+        .from('quiz_attempts')
         .select('*')
         .eq('user_id', userId);
 
@@ -281,7 +284,7 @@ export class QuizService {
   async getBestAttempt(userId: string, quizId: string): Promise<UserQuizAttempt | null> {
     try {
       const { data, error } = await supabase
-        .from('user_quiz_attempts')
+        .from('quiz_attempts')
         .select('*')
         .eq('user_id', userId)
         .eq('quiz_id', quizId)
@@ -294,6 +297,36 @@ export class QuizService {
     } catch (error) {
       console.error('Error fetching best attempt:', error);
       return null;
+    }
+  }
+
+  // Get user's average quiz score across all attempts
+  async getUserAverageScore(userId: string): Promise<number> {
+    try {
+      // Get all quiz attempts for the user
+      const attempts = await this.getUserQuizAttempts(userId);
+      
+      if (attempts.length === 0) {
+        return 0;
+      }
+
+      // Calculate average of best scores per quiz
+      const quizScores = new Map<string, number>();
+      
+      attempts.forEach(attempt => {
+        const currentBest = quizScores.get(attempt.quiz_id) || 0;
+        if (attempt.score > currentBest) {
+          quizScores.set(attempt.quiz_id, attempt.score);
+        }
+      });
+
+      const scores = Array.from(quizScores.values());
+      const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      
+      return Math.round(averageScore);
+    } catch (error) {
+      console.error('Error calculating user average score:', error);
+      return 0;
     }
   }
 

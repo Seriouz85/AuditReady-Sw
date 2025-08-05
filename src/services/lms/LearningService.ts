@@ -11,11 +11,20 @@ import {
   CourseEnrollment
 } from '@/types/lms';
 import { toast } from '@/utils/toast';
+import { demoCoursesData, demoProgressData } from '@/data/lms/demoCourses';
 
 export class LearningService {
   // Learning Paths (Courses)
   async getOrganizationCourses(organizationId: string): Promise<LearningPath[]> {
     try {
+      // Check if this is the demo organization
+      const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d' || organizationId === 'demo-org';
+      
+      if (isDemoOrg) {
+        console.log('Returning demo courses data for demo organization');
+        return demoCoursesData;
+      }
+
       const { data, error } = await supabase
         .from('learning_paths')
         .select(`
@@ -36,6 +45,14 @@ export class LearningService {
 
   async getCourseById(courseId: string): Promise<LearningPath | null> {
     try {
+      // Check if this is a demo course ID
+      const demoCourse = demoCoursesData.find(course => course.id === courseId);
+      
+      if (demoCourse) {
+        console.log('Returning demo course data for course ID:', courseId);
+        return demoCourse;
+      }
+
       const { data, error } = await supabase
         .from('learning_paths')
         .select(`

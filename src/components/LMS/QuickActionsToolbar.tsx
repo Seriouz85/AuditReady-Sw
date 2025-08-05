@@ -28,7 +28,8 @@ import {
   MoreHorizontal,
   Command,
   Shuffle,
-  Library
+  Library,
+  Sparkles
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -63,6 +64,7 @@ interface QuickActionsToolbarProps {
   onFilterChange: (type: string) => void;
   isSaving?: boolean;
   onOpenMediaBrowser?: () => void;
+  onGenerateWithAI?: () => void;
   className?: string;
 }
 
@@ -97,6 +99,7 @@ export const QuickActionsToolbar: React.FC<QuickActionsToolbarProps> = ({
   onFilterChange,
   isSaving = false,
   onOpenMediaBrowser,
+  onGenerateWithAI,
   className = ''
 }) => {
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -226,6 +229,25 @@ export const QuickActionsToolbar: React.FC<QuickActionsToolbarProps> = ({
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Open media library</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {onGenerateWithAI && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onGenerateWithAI}
+                    className="gap-1 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:border-purple-300 text-purple-700 hover:text-purple-800"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span className="hidden sm:inline">AI Generate</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Generate content with AI</p>
                 </TooltipContent>
               </Tooltip>
             )}

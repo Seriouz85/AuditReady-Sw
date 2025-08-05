@@ -124,6 +124,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
   const [selectedFile, setSelectedFile] = useState<MediaFile | MediaItem | null>(null);
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'local' | 'online' | 'upload'>('local');
+  const [hasLoadedPopularMedia, setHasLoadedPopularMedia] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState<MediaFile | MediaItem | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -190,13 +191,19 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
   }, [isOpen, organization, activeTab]);
 
   useEffect(() => {
-    if (activeTab === 'online' && searchTerm) {
-      const debounceTimer = setTimeout(() => {
-        searchOnlineMedia();
-      }, 500);
-      return () => clearTimeout(debounceTimer);
+    if (activeTab === 'online') {
+      if (searchTerm) {
+        const debounceTimer = setTimeout(() => {
+          searchOnlineMedia();
+        }, 500);
+        return () => clearTimeout(debounceTimer);
+      } else if (!hasLoadedPopularMedia && onlineMedia.length === 0) {
+        // Automatically load popular content when first switching to online tab
+        setSearchTerm('business');
+        setHasLoadedPopularMedia(true);
+      }
     }
-  }, [searchTerm, activeTab]);
+  }, [searchTerm, activeTab, hasLoadedPopularMedia, onlineMedia.length]);
 
   const loadLocalFiles = async () => {
     try {
@@ -341,7 +348,9 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
         )}
         onClick={(e) => {
           e.stopPropagation();
-          setSelectedFile(item);
+          // Direct selection - no extra clicks needed
+          onSelect(item);
+          onClose();
         }}
         onDoubleClick={() => {
           setPreviewItem(item);
@@ -454,7 +463,11 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
           "flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer transition-colors border-l-2",
           isSelected ? "bg-blue-50 border-l-blue-500" : "border-l-transparent"
         )}
-        onClick={() => setSelectedFile(item)}
+        onClick={() => {
+          // Direct selection - no extra clicks needed
+          onSelect(item);
+          onClose();
+        }}
         onDoubleClick={() => {
           setPreviewItem(item);
           setShowPreview(true);
@@ -508,7 +521,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
   return (
     <div
       className={cn(
-        "fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] lg:w-[480px] bg-white border-l shadow-xl transform transition-transform duration-300 ease-in-out",
+        "fixed inset-y-0 right-0 z-50 w-full sm:w-[300px] lg:w-[320px] bg-white border-l shadow-xl transform transition-transform duration-300 ease-in-out",
         isOpen ? "translate-x-0" : "translate-x-full",
         className
       )}
@@ -640,51 +653,38 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
 
         {activeTab === 'online' && (
           <>
-            {!searchTerm ? (
-              <div className="p-4 space-y-4">
-                <div className="text-center py-8">
-                  <Globe className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-sm text-gray-600 mb-2">Search copyright-free media</p>
-                  <p className="text-xs text-gray-500">Enter a search term to find free images and videos</p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Shield className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-medium">Available Sources</span>
-                  </div>
-                  {copyrightFreeSources.map((source) => (
-                    <div key={source.id} className="p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm">{source.icon}</span>
-                        <span className="font-medium text-sm">{source.name}</span>
-                        <Badge variant="outline" className="text-xs">{source.type}</Badge>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-2">{source.description}</p>
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => window.open(source.url, '_blank')}
-                          className="flex-1"
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Visit
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : searchLoading ? (
+            {searchLoading ? (
               <div className="flex items-center justify-center h-32">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
               </div>
             ) : filteredOnlineMedia.length === 0 ? (
               <div className="text-center py-8 px-4">
-                <Search className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-sm text-gray-600">No results found</p>
-                <p className="text-xs text-gray-500 mt-1">Try different keywords</p>
+                {!searchTerm ? (
+                  <>
+                    <Globe className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-600 mb-2">Search copyright-free media</p>
+                    <p className="text-xs text-gray-500 mb-4">Enter keywords like "business", "technology", "education"</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {['business', 'technology', 'education', 'office'].map(term => (
+                        <Button
+                          key={term}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSearchTerm(term)}
+                          className="text-xs"
+                        >
+                          {term}
+                        </Button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-600">No results found</p>
+                    <p className="text-xs text-gray-500 mt-1">Try different keywords</p>
+                  </>
+                )}
               </div>
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-2 gap-3 p-4">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { learningService } from '@/services/lms/LearningService';
 import { LearningPath } from '@/types/lms';
-import CourseCreationForm from '@/components/LMS/CourseCreationForm';
+import CourseBuilder from '@/pages/LMS/CourseBuilder';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/utils/toast';
@@ -68,28 +68,8 @@ const EditCourse: React.FC = () => {
 
   return (
     <div>
-      {/* For now, redirect to course creation form with pre-filled data */}
-      {/* In a full implementation, this would be an edit-specific form */}
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">Edit Course: {course.title}</h1>
-          <p className="text-muted-foreground">
-            Update course information and settings
-          </p>
-        </div>
-        
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-yellow-800">
-            <strong>Note:</strong> Course editing is currently redirected to the course creation form. 
-            In a full implementation, this would be a dedicated edit interface with pre-filled course data.
-          </p>
-        </div>
-
-        <CourseCreationForm 
-          onClose={() => navigate('/lms')}
-          onSuccess={handleUpdateSuccess}
-        />
-      </div>
+      {/* Use CourseBuilder for proper course content editing */}
+      <CourseBuilder />
     </div>
   );
 };

@@ -85,6 +85,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState(title);
   const [isHovered, setIsHovered] = useState(false);
+  const [showAddMenu, setShowAddMenu] = useState(false);
 
   const handleTitleSave = () => {
     onUpdateTitle(titleValue);
@@ -122,7 +123,10 @@ export const SectionCard: React.FC<SectionCardProps> = ({
         ${className}
       `}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setShowAddMenu(false);
+      }}
     >
       {/* Drag Handle */}
       <div className="absolute left-3 top-6 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10">
@@ -137,33 +141,39 @@ export const SectionCard: React.FC<SectionCardProps> = ({
             </div>
             
             <div className="flex-1">
-              {isEditingTitle ? (
-                <Input
-                  value={titleValue}
-                  onChange={(e) => setTitleValue(e.target.value)}
-                  onBlur={handleTitleSave}
-                  onKeyDown={handleTitleKeyPress}
-                  className="text-lg font-semibold"
-                  autoFocus
-                />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <h3 
-                    className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-blue-600"
-                    onClick={() => setIsEditingTitle(true)}
-                  >
-                    {title}
-                  </h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                    onClick={() => setIsEditingTitle(true)}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {isEditingTitle ? (
+                  <Input
+                    value={titleValue}
+                    onChange={(e) => setTitleValue(e.target.value)}
+                    onBlur={handleTitleSave}
+                    onKeyDown={handleTitleKeyPress}
+                    className="text-lg font-semibold border-none shadow-none px-0 focus:ring-0"
+                    autoFocus
+                  />
+                ) : (
+                  <>
+                    <h3 
+                      className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                      onClick={() => setIsEditingTitle(true)}
+                      title="Click to edit section title"
+                    >
+                      {title}
+                    </h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:bg-blue-50 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditingTitle(true);
+                      }}
+                    >
+                      <Edit2 className="h-3 w-3 text-gray-400 hover:text-blue-600" />
+                    </Button>
+                  </>
+                )}
+              </div>
               
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline" className="text-xs">
@@ -250,28 +260,38 @@ export const SectionCard: React.FC<SectionCardProps> = ({
               />
             ))}
 
-            {/* Direct Module Addition */}
-            <div className="mt-4 space-y-2">
-              {moduleTypeOptions.map(({ type, icon: Icon, label, color }) => (
-                <div
-                  key={type}
-                  onClick={() => onAddModule(type)}
-                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer transition-all duration-200 group"
+            {/* Centered Add Module Button */}
+            <div className="mt-6 flex justify-center">
+              <div className="relative">
+                <Button
+                  onClick={() => setShowAddMenu(!showAddMenu)}
+                  className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 border-0"
+                  size="sm"
                 >
-                  <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
-                    <Icon className="h-4 w-4 text-white" />
+                  <Plus className="h-6 w-6 text-white" />
+                </Button>
+                
+                {/* Add Module Menu */}
+                {showAddMenu && (
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 space-y-1 z-50 min-w-[200px]">
+                    {moduleTypeOptions.map(({ type, icon: Icon, label, color }) => (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          onAddModule(type);
+                          setShowAddMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors text-left"
+                      >
+                        <div className={`w-6 h-6 rounded ${color} flex items-center justify-center`}>
+                          <Icon className="h-3 w-3 text-white" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-800">{label}</span>
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">{label}</p>
-                    <p className="text-xs text-gray-500">
-                      {type === 'text' && 'Add formatted text, images, and links'}
-                      {type === 'video' && 'Embed videos from YouTube, Vimeo, or upload'}
-                      {type === 'quiz' && 'Create interactive assessments'}
-                    </p>
-                  </div>
-                  <Plus className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                </div>
-              ))}
+                )}
+              </div>
             </div>
           </div>
         </CardContent>

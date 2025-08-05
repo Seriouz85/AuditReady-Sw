@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { InlineContentEditor } from './InlineContentEditor';
 import { 
   MoreHorizontal, 
@@ -17,7 +18,8 @@ import {
   GripVertical,
   Eye,
   Copy,
-  Clock
+  Clock,
+  Edit2
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -78,9 +80,41 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   className = ''
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleValue, setTitleValue] = useState(title);
+  // Start in edit mode if there's no content
+  const [isEditing, setIsEditing] = useState(!content && isExpanded);
   const typeConfig = contentTypeConfig[type];
   const TypeIcon = typeConfig.icon;
+  
+  // Automatically start editing when expanded without content
+  React.useEffect(() => {
+    if (isExpanded && !content && !isEditing) {
+      setIsEditing(true);
+    }
+  }, [isExpanded, content, isEditing]);
+
+  // Update title value when title prop changes
+  React.useEffect(() => {
+    setTitleValue(title);
+  }, [title]);
+
+  const handleTitleSave = () => {
+    if (titleValue.trim() && titleValue !== title) {
+      onUpdate?.({ title: titleValue.trim() });
+    }
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    }
+    if (e.key === 'Escape') {
+      setTitleValue(title);
+      setIsEditingTitle(false);
+    }
+  };
 
   const getContentPreview = () => {
     if (type === 'quiz') {
@@ -99,6 +133,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
 
   return (
     <Card 
+      data-module-id={id}
       className={`
         relative group transition-all duration-200 hover:shadow-md
         ${isDragging ? 'shadow-lg rotate-1 scale-105' : ''}
@@ -120,9 +155,35 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               <TypeIcon className="h-4 w-4 text-white" />
             </div>
             <div>
-              <CardTitle className="text-sm font-medium text-gray-900">
-                {title}
-              </CardTitle>
+              <div className="flex items-center gap-2">
+                {isEditingTitle ? (
+                  <Input
+                    value={titleValue}
+                    onChange={(e) => setTitleValue(e.target.value)}
+                    onBlur={handleTitleSave}
+                    onKeyDown={handleTitleKeyPress}
+                    className="text-sm font-medium h-6 border-none shadow-none px-0 focus:ring-0"
+                    autoFocus
+                  />
+                ) : (
+                  <>
+                    <CardTitle 
+                      className="text-sm font-medium text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                      onClick={() => setIsEditingTitle(true)}
+                    >
+                      {title}
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 hover:bg-blue-50"
+                      onClick={() => setIsEditingTitle(true)}
+                    >
+                      <Edit2 className="h-3 w-3 text-gray-400 hover:text-blue-600" />
+                    </Button>
+                  </>
+                )}
+              </div>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="secondary" className="text-xs">
                   {typeConfig.label}
@@ -171,7 +232,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                   </DropdownMenuItem>
                 )}
                 {onEdit && (
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                  <DropdownMenuItem onClick={() => setIsEditing(true)} data-action="edit">
                     <Edit className="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
@@ -196,30 +257,33 @@ export const ContentCard: React.FC<ContentCardProps> = ({
 
       {/* Expandable Content */}
       {isExpanded && (
-        <CardContent className="pt-0 pl-10 animate-in slide-in-from-top-2 duration-200">
+        <CardContent className="pt-0 pl-10 pr-4 animate-in slide-in-from-top-2 duration-200">
           {isEditing ? (
-            <InlineContentEditor
-              type={type}
-              content={content}
-              title={title}
-              isOpen={isEditing}
-              onSave={(newContent, newTitle) => {
-                onUpdate?.({ 
-                  content: newContent, 
-                  ...(newTitle && { title: newTitle }) 
-                });
-                setIsEditing(false);
-              }}
-              onCancel={() => setIsEditing(false)}
-            />
+            <div className="-mx-6 px-6">
+              <InlineContentEditor
+                type={type}
+                content={content}
+                title={title}
+                isOpen={isEditing}
+                onSave={(newContent) => {
+                  onUpdate?.({ content: newContent });
+                  setIsEditing(false);
+                }}
+                onCancel={() => setIsEditing(false)}
+              />
+            </div>
           ) : (
-            <div className="bg-gray-50 rounded-lg p-4 border hover:bg-gray-100 transition-colors">
+            <div 
+              className="p-4 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg"
+              onClick={() => setIsEditing(true)}
+              data-action="edit"
+            >
               {/* Content Display */}
               <div className="mb-3">
                 {type === 'text' && (
                   <div 
                     className="text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: content || '<p class="text-gray-500 italic">Click to add content</p>' }}
+                    dangerouslySetInnerHTML={{ __html: content || '<p class="text-gray-500 italic">No content yet</p>' }}
                   />
                 )}
                 
@@ -227,15 +291,87 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                   <div className="space-y-2">
                     {content ? (
                       <div>
-                        <div className="aspect-video bg-gray-200 rounded flex items-center justify-center mb-2">
-                          <span className="text-gray-500">Video Preview</span>
-                        </div>
-                        <p className="text-sm text-gray-600">Video content configured</p>
+                        {(() => {
+                          try {
+                            const videoData = JSON.parse(content);
+                            const videoUrl = videoData.url;
+                            if (videoUrl) {
+                              // Check if it's a YouTube URL
+                              const youtubeMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                              if (youtubeMatch) {
+                                const videoId = youtubeMatch[1];
+                                return (
+                                  <div className="aspect-video bg-black rounded-lg overflow-hidden mb-2">
+                                    <iframe
+                                      src={`https://www.youtube.com/embed/${videoId}`}
+                                      className="w-full h-full"
+                                      allowFullScreen
+                                      title={videoData.title || 'Video'}
+                                    />
+                                  </div>
+                                );
+                              }
+                              // Check if it's a Vimeo URL
+                              const vimeoMatch = videoUrl.match(/vimeo\.com\/(\d+)/);
+                              if (vimeoMatch) {
+                                const videoId = vimeoMatch[1];
+                                return (
+                                  <div className="aspect-video bg-black rounded-lg overflow-hidden mb-2">
+                                    <iframe
+                                      src={`https://player.vimeo.com/video/${videoId}`}
+                                      className="w-full h-full"
+                                      allowFullScreen
+                                      title={videoData.title || 'Video'}
+                                    />
+                                  </div>
+                                );
+                              }
+                              // Check if it's a direct video file
+                              if (videoUrl.includes('.mp4') || videoUrl.includes('.webm') || videoUrl.includes('.ogg')) {
+                                return (
+                                  <div className="aspect-video bg-black rounded-lg overflow-hidden mb-2">
+                                    <video
+                                      src={videoUrl}
+                                      controls
+                                      className="w-full h-full"
+                                      title={videoData.title || 'Video'}
+                                    />
+                                  </div>
+                                );
+                              }
+                            }
+                            // Fallback for invalid URL
+                            return (
+                              <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                                <div className="text-center">
+                                  <Video className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                                  <span className="text-sm text-gray-500">Invalid video URL</span>
+                                </div>
+                              </div>
+                            );
+                          } catch {
+                            return (
+                              <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                                <span className="text-gray-500">Video Preview</span>
+                              </div>
+                            );
+                          }
+                        })()}
+                        <p className="text-sm text-gray-600">
+                          {(() => {
+                            try {
+                              const videoData = JSON.parse(content);
+                              return videoData.title || 'Video content configured';
+                            } catch {
+                              return 'Video content configured';
+                            }
+                          })()}
+                        </p>
                       </div>
                     ) : (
                       <div className="text-center py-8">
                         <Video className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-500">Click to add video</p>
+                        <p className="text-sm text-gray-500">No video added</p>
                       </div>
                     )}
                   </div>
@@ -263,7 +399,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                     ) : (
                       <div className="text-center py-8">
                         <FileQuestion className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-500">Click to add questions</p>
+                        <p className="text-sm text-gray-500">No questions added</p>
                       </div>
                     )}
                   </div>
@@ -271,24 +407,15 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                 
               </div>
               
-              {/* Action buttons for expanded state */}
-              <div className="flex gap-2 pt-3 border-t">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsEditing(true)}
-                  className="flex-1"
-                >
-                  <Edit className="mr-2 h-3 w-3" />
-                  {content ? 'Edit' : 'Add'} Content
-                </Button>
-                {onPreview && content && (
+              {/* Preview button only - content is directly editable by clicking */}
+              {onPreview && content && (
+                <div className="flex justify-end pt-3">
                   <Button variant="outline" size="sm" onClick={onPreview}>
                     <Eye className="mr-2 h-3 w-3" />
                     Preview
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

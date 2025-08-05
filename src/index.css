@@ -713,3 +713,16 @@ main > div.border-b {
 
 /* Template card hover effects - using transform utilities in components instead */
 /* Glass morphic effects - converted to Tailwind backdrop-blur utilities */
+
+/* Animation delays for LMS loading states */
+.animation-delay-75 {
+  animation-delay: 75ms;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}

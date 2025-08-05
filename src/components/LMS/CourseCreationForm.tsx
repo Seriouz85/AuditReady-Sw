@@ -323,8 +323,13 @@ const CourseCreationForm: React.FC<CourseCreationFormProps> = ({ onClose, onSucc
               <Input
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Add a tag"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                placeholder="Add a tag (press Enter or click Add)"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
               />
               <Button type="button" onClick={addTag}>Add</Button>
             </div>

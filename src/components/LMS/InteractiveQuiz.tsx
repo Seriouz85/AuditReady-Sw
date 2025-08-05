@@ -119,6 +119,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
   // State management
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
+  const [questionAttempts, setQuestionAttempts] = useState<Record<string, number>>({});
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -208,15 +209,35 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
     const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
     const isCorrect = checkAnswer();
     
+    // Track attempts for this specific question
+    const currentAttempts = (questionAttempts[currentQuestion.id] || 0) + 1;
+    setQuestionAttempts(prev => ({
+      ...prev,
+      [currentQuestion.id]: currentAttempts
+    }));
+    
     const attempt: QuizAttempt = {
       questionId: currentQuestion.id,
       selectedAnswers: [...selectedAnswers],
       isCorrect,
       timeSpent,
-      attempts: 1 // TODO: Track multiple attempts per question
+      attempts: currentAttempts
     };
 
-    setQuizAttempts(prev => [...prev, attempt]);
+    // Update or add attempt for this question
+    setQuizAttempts(prev => {
+      const existingIndex = prev.findIndex(a => a.questionId === currentQuestion.id);
+      if (existingIndex >= 0) {
+        // Update existing attempt
+        const updated = [...prev];
+        updated[existingIndex] = attempt;
+        return updated;
+      } else {
+        // Add new attempt
+        return [...prev, attempt];
+      }
+    });
+    
     setShowResult(true);
     
     if (showExplanations) {
@@ -251,6 +272,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
   const handleRestartQuiz = () => {
     setCurrentQuestionIndex(0);
     setQuizAttempts([]);
+    setQuestionAttempts({});
     setSelectedAnswers([]);
     setShowResult(false);
     setShowExplanation(false);

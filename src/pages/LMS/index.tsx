@@ -130,12 +130,22 @@ const TrenningLMS: React.FC = () => {
         const inProgressCount = progressData.filter(p => !p.completed_at && p.progress_percentage > 0).length;
         const totalTime = progressData.reduce((sum, p) => sum + p.time_spent_minutes, 0);
         
+        // Calculate average quiz score
+        let averageScore = 0;
+        try {
+          const { quizService } = await import('@/services/lms/QuizService');
+          averageScore = await quizService.getUserAverageScore(user!.id);
+        } catch (error) {
+          console.error('Failed to load quiz scores:', error);
+          averageScore = 0; // fallback
+        }
+
         setAnalytics({
           totalCourses: coursesData.length,
           completedCourses: completedCount,
           inProgressCourses: inProgressCount,
           totalTimeSpent: totalTime,
-          averageScore: 85, // TODO: Calculate from quiz scores
+          averageScore,
           certificatesEarned: progressData.filter(p => p.certificate_issued).length,
           upcomingDeadlines: assignmentsData.filter(a => !a.completed_at && new Date(a.due_date) > new Date()).length,
           overdueCourses: assignmentsData.filter(a => !a.completed_at && new Date(a.due_date) < new Date()).length
