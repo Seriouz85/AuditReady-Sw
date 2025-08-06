@@ -429,6 +429,267 @@ export const internalUsers: InternalUser[] = [
 ];
 
 // Mock Suppliers
+// Enhanced Supplier Assessment Mock Data
+export const supplierAssessmentCampaigns = [
+  {
+    id: 'campaign-1',
+    supplier_id: 'supplier-1',
+    name: 'CloudSecure Solutions - Q1 2024 Security Assessment',
+    description: 'Comprehensive security and compliance assessment covering ISO 27001, SOC 2, and NIS2 requirements for cloud infrastructure services.',
+    status: 'completed' as const,
+    due_date: '2024-03-31',
+    created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-03-25T16:30:00Z',
+    sent_at: '2024-01-16T09:00:00Z',
+    completed_at: '2024-03-20T14:45:00Z',
+    risk_score: 78,
+    risk_level: 'medium' as const,
+    allow_delegation: true,
+    require_evidence: true,
+    send_reminders: true,
+    reminder_frequency_days: 7
+  },
+  {
+    id: 'campaign-2', 
+    supplier_id: 'supplier-2',
+    name: 'DataGuard Analytics - Data Processing Agreement Review',
+    description: 'GDPR compliance and data processing security assessment focusing on data protection controls and privacy safeguards.',
+    status: 'in_progress' as const,
+    due_date: '2024-04-15',
+    created_at: '2024-02-01T11:30:00Z',
+    updated_at: '2024-03-28T10:15:00Z',
+    sent_at: '2024-02-02T08:00:00Z',
+    risk_score: 82,
+    risk_level: 'medium' as const,
+    allow_delegation: true,
+    require_evidence: true,
+    send_reminders: true,
+    reminder_frequency_days: 5
+  },
+  {
+    id: 'campaign-3',
+    supplier_id: 'supplier-3', 
+    name: 'SecureComm Networks - Critical Infrastructure Assessment',
+    description: 'NIS2 compliance assessment for critical network infrastructure components and incident response capabilities.',
+    status: 'sent' as const,
+    due_date: '2024-05-01',
+    created_at: '2024-03-15T09:45:00Z',
+    updated_at: '2024-03-28T12:00:00Z',
+    sent_at: '2024-03-16T10:30:00Z',
+    risk_score: 0,
+    risk_level: 'unknown' as const,
+    allow_delegation: false,
+    require_evidence: true,
+    send_reminders: true,
+    reminder_frequency_days: 3
+  },
+  {
+    id: 'campaign-4',
+    supplier_id: 'supplier-4',
+    name: 'TechFlow Systems - Multi-Framework Compliance Review',
+    description: 'Comprehensive assessment covering ISO 27001, SOC 2, and NIST frameworks for enterprise software development and deployment.',
+    status: 'draft' as const,
+    due_date: '2024-06-15',
+    created_at: '2024-03-25T15:20:00Z',
+    updated_at: '2024-03-26T09:15:00Z',
+    risk_score: 0,
+    risk_level: 'unknown' as const,
+    allow_delegation: true,
+    require_evidence: true,
+    send_reminders: true,
+    reminder_frequency_days: 7
+  },
+  {
+    id: 'campaign-5',
+    supplier_id: 'supplier-1',
+    name: 'CloudSecure Solutions - High-Risk Security Reassessment',
+    description: 'Follow-up assessment focusing on critical security gaps identified in previous evaluation, with emphasis on incident response and data protection.',
+    status: 'expired' as const,
+    due_date: '2024-02-29',
+    created_at: '2024-01-01T08:00:00Z',
+    updated_at: '2024-03-01T10:00:00Z',
+    sent_at: '2024-01-02T09:00:00Z',
+    risk_score: 92,
+    risk_level: 'critical' as const,
+    allow_delegation: false,
+    require_evidence: true,
+    send_reminders: true,
+    reminder_frequency_days: 3
+  }
+];
+
+export const supplierExternalUsers = [
+  {
+    id: 'ext-user-1',
+    supplier_id: 'supplier-1',
+    campaign_id: 'campaign-1',
+    email: 'jennifer.adams@cloudsecure.example.com',
+    full_name: 'Jennifer Adams',
+    title: 'Compliance Director',
+    phone: '+1-206-555-0198',
+    role: 'primary' as const,
+    invite_token: 'secure-token-1',
+    invite_sent_at: '2024-01-16T09:00:00Z',
+    invite_accepted_at: '2024-01-16T14:30:00Z',
+    last_login_at: '2024-03-20T10:15:00Z',
+    is_active: true,
+    created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-03-20T14:45:00Z'
+  },
+  {
+    id: 'ext-user-2',
+    supplier_id: 'supplier-1',
+    campaign_id: 'campaign-1',
+    email: 'tech.lead@cloudsecure.example.com',
+    full_name: 'Marcus Chen',
+    title: 'Technical Security Lead',
+    phone: '+1-206-555-0199',
+    role: 'contributor' as const,
+    invite_token: 'secure-token-2',
+    invite_sent_at: '2024-01-16T09:05:00Z',
+    invite_accepted_at: '2024-01-17T08:45:00Z',
+    last_login_at: '2024-03-19T16:20:00Z',
+    is_active: true,
+    created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-03-19T16:20:00Z'
+  },
+  {
+    id: 'ext-user-3',
+    supplier_id: 'supplier-2',
+    campaign_id: 'campaign-2',
+    email: 'robert.kim@dataguard.example.com',
+    full_name: 'Robert Kim',
+    title: 'Security Operations Manager',
+    phone: '+1-512-555-0287',
+    role: 'primary' as const,
+    invite_token: 'secure-token-3',
+    invite_sent_at: '2024-02-02T08:00:00Z',
+    invite_accepted_at: '2024-02-02T11:15:00Z',
+    last_login_at: '2024-03-27T14:30:00Z',
+    is_active: true,
+    created_at: '2024-02-01T11:30:00Z',
+    updated_at: '2024-03-27T14:30:00Z'
+  },
+  {
+    id: 'ext-user-4',
+    supplier_id: 'supplier-4',
+    campaign_id: 'campaign-4',
+    email: 'compliance@techflow.example.com',
+    full_name: 'Lisa Rodriguez',
+    title: 'Chief Compliance Officer',
+    phone: '+1-415-555-0234',
+    role: 'primary' as const,
+    invite_token: 'secure-token-4',
+    invite_sent_at: '2024-03-26T10:00:00Z',
+    is_active: true,
+    created_at: '2024-03-25T15:20:00Z',
+    updated_at: '2024-03-26T10:00:00Z'
+  },
+  {
+    id: 'ext-user-5',
+    supplier_id: 'supplier-1',
+    campaign_id: 'campaign-5',
+    email: 'security.lead@cloudsecure.example.com',
+    full_name: 'David Park',
+    title: 'Chief Information Security Officer',
+    phone: '+1-206-555-0299',
+    role: 'primary' as const,
+    invite_token: 'secure-token-5',
+    invite_sent_at: '2024-01-02T09:00:00Z',
+    invite_accepted_at: '2024-01-02T13:15:00Z',
+    last_login_at: '2024-02-28T16:45:00Z',
+    is_active: true,
+    created_at: '2024-01-01T08:00:00Z',
+    updated_at: '2024-02-28T16:45:00Z'
+  }
+];
+
+export const supplierRequirementResponses = [
+  {
+    id: 'response-1',
+    campaign_id: 'campaign-1',
+    requirement_id: 'iso-27001-A.8.1.1',
+    supplier_user_id: 'ext-user-1',
+    fulfillment_level: 'fulfilled' as const,
+    response_text: 'We have implemented a comprehensive data classification scheme with four levels: Public, Internal, Confidential, and Restricted. All data is labeled according to its sensitivity and handled with appropriate security controls.',
+    evidence_description: 'Data Classification Policy v2.1, data labeling procedures, and employee training records attached.',
+    confidence_level: 5,
+    is_draft: false,
+    created_at: '2024-01-20T10:00:00Z',
+    updated_at: '2024-01-25T14:30:00Z',
+    submitted_at: '2024-01-25T14:30:00Z'
+  },
+  {
+    id: 'response-2',
+    campaign_id: 'campaign-1',
+    requirement_id: 'iso-27001-A.8.1.2',
+    supplier_user_id: 'ext-user-2',
+    fulfillment_level: 'partially_fulfilled' as const,
+    response_text: 'We have access controls in place for most systems, but are currently upgrading legacy applications to support modern authentication protocols. Expected completion by Q2 2024.',
+    evidence_description: 'Access control matrix, upgrade roadmap, and current system documentation provided.',
+    confidence_level: 3,
+    is_draft: false,
+    created_at: '2024-01-22T09:15:00Z',
+    updated_at: '2024-02-01T11:45:00Z',
+    submitted_at: '2024-02-01T11:45:00Z'
+  },
+  {
+    id: 'response-3',
+    campaign_id: 'campaign-2',
+    requirement_id: 'iso-27001-A.12.1.1',
+    supplier_user_id: 'ext-user-3',
+    fulfillment_level: 'in_progress' as const,
+    response_text: 'Currently implementing enhanced logging and monitoring solutions. SIEM deployment is 70% complete with expected full implementation by end of March 2024.',
+    evidence_description: 'Project timeline, SIEM configuration documents, and current monitoring capabilities overview.',
+    confidence_level: 4,
+    is_draft: true,
+    created_at: '2024-02-10T13:20:00Z',
+    updated_at: '2024-03-15T09:30:00Z'
+  },
+  {
+    id: 'response-4',
+    campaign_id: 'campaign-1',
+    requirement_id: 'iso-27001-A.9.1.1',
+    supplier_user_id: 'ext-user-1',
+    fulfillment_level: 'not_fulfilled' as const,
+    response_text: 'Currently do not have formal access control policies in place for this specific requirement. This is a known gap that we are working to address in Q2 2024.',
+    evidence_description: 'Gap analysis document and remediation timeline provided.',
+    confidence_level: 2,
+    is_draft: false,
+    created_at: '2024-01-28T11:00:00Z',
+    updated_at: '2024-02-05T15:20:00Z',
+    submitted_at: '2024-02-05T15:20:00Z'
+  },
+  {
+    id: 'response-5',
+    campaign_id: 'campaign-5',
+    requirement_id: 'iso-27001-A.16.1.1',
+    supplier_user_id: 'ext-user-5',
+    fulfillment_level: 'not_fulfilled' as const,
+    response_text: 'Our incident response procedures are currently under major revision following the security incident in December 2023. New procedures are 90% complete.',
+    evidence_description: 'Draft incident response plan v3.0, incident post-mortem report, and implementation timeline.',
+    confidence_level: 1,
+    is_draft: false,
+    created_at: '2024-01-15T14:30:00Z',
+    updated_at: '2024-02-20T16:45:00Z',
+    submitted_at: '2024-02-20T16:45:00Z'
+  },
+  {
+    id: 'response-6',
+    campaign_id: 'campaign-2',
+    requirement_id: 'gdpr-art-32',
+    supplier_user_id: 'ext-user-3',
+    fulfillment_level: 'fulfilled' as const,
+    response_text: 'We have implemented comprehensive technical and organizational measures including encryption at rest and in transit, regular security testing, and staff training programs.',
+    evidence_description: 'Security architecture documentation, encryption certificates, penetration test reports, and training completion records.',
+    confidence_level: 5,
+    is_draft: false,
+    created_at: '2024-02-15T10:30:00Z',
+    updated_at: '2024-02-22T14:15:00Z',
+    submitted_at: '2024-02-22T14:15:00Z'
+  }
+];
+
 export const suppliers: Supplier[] = [
   {
     id: 'supplier-1',
@@ -453,19 +714,25 @@ export const suppliers: Supplier[] = [
     associatedStandards: [
       {
         standardId: 'iso-27001',
-        requirementIds: ['iso-27001-A.8.1.1', 'iso-27001-A.8.1.2', 'iso-27001-A.13.1.1'],
-        sentDate: '2024-12-15T10:00:00Z',
+        requirementIds: ['iso-27001-A.8.1.1', 'iso-27001-A.8.1.2', 'iso-27001-A.13.1.1', 'iso-27001-A.9.1.1', 'iso-27001-A.9.1.2'],
+        sentDate: '2024-01-16T09:00:00Z',
         status: 'completed'
       },
       {
         standardId: 'soc-2',
-        requirementIds: ['soc-2-CC6.1', 'soc-2-CC6.2'],
-        sentDate: '2024-12-20T14:30:00Z',
-        status: 'in-progress'
+        requirementIds: ['soc-2-CC6.1', 'soc-2-CC6.2', 'soc-2-CC6.3'],
+        sentDate: '2024-01-16T09:05:00Z',
+        status: 'completed'
+      },
+      {
+        standardId: 'nis2',
+        requirementIds: ['nis2-art-21-1', 'nis2-art-21-2'],
+        sentDate: '2024-01-16T09:10:00Z',
+        status: 'completed'
       }
     ],
     createdAt: '2024-11-01T09:00:00Z',
-    updatedAt: '2024-12-20T16:45:00Z'
+    updatedAt: '2024-03-25T16:30:00Z'
   },
   {
     id: 'supplier-2',
@@ -490,13 +757,19 @@ export const suppliers: Supplier[] = [
     associatedStandards: [
       {
         standardId: 'iso-27001',
-        requirementIds: ['iso-27001-A.12.1.1', 'iso-27001-A.12.6.1', 'iso-27001-A.18.1.4'],
-        sentDate: '2024-12-10T08:15:00Z',
-        status: 'completed'
+        requirementIds: ['iso-27001-A.12.1.1', 'iso-27001-A.12.6.1', 'iso-27001-A.18.1.4', 'iso-27001-A.8.2.1'],
+        sentDate: '2024-02-02T08:00:00Z',
+        status: 'in-progress'
+      },
+      {
+        standardId: 'gdpr',
+        requirementIds: ['gdpr-art-32', 'gdpr-art-25'],
+        sentDate: '2024-02-02T08:05:00Z',
+        status: 'in-progress'
       }
     ],
     createdAt: '2024-10-15T14:20:00Z',
-    updatedAt: '2024-12-18T11:00:00Z'
+    updatedAt: '2024-03-28T10:15:00Z'
   },
   {
     id: 'supplier-3',
@@ -520,13 +793,43 @@ export const suppliers: Supplier[] = [
     },
     associatedStandards: [
       {
+        standardId: 'nis2',
+        requirementIds: ['nis2-art-21-1', 'nis2-art-21-2', 'nis2-art-23-1'],
+        sentDate: '2024-03-16T10:30:00Z',
+        status: 'sent'
+      },
+      {
         standardId: 'iso-27001',
-        requirementIds: ['iso-27001-A.13.1.1', 'iso-27001-A.13.2.1'],
+        requirementIds: ['iso-27001-A.13.1.1', 'iso-27001-A.13.2.1', 'iso-27001-A.13.1.2'],
         status: 'draft'
       }
     ],
     createdAt: '2024-12-01T16:30:00Z',
-    updatedAt: '2024-12-22T09:15:00Z'
+    updatedAt: '2024-03-28T12:00:00Z'
+  },
+  {
+    id: 'supplier-4',
+    name: 'TechFlow Integration',
+    organizationNumber: 'ORG-223456789',
+    address: '2500 Technology Blvd, San Francisco, CA 94105',
+    website: 'https://techflow.example.com',
+    category: 'Software Development',
+    status: 'active',
+    contact: {
+      name: 'David Park',
+      email: 'david.park@techflow.example.com',
+      phone: '+1-415-555-0142',
+      title: 'VP of Engineering'
+    },
+    internalResponsible: {
+      id: 'internal-user-1',
+      name: 'Sarah Mitchell',
+      email: 'sarah.mitchell@democorp.com',
+      department: 'Information Security'
+    },
+    associatedStandards: [],
+    createdAt: '2024-03-01T08:00:00Z',
+    updatedAt: '2024-03-01T08:00:00Z'
   }
 ];
 
@@ -1272,6 +1575,9 @@ export const dashboardStats = {
   assessmentsInProgress: 0,
   recentActivity: []
 };
+
+// Enhanced Supplier Assessment Mock Data - Additional exports for enhanced functionality
+// Note: Basic supplier assessment data is already defined above
 
 // All other mock data arrays are now loaded from database
 // Demo account uses the same data as regular accounts for consistency

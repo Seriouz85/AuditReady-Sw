@@ -34,6 +34,9 @@ const Roadmap = lazy(() => import("./pages/Roadmap"));
 const ComplianceSimplification = lazy(() => import("./pages/ComplianceSimplification"));
 const PublicOnboarding = lazy(() => import("./pages/PublicOnboarding"));
 
+// Lazy load supplier portal (external access)
+const SupplierPortal = lazy(() => import("./pages/SupplierPortal"));
+
 // Lazy load LMS modules
 const LMS = lazy(() => import("./pages/LMS"));
 const TrenningLMS = lazy(() => import("./pages/LMS/index"));
@@ -217,6 +220,13 @@ const App = () => {
                     </Suspense>
                   } />
                   <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
+                  
+                  {/* Supplier Portal - External access (no authentication required) */}
+                  <Route path="/supplier-portal" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading supplier portal..." />}>
+                      <SupplierPortal />
+                    </Suspense>
+                  } />
                   
                   {/* Protected pages requiring authentication */}
                   {/* Enhanced onboarding flow for authenticated users */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,6 +53,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SupplierReviewReport } from "@/components/suppliers/SupplierReviewReport";
+import ImprovedSupplierReview from "@/components/suppliers/ImprovedSupplierReview";
 import { cn } from "@/lib/utils";
 
 // Define the EmailData interface
@@ -74,6 +75,10 @@ const Suppliers = () => {
   const [isSendRequirementsOpen, setIsSendRequirementsOpen] = useState(false);
   const [isReportPreviewVisible, setIsReportPreviewVisible] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isEnhancedReviewOpen, setIsEnhancedReviewOpen] = useState(false);
+  
+  // Ref for the modal container to handle click-outside
+  const modalRef = useRef<HTMLDivElement>(null);
   
   // New supplier form state
   const [newSupplier, setNewSupplier] = useState({
@@ -124,6 +129,23 @@ const Suppliers = () => {
       ...prev,
       internalResponsibleId: value
     }));
+  };
+
+  const handleViewSupplier = (supplier: Supplier) => {
+    setSelectedSupplier(supplier);
+    setIsEnhancedReviewOpen(true);
+  };
+
+  const handleCloseEnhancedReview = () => {
+    setIsEnhancedReviewOpen(false);
+    setSelectedSupplier(null);
+  };
+
+  const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Close modal if clicking on the overlay (not the modal content)
+    if (e.target === e.currentTarget) {
+      handleCloseEnhancedReview();
+    }
   };
 
   const handleAddSupplier = () => {
@@ -191,9 +213,6 @@ const Suppliers = () => {
     toast.success("Supplier added successfully");
   };
 
-  const handleViewSupplier = (supplier: Supplier) => {
-    setSelectedSupplier(supplier);
-  };
 
   const handleBackToSuppliers = () => {
     setSelectedSupplier(null);
@@ -490,6 +509,11 @@ const Suppliers = () => {
   };
 
   const getStandardName = (standardId: string): string => {
+    // Handle enhanced campaign standards
+    if (standardId.startsWith('enhanced-campaign-')) {
+      return '🚀 Enhanced Assessment Campaign';
+    }
+    
     const standard = standards.find(s => s.id === standardId);
     return standard ? standard.name : standardId;
   };
@@ -593,8 +617,22 @@ const Suppliers = () => {
           
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleOpenStandardsDialog}>
+              <CheckSquare className="mr-2 h-4 w-4" />
+              Quick Setup
+            </Button>
+            <Button 
+              onClick={() => setIsEnhancedReviewOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+            >
               <Shield className="mr-2 h-4 w-4" />
-              Manage Requirements
+              Assessment
+            </Button>
+            <Button variant="outline" onClick={() => {
+              toast.info('Feature Preview: Full supplier portal with external access coming next!');
+              window.open('/supplier-portal?email=demo@example.com&token=demo-token', '_blank');
+            }}>
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Supplier Portal
             </Button>
           </div>
         </div>
@@ -673,101 +711,27 @@ const Suppliers = () => {
           </Card>
         </div>
         
+        {/* Assessment Action Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Standards & Requirements</CardTitle>
-            <CardDescription>
-              Manage compliance requirements for this supplier
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {selectedSupplier.associatedStandards.length === 0 ? (
-              <div className="text-center py-12 border rounded-lg">
-                <Shield className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                <h3 className="text-lg font-medium">No standards assigned</h3>
-                <p className="text-muted-foreground mt-1 mb-4">
-                  Assign standards and requirements to this supplier
-                </p>
-                <Button onClick={handleOpenStandardsDialog}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Standards
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="border rounded-md overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Standard</TableHead>
-                        <TableHead>Requirements</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Last Sent</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {selectedSupplier.associatedStandards.map(standard => (
-                        <TableRow key={standard.standardId}>
-                          <TableCell className="font-medium">
-                            {getStandardName(standard.standardId)}
-                          </TableCell>
-                          <TableCell>{standard.requirementIds.length} requirements</TableCell>
-                          <TableCell>{getRequirementStatus(standard.status)}</TableCell>
-                          <TableCell>
-                            {standard.sentDate ? 
-                              new Date(standard.sentDate).toLocaleDateString() : 
-                              'Not sent yet'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleDirectPDFExport(standard.standardId)}
-                                disabled={standard.requirementIds.length === 0}
-                                className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                              >
-                                <FileText className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">Export PDF</span>
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  handleSupplierReview(standard.standardId);
-                                }}
-                                disabled={standard.requirementIds.length === 0}
-                                className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
-                              >
-                                <FileDown className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">Export PDF</span>
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleOpenSendRequirementsDialog(standard.standardId)}
-                                disabled={standard.requirementIds.length === 0}
-                              >
-                                <Mail className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">Send</span>
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                
-                <div className="flex justify-end">
-                  <Button onClick={handleOpenStandardsDialog}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Supplier Review
-                  </Button>
+          <CardContent className="py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Shield className="h-8 w-8 text-blue-600" />
+                <div>
+                  <h3 className="text-lg font-semibold">Supplier Assessment</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Create and manage comprehensive security assessments
+                  </p>
                 </div>
               </div>
-            )}
+              <Button 
+                onClick={() => setIsEnhancedReviewOpen(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                Launch Assessment
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -1066,6 +1030,39 @@ const Suppliers = () => {
             selectedStandardIds={selectedStandardIds}
             onClose={() => setIsReviewOpen(false)}
             onSend={handleSendRequirementsEmail}
+          />
+        )}
+
+        {/* Enhanced Supplier Review */}
+        {isEnhancedReviewOpen && selectedSupplier && (
+          <ImprovedSupplierReview
+            supplier={selectedSupplier}
+            onClose={() => setIsEnhancedReviewOpen(false)}
+            onCampaignCreated={(campaign) => {
+              toast.success(`🎉 Assessment campaign "${campaign.name}" created successfully! Invitations sent to supplier contacts.`);
+              
+              // Show success feedback with next steps
+              setTimeout(() => {
+                toast.info('💡 Tip: Suppliers can now access their assessment via the secure portal link sent to their email.');
+              }, 2000);
+              
+              // Create a mock standard entry to show the campaign was created
+              const mockStandard = {
+                standardId: 'enhanced-campaign-' + campaign.id,
+                requirementIds: ['mock-req-1', 'mock-req-2', 'mock-req-3'],
+                status: 'sent' as const,
+                sentDate: new Date().toISOString()
+              };
+              
+              // Update the supplier to show the new assessment
+              const updatedSupplier = {
+                ...selectedSupplier,
+                associatedStandards: [...selectedSupplier.associatedStandards, mockStandard]
+              };
+              
+              setSuppliers(prev => prev.map(s => s.id === selectedSupplier.id ? updatedSupplier : s));
+              setSelectedSupplier(updatedSupplier);
+            }}
           />
         )}
       </div>
@@ -1395,6 +1392,26 @@ const Suppliers = () => {
               Add Supplier
             </Button>
           )}
+        </div>
+      )}
+
+      {/* Enhanced Supplier Review Modal */}
+      {isEnhancedReviewOpen && selectedSupplier && (
+        <div className="fixed inset-0 z-50">
+          <ImprovedSupplierReview
+            supplier={selectedSupplier}
+            onClose={() => setIsEnhancedReviewOpen(false)}
+            onCampaignCreated={(campaign) => {
+              toast.success(`Assessment campaign "${campaign.name}" created successfully!`);
+              
+              // Show success feedback with next steps
+              setTimeout(() => {
+                toast.info('💡 Tip: Suppliers can now access their assessment via the secure portal link sent to their email.');
+              }, 2000);
+              
+              setIsEnhancedReviewOpen(false);
+            }}
+          />
         </div>
       )}
     </div>
