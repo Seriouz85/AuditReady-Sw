@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cleanMarkdownFormatting, cleanComplianceSubRequirement } from '@/utils/textFormatting';
 import { SectorSpecificEnhancer } from '@/services/compliance/SectorSpecificEnhancer';
 import { 
   ArrowLeft, 
-  Download, 
+ 
   Shield, 
   Zap, 
   Target,
@@ -19,7 +19,6 @@ import {
   Settings,
   Eye,
   Filter,
-  Loader2,
   Building2,
   Factory
 } from 'lucide-react';
@@ -28,11 +27,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
-import { proGradeEngine } from '@/services/compliance/ProGradeComplianceEngine';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
-import { useFrameworkCounts, useCISControlsCount } from '@/hooks/useFrameworkCounts';
+import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
 import { useQueryClient } from '@tanstack/react-query';
 import { FrameworkFilterService } from '@/services/compliance/FrameworkFilterService';
 // Removed xlsx import - will use CSV export instead for better compatibility
@@ -48,7 +47,6 @@ export default function ComplianceSimplification() {
   const [filterFramework, setFilterFramework] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [unifiedCategoryFilter, setUnifiedCategoryFilter] = useState('all');
-  const [viewMode, setViewMode] = useState<'heatmap' | '3d'>('heatmap');
   
   // Industry sector selection state
   const [selectedIndustrySector, setSelectedIndustrySector] = useState<string | null>(null);
@@ -71,6 +69,10 @@ export default function ComplianceSimplification() {
   // AI generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [showGeneration, setShowGeneration] = useState(false);
+  
+  // Unified Guidance modal state
+  const [showUnifiedGuidance, setShowUnifiedGuidance] = useState(false);
+  const [selectedGuidanceCategory, setSelectedGuidanceCategory] = useState<string>('');
   const [frameworksSelected, setFrameworksSelected] = useState({
     iso27001: true,
     iso27002: true,
@@ -79,20 +81,461 @@ export default function ComplianceSimplification() {
     nis2: false
   });
 
+  // Function to get enhanced guidance content for categories with framework references
+  const getGuidanceContent = (category: string) => {
+    // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
+    const cleanCategory = category.replace(/^\d+\.\s*/, '');
+    
+    // Get selected frameworks to customize content
+    const selectedFrameworksList = Object.entries(frameworksSelected)
+      .filter(([_, selected]) => selected)
+      .map(([framework, _]) => framework);
+    
+    // Create framework-specific references
+    const getFrameworkReferences = (categoryName: string) => {
+      const references: Record<string, string> = {
+        'Governance & Leadership': getGovernanceReferences(),
+        'Risk Management': getRiskReferences(),
+        'Access Control & Identity Management': getAccessControlReferences(),
+        'Asset Management': getAssetReferences(),
+        'Physical & Environmental Security': getPhysicalReferences(),
+        'Communications & Operations Management': getOperationsReferences(),
+        'System Acquisition, Development & Maintenance': getDevelopmentReferences(),
+        'Information Security Incident Management': getIncidentReferences(),
+        'Business Continuity Management': getContinuityReferences(),
+        'Compliance': getComplianceReferences()
+      };
+      
+      return references[categoryName] || '';
+    };
+
+    // Framework reference functions
+    const getGovernanceReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** Clause 5.1 (Leadership), 7.2 (Competence), 9.3 (Management Review), A.7.1 (Personnel Security)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.6.1 (Security Roles), A.7.1.1 (Background Screening), A.7.1.2 (Terms of Employment), A.7.2.1 (Training), A.7.3.1 (Disciplinary Process)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 14 (Security Awareness), Control 17 (Security Skills Assessment)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 32 (Security Measures), Article 39 (DPO Tasks and Duties)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Cybersecurity Risk Management), Article 21 (Corporate Accountability)\n';
+      }
+      
+      return references + '\n';
+    };
+
+    const getRiskReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** Clause 6.1.2 (Risk Assessment), 6.1.3 (Risk Treatment), 8.2 (Risk Assessment), 8.3 (Risk Treatment)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.5.1 (Information Security Policies), A.12.6 (Technical Vulnerability Management)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 4 (Secure Configuration), Control 7 (Continuous Vulnerability Management)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 35 (Data Protection Impact Assessment), Article 32 (Security of Processing)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Cybersecurity Risk Management), Article 23 (Incident Reporting)\n';
+      }
+      
+      return references + '\n';
+    };
+
+    const getAccessControlReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.9 (Access Control), A.9.1 (Business Requirements), A.9.2 (User Access Management)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.9.1.1 (Access Control Policy), A.9.2.1 (User Registration), A.9.2.6 (Privileged Access Rights)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 5 (Account Management), Control 6 (Access Control Management), Control 16 (Application Security)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 32 (Security of Processing), Article 25 (Data Protection by Design)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Access Control), Article 21 (Identity Management)\n';
+      }
+      
+      return references + '\n';
+    };
+
+    // Placeholder functions for other categories
+    const getAssetReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Asset management requirements vary by selected standards.\n\n' : '';
+    const getPhysicalReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Physical security requirements vary by selected standards.\n\n' : '';
+    const getOperationsReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Operations management requirements vary by selected standards.\n\n' : '';
+    const getDevelopmentReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Development lifecycle requirements vary by selected standards.\n\n' : '';
+    const getIncidentReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Incident management requirements vary by selected standards.\n\n' : '';
+    const getContinuityReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Business continuity requirements vary by selected standards.\n\n' : '';
+    const getComplianceReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Compliance requirements vary by selected standards.\n\n' : '';
+
+    const guidanceMap: Record<string, string> = {
+      'Governance & Leadership': `${getFrameworkReferences('Governance & Leadership')}
+
+**Strategic Business Foundation**
+
+Governance & Leadership establishes the executive framework and organizational structure necessary for systematic information security management. This forms the cornerstone of regulatory compliance and business resilience.
+
+**Leadership Requirements**
+
+Executive leadership must demonstrate measurable commitment through:
+
+**Board-Level Information Security Oversight**
+Quarterly reporting requirements with executive accountability for security performance and strategic direction
+
+**Documented Security Policies**
+Senior management approval and annual review cycles ensuring policies remain current and effective
+
+**Resource Allocation**
+Demonstrable security integration into business strategy through appropriate budget allocation and staffing
+
+**Clear Accountability Structures**
+Defined roles and responsibilities across all organizational levels with appropriate authority and decision-making power
+
+**Strategic Security Planning**
+Alignment with business objectives and regulatory requirements through integrated planning processes
+
+**Human Resources (HR) Security Framework**
+
+Personnel security controls ensure trustworthy workforce management:
+
+**Background Screening**
+Comprehensive verification procedures proportional to access levels, including criminal background checks, employment verification, and reference validation for positions handling sensitive information
+
+**Disciplinary Action Procedures**
+${selectedFrameworksList.includes('iso27002') ? 
+'Progressive disciplinary measures including verbal warnings, written warnings, suspension, and termination for security violations. Immediate termination procedures for serious security breaches with security clearance revocation and post-employment obligations enforcement.' : 
+'Established procedures for addressing security policy violations through appropriate disciplinary measures.'
+}
+
+**Security Competence Management**
+Role-based security training programs with documented completion tracking, specialized training for high-risk positions, and regular competence assessments to ensure personnel can fulfill security responsibilities effectively
+
+**Monitoring & Compliance Operations**
+
+Systematic oversight ensures ongoing effectiveness and regulatory adherence:
+
+**Management Reviews**
+Formal quarterly reviews of Information Security Management System (ISMS) performance, including security metrics analysis, incident trend evaluation, and corrective action tracking
+
+**Internal Audit Programs**
+Annual security audits conducted by qualified personnel, with documented findings, corrective action plans, and management response procedures
+
+**Continuous Improvement**
+Structured processes for identifying security improvements, implementing corrective actions, and measuring effectiveness through key performance indicators
+
+**Implementation Phases**
+
+**Foundation Phase**
+Define security governance charter, establish security committee structure, and create initial policy framework
+
+**Operationalization Phase**
+Implement management review processes, deploy training programs, and establish audit procedures
+
+**Maturation Phase**
+Develop advanced metrics, enhance continuous improvement processes, and integrate security governance with broader enterprise governance
+
+**Critical Success Factors**
+
+✅ Executive leadership actively champions security initiatives with visible commitment
+✅ Security roles and responsibilities are clearly defined and communicated across all organizational levels
+✅ Regular management reviews drive continuous improvement and strategic alignment
+✅ HR security processes ensure personnel trustworthiness and competence
+✅ Audit and monitoring activities provide objective assessment of security effectiveness
+      `,
+      
+      'Risk Management': `${getFrameworkReferences('Risk Management')}
+
+**Strategic Risk Assessment Framework**
+
+Risk management provides the systematic foundation for identifying, analyzing, and treating information security risks across the enterprise. This process ensures business continuity while meeting regulatory compliance requirements.
+
+**Risk Identification and Assessment**
+
+Comprehensive risk evaluation encompasses:
+
+**Asset-Based Risk Analysis**
+Systematic identification of information assets, their vulnerabilities, and potential threats, including business process dependencies and technology infrastructure risks
+
+**Business Impact Analysis**
+Quantitative and qualitative assessment of potential consequences, including financial impact, operational disruption, regulatory penalties, and reputational damage
+
+**Threat Landscape Evaluation**
+Regular assessment of emerging threats, attack vectors, and industry-specific risks relevant to your business sector and geographic presence
+
+**Risk Register Maintenance**
+Dynamic documentation of identified risks with likelihood assessments, impact evaluations, and risk ownership assignments
+
+**Risk Treatment Strategies**
+
+Systematic approach to risk mitigation:
+
+**Risk Acceptance**
+Formal acceptance of risks within organizational tolerance levels, with documented justification and regular review cycles
+
+**Risk Mitigation**
+Implementation of security controls to reduce risk likelihood or impact to acceptable levels, with effectiveness monitoring and control testing
+
+**Risk Transfer**
+Strategic use of insurance, contractual arrangements, and third-party services to transfer specific risk exposures
+
+**Risk Avoidance**
+Elimination of activities or systems that present unacceptable risk levels when mitigation options are insufficient
+
+**Continuous Risk Monitoring**
+
+Ongoing risk oversight ensures current and effective risk management:
+
+**Key Risk Indicators (KRIs)**
+Measurable metrics that provide early warning of increasing risk exposure, with defined thresholds and escalation procedures
+
+**Regular Risk Reviews**
+Monthly operational risk assessments and quarterly strategic risk evaluations, with trend analysis and emerging risk identification
+
+**Change Impact Assessment**
+Evaluation of risk implications for all significant business, technology, and operational changes
+
+**Third-Party Risk Management**
+Ongoing assessment and monitoring of vendor and supplier risks, including due diligence, contract management, and performance monitoring
+
+**Implementation Methodology**
+
+Establish effective risk management through structured phases:
+1. **Foundation**: Develop risk management policy, establish risk appetite and tolerance levels, and create risk governance structure
+2. **Assessment**: Conduct comprehensive initial risk assessment, populate risk register, and prioritize treatment activities
+3. **Treatment**: Implement risk mitigation controls, establish monitoring procedures, and create risk reporting mechanisms
+4. **Optimization**: Mature risk management processes, enhance predictive capabilities, and integrate with strategic planning
+
+**Critical Success Indicators**
+
+✅ Comprehensive risk register maintained with current and accurate risk assessments
+✅ Risk treatment plans implemented with measurable effectiveness metrics
+✅ Regular risk monitoring provides actionable insights for decision-making
+✅ Risk management processes support compliance with applicable regulatory requirements
+✅ Risk-informed decision making demonstrated across all organizational levels
+      `,
+      
+      'Access Control & Identity Management': `${getFrameworkReferences('Access Control & Identity Management')}
+
+**Comprehensive Identity and Access Framework**
+
+Access control and identity management establish systematic controls for user authentication, authorization, and access lifecycle management across all information systems and resources.
+
+**Identity Lifecycle Management**
+
+Complete identity governance encompasses:
+
+**User Provisioning**
+Standardized onboarding processes with role-based access assignment, automated account creation workflows, and integration with HR systems for seamless identity management
+
+**Access Certification**  
+Regular access reviews and recertification processes, with manager attestation for direct reports and automated compliance reporting for audit purposes
+
+**Deprovisioning**
+Immediate account disabling upon termination or role changes, with systematic access removal procedures and asset recovery protocols
+
+**Identity Federation**
+Single sign-on (SSO) implementation supporting SAML, OAuth, and OpenID Connect protocols for streamlined user experience and centralized identity management
+
+**Authentication and Authorization Controls**
+
+Multi-layered security controls ensure appropriate access:
+
+**Multi-Factor Authentication (MFA)**
+Mandatory MFA for all privileged accounts and sensitive system access, supporting multiple authentication factors including hardware tokens, mobile applications, and biometric verification
+
+**Privileged Access Management**
+Dedicated PAM solutions with password vaulting, session recording, just-in-time access provisioning, and privileged activity monitoring with comprehensive audit trails
+
+**Role-Based Access Control (RBAC)**
+Systematic role design based on job functions and least privilege principles, with standardized role templates and automated role assignment workflows
+
+**Attribute-Based Access Control**
+Dynamic authorization decisions based on user attributes, resource sensitivity, environmental context, and risk-based authentication factors
+
+**Access Governance and Monitoring**
+
+Continuous oversight ensures access control effectiveness:
+
+**Access Analytics**
+Regular analysis of user access patterns, identification of excessive privileges, detection of dormant accounts, and monitoring of access policy violations
+
+**Segregation of Duties**
+Implementation of preventive and detective controls to prevent conflicting access combinations, with automated violation detection and remediation workflows
+
+**Network Access Control**  
+802.1X authentication for wired and wireless networks, device compliance verification, and dynamic VLAN assignment based on user identity and device trust status
+
+**Application Security**
+Fine-grained authorization controls within applications, API access management, and integration with enterprise identity providers
+
+**Regulatory Compliance Support**
+
+Access controls support multiple regulatory requirements:
+
+**GDPR Data Subject Rights**
+Identity verification procedures for data subject requests, access logging for audit purposes, and data subject consent management
+
+**SOX Compliance**
+Segregation of duties controls for financial systems, access certification processes, and IT general controls documentation
+
+**ISO 27001**
+Comprehensive access control framework addressing user access management, privileged access, and remote access security
+
+**Implementation Strategy**
+
+Systematic deployment across enterprise:
+
+**Phase 1: Assessment**
+Current state access review, gap analysis against security requirements, and risk-based prioritization of remediation activities
+
+**Phase 2: Foundation**  
+Core identity infrastructure deployment, basic RBAC implementation, and essential security controls activation
+
+**Phase 3: Enhancement**
+Advanced access controls, privileged access management, and automated governance processes
+
+**Phase 4: Optimization**
+Analytics-driven access optimization, zero-trust architecture elements, and advanced threat detection integration
+
+**Operational Excellence Indicators**
+
+✅ Comprehensive identity lifecycle management with automated provisioning and deprovisioning
+✅ Multi-factor authentication deployed across all privileged and remote access scenarios
+✅ Regular access certification processes with documented manager approval and audit trails
+✅ Privileged access management controls with session monitoring and just-in-time access
+✅ Access analytics providing insights into access patterns and policy compliance
+      `,
+      
+      'Incident Response & Recovery': `
+**Comprehensive Incident Management Framework**
+
+Incident response and recovery capabilities provide systematic procedures for detecting, responding to, and recovering from security incidents while meeting regulatory notification requirements and maintaining business continuity.
+
+**Critical Regulatory Notification Requirements**
+
+Time-sensitive compliance obligations must be integrated into incident response procedures:
+
+**GDPR Personal Data Breach Notification**
+Supervisory authority notification within 72 hours of awareness (Article 33), including breach nature, affected data categories and subjects, likely consequences, and remediation measures taken
+
+**NIS2 Early Warning System**
+Essential and important entities must provide early warning notifications within 24 hours to competent national authorities for significant incidents affecting service availability
+
+**NIS2 Detailed Incident Reports**
+Comprehensive incident analysis and final report submission within 72 hours, including technical root cause analysis, impact assessment, and remediation timeline
+
+**Data Subject Notification**
+Individual notification requirements when breaches likely result in high risk to personal rights and freedoms, using clear language explaining consequences and mitigation actions
+
+**Incident Detection and Classification**
+
+Systematic incident identification and prioritization:
+
+**24/7 Security Monitoring**
+Continuous threat detection using SIEM platforms, threat intelligence integration, and automated alerting systems with defined escalation thresholds
+
+**Incident Classification Framework**
+Severity-based categorization (Critical, High, Medium, Low) considering service impact, data exposure, regulatory implications, and business disruption potential
+
+**Automated Response Triggers**
+Integration with security tools for immediate containment actions, threat intelligence correlation, and stakeholder notification based on incident type and severity
+
+**Evidence Preservation**
+Forensic evidence collection procedures maintaining chain of custody for potential legal proceedings and regulatory investigations
+
+**Response Team Structure and Procedures**
+
+Organized response capabilities ensure effective incident management:
+- **Incident Response Team**: Cross-functional team including Incident Commander, Technical Lead, Communications Lead, Legal Counsel, and Business Continuity Manager with 24/7 availability
+- **Escalation Procedures**: Clear decision-making authority and escalation paths, including criteria for executive notification and external assistance engagement
+- **Communication Management**: Internal stakeholder updates, customer notifications, media response coordination, and regulatory communications using pre-approved templates and messaging
+- **Containment Strategy**: Immediate isolation procedures, short-term remediation measures, and long-term security improvements with documented effectiveness assessment
+
+**Recovery and Business Continuity**
+
+Systematic restoration of normal operations:
+- **Recovery Planning**: Prioritized system restoration procedures, backup validation and restoration processes, and alternative operational procedures during recovery phases
+- **Service Restoration**: Phased approach to service recovery with security validation, performance testing, and enhanced monitoring during initial restoration periods
+- **Post-Incident Activities**: Comprehensive after-action reviews, lessons learned documentation, procedure updates, and improvement recommendations implementation
+- **Stakeholder Communication**: Regular updates to customers, partners, and regulators throughout recovery process with transparent status reporting
+
+**Continuous Improvement and Preparedness**
+
+Ongoing enhancement of incident response capabilities:
+- **Regular Testing**: Quarterly tabletop exercises, annual full-scale simulations, and scenario-based training programs with documented improvement actions
+- **Metrics and Reporting**: Incident response performance metrics, regulatory compliance tracking, and effectiveness measurements with trend analysis
+- **Threat Intelligence Integration**: Incorporation of current threat landscape information, attack pattern analysis, and industry-specific threat indicators
+- **Supply Chain Coordination**: Incident response procedures for third-party service providers, vendor notification requirements, and coordinated response activities
+
+**Implementation Requirements**
+
+Essential elements for effective incident response:
+1. **Foundation**: Incident response policy, team structure establishment, and basic procedure development with regulatory requirement integration
+2. **Operationalization**: Response team training, communication procedure testing, and technology infrastructure deployment
+3. **Optimization**: Advanced threat detection capabilities, automated response procedures, and comprehensive recovery testing
+
+**Performance Indicators**
+
+✅ Mean time to detection (MTTD) and mean time to response (MTTR) meet organizational targets
+✅ Regulatory notification requirements consistently met within required timeframes
+✅ Incident response team demonstrates competence through regular testing and actual incident performance
+✅ Post-incident reviews result in measurable improvements to response capabilities
+✅ Business continuity objectives achieved during incident response and recovery activities
+      `
+    };
+    
+    return guidanceMap[cleanCategory] || `
+**Guidance for ${cleanCategory}**
+
+This category covers important compliance requirements that help ensure your organization meets industry standards and regulations.
+
+**Key Focus Areas:**
+- Understanding the specific requirements for this category
+- Implementing practical controls and procedures
+- Maintaining documentation and evidence
+- Regular monitoring and improvement
+
+**Next Steps:**
+1. Review the detailed requirements below
+2. Assess your current state against these requirements
+3. Create an implementation plan for any gaps
+4. Document your procedures and controls
+
+For more specific guidance on this category, please consult with your compliance team or external advisors.
+    `;
+  };
+
   // Fetch industry sectors
   const { data: industrySectors, isLoading: isLoadingSectors } = useIndustrySectors();
   
   // Fetch compliance mapping data from Supabase
   // Transform selectedFrameworks to match the expected format for the hook
   const frameworksForHook = {
-    iso27001: selectedFrameworks.iso27001,
-    iso27002: selectedFrameworks.iso27002,
-    cisControls: selectedFrameworks.cisControls, // Pass the actual IG level ('ig1', 'ig2', 'ig3') or null
-    gdpr: selectedFrameworks.gdpr,
-    nis2: selectedFrameworks.nis2
+    iso27001: Boolean(selectedFrameworks['iso27001']),
+    iso27002: Boolean(selectedFrameworks['iso27002']),
+    cisControls: Boolean(selectedFrameworks['cisControls']), // Pass boolean for the query
+    gdpr: Boolean(selectedFrameworks['gdpr']),
+    nis2: Boolean(selectedFrameworks['nis2'])
   };
   
-  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook, selectedIndustrySector);
+  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook, selectedIndustrySector || undefined);
   
   // Use database data
   const complianceMappingData = fetchedComplianceMapping || [];
@@ -111,7 +554,7 @@ export default function ComplianceSimplification() {
   
   
   // Handle framework selection
-  const handleFrameworkToggle = (framework: string, value: any) => {
+  const handleFrameworkToggle = (framework: string, value: boolean | 'ig1' | 'ig2' | 'ig3' | null) => {
     setFrameworksSelected(prev => ({ ...prev, [framework]: value }));
   };
   
@@ -122,10 +565,16 @@ export default function ComplianceSimplification() {
     setShowGeneration(true);
     
     // Force update the frameworks to trigger data refetch
-    setSelectedFrameworks({ ...frameworksSelected });
+    setSelectedFrameworks({ 
+      iso27001: Boolean(frameworksSelected['iso27001']),
+      iso27002: Boolean(frameworksSelected['iso27002']),
+      cisControls: frameworksSelected['cisControls'] as 'ig1' | 'ig2' | 'ig3' | null,
+      gdpr: Boolean(frameworksSelected['gdpr']),
+      nis2: Boolean(frameworksSelected['nis2'])
+    });
     
     // Force invalidate React Query cache to ensure fresh data
-    queryClient.invalidateQueries(['compliance-mapping-data']);
+    queryClient.invalidateQueries({ queryKey: ['compliance-mapping-data'] });
     
     // Simulate AI processing time
     setTimeout(() => {
@@ -157,10 +606,10 @@ export default function ComplianceSimplification() {
         mapping.category,
         mapping.auditReadyUnified?.title || '',
         subReq,
-        mapping.frameworks?.iso27001?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
-        mapping.frameworks?.iso27002?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
-        mapping.frameworks?.cisControls?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
-        (mapping.frameworks?.nis2 || []).map(r => `${r.code}: ${r.title}`).join('; '),
+        mapping.frameworks?.['iso27001']?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
+        mapping.frameworks?.['iso27002']?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
+        mapping.frameworks?.['cisControls']?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
+        (mapping.frameworks?.['nis2'] || []).map(r => `${r.code}: ${r.title}`).join('; '),
         mapping.auditReadyUnified?.description || ''
       ])
     );
@@ -189,13 +638,13 @@ export default function ComplianceSimplification() {
     let filtered = complianceMappingData || [];
     
     // First, filter to show only GDPR group when GDPR is selected, or non-GDPR groups when other frameworks are selected
-    if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls && !selectedFrameworks.nis2) {
+    if (selectedFrameworks['gdpr'] && !selectedFrameworks['iso27001'] && !selectedFrameworks['iso27002'] && !selectedFrameworks['cisControls'] && !selectedFrameworks['nis2']) {
       // GDPR only - show only the unified GDPR group
       filtered = filtered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
+    } else if (!selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
       // Other frameworks without GDPR - show only non-GDPR groups
       filtered = filtered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
+    } else if (selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
       // Mixed selection - show all relevant groups
       filtered = complianceMappingData || [];
     } else {
@@ -207,7 +656,7 @@ export default function ComplianceSimplification() {
     filtered = filtered.map(mapping => {
       // For GDPR group, only show GDPR frameworks
       if (mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948') {
-        if (!selectedFrameworks.gdpr) return null;
+        if (!selectedFrameworks['gdpr']) return null;
         
         return {
           ...mapping,
@@ -216,7 +665,7 @@ export default function ComplianceSimplification() {
             iso27002: [],
             cisControls: [],
             nis2: [],
-            gdpr: mapping.frameworks?.gdpr || []
+            gdpr: mapping.frameworks?.['gdpr'] || []
           }
         };
       }
@@ -225,11 +674,11 @@ export default function ComplianceSimplification() {
       const newMapping = {
         ...mapping,
         frameworks: {
-          iso27001: selectedFrameworks.iso27001 && mapping.frameworks?.iso27001 ? mapping.frameworks.iso27001 : [],
-          iso27002: selectedFrameworks.iso27002 && mapping.frameworks?.iso27002 ? mapping.frameworks.iso27002 : [],
-          nis2: selectedFrameworks.nis2 ? (mapping.frameworks?.nis2 || []) : [],
+          iso27001: selectedFrameworks['iso27001'] && mapping.frameworks?.['iso27001'] ? mapping.frameworks['iso27001'] : [],
+          iso27002: selectedFrameworks['iso27002'] && mapping.frameworks?.['iso27002'] ? mapping.frameworks['iso27002'] : [],
+          nis2: selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2'] || []) : [],
           gdpr: [], // Never show GDPR in non-GDPR groups
-          cisControls: selectedFrameworks.cisControls && mapping.frameworks?.cisControls ? mapping.frameworks.cisControls : []
+          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? mapping.frameworks['cisControls'] : []
         }
       };
       
@@ -248,13 +697,13 @@ export default function ComplianceSimplification() {
       filtered = filtered.filter(mapping => {
         switch (filterFramework) {
           case 'iso27001':
-            return (mapping.frameworks?.iso27001?.length || 0) > 0;
+            return (mapping.frameworks?.['iso27001']?.length || 0) > 0;
           case 'iso27002':
-            return (mapping.frameworks?.iso27002?.length || 0) > 0;
+            return (mapping.frameworks?.['iso27002']?.length || 0) > 0;
           case 'cis':
-            return (mapping.frameworks?.cisControls?.length || 0) > 0;
+            return (mapping.frameworks?.['cisControls']?.length || 0) > 0;
           case 'gdpr':
-            return (mapping.frameworks.gdpr?.length || 0) > 0;
+            return (mapping.frameworks['gdpr']?.length || 0) > 0;
           default:
             return true;
         }
@@ -297,11 +746,11 @@ export default function ComplianceSimplification() {
     let baseFiltered = complianceMappingData || [];
     
     // Apply the SAME framework filtering logic as filteredMappings
-    if (selectedFrameworks.gdpr && !selectedFrameworks.iso27001 && !selectedFrameworks.iso27002 && !selectedFrameworks.cisControls && !selectedFrameworks.nis2) {
+    if (selectedFrameworks['gdpr'] && !selectedFrameworks['iso27001'] && !selectedFrameworks['iso27002'] && !selectedFrameworks['cisControls'] && !selectedFrameworks['nis2']) {
       baseFiltered = baseFiltered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (!selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
+    } else if (!selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
       baseFiltered = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (selectedFrameworks.gdpr && (selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.nis2)) {
+    } else if (selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
       baseFiltered = complianceMappingData || [];
     } else {
       baseFiltered = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
@@ -310,7 +759,7 @@ export default function ComplianceSimplification() {
     // Apply the SAME framework content filtering
     baseFiltered = baseFiltered.map(mapping => {
       if (mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948') {
-        if (!selectedFrameworks.gdpr) return null;
+        if (!selectedFrameworks['gdpr']) return null;
         return {
           ...mapping,
           frameworks: {
@@ -318,7 +767,7 @@ export default function ComplianceSimplification() {
             iso27002: [],
             cisControls: [],
             nis2: [],
-            gdpr: mapping.frameworks?.gdpr || []
+            gdpr: mapping.frameworks?.['gdpr'] || []
           }
         };
       }
@@ -326,12 +775,12 @@ export default function ComplianceSimplification() {
       const newMapping = {
         ...mapping,
         frameworks: {
-          iso27001: selectedFrameworks.iso27001 && mapping.frameworks?.iso27001 ? mapping.frameworks.iso27001 : [],
-          iso27002: selectedFrameworks.iso27002 && mapping.frameworks?.iso27002 ? mapping.frameworks.iso27002 : [],
-          nis2: selectedFrameworks.nis2 ? (mapping.frameworks?.nis2 || []) : [],
+          iso27001: selectedFrameworks['iso27001'] && mapping.frameworks?.['iso27001'] ? mapping.frameworks['iso27001'] : [],
+          iso27002: selectedFrameworks['iso27002'] && mapping.frameworks?.['iso27002'] ? mapping.frameworks['iso27002'] : [],
+          nis2: selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2'] || []) : [],
           gdpr: [],
-          cisControls: selectedFrameworks.cisControls && mapping.frameworks?.cisControls ? 
-            mapping.frameworks.cisControls.filter(control => {
+          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? 
+            mapping.frameworks['cisControls'].filter(control => {
               const ig3OnlyControls = [
                 '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
                 '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
@@ -339,15 +788,15 @@ export default function ComplianceSimplification() {
                 '17.9', '18.4', '18.5'
               ];
               
-              if (selectedFrameworks.cisControls === 'ig1') {
+              if (selectedFrameworks['cisControls'] === 'ig1') {
                 return !ig3OnlyControls.includes(control.code) && 
                        !control.code.startsWith('13.') && 
                        !control.code.startsWith('16.') && 
                        !control.code.startsWith('17.') && 
                        !control.code.startsWith('18.');
-              } else if (selectedFrameworks.cisControls === 'ig2') {
+              } else if (selectedFrameworks['cisControls'] === 'ig2') {
                 return !ig3OnlyControls.includes(control.code);
-              } else if (selectedFrameworks.cisControls === 'ig3') {
+              } else if (selectedFrameworks['cisControls'] === 'ig3') {
                 return true;
               }
               return false;
@@ -369,13 +818,13 @@ export default function ComplianceSimplification() {
       baseFiltered = baseFiltered.filter(mapping => {
         switch (filterFramework) {
           case 'iso27001':
-            return (mapping.frameworks?.iso27001?.length || 0) > 0;
+            return (mapping.frameworks?.['iso27001']?.length || 0) > 0;
           case 'iso27002':
-            return (mapping.frameworks?.iso27002?.length || 0) > 0;
+            return (mapping.frameworks?.['iso27002']?.length || 0) > 0;
           case 'cis':
-            return (mapping.frameworks?.cisControls?.length || 0) > 0;
+            return (mapping.frameworks?.['cisControls']?.length || 0) > 0;
           case 'gdpr':
-            return (mapping.frameworks.gdpr?.length || 0) > 0;
+            return (mapping.frameworks['gdpr']?.length || 0) > 0;
           default:
             return true;
         }
@@ -434,21 +883,21 @@ export default function ComplianceSimplification() {
     // Filter to ensure we have all groups (including GDPR)
     const processedData = allFrameworksData.filter(mapping => {
       const hasAnyFramework = 
-        (mapping.frameworks?.iso27001?.length || 0) > 0 ||
-        (mapping.frameworks?.iso27002?.length || 0) > 0 ||
-        (mapping.frameworks?.cisControls?.length || 0) > 0 ||
-        (mapping.frameworks?.gdpr?.length || 0) > 0 ||
-        (mapping.frameworks?.nis2?.length || 0) > 0;
+        (mapping.frameworks?.['iso27001']?.length || 0) > 0 ||
+        (mapping.frameworks?.['iso27002']?.length || 0) > 0 ||
+        (mapping.frameworks?.['cisControls']?.length || 0) > 0 ||
+        (mapping.frameworks?.['gdpr']?.length || 0) > 0 ||
+        (mapping.frameworks?.['nis2']?.length || 0) > 0;
       return hasAnyFramework;
     });
     
     // Calculate total requirements across ALL frameworks
     const totalRequirements = processedData.reduce((total, mapping) => {
-      const iso27001Count = mapping.frameworks?.iso27001?.length || 0;
-      const iso27002Count = mapping.frameworks?.iso27002?.length || 0;
-      const cisControlsCount = mapping.frameworks?.cisControls?.length || 0;
-      const gdprCount = mapping.frameworks?.gdpr?.length || 0;
-      const nis2Count = mapping.frameworks?.nis2?.length || 0;
+      const iso27001Count = mapping.frameworks?.['iso27001']?.length || 0;
+      const iso27002Count = mapping.frameworks?.['iso27002']?.length || 0;
+      const cisControlsCount = mapping.frameworks?.['cisControls']?.length || 0;
+      const gdprCount = mapping.frameworks?.['gdpr']?.length || 0;
+      const nis2Count = mapping.frameworks?.['nis2']?.length || 0;
       
       return total + iso27001Count + iso27002Count + cisControlsCount + gdprCount + nis2Count;
     }, 0);
@@ -468,34 +917,34 @@ export default function ComplianceSimplification() {
   }, [maxComplianceMapping]);
 
   // Calculate dynamic statistics based on selected frameworks
-  const dynamicOverviewStats = useMemo(() => {
-    // Calculate total maximum requirements across selected frameworks only
-    const maxRequirements = filteredMappings.reduce((total, mapping) => {
-      const iso27001Count = mapping.frameworks?.iso27001?.length || 0;
-      const iso27002Count = mapping.frameworks?.iso27002?.length || 0;
-      const cisControlsCount = mapping.frameworks?.cisControls?.length || 0;
-      const gdprCount = mapping.frameworks?.gdpr?.length || 0;
-      const nis2Count = mapping.frameworks?.nis2?.length || 0;
-      
-      return total + iso27001Count + iso27002Count + cisControlsCount + gdprCount + nis2Count;
-    }, 0);
-    
-    // Number of unified groups based on filtered mappings
-    const unifiedGroups = filteredMappings.length;
-    
-    // Calculate reduction metrics with safe fallbacks
-    const reduction = maxRequirements - unifiedGroups;
-    const reductionPercentage = maxRequirements > 0 ? ((reduction / maxRequirements) * 100).toFixed(1) : '0.0';
-    const efficiencyRatio = unifiedGroups > 0 ? Math.round(maxRequirements / unifiedGroups) : 0;
-    
-    return {
-      maxRequirements,
-      unifiedGroups,
-      reduction,
-      reductionPercentage,
-      efficiencyRatio
-    };
-  }, [filteredMappings]);
+  // const dynamicOverviewStats = useMemo(() => {
+  //   // Calculate total maximum requirements across selected frameworks only
+  //   const maxRequirements = filteredMappings.reduce((total, mapping) => {
+  //     const iso27001Count = mapping.frameworks?.['iso27001']?.length || 0;
+  //     const iso27002Count = mapping.frameworks?.['iso27002']?.length || 0;
+  //     const cisControlsCount = mapping.frameworks?.['cisControls']?.length || 0;
+  //     const gdprCount = mapping.frameworks?.['gdpr']?.length || 0;
+  //     const nis2Count = mapping.frameworks?.['nis2']?.length || 0;
+  //     
+  //     return total + iso27001Count + iso27002Count + cisControlsCount + gdprCount + nis2Count;
+  //   }, 0);
+  //   
+  //   // Number of unified groups based on filtered mappings
+  //   const unifiedGroups = filteredMappings.length;
+  //   
+  //   // Calculate reduction metrics with safe fallbacks
+  //   const reduction = maxRequirements - unifiedGroups;
+  //   const reductionPercentage = maxRequirements > 0 ? ((reduction / maxRequirements) * 100).toFixed(1) : '0.0';
+  //   const efficiencyRatio = unifiedGroups > 0 ? Math.round(maxRequirements / unifiedGroups) : 0;
+  //   
+  //   return {
+  //     maxRequirements,
+  //     unifiedGroups,
+  //     reduction,
+  //     reductionPercentage,
+  //     efficiencyRatio
+  //   };
+  // }, [filteredMappings]);
 
   // Show enhanced AI loading state while fetching data
   if (isLoadingMappings || isLoadingCounts) {
@@ -854,14 +1303,14 @@ export default function ComplianceSimplification() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
-                        frameworksSelected.iso27001
+                        frameworksSelected['iso27001']
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg shadow-blue-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-blue-300'
                       }`}
-                      onClick={() => handleFrameworkToggle('iso27001', !frameworksSelected.iso27001)}
+                      onClick={() => handleFrameworkToggle('iso27001', !frameworksSelected['iso27001'])}
                     >
                       {/* Selected Badge at Top */}
-                      {frameworksSelected.iso27001 && (
+                      {frameworksSelected['iso27001'] && (
                         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-blue-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
@@ -870,8 +1319,8 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-2 rounded-full ${frameworksSelected.iso27001 ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Shield className={`w-5 h-5 ${frameworksSelected.iso27001 ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected['iso27001'] ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-5 h-5 ${frameworksSelected['iso27001'] ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">ISO 27001</h3>
@@ -881,7 +1330,7 @@ export default function ComplianceSimplification() {
                           </p>
                         </div>
                       </div>
-                      {frameworksSelected.iso27001 && (
+                      {frameworksSelected['iso27001'] && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -897,14 +1346,14 @@ export default function ComplianceSimplification() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
-                        frameworksSelected.iso27002
+                        frameworksSelected['iso27002']
                           ? 'border-green-500 bg-green-50 dark:bg-green-900/20 shadow-lg shadow-green-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-green-300'
                       }`}
-                      onClick={() => handleFrameworkToggle('iso27002', !frameworksSelected.iso27002)}
+                      onClick={() => handleFrameworkToggle('iso27002', !frameworksSelected['iso27002'])}
                     >
                       {/* Selected Badge at Top */}
-                      {frameworksSelected.iso27002 && (
+                      {frameworksSelected['iso27002'] && (
                         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-green-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
@@ -913,8 +1362,8 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-2 rounded-full ${frameworksSelected.iso27002 ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Lock className={`w-5 h-5 ${frameworksSelected.iso27002 ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected['iso27002'] ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Lock className={`w-5 h-5 ${frameworksSelected['iso27002'] ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">ISO 27002</h3>
@@ -924,7 +1373,7 @@ export default function ComplianceSimplification() {
                           </p>
                         </div>
                       </div>
-                      {frameworksSelected.iso27002 && (
+                      {frameworksSelected['iso27002'] && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -940,7 +1389,7 @@ export default function ComplianceSimplification() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
-                        frameworksSelected.cisControls
+                        frameworksSelected['cisControls']
                           ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg shadow-purple-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-purple-300'
                       }`}
@@ -952,7 +1401,7 @@ export default function ComplianceSimplification() {
                       }}
                     >
                       {/* Selected Badge at Top */}
-                      {frameworksSelected.cisControls && (
+                      {frameworksSelected['cisControls'] && (
                         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-purple-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
@@ -961,15 +1410,15 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-2 rounded-full ${frameworksSelected.cisControls ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Settings className={`w-5 h-5 ${frameworksSelected.cisControls ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected['cisControls'] ? 'bg-purple-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Settings className={`w-5 h-5 ${frameworksSelected['cisControls'] ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">CIS Controls</h3>
                           <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">Cybersecurity Best Practices</p>
                           <p className="text-xs text-purple-600 dark:text-purple-400 font-medium text-center">
                             {(() => {
-                              const igLevel = frameworksSelected.cisControls;
+                              const igLevel = frameworksSelected['cisControls'];
                               if (!frameworkCounts || isLoadingCounts) {
                                 return igLevel === 'ig1' ? 36 : igLevel === 'ig2' ? 82 : 155;
                               }
@@ -987,18 +1436,18 @@ export default function ComplianceSimplification() {
                               key={level}
                               whileTap={{ scale: 0.95 }}
                               className={`w-full p-1.5 rounded-lg text-xs font-medium transition-all ${
-                                frameworksSelected.cisControls === level
+                                frameworksSelected['cisControls'] === level
                                   ? 'bg-purple-500 text-white'
                                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-purple-100 dark:hover:bg-purple-900/50'
                               }`}
-                              onClick={() => handleFrameworkToggle('cisControls', frameworksSelected.cisControls === level ? null : level as 'ig1' | 'ig2' | 'ig3')}
+                              onClick={() => handleFrameworkToggle('cisControls', frameworksSelected['cisControls'] === level ? null : level as 'ig1' | 'ig2' | 'ig3')}
                             >
                               {level.toUpperCase()} - {level === 'ig1' ? 'Basic' : level === 'ig2' ? 'Foundational' : 'Organizational'}
                             </motion.button>
                           ))}
                         </div>
                       </div>
-                      {frameworksSelected.cisControls && (
+                      {frameworksSelected['cisControls'] && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1014,14 +1463,14 @@ export default function ComplianceSimplification() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
-                        frameworksSelected.gdpr
+                        frameworksSelected['gdpr']
                           ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20 shadow-lg shadow-orange-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-orange-300'
                       }`}
-                      onClick={() => handleFrameworkToggle('gdpr', !frameworksSelected.gdpr)}
+                      onClick={() => handleFrameworkToggle('gdpr', !frameworksSelected['gdpr'])}
                     >
                       {/* Selected Badge at Top */}
-                      {frameworksSelected.gdpr && (
+                      {frameworksSelected['gdpr'] && (
                         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-orange-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
@@ -1030,8 +1479,8 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-2 rounded-full ${frameworksSelected.gdpr ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <BookOpen className={`w-5 h-5 ${frameworksSelected.gdpr ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected['gdpr'] ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <BookOpen className={`w-5 h-5 ${frameworksSelected['gdpr'] ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">GDPR</h3>
@@ -1041,7 +1490,7 @@ export default function ComplianceSimplification() {
                           </p>
                         </div>
                       </div>
-                      {frameworksSelected.gdpr && (
+                      {frameworksSelected['gdpr'] && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1057,19 +1506,19 @@ export default function ComplianceSimplification() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
-                        frameworksSelected.nis2
+                        frameworksSelected['nis2']
                           ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 shadow-lg shadow-indigo-500/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-indigo-300'
                       }`}
                       onClick={(e) => {
                         // Only toggle if clicking the card background, not the dropdown
                         if (!(e.target as HTMLElement).closest('.industry-dropdown')) {
-                          handleFrameworkToggle('nis2', !frameworksSelected.nis2);
+                          handleFrameworkToggle('nis2', !frameworksSelected['nis2']);
                         }
                       }}
                     >
                       {/* Selected Badge at Top */}
-                      {frameworksSelected.nis2 && (
+                      {frameworksSelected['nis2'] && (
                         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
                           <Badge className="bg-indigo-500 text-white px-3 py-1 text-xs rounded-full">
                             Selected
@@ -1078,8 +1527,8 @@ export default function ComplianceSimplification() {
                       )}
                       
                       <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
-                        <div className={`p-2 rounded-full ${frameworksSelected.nis2 ? 'bg-indigo-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
-                          <Shield className={`w-5 h-5 ${frameworksSelected.nis2 ? 'text-white' : 'text-gray-600'}`} />
+                        <div className={`p-2 rounded-full ${frameworksSelected['nis2'] ? 'bg-indigo-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-5 h-5 ${frameworksSelected['nis2'] ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex flex-col space-y-1">
                           <h3 className="font-semibold text-sm h-5 flex items-center justify-center">NIS2</h3>
@@ -1090,7 +1539,7 @@ export default function ComplianceSimplification() {
                         </div>
                         
                         {/* Industry Sector Selection - Inside the card */}
-                        {frameworksSelected.nis2 && (
+                        {frameworksSelected['nis2'] && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
@@ -1168,7 +1617,7 @@ export default function ComplianceSimplification() {
                           </motion.div>
                         )}
                       </div>
-                      {frameworksSelected.nis2 && (
+                      {frameworksSelected['nis2'] && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
@@ -1210,7 +1659,7 @@ export default function ComplianceSimplification() {
                     <div className="flex justify-center">
                       <Button
                         onClick={handleGenerate}
-                        disabled={isGenerating || (!frameworksSelected.iso27001 && !frameworksSelected.iso27002 && !frameworksSelected.cisControls && !frameworksSelected.gdpr && !frameworksSelected.nis2)}
+                        disabled={isGenerating || (!frameworksSelected['iso27001'] && !frameworksSelected['iso27002'] && !frameworksSelected['cisControls'] && !frameworksSelected['gdpr'] && !frameworksSelected['nis2'])}
                         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-12 py-4 rounded-xl shadow-lg text-lg transition-all duration-300 transform hover:scale-105"
                         size="lg"
                       >
@@ -1328,7 +1777,7 @@ export default function ComplianceSimplification() {
                                 <h4 className="font-semibold text-orange-900 dark:text-orange-100">GDPR Articles</h4>
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-orange-100 dark:scrollbar-thumb-orange-600 dark:scrollbar-track-orange-900">
-                                {(mapping.frameworks.gdpr || []).map((req, i) => (
+                                {(mapping.frameworks['gdpr'] || []).map((req, i) => (
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-orange-200 dark:border-orange-700">
                                     <div className="font-medium text-sm text-orange-900 dark:text-orange-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">{req.title}</div>
@@ -1343,10 +1792,10 @@ export default function ComplianceSimplification() {
                             // Calculate grid columns based on selected frameworks
                             (() => {
                               const selectedCount = 
-                                (selectedFrameworks.iso27001 ? 1 : 0) +
-                                (selectedFrameworks.iso27002 ? 1 : 0) +
-                                (selectedFrameworks.cisControls ? 1 : 0) +
-                                (selectedFrameworks.nis2 ? 1 : 0);
+                                (selectedFrameworks['iso27001'] ? 1 : 0) +
+                                (selectedFrameworks['iso27002'] ? 1 : 0) +
+                                (selectedFrameworks['cisControls'] ? 1 : 0) +
+                                (selectedFrameworks['nis2'] ? 1 : 0);
                               
                               if (selectedCount === 1) return 'lg:grid-cols-1';
                               if (selectedCount === 2) return 'sm:grid-cols-2';
@@ -1357,14 +1806,14 @@ export default function ComplianceSimplification() {
                           }`}>
                           
                           {/* ISO 27001 Column - Only show if selected */}
-                          {selectedFrameworks.iso27001 && (
+                          {selectedFrameworks['iso27001'] && (
                             <div className="p-4 sm:p-6 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-900/10">
                               <div className="flex items-center space-x-2 mb-4">
                                 <Shield className="w-5 h-5 text-blue-600" />
                                 <h4 className="font-semibold text-blue-900 dark:text-blue-100">ISO 27001</h4>
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100 dark:scrollbar-thumb-blue-600 dark:scrollbar-track-blue-900">
-                                {(mapping.frameworks?.iso27001 || []).map((req, i) => (
+                                {(mapping.frameworks?.['iso27001'] || []).map((req, i) => (
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-blue-200 dark:border-blue-700">
                                     <div className="font-medium text-sm text-blue-900 dark:text-blue-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
@@ -1375,14 +1824,14 @@ export default function ComplianceSimplification() {
                           )}
 
                           {/* ISO 27002 Column - Only show if selected */}
-                          {selectedFrameworks.iso27002 && (
+                          {selectedFrameworks['iso27002'] && (
                             <div className="p-4 sm:p-6 border-b sm:border-b-0 lg:border-r border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-green-900/10">
                               <div className="flex items-center space-x-2 mb-4">
                                 <Lock className="w-5 h-5 text-green-600" />
                                 <h4 className="font-semibold text-green-900 dark:text-green-100">ISO 27002</h4>
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-green-100 dark:scrollbar-thumb-green-600 dark:scrollbar-track-green-900">
-                                {(mapping.frameworks?.iso27002 || []).map((req, i) => (
+                                {(mapping.frameworks?.['iso27002'] || []).map((req, i) => (
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-green-200 dark:border-green-700">
                                     <div className="font-medium text-sm text-green-900 dark:text-green-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
@@ -1393,16 +1842,16 @@ export default function ComplianceSimplification() {
                           )}
 
                           {/* CIS Controls Column - Only show if selected */}
-                          {selectedFrameworks.cisControls && (
+                          {selectedFrameworks['cisControls'] && (
                             <div className="p-4 sm:p-6 border-b sm:border-b-0 border-slate-200 dark:border-slate-700 bg-purple-50 dark:bg-purple-900/10">
                               <div className="flex items-center space-x-2 mb-4">
                                 <Settings className="w-5 h-5 text-purple-600" />
                                 <h4 className="font-semibold text-purple-900 dark:text-purple-100">
-                                  CIS Controls {selectedFrameworks.cisControls.toUpperCase()}
+                                  CIS Controls {selectedFrameworks['cisControls'].toUpperCase()}
                                 </h4>
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-purple-900">
-                                {(mapping.frameworks?.cisControls || []).map((req, i) => (
+                                {(mapping.frameworks?.['cisControls'] || []).map((req, i) => (
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700">
                                     <div className="font-medium text-sm text-purple-900 dark:text-purple-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
@@ -1413,14 +1862,14 @@ export default function ComplianceSimplification() {
                           )}
 
                           {/* NIS2 Column - Only show if selected */}
-                          {selectedFrameworks.nis2 && (
+                          {selectedFrameworks['nis2'] && (
                             <div className="p-4 sm:p-6 bg-indigo-50 dark:bg-indigo-900/10">
                               <div className="flex items-center space-x-2 mb-4">
                                 <Shield className="w-5 h-5 text-indigo-600" />
                                 <h4 className="font-semibold text-indigo-900 dark:text-indigo-100">NIS2</h4>
                               </div>
                               <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-indigo-100 dark:scrollbar-thumb-indigo-600 dark:scrollbar-track-indigo-900">
-                                {(mapping.frameworks.nis2 || []).map((req, i) => (
+                                {(mapping.frameworks['nis2'] || []).map((req, i) => (
                                   <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-indigo-200 dark:border-indigo-700">
                                     <div className="font-medium text-sm text-indigo-900 dark:text-indigo-100">{req.code}</div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
@@ -1451,17 +1900,17 @@ export default function ComplianceSimplification() {
                                   {(() => {
                                     if (mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948') {
                                       // For GDPR groups, show GDPR articles count
-                                      const totalGdprReqs = mapping.frameworks.gdpr?.length || 0;
+                                      const totalGdprReqs = mapping.frameworks['gdpr']?.length || 0;
                                       const unifiedReqs = mapping.auditReadyUnified.subRequirements.length;
                                       const reductionPercent = totalGdprReqs > 1 ? Math.round((1 - unifiedReqs / totalGdprReqs) * 100) : 0;
                                       return `Unifies ${totalGdprReqs} GDPR articles - ${reductionPercent}% simpler`;
                                     } else {
                                       // For regular groups, show framework requirements from selected frameworks only
                                       const totalFrameworkReqs = 
-                                        (selectedFrameworks.iso27001 ? (mapping.frameworks?.iso27001?.length || 0) : 0) + 
-                                        (selectedFrameworks.iso27002 ? (mapping.frameworks?.iso27002?.length || 0) : 0) + 
-                                        (selectedFrameworks.cisControls ? (mapping.frameworks?.cisControls?.length || 0) : 0) +
-                                        (selectedFrameworks.nis2 ? (mapping.frameworks?.nis2?.length || 0) : 0);
+                                        (selectedFrameworks['iso27001'] ? (mapping.frameworks?.['iso27001']?.length || 0) : 0) + 
+                                        (selectedFrameworks['iso27002'] ? (mapping.frameworks?.['iso27002']?.length || 0) : 0) + 
+                                        (selectedFrameworks['cisControls'] ? (mapping.frameworks?.['cisControls']?.length || 0) : 0) +
+                                        (selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2']?.length || 0) : 0);
                                       const reductionPercent = totalFrameworkReqs > 1 ? Math.round((1 - 1 / totalFrameworkReqs) * 100) : 0;
                                       return totalFrameworkReqs > 0 ? `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction` : 'No requirements from selected frameworks';
                                     }
@@ -1544,9 +1993,9 @@ export default function ComplianceSimplification() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                    The following unified requirements have been generated by consolidating controls from your selected compliance frameworks{selectedFrameworks.nis2 && selectedIndustrySector ? ' with sector-specific enhancements for ' + (industrySectors?.find(s => s.id === selectedIndustrySector)?.name || 'selected sector') : ''}:
+                    The following unified requirements have been generated by consolidating controls from your selected compliance frameworks{selectedFrameworks['nis2'] && selectedIndustrySector ? ' with sector-specific enhancements for ' + (industrySectors?.find(s => s.id === selectedIndustrySector)?.name || 'selected sector') : ''}:
                   </p>
-                  {selectedFrameworks.nis2 && selectedIndustrySector && SectorSpecificEnhancer.hasSectorEnhancements(selectedIndustrySector) && (
+                  {selectedFrameworks['nis2'] && selectedIndustrySector && SectorSpecificEnhancer.hasSectorEnhancements(selectedIndustrySector) && (
                     <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                       <div className="flex items-center space-x-2">
                         <Factory className="w-4 h-4 text-green-600" />
@@ -1560,31 +2009,31 @@ export default function ComplianceSimplification() {
                     </div>
                   )}
                   <div className="flex flex-wrap gap-2">
-                    {selectedFrameworks.iso27001 && (
+                    {selectedFrameworks['iso27001'] && (
                       <Badge className="bg-blue-500 text-white px-3 py-1">
                         <Shield className="w-3 h-3 mr-1" />
                         ISO 27001
                       </Badge>
                     )}
-                    {selectedFrameworks.iso27002 && (
+                    {selectedFrameworks['iso27002'] && (
                       <Badge className="bg-green-500 text-white px-3 py-1">
                         <Lock className="w-3 h-3 mr-1" />
                         ISO 27002
                       </Badge>
                     )}
-                    {selectedFrameworks.cisControls && (
+                    {selectedFrameworks['cisControls'] && (
                       <Badge className="bg-purple-500 text-white px-3 py-1">
                         <Settings className="w-3 h-3 mr-1" />
-                        CIS Controls {selectedFrameworks.cisControls.toUpperCase()}
+                        CIS Controls {selectedFrameworks['cisControls'].toUpperCase()}
                       </Badge>
                     )}
-                    {selectedFrameworks.gdpr && (
+                    {selectedFrameworks['gdpr'] && (
                       <Badge className="bg-orange-500 text-white px-3 py-1">
                         <BookOpen className="w-3 h-3 mr-1" />
                         GDPR
                       </Badge>
                     )}
-                    {selectedFrameworks.nis2 && (
+                    {selectedFrameworks['nis2'] && (
                       <Badge className="bg-indigo-500 text-white px-3 py-1">
                         <Shield className="w-3 h-3 mr-1" />
                         NIS2
@@ -1606,12 +2055,12 @@ export default function ComplianceSimplification() {
                             group.auditReadyUnified.subRequirements || [],
                             group.category,
                             selectedIndustrySector,
-                            selectedFrameworks.nis2
+                            selectedFrameworks['nis2']
                           );
                           return total + enhancedSubReqs.length;
                         }, 0)}
                       </div>
-                      <div className="text-gray-600 dark:text-gray-400">Total Sub-requirements{selectedFrameworks.nis2 && selectedIndustrySector ? ' (Enhanced)' : ''}</div>
+                      <div className="text-gray-600 dark:text-gray-400">Total Sub-requirements{selectedFrameworks['nis2'] && selectedIndustrySector ? ' (Enhanced)' : ''}</div>
                     </div>
                   </div>
                 </div>
@@ -1666,10 +2115,22 @@ export default function ComplianceSimplification() {
                             {mapping.category}
                           </Badge>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex flex-col items-end space-y-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mb-2 text-xs px-3 py-1 text-emerald-700 border-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-500 dark:hover:bg-emerald-900/20"
+                            onClick={() => {
+                              setSelectedGuidanceCategory(mapping.category);
+                              setShowUnifiedGuidance(true);
+                            }}
+                          >
+                            <Lightbulb className="w-3 h-3 mr-1" />
+                            Unified Guidance
+                          </Button>
                           <div className="text-xs text-gray-500 dark:text-gray-400">Replaces</div>
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {(mapping.frameworks?.iso27001?.length || 0) + (mapping.frameworks?.iso27002?.length || 0) + (mapping.frameworks?.cisControls?.length || 0) + (mapping.frameworks?.gdpr?.length || 0)}
+                            {(mapping.frameworks?.['iso27001']?.length || 0) + (mapping.frameworks?.['iso27002']?.length || 0) + (mapping.frameworks?.['cisControls']?.length || 0) + (mapping.frameworks?.['gdpr']?.length || 0)}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">requirements</div>
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1678,10 +2139,10 @@ export default function ComplianceSimplification() {
                                 mapping.auditReadyUnified.subRequirements || [],
                                 mapping.category,
                                 selectedIndustrySector,
-                                selectedFrameworks.nis2
+                                selectedFrameworks['nis2']
                               );
                               return enhancedSubReqs.length;
-                            })()} sub-requirements{selectedFrameworks.nis2 && selectedIndustrySector && SectorSpecificEnhancer.hasSectorEnhancements(selectedIndustrySector) ? ' (enhanced)' : ''}
+                            })()} sub-requirements{selectedFrameworks['nis2'] && selectedIndustrySector && SectorSpecificEnhancer.hasSectorEnhancements(selectedIndustrySector) ? ' (enhanced)' : ''}
                           </div>
                         </div>
                       </div>
@@ -1695,15 +2156,51 @@ export default function ComplianceSimplification() {
                               mapping.auditReadyUnified.subRequirements || [],
                               mapping.category,
                               selectedIndustrySector,
-                              selectedFrameworks.nis2
+                              selectedFrameworks['nis2']
                             );
                             
                             // Group enhanced sub-requirements for better organization
-                            const groupedSubReqs = {
-                              'Core Requirements': enhancedSubReqs.filter((_, i) => i < Math.ceil(enhancedSubReqs.length / 3)),
-                              'Implementation Standards': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length / 3) && i < Math.ceil(enhancedSubReqs.length * 2 / 3)),
-                              'Monitoring & Compliance': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length * 2 / 3))
-                            };
+                            let groupedSubReqs: Record<string, string[]> = {};
+                            
+                            // Special grouping for Governance & Leadership category - MOVE content, don't copy
+                            if (mapping.category.includes('Governance') || mapping.category.includes('Leadership')) {
+                              const leadership: string[] = [];
+                              const hr: string[] = [];
+                              const monitoring: string[] = [];
+                              
+                              // Move each requirement to exactly one section based on your specifications
+                              enhancedSubReqs.forEach(req => {
+                                const lowerReq = req.toLowerCase();
+                                
+                                // HR section: Only Competence Management + Personnel Security Framework
+                                if (lowerReq.includes('competence management') || lowerReq.includes('personnel security framework')) {
+                                  hr.push(req);
+                                }
+                                // Monitoring section: RELATIONSHIPS, THIRD PARTY GOVERNANCE, INCIDENT RESPONSE GOVERNANCE, CONTINUOUS IMPROVEMENT, Monitoring & Reporting, Change Management & Control
+                                else if (lowerReq.includes('relationships') || lowerReq.includes('third party governance') || 
+                                        lowerReq.includes('incident response governance') || lowerReq.includes('continuous improvement') ||
+                                        lowerReq.includes('monitoring & reporting') || lowerReq.includes('change management & control')) {
+                                  monitoring.push(req);
+                                }
+                                // Leadership section: Everything else (almost all content)
+                                else {
+                                  leadership.push(req);
+                                }
+                              });
+                              
+                              groupedSubReqs = {
+                                'Leadership': leadership,
+                                'HR': hr,
+                                'Monitoring & Compliance': monitoring
+                              };
+                            } else {
+                              // Default grouping for other categories
+                              groupedSubReqs = {
+                                'Core Requirements': enhancedSubReqs.filter((_, i) => i < Math.ceil(enhancedSubReqs.length / 3)),
+                                'Implementation Standards': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length / 3) && i < Math.ceil(enhancedSubReqs.length * 2 / 3)),
+                                'Monitoring & Compliance': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length * 2 / 3))
+                              };
+                            }
                             
                             return Object.entries(groupedSubReqs).map(([groupName, requirements]) => (
                               requirements.length > 0 && (
@@ -1713,7 +2210,7 @@ export default function ComplianceSimplification() {
                                     {groupName}
                                   </h5>
                                   <div className="space-y-2">
-                                    {requirements.map((subReq, i) => (
+                                    {(requirements as string[]).map((subReq: string, i: number) => (
                                       <div key={i} className="flex items-start space-x-2 text-sm">
                                         <ArrowRight className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
                                         <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{subReq}</span>
@@ -1794,7 +2291,7 @@ export default function ComplianceSimplification() {
               </CardHeader>
               <CardContent className="p-8">
                 {/* Check if any frameworks are selected */}
-                {(selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || selectedFrameworks.cisControls || selectedFrameworks.gdpr || selectedFrameworks.nis2) ? (
+                {(selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['gdpr'] || selectedFrameworks['nis2']) ? (
                   <>
                 {/* Overlap Statistics */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -1839,7 +2336,13 @@ export default function ComplianceSimplification() {
                 
                 {/* Framework Coverage Visualization */}
                 <PentagonVisualization 
-                  selectedFrameworks={selectedFrameworks}
+                  selectedFrameworks={{
+                    iso27001: selectedFrameworks['iso27001'],
+                    iso27002: selectedFrameworks['iso27002'],
+                    cisControls: Boolean(selectedFrameworks['cisControls']),
+                    gdpr: selectedFrameworks['gdpr'],
+                    nis2: selectedFrameworks['nis2']
+                  }}
                   mappingData={filteredMappings}
                 />
                 
@@ -1848,31 +2351,31 @@ export default function ComplianceSimplification() {
                 <div className="border-t pt-6">
                   <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Selected Frameworks</h3>
                   <div className="flex flex-wrap gap-3">
-                    {selectedFrameworks.iso27001 && (
+                    {selectedFrameworks['iso27001'] && (
                       <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-blue-500 rounded"></div>
                         <span className="text-sm">ISO 27001</span>
                       </div>
                     )}
-                    {selectedFrameworks.iso27002 && (
+                    {selectedFrameworks['iso27002'] && (
                       <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-green-500 rounded"></div>
                         <span className="text-sm">ISO 27002</span>
                       </div>
                     )}
-                    {selectedFrameworks.cisControls && (
+                    {selectedFrameworks['cisControls'] && (
                       <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                        <span className="text-sm">CIS Controls ({selectedFrameworks.cisControls.toUpperCase()})</span>
+                        <span className="text-sm">CIS Controls ({selectedFrameworks['cisControls'].toUpperCase()})</span>
                       </div>
                     )}
-                    {selectedFrameworks.gdpr && (
+                    {selectedFrameworks['gdpr'] && (
                       <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-orange-500 rounded"></div>
                         <span className="text-sm">GDPR</span>
                       </div>
                     )}
-                    {selectedFrameworks.nis2 && (
+                    {selectedFrameworks['nis2'] && (
                       <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-indigo-500 rounded"></div>
                         <span className="text-sm">NIS2</span>
@@ -1920,6 +2423,109 @@ export default function ComplianceSimplification() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Unified Guidance Modal */}
+      <Dialog open={showUnifiedGuidance} onOpenChange={setShowUnifiedGuidance}>
+        <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+          <DialogHeader className="pb-4 border-b border-gray-200 dark:border-gray-700">
+            <DialogTitle className="flex items-center space-x-3 text-xl">
+              <div className="p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                <Lightbulb className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div>
+                <span className="text-gray-900 dark:text-white">
+                  {selectedGuidanceCategory.replace(/^\d+\. /, '')}
+                </span>
+                <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mt-1">
+                  Implementation Guidance
+                </div>
+              </div>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-300 mt-2">
+              Framework-specific guidance and best practices tailored to your selected compliance standards
+            </DialogDescription>
+          </DialogHeader>
+          <div className="prose dark:prose-invert max-w-none pt-6">
+            {getGuidanceContent(selectedGuidanceCategory).split('\n').map((line, index) => {
+              // Remove any remaining asterisks from content
+              const cleanLine = line.replace(/\*/g, '');
+              
+              if (cleanLine.trim() === '') return <div key={index} className="h-2" />;
+              
+              // Framework References section with special styling
+              if (cleanLine.includes('Framework References for Selected Standards:')) {
+                return (
+                  <div key={index} className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
+                    <h4 className="text-base font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                      📋 Framework References for Selected Standards
+                    </h4>
+                  </div>
+                );
+              }
+              
+              // Framework-specific references
+              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2):/)) {
+                return (
+                  <div key={index} className="ml-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg mb-2">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                      {cleanLine}
+                    </p>
+                  </div>
+                );
+              }
+              
+              if (cleanLine.startsWith('**') && cleanLine.endsWith('**')) {
+                return (
+                  <h3 key={index} className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+                    {cleanLine.replace(/\*\*/g, '')}
+                  </h3>
+                );
+              }
+              
+              if (cleanLine.startsWith('✅')) {
+                return (
+                  <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg mb-3">
+                    <span className="text-green-600 dark:text-green-400 text-lg">✅</span>
+                    <p className="text-sm text-green-800 dark:text-green-200">{cleanLine.replace('✅ ', '')}</p>
+                  </div>
+                );
+              }
+              
+              if (cleanLine.startsWith('❌')) {
+                return (
+                  <div key={index} className="flex items-start space-x-3 p-3 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg mb-3">
+                    <span className="text-red-600 dark:text-red-400 text-lg">❌</span>
+                    <p className="text-sm text-red-800 dark:text-red-200">{cleanLine.replace('❌ ', '')}</p>
+                  </div>
+                );
+              }
+              
+              if (cleanLine.match(/^\d+\./)) {
+                return (
+                  <div key={index} className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg mb-3 border-l-4 border-indigo-400">
+                    <p className="font-medium text-indigo-800 dark:text-indigo-200">{cleanLine}</p>
+                  </div>
+                );
+              }
+              
+              return (
+                <p key={index} className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 text-sm">
+                  {cleanLine}
+                </p>
+              );
+            })}
+          </div>
+          <div className="flex justify-end mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowUnifiedGuidance(false)}
+              className="px-6"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

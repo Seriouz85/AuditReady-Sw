@@ -39,8 +39,11 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   mappingData.forEach(mapping => {
     Object.keys(frameworkStats).forEach(framework => {
       if (mapping.frameworks?.[framework]?.length > 0) {
-        frameworkStats[framework].totalRequirements += mapping.frameworks[framework].length;
-        frameworkStats[framework].mappings += 1;
+        const frameworkData = frameworkStats[framework];
+        if (frameworkData) {
+          frameworkData.totalRequirements += mapping.frameworks[framework].length;
+          frameworkData.mappings += 1;
+        }
       }
     });
   });
@@ -48,9 +51,12 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   // Calculate coverage percentages
   const totalAllRequirements = Object.values(frameworkStats).reduce((sum, stat) => sum + stat.totalRequirements, 0);
   Object.keys(frameworkStats).forEach(framework => {
-    frameworkStats[framework].coverage = totalAllRequirements > 0 
-      ? (frameworkStats[framework].totalRequirements / totalAllRequirements) * 100 
-      : 0;
+    const frameworkData = frameworkStats[framework];
+    if (frameworkData) {
+      frameworkData.coverage = totalAllRequirements > 0 
+        ? (frameworkData.totalRequirements / totalAllRequirements) * 100 
+        : 0;
+    }
   });
   
   // Calculate pentagon points
@@ -63,7 +69,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   });
 
   // Generate proper area coverage based on actual framework characteristics
-  const generateAreaCoverage = (frameworkKey: string, stats: FrameworkStats) => {
+  const generateAreaCoverage = (frameworkKey: string, _stats: FrameworkStats) => {
     // Define which areas each framework actually covers
     const getFrameworkAreas = (key: string) => {
       switch (key) {
@@ -92,7 +98,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
     if (areaIndices.length === 1) {
       // Single domain - create a sector
       const domainIndex = areaIndices[0];
+      if (domainIndex === undefined) return points;
       const domainPoint = pentagonPoints[domainIndex];
+      if (!domainPoint) return points;
       const angle = Math.atan2(domainPoint.y - centerY, domainPoint.x - centerX);
       const sectorWidth = Math.PI / 3; // 60 degrees
       
@@ -111,9 +119,13 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
     } else {
       // Multiple domains - create shape that covers the areas
       areaIndices.forEach((domainIndex, i) => {
+        if (domainIndex === undefined) return;
         const domainPoint = pentagonPoints[domainIndex];
+        if (!domainPoint) return;
         const nextDomainIndex = areaIndices[(i + 1) % areaIndices.length];
+        if (nextDomainIndex === undefined) return;
         const nextDomainPoint = pentagonPoints[nextDomainIndex];
+        if (!nextDomainPoint) return;
         
         // Special handling for framework partial coverage
         let coverageDistance = 0.9;
@@ -153,11 +165,13 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
     // Special extension for GDPR towards Operational
     if (frameworkKey === 'gdpr') {
       const operationalPoint = pentagonPoints[3]; // Operational domain
-      const extensionDistance = 0.25; // Small extension towards operational
-      points.push({
-        x: centerX + (operationalPoint.x - centerX) * extensionDistance,
-        y: centerY + (operationalPoint.y - centerY) * extensionDistance
-      });
+      if (operationalPoint) {
+        const extensionDistance = 0.25; // Small extension towards operational
+        points.push({
+          x: centerX + (operationalPoint.x - centerX) * extensionDistance,
+          y: centerY + (operationalPoint.y - centerY) * extensionDistance
+        });
+      }
     }
     
     return points;
@@ -165,7 +179,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   
   // Convert sausage points to ultra-smooth SVG path
   const sausageToSVGPath = (points: {x: number, y: number}[]) => {
-    if (points.length === 0) return '';
+    if (points.length === 0 || !points[0]) return '';
     
     let path = `M ${points[0].x} ${points[0].y}`;
     
@@ -176,6 +190,8 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       const current = points[i];
       const prev = points[i - 1];
       const next = points[(i + 1) % points.length];
+      
+      if (!current || !prev || !next) continue;
       
       // Premium control points for silk-smooth sausage curves
       const cp1x = prev.x + (current.x - prev.x) * tension;
@@ -198,9 +214,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       name: 'ISO 27001',
       color: '#3b82f6',
       secondaryColor: '#60a5fa',
-      stats: frameworkStats.iso27001,
+      stats: frameworkStats['iso27001'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('iso27001', frameworkStats.iso27001),
+        points: generateAreaCoverage('iso27001', frameworkStats['iso27001'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
         path: ''
       }
     },
@@ -209,9 +225,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       name: 'ISO 27002',
       color: '#10b981',
       secondaryColor: '#34d399',
-      stats: frameworkStats.iso27002,
+      stats: frameworkStats['iso27002'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('iso27002', frameworkStats.iso27002),
+        points: generateAreaCoverage('iso27002', frameworkStats['iso27002'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
         path: ''
       }
     },
@@ -220,9 +236,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       name: 'CIS Controls',
       color: '#8b5cf6',
       secondaryColor: '#a78bfa',
-      stats: frameworkStats.cisControls,
+      stats: frameworkStats['cisControls'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('cisControls', frameworkStats.cisControls),
+        points: generateAreaCoverage('cisControls', frameworkStats['cisControls'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
         path: ''
       }
     },
@@ -231,9 +247,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       name: 'GDPR',
       color: '#f97316',
       secondaryColor: '#fb923c',
-      stats: frameworkStats.gdpr,
+      stats: frameworkStats['gdpr'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('gdpr', frameworkStats.gdpr),
+        points: generateAreaCoverage('gdpr', frameworkStats['gdpr'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
         path: ''
       }
     },
@@ -242,9 +258,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       name: 'NIS2',
       color: '#ef4444',
       secondaryColor: '#f87171',
-      stats: frameworkStats.nis2,
+      stats: frameworkStats['nis2'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('nis2', frameworkStats.nis2),
+        points: generateAreaCoverage('nis2', frameworkStats['nis2'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
         path: ''
       }
     }
@@ -354,7 +370,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
         {frameworkConfigs.filter(config => {
           // Only show if framework is actually selected
           if (config.key === 'cisControls') {
-            return selectedFrameworks.cisControls !== null; // CIS Controls uses IG levels
+            return selectedFrameworks['cisControls'] !== null; // CIS Controls uses IG levels
           }
           return selectedFrameworks[config.key] === true; // Others use boolean
         }).filter(config => config.zone.path).map((config, index) => {
@@ -372,12 +388,12 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
                 fill={`url(#${config.key}Gradient)`}
                 stroke={config.color}
                 strokeWidth={hoveredFramework === config.key ? "5" : "3"}
-                strokeOpacity={hoveredFramework === config.key ? "1" : "0.9"}
                 fillOpacity={hoveredFramework === config.key ? "0.8" : "1"}
-                initial={{ opacity: 0, scale: 0.5 }}
+                initial={{ opacity: 0, scale: 0.5, strokeOpacity: 0.9 }}
                 animate={{ 
                   opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.4,
-                  scale: hoveredFramework === config.key ? 1.02 : 1
+                  scale: hoveredFramework === config.key ? 1.02 : 1,
+                  strokeOpacity: hoveredFramework === config.key ? 1 : 0.9
                 }}
                 transition={{ 
                   duration: hoveredFramework ? 0.2 : 0.8, 
@@ -431,7 +447,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
           strokeWidth={hoveredUnified ? "4" : "2"}
           strokeDasharray={hoveredUnified ? "0" : "20,8"}
           filter={hoveredUnified ? "url(#pentagonGlow)" : "none"}
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.95, strokeOpacity: 0.6 }}
           animate={{ 
             opacity: hoveredUnified ? 0.9 : 0.7, 
             scale: hoveredUnified ? 1.01 : 1,
@@ -616,7 +632,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
           .filter(config => {
             // Only show legend for actually selected frameworks
             if (config.key === 'cisControls') {
-              return selectedFrameworks.cisControls !== null; // CIS Controls uses IG levels
+              return selectedFrameworks['cisControls'] !== null; // CIS Controls uses IG levels
             }
             return selectedFrameworks[config.key] === true; // Others use boolean
           })
