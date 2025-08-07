@@ -98,37 +98,49 @@ export class OptimizedDemoDataService {
 
       // Fulfilled (67%)
       for (let i = 0; i < fulfilledCount; i++) {
-        updates.push({
-          id: shuffled[index].id,
-          status: 'fulfilled',
-          fulfillment_percentage: 100,
-          notes: 'Fully implemented - demo data',
-          updated_at: new Date().toISOString()
-        });
+        const req = shuffled[index];
+        if (req) {
+          updates.push({
+            id: req.id,
+            status: 'fulfilled',
+            fulfillment_percentage: 100,
+            notes: 'Fully implemented - demo data',
+            updated_at: new Date().toISOString(),
+            version: 1
+          });
+        }
         index++;
       }
 
       // Partially fulfilled
       for (let i = 0; i < partiallyCount; i++) {
-        updates.push({
-          id: shuffled[index].id,
-          status: 'partially-fulfilled',
-          fulfillment_percentage: Math.floor(Math.random() * 60) + 20,
-          notes: 'Implementation in progress - demo data',
-          updated_at: new Date().toISOString()
-        });
+        const req = shuffled[index];
+        if (req) {
+          updates.push({
+            id: req.id,
+            status: 'partially-fulfilled',
+            fulfillment_percentage: Math.floor(Math.random() * 60) + 20,
+            notes: 'Implementation in progress - demo data',
+            updated_at: new Date().toISOString(),
+            version: 1
+          });
+        }
         index++;
       }
 
       // Not fulfilled
       for (let i = index; i < total; i++) {
-        updates.push({
-          id: shuffled[i].id,
-          status: 'not-fulfilled',
-          fulfillment_percentage: 0,
-          notes: 'Pending implementation - demo data',
-          updated_at: new Date().toISOString()
-        });
+        const req = shuffled[i];
+        if (req) {
+          updates.push({
+            id: req.id,
+            status: 'not-fulfilled',
+            fulfillment_percentage: 0,
+            notes: 'Pending implementation - demo data',
+            updated_at: new Date().toISOString(),
+            version: 1
+          });
+        }
       }
 
       // Apply updates in efficient batches
