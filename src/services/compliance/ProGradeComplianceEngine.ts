@@ -39,7 +39,6 @@ export interface ComplianceAuditResult {
 }
 
 export class ProGradeComplianceEngine {
-  private frameworkKeywords: Map<string, Set<string>> = new Map();
   private implementationPatterns: Map<string, string[]> = new Map();
   private controlMappings: Map<string, string[]> = new Map();
 
@@ -184,8 +183,7 @@ export class ProGradeComplianceEngine {
     // Generate recommendations
     const recommendations = this.generateRecommendations(
       unmappedRequirements,
-      missingKeywords,
-      selectedFrameworks
+      missingKeywords
     );
 
     return {
@@ -237,16 +235,16 @@ export class ProGradeComplianceEngine {
 
       if (error) throw error;
 
-      return (requirements || []).map(req => ({
+      return (requirements || []).map((req: any) => ({
         id: req.id,
         code: req.requirement_code,
         title: req.title,
         description: req.official_description,
-        framework: req.standard.code.toLowerCase(),
+        framework: req.standard?.code?.toLowerCase() || 'unknown',
         category: req.category || 'General',
         keywords: this.extractKeywords(`${req.title} ${req.official_description}`),
         implementation: this.getImplementationGuidance(req.title, req.official_description),
-        controls: this.getControlMappings(req.standard.code.toLowerCase()),
+        controls: this.getControlMappings(req.standard?.code?.toLowerCase() || 'unknown'),
         evidence: this.getEvidenceRequirements(req.title, req.official_description)
       }));
     } catch (error) {
@@ -607,7 +605,6 @@ export class ProGradeComplianceEngine {
     // Calculate comprehensive coverage
     const allImplementations = requirementGroup.flatMap(req => req.implementation);
     const allControls = requirementGroup.flatMap(req => req.controls);
-    const allEvidence = requirementGroup.flatMap(req => req.evidence);
     const frameworks = [...new Set(requirementGroup.map(req => req.framework))];
 
     return {
@@ -644,15 +641,6 @@ export class ProGradeComplianceEngine {
     return titleTemplates[primaryKeyword] || `${category} Security Controls`;
   }
 
-  private generateUnifiedDescription(
-    requirements: DetailedRequirement[],
-    keywords: string[]
-  ): string {
-    const frameworks = [...new Set(requirements.map(req => req.framework.toUpperCase()))];
-    const keywordPhrase = keywords.slice(0, 5).join(', ');
-    
-    return `Comprehensive security controls addressing ${keywordPhrase} requirements across ${frameworks.join(', ')} frameworks, ensuring unified implementation and compliance management.`;
-  }
 
   private generateEnhancedUnifiedDescription(
     requirements: DetailedRequirement[],
@@ -674,6 +662,9 @@ export class ProGradeComplianceEngine {
     const subReqs: string[] = [];
     const frameworks = [...new Set(requirements.map(req => req.framework.toUpperCase()))];
     const frameworkList = frameworks.join(', ');
+    
+    // Use category to tailor sub-requirements
+    const categoryPrefix = category.toLowerCase().includes('governance') ? 'Management and ' : '';
 
     // First, ensure ALL specific requirements are captured
     const allImplementationDetails = new Set<string>();
@@ -698,6 +689,7 @@ export class ProGradeComplianceEngine {
       if (themeRequirements.length > 0) {
         const specificCodes = themeRequirements.map(req => req.code).join(', ');
         const detailedImplementation = this.generateDetailedImplementation(theme, themeRequirements);
+        const enhancedThemeName = `${categoryPrefix}${theme.name}`;
         
         // Include ALL specific implementation details from the requirements
         const specificImplementations = themeRequirements
@@ -718,7 +710,7 @@ export class ProGradeComplianceEngine {
           .join(', ');
         
         subReqs.push(
-          `${letter}) UNIFIED ${theme.name.toUpperCase()}: ${detailedImplementation} - satisfying ${frameworkList} requirements (${specificCodes}) with comprehensive implementation: [${specificImplementations}], controls mapping: [${specificControls}], evidence requirements: [${specificEvidence}]`
+          `${letter}) UNIFIED ${enhancedThemeName.toUpperCase()}: ${detailedImplementation} - satisfying ${frameworkList} requirements (${specificCodes}) with comprehensive implementation: [${specificImplementations}], controls mapping: [${specificControls}], evidence requirements: [${specificEvidence}]`
         );
       }
     });
@@ -817,7 +809,7 @@ export class ProGradeComplianceEngine {
         ]
       },
       {
-        name: 'Training & Awareness',
+        name: 'Security Awareness & Skills Training',
         keywords: ['training', 'awareness', 'competence', 'education'],
         guidance: [
           'Develop role-specific training programs',
@@ -877,8 +869,7 @@ export class ProGradeComplianceEngine {
 
   private generateRecommendations(
     unmappedRequirements: DetailedRequirement[],
-    missingKeywords: string[],
-    frameworks: string[]
+    missingKeywords: string[]
   ): string[] {
     const recommendations: string[] = [];
 

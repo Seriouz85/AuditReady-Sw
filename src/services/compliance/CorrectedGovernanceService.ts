@@ -29,32 +29,31 @@ export class CorrectedGovernanceService {
       // Properly organized sections with a, b, c, d ordering
       sections: {
         
-        // SECTION 1: Leadership (most requirements go here)
+        // SECTION 1: Leadership
         'Leadership': [
-          'a) ISMS (Information Security Management System) - Establish and maintain a systematic approach to managing information security risks, policies, and procedures across the organization',
-          'b) Scope and boundaries - Define the boundaries and applicability of the information security management system, including internal and external issues',
-          'c) Leadership commitment and responsibility - Top management must demonstrate leadership and commitment with respect to the information security management system',
-          'd) Information security policy framework - Develop, approve, communicate, and regularly review comprehensive information security policies aligned with business objectives',
-          'e) Organizational roles and responsibilities - Define and assign clear information security roles, responsibilities, and authorities throughout the organization',
-          'f) Resource allocation and management - Ensure adequate resources are provided for establishing, implementing, maintaining and continually improving the ISMS',
-          'g) Strategic planning and alignment - Align information security objectives with business strategy and ensure security planning supports organizational goals',
-          'h) Risk appetite and tolerance - Define and communicate the organization\'s risk appetite and tolerance levels for information security risks',
-          'i) Governance structure and oversight - Establish appropriate governance structures with clear oversight responsibilities for information security',
-          'j) Segregation of duties - Implement proper segregation of conflicting duties and areas of responsibility to reduce risk of misuse',
-          'k) Management review and decision-making - Conduct regular management reviews of the ISMS performance and make strategic decisions for improvement'
+          'a) Leadership commitment and accountability - ISMS Foundation: ISO 27001 requires an Information Security Management System (ISMS), a systematic approach to managing security. Top management must actively lead information security with documented commitment, regular reviews (at least quarterly), and personal accountability',
+          'b) Scope and boundaries - Clearly document ISMS scope including: physical locations, logical boundaries, included/excluded systems, interfaces with third parties, and business processes covered. Make scope statement publicly available. Review scope with any significant organizational change',
+          'c) Organizational structure (ISMS Define roles and responsibilities as part of your ISMS implementation) and roles - Define and document ALL security roles including: Information Security Officer, Data Protection Officer (GDPR mandatory if applicable), Incident Response Manager (with backup), Risk Owners, and Asset Owners. Each role must have clear written responsibilities, authorities, and reporting lines. Review and update annually or when organizational changes occur',
+          'd) Policy framework (ISO 27001 Foundation: Your information security policy becomes the cornerstone document where many governance can be documented, approved, and communicated) with deadlines - Establish comprehensive security policies that specify key timelines: disable unused accounts within 45 days, have incident response plans ready for notifications (GDPR: notify supervisory authority within 72h when personal data breaches likely result in high risk to individuals. NIS2: early warning to national competent authority within 24h for significant incidents affecting service continuity), keep audit logs for at least 90 days, and patch vulnerabilities monthly. All policies must be approved by management and reviewed annually',
+          'e) Project management (ISO 27001 Security must be integrated into all project processes including planning, development, and deployment) and security integration - ISO 27001 Security must be integrated into all projects from inception. Project managers must include security in project planning, conduct security reviews at key milestones, and ensure security testing before deployment. All projects must complete security impact assessments and maintain security documentation throughout the project lifecycle',
+          'f) Asset use and disposal policies (ISO 27001 Define acceptable use and secure disposal procedures for all information assets) policies - Define acceptable use policies for information and associated assets covering permitted activities, prohibited actions, and monitoring procedures. Establish asset return and disposal procedures ensuring secure data destruction, documentation of disposal activities, and proper handling of both physical and digital assets during termination, transfer, or end of life',
+          'g) Documented procedures and evidence - Maintain documented operating procedures for ALL security processes. Keep evidence of: lawful basis for data processing (GDPR), risk assessments, incident reports, audit results, management decisions, training records, and certifications. Documentation must be version controlled'
         ],
         
-        // SECTION 2: HR (ONLY 2 requirements as requested)
+        // SECTION 2: HR
         'HR': [
-          'l) Personnel Security Framework - Implement comprehensive background verification, screening procedures, security clearance processes, disciplinary action procedures, and detailed termination protocols. Include pre-employment screening (criminal background, employment verification, reference checks), ongoing monitoring for security violations, progressive disciplinary measures (verbal warning, written warning, suspension, termination), immediate termination procedures for security breaches, security clearance revocation processes, post-employment obligations (confidentiality agreements, non-disclosure enforcement), asset recovery procedures, and access revocation protocols',
-          'm) Competence Management - Ensure personnel have appropriate competence, awareness, and training for their information security responsibilities'
+          'h) Personnel security framework (ISO 27001 Comprehensive employment security including terms, screening, NDAs, and termination procedures) and leadership framework: leadership responsibilities - Employment terms and conditions with defined security responsibilities and accountabilities. Confidentiality/non-disclosure agreements',
+          'i) Competence management - Determine and ensure the necessary competence of persons doing work that affects information security performance. This includes defining competence for each security role, providing appropriate education/training/experience, evaluating effectiveness of competence actions, and maintaining documented evidence of competence. Implement mentoring programs, skills assessments, and continuous professional development for security personnel'
         ],
         
-        // SECTION 3: Monitoring & Compliance (ONLY 3 requirements as requested) 
+        // SECTION 3: Monitoring & Compliance
         'Monitoring & Compliance': [
-          'n) Monitoring, measurement, analysis and evaluation - Establish processes to monitor, measure, analyze and evaluate the performance and effectiveness of the ISMS',
-          'o) Internal audit and compliance verification - Conduct planned internal audits to verify ISMS conformity and effective implementation',
-          'p) Continual improvement and corrective actions - Implement processes for continual improvement including corrective actions and management of nonconformities'
+          'j) Monitoring and reporting - Conduct internal ISMS audits at planned intervals (minimum annually), management reviews (minimum quarterly), and maintain continuous monitoring. Document ALL activities, findings, and corrective actions. Report status to management with specific metrics and KPIs',
+          'k) Change management and control - Establish formal change management processes for all system modifications. All changes must follow documented procedures with security impact assessments, testing, and approval workflows. Implement change advisory boards for significant changes and maintain detailed change logs for audit purposes',
+          'l) Relationships - Establish documented procedures for: GDPR supervisory authority cooperation (including breach notifications), NIS2 competent authority reporting (incident warnings), law enforcement cooperation, and industry information sharing. Maintain current contact lists and communication templates',
+          'm) Incident response governance - Designate incident response manager plus backup (review annually). Establish 24/7 contact information for incident reporting. Define incident classification with clear thresholds for: significant incidents (NIS2), high risk breaches (GDPR)',
+          'n) Third party governance - ALL service provider contracts MUST include: security, incident notification (specify timeframes), audit rights, data protection clauses, termination procedures with data return/destruction, and verification. Monitor providers monthly and conduct annual security reviews',
+          'o) Continuous improvement - Implement formal processes for: learning from incidents, updating policies based on new threats, addressing audit findings within 30 days, tracking security metrics, and demonstrating year over year improvement'
         ]
       },
       
@@ -90,33 +89,30 @@ export class CorrectedGovernanceService {
     const structure = this.getCorrectedStructure();
     const errors: string[] = [];
 
-    // Check first 2 requirements are a) ISMS and b) Scope and boundaries
+    // Check first requirement is a) Leadership commitment
     const leadershipReqs = structure.sections['Leadership'];
-    if (!leadershipReqs[0]?.includes('a) ISMS')) {
-      errors.push('First requirement must be a) ISMS');
-    }
-    if (!leadershipReqs[1]?.includes('b) Scope and boundaries')) {
-      errors.push('Second requirement must be b) Scope and boundaries');
+    if (!leadershipReqs || !leadershipReqs[0]?.includes('a) Leadership commitment')) {
+      errors.push('First requirement must be a) Leadership commitment');
     }
 
-    // Check HR has only 2 requirements
+    // Check HR has 2 requirements
     if (structure.sections['HR']?.length !== 2) {
       errors.push(`HR section must have exactly 2 requirements, found ${structure.sections['HR']?.length}`);
     }
 
-    // Check Monitoring & Compliance has only 3 requirements
-    if (structure.sections['Monitoring & Compliance']?.length !== 3) {
-      errors.push(`Monitoring & Compliance section must have exactly 3 requirements, found ${structure.sections['Monitoring & Compliance']?.length}`);
+    // Check Monitoring & Compliance has 6 requirements
+    if (structure.sections['Monitoring & Compliance']?.length !== 6) {
+      errors.push(`Monitoring & Compliance section must have exactly 6 requirements, found ${structure.sections['Monitoring & Compliance']?.length}`);
     }
 
     // Check proper a, b, c ordering
     const allReqs = [
-      ...leadershipReqs,
-      ...structure.sections['HR'],
-      ...structure.sections['Monitoring & Compliance']
+      ...(leadershipReqs || []),
+      ...(structure.sections['HR'] || []),
+      ...(structure.sections['Monitoring & Compliance'] || [])
     ];
 
-    const expectedLetters = 'abcdefghijklmnop'.split('');
+    const expectedLetters = 'abcdefghijklmno'.split('');
     for (let i = 0; i < allReqs.length; i++) {
       if (!allReqs[i]?.startsWith(`${expectedLetters[i]})`)) {
         errors.push(`Requirement ${i + 1} should start with "${expectedLetters[i]})" but starts with "${allReqs[i]?.substring(0, 3)}"`);

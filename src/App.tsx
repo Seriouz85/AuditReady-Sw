@@ -45,6 +45,7 @@ const EditCourse = lazy(() => import("./pages/LMS/EditCourse"));
 const QuizEditor = lazy(() => import("./pages/LMS/QuizEditor"));
 const ContentCreator = lazy(() => import("./pages/LMS/ContentCreator"));
 const CourseBuilder = lazy(() => import("./pages/LMS/CourseBuilder"));
+const CoursePreview = lazy(() => import("./pages/LMS/CoursePreview"));
 const Reports = lazy(() => import("./pages/LMS/Reports"));
 const CourseDetail = lazy(() => import("./pages/LMS/CourseDetail"));
 const LMSAdmin = lazy(() => import("./pages/LMS/Admin"));
@@ -368,6 +369,16 @@ const App = () => {
                       <ProtectedRoute requiredPermission="create_lms_content">
                         <Suspense fallback={<LoadingSpinner text="Loading course builder..." />}>
                           <CourseBuilder />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/lms/course-preview/:courseId" 
+                    element={
+                      <ProtectedRoute requiredPermission="view_lms_content">
+                        <Suspense fallback={<LoadingSpinner text="Loading course preview..." />}>
+                          <CoursePreview />
                         </Suspense>
                       </ProtectedRoute>
                     } 

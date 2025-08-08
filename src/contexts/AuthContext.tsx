@@ -97,6 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         'view_documents',
         'create_documents',
         'access_lms',
+        'view_lms_content',
         'create_lms_content',
         'edit_lms_content',
         'view_lms_reports',

@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -168,7 +168,18 @@ const CourseBuilder: React.FC = () => {
   // Template library states
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   
-  useEffect(() => { setTheme('light'); setActiveTab('course-builder'); }, [setTheme]);
+  useEffect(() => { 
+    setTheme('light'); 
+    setActiveTab('course-builder');
+    
+    // Check if returning from preview
+    if (location.state?.returnFromPreview) {
+      const savedSections = location.state?.courseSections;
+      if (savedSections) {
+        setCourseSections(savedSections);
+      }
+    }
+  }, [setTheme, location.state]);
   
   // Add undo/redo functionality
   const saveToUndoStack = (sections: CourseSection[]) => {
@@ -427,38 +438,79 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
 
     try {
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`;
+      
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        body: JSON.stringify({ 
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 8192,
+            topP: 0.95,
+            topK: 40
+          }
+        }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error('Failed to generate content');
+        const errorData = await response.json().catch(() => null);
+        console.error('API Error:', errorData);
+        throw new Error(`Failed to generate content: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-      // Försök tolka JSON
+      // Enhanced JSON parsing with better error handling
       let parsed;
       try {
+        // First try direct JSON parsing
         parsed = JSON.parse(rawText);
       } catch (err) {
-        // Försök extrahera JSON om AI lagt till text före/efter
-        const match = rawText.match(/\{[\s\S]*\}/);
-        if (match) {
+        // Try to extract JSON from markdown code blocks
+        const codeBlockMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
           try {
-            parsed = JSON.parse(match[0]);
+            parsed = JSON.parse(codeBlockMatch[1].trim());
           } catch (e) {
+            // Continue to next attempt
+          }
+        }
+        
+        // If no code block, try to extract raw JSON object
+        if (!parsed) {
+          // More robust regex to handle nested objects
+          const jsonMatch = rawText.match(/\{[\s\S]*"sections"[\s\S]*\}/);
+          if (jsonMatch) {
+            try {
+              // Clean up common formatting issues
+              let cleanJson = jsonMatch[0]
+                .replace(/\n\s*\/\/.*/g, '') // Remove single-line comments
+                .replace(/,\s*([}\]])/g, '$1') // Remove trailing commas
+                .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":'); // Fix unquoted keys
+              parsed = JSON.parse(cleanJson);
+            } catch (e) {
+              console.error('JSON parsing error:', e);
+              console.log('Raw response:', rawText.substring(0, 500));
+              setIsGenerating(false);
+              toast.error('Could not parse AI response. The AI may have returned invalid JSON. Please try again.');
+              return;
+            }
+          } else {
+            console.error('No JSON found in response');
+            console.log('Raw response:', rawText.substring(0, 500));
             setIsGenerating(false);
-            toast.error('Could not parse AI response as JSON. Please try again.');
+            toast.error('No valid JSON found in AI response. Please try again.');
             return;
           }
-        } else {
-          setIsGenerating(false);
-          toast.error('Could not parse AI response as JSON. Please try again.');
-          return;
         }
       }
 
@@ -607,10 +659,24 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
       
       setIsGenerating(false);
       setShowGenerateModal(false);
-    } catch (error) {
+    } catch (error: any) {
       setIsGenerating(false);
       console.error('Error generating content:', error);
-      toast.error('Failed to generate content. Please check your API key and try again.');
+      
+      // Provide more specific error messages
+      if (error.name === 'AbortError') {
+        toast.error('Request timed out. The AI is taking too long to respond. Please try again with simpler settings.');
+      } else if (error.message?.includes('API key')) {
+        toast.error('Invalid API key. Please check your Gemini API key in environment settings.');
+      } else if (error.message?.includes('404')) {
+        toast.error('API endpoint not found. Please check if the Gemini API is available.');
+      } else if (error.message?.includes('429')) {
+        toast.error('Rate limit exceeded. Please wait a moment and try again.');
+      } else if (error.message?.includes('500') || error.message?.includes('503')) {
+        toast.error('The AI service is temporarily unavailable. Please try again later.');
+      } else {
+        toast.error(`Failed to generate content: ${error.message || 'Unknown error occurred'}`);
+      }
     }
   };
 
@@ -963,8 +1029,16 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
                 }}
                 onSave={saveCourse}
                 onPreview={() => {
-                  // Add preview functionality
-                  window.open(`/lms/course-preview/${courseData?.id || 'demo'}`, '_blank');
+                  // Save course data to localStorage for preview
+                  localStorage.setItem('courseBuilderData', JSON.stringify(courseData));
+                  localStorage.setItem('courseBuilderSections', JSON.stringify(courseSections));
+                  // Navigate to preview in same window
+                  navigate(`/lms/course-preview/${courseData?.id || 'demo'}`, {
+                    state: {
+                      courseData,
+                      courseSections
+                    }
+                  });
                 }}
                 onUndo={handleUndo}
                 onRedo={handleRedo}
@@ -1183,6 +1257,9 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
               <Trash2 className="h-5 w-5" />
               Delete Section?
             </DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. All content in this section will be permanently deleted.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-gray-600">
@@ -1219,6 +1296,9 @@ Do NOT include any introduction or explanation text before or after the JSON.`;
               <Sparkles className="h-5 w-5 text-purple-500" />
               Generate Course Content with AI
             </DialogTitle>
+            <DialogDescription>
+              Configure AI generation settings to create comprehensive course content tailored to your needs.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-6">
             {/* Basic Settings */}
