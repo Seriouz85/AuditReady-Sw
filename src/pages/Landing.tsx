@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ZoomToggle } from "@/components/ui/zoom-toggle";
 import { IntegrationIcon } from "@/components/ui/IntegrationIcon";
+import UltraAIShowcase from "@/components/landing/UltraAIShowcase";
 import { useTheme } from "next-themes";
 
 export default function Landing() {
@@ -592,6 +593,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Ultra AI Semantic Mapping Engine Showcase */}
+      <UltraAIShowcase />
 
       {/* Data Governance & Security Section */}
       <section className="py-16 sm:py-20 px-3 sm:px-4">

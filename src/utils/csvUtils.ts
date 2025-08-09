@@ -59,12 +59,17 @@ export function createCSVContent(headers: string[], rows: (string | number | nul
 
 /**
  * Download CSV content as a file
+ * Enhanced with BOM for better Excel/Google Sheets compatibility
  * 
  * @param content - CSV content string
  * @param filename - Name for the downloaded file
  */
 export function downloadCSV(content: string, filename: string): void {
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  // Add BOM (Byte Order Mark) for better Excel/Google Sheets UTF-8 support
+  const BOM = '\uFEFF';
+  const csvWithBOM = BOM + content;
+  
+  const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8;' });
   const url = window.URL.createObjectURL(blob);
   
   const link = document.createElement('a');

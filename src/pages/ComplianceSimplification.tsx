@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
+import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
@@ -2162,37 +2163,40 @@ For more specific guidance on this category, please consult with your compliance
                             // Group enhanced sub-requirements for better organization
                             let groupedSubReqs: Record<string, string[]> = {};
                             
-                            // Special grouping for Governance & Leadership category - MOVE content, don't copy
+                            // Special grouping for Governance & Leadership category - use CorrectedGovernanceService
                             if (mapping.category.includes('Governance') || mapping.category.includes('Leadership')) {
-                              const leadership: string[] = [];
-                              const hr: string[] = [];
-                              const monitoring: string[] = [];
-                              
-                              // Move each requirement to exactly one section based on your specifications
-                              enhancedSubReqs.forEach(req => {
-                                const lowerReq = req.toLowerCase();
+                              // Check if this category should use corrected governance structure
+                              if (CorrectedGovernanceService.isGovernanceCategory(mapping.category)) {
+                                const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
+                                groupedSubReqs = correctedStructure.sections;
+                              } else {
+                                // Fallback to original logic if needed
+                                const leadership: string[] = [];
+                                const hr: string[] = [];
+                                const monitoring: string[] = [];
                                 
-                                // HR section: Only Competence Management + Personnel Security Framework
-                                if (lowerReq.includes('competence management') || lowerReq.includes('personnel security framework')) {
-                                  hr.push(req);
-                                }
-                                // Monitoring section: RELATIONSHIPS, THIRD PARTY GOVERNANCE, INCIDENT RESPONSE GOVERNANCE, CONTINUOUS IMPROVEMENT, Monitoring & Reporting, Change Management & Control
-                                else if (lowerReq.includes('relationships') || lowerReq.includes('third party governance') || 
-                                        lowerReq.includes('incident response governance') || lowerReq.includes('continuous improvement') ||
-                                        lowerReq.includes('monitoring & reporting') || lowerReq.includes('change management & control')) {
-                                  monitoring.push(req);
-                                }
-                                // Leadership section: Everything else (almost all content)
-                                else {
-                                  leadership.push(req);
-                                }
-                              });
-                              
-                              groupedSubReqs = {
-                                'Leadership': leadership,
-                                'HR': hr,
-                                'Monitoring & Compliance': monitoring
-                              };
+                                enhancedSubReqs.forEach(req => {
+                                  const lowerReq = req.toLowerCase();
+                                  
+                                  if (lowerReq.includes('competence management') || lowerReq.includes('personnel security framework')) {
+                                    hr.push(req);
+                                  }
+                                  else if (lowerReq.includes('relationships') || lowerReq.includes('third party governance') || 
+                                          lowerReq.includes('incident response governance') || lowerReq.includes('continuous improvement') ||
+                                          lowerReq.includes('monitoring & reporting') || lowerReq.includes('change management & control')) {
+                                    monitoring.push(req);
+                                  }
+                                  else {
+                                    leadership.push(req);
+                                  }
+                                });
+                                
+                                groupedSubReqs = {
+                                  'Leadership': leadership,
+                                  'HR': hr,
+                                  'Monitoring & Compliance': monitoring
+                                };
+                              }
                             } else {
                               // Default grouping for other categories
                               groupedSubReqs = {

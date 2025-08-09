@@ -11,7 +11,8 @@ import {
   Activity, 
   Building,
   ArrowLeft,
-  Home
+  Home,
+  Brain
 } from 'lucide-react';
 
 export const AdminNavigation: React.FC = () => {
@@ -32,6 +33,7 @@ export const AdminNavigation: React.FC = () => {
     { to: '/admin/organizations', icon: <Building size={20} />, label: 'Organizations' },
     { to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
     { to: '/admin/compliance', icon: <BookOpen size={20} />, label: 'Compliance' },
+    { to: '/admin/semantic-mapping', icon: <Brain size={20} />, label: 'AI Mapping', badge: 'NEW' },
     { to: '/admin/system', icon: <Settings size={20} />, label: 'System' },
     { to: '/admin/logs', icon: <Activity size={20} />, label: 'Audit Logs' },
   ];
@@ -62,14 +64,21 @@ export const AdminNavigation: React.FC = () => {
             <Link key={item.to} to={item.to}>
               <Button
                 variant={itemIsActive ? "secondary" : "ghost"}
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-between gap-3 ${
                   itemIsActive 
                     ? "bg-blue-600 text-white hover:bg-blue-700" 
                     : "text-slate-300 hover:text-white hover:bg-slate-800"
                 }`}
               >
-                {item.icon}
-                <span>{item.label}</span>
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <span>{item.label}</span>
+                </div>
+                {item.badge && (
+                  <Badge variant="secondary" className="bg-purple-600 text-white text-xs">
+                    {item.badge}
+                  </Badge>
+                )}
               </Button>
             </Link>
           );

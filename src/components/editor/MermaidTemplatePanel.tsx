@@ -97,7 +97,7 @@ const MERMAID_TEMPLATES: MermaidTemplate[] = [
     code: `flowchart TD
     A[Regulatory Requirements] --> B[Policy Development]
     B --> C[Control Implementation]
-    C --> D[Training & Awareness]
+    C --> D[Security Awareness & Skills Training]
     D --> E[Monitoring & Testing]
     E --> F{Compliance Status}
     F -->|Compliant| G[Maintain Controls]
