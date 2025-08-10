@@ -60,6 +60,7 @@ const LearningPathBuilder = lazy(() => import("./pages/LMS/LearningPathBuilder")
 
 // Lazy load editor
 const GraphicalEditor = lazy(() => import("./pages/documents/GraphicalEditor"));
+const AREditorShowcase = lazy(() => import("./pages/AREditorShowcase"));
 // Lazy load admin components for code splitting
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const AnalyticsDashboard = lazy(() => import("./pages/admin/analytics/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
@@ -278,6 +279,18 @@ const App = () => {
                       <ProtectedRoute>
                         <Suspense fallback={<LoadingSpinner text="Loading editor..." />}>
                           <GraphicalEditor />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  
+                  {/* Enterprise AR Editor Showcase */}
+                  <Route 
+                    path="/ar-editor-showcase" 
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <Suspense fallback={<LoadingSpinner text="Loading Enterprise AR Editor..." />}>
+                          <AREditorShowcase />
                         </Suspense>
                       </ProtectedRoute>
                     } 

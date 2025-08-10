@@ -135,13 +135,28 @@ const documentTypes: DocumentType[] = [
   },
   {
     id: 'create-custom',
-    name: 'AR Editor',
-    description: 'Create stunning professional diagrams with our new AuditReady Editor - featuring 14+ diagram types, modern design, audit-specific themes, and AI-powered workflow creation',
+    name: 'AR Editor (Legacy)',
+    description: 'Create professional diagrams with our AuditReady Editor - featuring 14+ diagram types, modern design, audit-specific themes, and AI-powered workflow creation',
     icon: <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><BrushIcon /><AIIcon sx={{ fontSize: '0.9em' }} /></Box>,
     initialQuestions: [
       'What type of diagram would you like to create? (Flowchart, Sequence, Gantt, etc.)',
       'Would you prefer to start with a template or write Mermaid syntax?',
       'What is the primary purpose of this diagram?'
+    ]
+  },
+  {
+    id: 'enterprise-ar-editor',
+    name: '🚀 Enterprise AR Editor',
+    description: 'NEW! Jaw-dropping AI-powered enterprise diagram editor with 50+ templates, real-time collaboration, stunning animations, and professional themes. Transformed from F- to A+ level!',
+    icon: <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, position: 'relative' }}>
+      <BrushIcon sx={{ color: 'primary.main' }} />
+      <AIIcon sx={{ fontSize: '0.9em', color: 'secondary.main' }} />
+      <Box sx={{ position: 'absolute', top: -6, right: -6, bgcolor: 'error.main', color: 'white', fontSize: '0.6rem', px: 0.5, py: 0.2, borderRadius: '50%', fontWeight: 'bold' }}>NEW</Box>
+    </Box>,
+    initialQuestions: [
+      'This will launch the new Enterprise AR Editor!',
+      'Experience the stunning transformation from our previous editor',
+      'Features: AI Intelligence, 50+ Templates, Real-time Collaboration'
     ]
   }
 ];
@@ -178,6 +193,14 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
     // If it's the graphical editor option, open the standalone editor in a new window
     if (selectedType === 'create-custom') {
       window.open('/editor', '_blank');
+      // Reset the selected type to prevent further processing
+      setSelectedType('');
+      return;
+    }
+
+    // If it's the new Enterprise AR Editor, open the AR Editor Showcase
+    if (selectedType === 'enterprise-ar-editor') {
+      window.open('/ar-editor-showcase', '_blank');
       // Reset the selected type to prevent further processing
       setSelectedType('');
       return;
@@ -925,6 +948,9 @@ Create the complete "${processName}" process document now, formatted for immedia
                       if (type.id === 'create-custom') {
                         // Use the dedicated handler for opening the dialog
                         openGraphicalEditor();
+                      } else if (type.id === 'enterprise-ar-editor') {
+                        // Open the new Enterprise AR Editor
+                        window.open('/ar-editor-showcase', '_blank');
                       } else {
                         setSelectedType(type.id);
                         handleTypeSelection();
@@ -935,23 +961,49 @@ Create the complete "${processName}" process document now, formatted for immedia
                       borderRadius: 2,
                       cursor: 'pointer',
                       border: '1px solid',
-                      borderColor: type.id === 'create-custom' ? 'primary.main' : 'divider',
+                      borderColor: type.id === 'enterprise-ar-editor' ? 'error.main' : type.id === 'create-custom' ? 'primary.main' : 'divider',
                       transition: 'all 0.2s',
                       '&:hover': {
                         boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                        borderColor: 'primary.main',
+                        borderColor: type.id === 'enterprise-ar-editor' ? 'error.main' : 'primary.main',
                         transform: 'translateY(-2px)'
                       },
                       display: 'flex',
                       gap: 2,
                       alignItems: 'center',
                       position: 'relative',
+                      ...(type.id === 'enterprise-ar-editor' && {
+                        background: 'linear-gradient(45deg, rgba(255,82,82,0.08), rgba(255,171,0,0.08))',
+                        borderWidth: '2px',
+                        boxShadow: '0 8px 24px rgba(255,82,82,0.15)',
+                        transform: 'scale(1.02)'
+                      }),
                       ...(type.id === 'create-custom' && {
                         background: 'linear-gradient(45deg, rgba(0,171,85,0.05), rgba(0,123,85,0.05))',
                         borderWidth: '2px'
                       })
                     }}
                   >
+                    {type.id === 'enterprise-ar-editor' && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: -12,
+                          right: -12,
+                          bgcolor: 'error.main',
+                          color: 'white',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: '12px',
+                          boxShadow: '0 4px 12px rgba(255,82,82,0.4)',
+                          animation: 'pulse 2s infinite'
+                        }}
+                      >
+                        🔥 NEW
+                      </Box>
+                    )}
                     {type.id === 'create-custom' && (
                       <Box
                         sx={{
@@ -960,7 +1012,7 @@ Create the complete "${processName}" process document now, formatted for immedia
                           right: -10,
                           bgcolor: 'primary.main',
                           color: 'white',
-                          fontSize: '0.75rem',
+                          fontSize: '0.65rem',
                           fontWeight: 'bold',
                           px: 1,
                           py: 0.5,
@@ -968,20 +1020,28 @@ Create the complete "${processName}" process document now, formatted for immedia
                           boxShadow: '0 2px 8px rgba(0,171,85,0.24)'
                         }}
                       >
-                        UPGRADED
+                        LEGACY
                       </Box>
                     )}
                     <Box
                       sx={{
-                        bgcolor: type.id === 'create-custom' ? 'primary.main' : 'primary.lighter',
-                        color: type.id === 'create-custom' ? 'white' : 'primary.main',
+                        bgcolor: type.id === 'enterprise-ar-editor' 
+                          ? 'linear-gradient(45deg, #FF5252, #FFAB00)' 
+                          : type.id === 'create-custom' 
+                          ? 'primary.main' 
+                          : 'primary.lighter',
+                        color: (type.id === 'create-custom' || type.id === 'enterprise-ar-editor') ? 'white' : 'primary.main',
                         borderRadius: '50%',
                         width: 48,
                         height: 48,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        ...(type.id === 'enterprise-ar-editor' && {
+                          background: 'linear-gradient(45deg, #FF5252, #FFAB00)',
+                          boxShadow: '0 4px 12px rgba(255,82,82,0.3)'
+                        })
                       }}
                     >
                       {React.cloneElement(type.icon as React.ReactElement, {

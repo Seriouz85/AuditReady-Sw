@@ -1,0 +1,206 @@
+/* Layout Fixes for Enterprise AR Editor */
+
+/* Z-Index Hierarchy */
+:root {
+  --z-base: 1;
+  --z-sidebar: 10;
+  --z-panel: 20;
+  --z-toolbar: 30;
+  --z-floating: 40;
+  --z-modal: 50;
+  --z-tooltip: 60;
+  --z-max: 9999;
+}
+
+/* Enterprise AR Editor Layout */
+.enterprise-ar-editor {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: grid;
+}
+
+/* Sidebar */
+.enterprise-ar-editor .sidebar {
+  z-index: var(--z-sidebar);
+  position: relative;
+}
+
+/* Panel */
+.enterprise-ar-editor .panel {
+  z-index: var(--z-panel);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Toolbar */
+.enterprise-ar-editor .toolbar {
+  z-index: var(--z-toolbar);
+  position: relative;
+}
+
+/* Main Canvas */
+.enterprise-ar-editor .main-canvas {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Floating Elements */
+.enterprise-ar-editor .floating-element {
+  z-index: var(--z-floating);
+  position: absolute;
+}
+
+/* ReactFlow Overrides */
+.react-flow {
+  width: 100%;
+  height: 100%;
+}
+
+.react-flow__panel {
+  z-index: var(--z-floating) !important;
+}
+
+.react-flow__controls {
+  z-index: var(--z-floating) !important;
+}
+
+.react-flow__minimap {
+  z-index: var(--z-floating) !important;
+}
+
+/* Dropdown and Tooltip Fixes */
+.dropdown-content,
+.tooltip-content {
+  z-index: var(--z-tooltip) !important;
+  position: fixed !important;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 768px) {
+  .enterprise-ar-editor {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 
+      "sidebar main"
+      "sidebar main";
+  }
+  
+  .enterprise-ar-editor .panel {
+    position: fixed;
+    left: 3rem;
+    top: 0;
+    height: 100vh;
+    z-index: var(--z-panel);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .enterprise-ar-editor .panel.active {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .enterprise-ar-editor .panel {
+    left: 2.5rem;
+    width: calc(100vw - 2.5rem);
+  }
+}
+
+/* Scrollable Containers */
+.scrollable-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollable-container .scroll-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Prevent Layout Shift */
+.prevent-layout-shift {
+  contain: layout style paint;
+}
+
+/* Safe Area Insets for Mobile */
+@supports (padding: max(0px)) {
+  .safe-area-inset {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Fix for Webkit Scrollbar */
+.scrollable-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Prevent Text Selection Issues */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Smooth Animations */
+.smooth-animation {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus Management */
+.focus-trap {
+  isolation: isolate;
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  .enterprise-ar-editor {
+    --border-opacity: 1;
+    --bg-opacity: 1;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .smooth-animation,
+  .will-change-transform {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+}
