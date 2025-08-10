@@ -102,14 +102,15 @@ export default function UltraAIShowcase() {
     let nodeId = 0;
     
     layers.forEach((layerSize, layerIndex) => {
-      const layerX = (layerIndex * 110) + 80; // Increased spacing and padding for better visibility
-      const startY = (320 - (layerSize * 40)) / 2; // Increased viewport height and node spacing
+      const layerX = (layerIndex * 80) + 50; // Slightly expand nodes outward
+      const containerHeight = 384; // Back to original container height
+      const startY = ((containerHeight - 100) - (layerSize * 30)) / 2 + 20; // Move nodes up from x-axis
       
       for (let i = 0; i < layerSize; i++) {
         nodes.push({
           id: nodeId++,
           x: layerX,
-          y: startY + (i * 40),
+          y: startY + (i * 30), // Reduced node spacing
           activated: false,
           value: Math.random(),
           layer: layerIndex
@@ -344,7 +345,7 @@ export default function UltraAIShowcase() {
               </div>
 
               {/* Multi-Layer Neural Network Visualization - Increased height */}
-              <div className="relative h-80 mb-6 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-xl border border-gray-700/50 overflow-visible">
+              <div className="relative h-96 mb-6 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-xl border border-gray-700/50 overflow-visible">
                 {/* Animated Background Matrix */}
                 <motion.div
                   className="absolute inset-0"
@@ -374,7 +375,7 @@ export default function UltraAIShowcase() {
                             x2={targetNode.x}
                             y2={targetNode.y}
                             stroke={shouldShow ? `url(#gradient-${sourceNode.layer})` : "rgba(75,85,99,0.1)"}
-                            strokeWidth={shouldShow ? "2" : "0.5"}
+                            strokeWidth={shouldShow ? "1" : "0.3"}
                             initial={{ pathLength: 0, opacity: 0 }}
                             animate={{ 
                               pathLength: shouldShow ? 1 : 0,
@@ -425,10 +426,10 @@ export default function UltraAIShowcase() {
                       <motion.div
                         className="absolute inset-0 rounded-full"
                         style={{
-                          width: '20px',
-                          height: '20px',
-                          left: '-10px',
-                          top: '-10px',
+                          width: '12px',
+                          height: '12px',
+                          left: '-6px',
+                          top: '-6px',
                           background: `radial-gradient(circle, ${
                             node.layer === 4 ? 'rgba(34, 197, 94, 0.3)' :
                             node.layer === 3 ? 'rgba(236, 72, 153, 0.3)' :
@@ -463,10 +464,10 @@ export default function UltraAIShowcase() {
                           : 'bg-gray-700/50 border border-gray-600/30'
                       }`}
                       style={{ 
-                        width: node.layer === 0 || node.layer === 4 ? '12px' : '8px',
-                        height: node.layer === 0 || node.layer === 4 ? '12px' : '8px',
+                        width: node.layer === 0 || node.layer === 4 ? '8px' : '6px',
+                        height: node.layer === 0 || node.layer === 4 ? '8px' : '6px',
                         boxShadow: node.activated ? 
-                          `0 0 ${20 + node.value * 10}px ${
+                          `0 0 ${10 + node.value * 5}px ${
                             node.layer === 4 ? 'rgba(34, 197, 94, 0.8)' :
                             node.layer === 3 ? 'rgba(236, 72, 153, 0.8)' :
                             node.layer === 2 ? 'rgba(147, 51, 234, 0.8)' :
@@ -492,11 +493,11 @@ export default function UltraAIShowcase() {
                       <motion.div
                         className="absolute rounded-full"
                         style={{
-                          width: '40px',
-                          height: '40px',
-                          left: '-20px',
-                          top: '-20px',
-                          border: '2px solid',
+                          width: '24px',
+                          height: '24px',
+                          left: '-12px',
+                          top: '-12px',
+                          border: '1px solid',
                           borderColor: index % 2 === 0 ? 'rgba(34, 197, 94, 0.5)' : 'rgba(147, 51, 234, 0.5)'
                         }}
                         animate={{
@@ -514,13 +515,13 @@ export default function UltraAIShowcase() {
                 ))}
 
                 {/* Layer Labels - Improved spacing and visibility */}
-                <div className="absolute bottom-2 left-2 text-xs text-gray-300 font-mono">
-                  <div className="flex gap-8">
-                    <span className="opacity-80 font-semibold">Input</span>
-                    <span className="opacity-80 font-semibold">Hidden1</span>
-                    <span className="opacity-80 font-semibold">Hidden2</span>
-                    <span className="opacity-80 font-semibold">Hidden3</span>
-                    <span className="opacity-80 font-semibold">Output</span>
+                <div className="absolute bottom-4 left-4 right-4 text-xs text-gray-300 font-mono">
+                  <div className="flex justify-between items-center">
+                    <span className="opacity-80 font-semibold bg-gray-800/60 px-2 py-1 rounded">Input</span>
+                    <span className="opacity-80 font-semibold bg-gray-800/60 px-2 py-1 rounded">Hidden1</span>
+                    <span className="opacity-80 font-semibold bg-gray-800/60 px-2 py-1 rounded">Hidden2</span>
+                    <span className="opacity-80 font-semibold bg-gray-800/60 px-2 py-1 rounded">Hidden3</span>
+                    <span className="opacity-80 font-semibold bg-gray-800/60 px-2 py-1 rounded">Output</span>
                   </div>
                 </div>
               </div>
