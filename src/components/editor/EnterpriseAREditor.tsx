@@ -56,7 +56,7 @@ import EnterpriseToolbar from './components/EnterpriseToolbar';
 import EditorSettings from './components/EditorSettings';
 import { NodePropertiesPanel } from './NodePropertiesPanel';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
-import { BackgroundColorPicker } from './BackgroundColorPicker';
+// import { BackgroundColorPicker } from './BackgroundColorPicker'; // TODO: Implement background picker
 import SmartNodeTypes from './nodes/SmartNodeTypes';
 
 // Types
@@ -85,7 +85,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showEdgePropertiesPanel, setShowEdgePropertiesPanel] = useState(false);
-  const [showBackgroundPicker, setShowBackgroundPicker] = useState(false);
+  // const [showBackgroundPicker, setShowBackgroundPicker] = useState(false); // TODO: Implement background picker
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -194,13 +194,13 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   );
 
   // Node and Edge Selection Handlers
-  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const handleNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
     setShowPropertiesPanel(true);
     setShowEdgePropertiesPanel(false);
   }, []);
 
-  const handleEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+  const handleEdgeClick = useCallback((_event: React.MouseEvent, edge: Edge) => {
     setSelectedEdge(edge);
     setShowEdgePropertiesPanel(true);
     setShowPropertiesPanel(false);
