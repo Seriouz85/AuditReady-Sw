@@ -102,7 +102,7 @@ export default function UltraAIShowcase() {
     let nodeId = 0;
     
     layers.forEach((layerSize, layerIndex) => {
-      const layerX = (layerIndex * 100) + 40; // Reduced spacing to fit better
+      const layerX = (layerIndex * 80) + 60; // Increased left padding and reduced spacing
       const startY = (280 - (layerSize * 32)) / 2; // Adjusted for viewport
       
       for (let i = 0; i < layerSize; i++) {
@@ -221,18 +221,10 @@ export default function UltraAIShowcase() {
     
     setProgress(100);
     
-    // Keep showing results for a while, then restart
+    // Keep showing results, but don't auto-restart (run once only)
     setTimeout(() => {
       setIsProcessing(false);
-      setShowMatrix(false);
-      setNeuralNodes(prev => prev.map(node => ({ ...node, activated: false })));
-      setCurrentPhase(0);
-      
-      // Auto-restart after a pause
-      setTimeout(() => {
-        if (isInView) startProcessing();
-      }, 3000);
-    }, 4000);
+    }, 2000);
   };
 
   return (
@@ -321,7 +313,7 @@ export default function UltraAIShowcase() {
           </motion.p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Enhanced AI Processing Visualization */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -601,6 +593,7 @@ export default function UltraAIShowcase() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="space-y-6"
+            style={{ minHeight: '800px' }} // Match left side height
           >
             <motion.div
               className="text-center mb-8"
@@ -643,25 +636,25 @@ export default function UltraAIShowcase() {
                           {example.icon}
                         </div>
                         <div>
-                          <Badge className={`bg-${example.color}-500/20 text-${example.color}-300 border-${example.color}-400/30 text-xs`}>
+                          <Badge className={`bg-${example.color}-500/30 text-${example.color}-200 border-${example.color}-400/50 text-xs font-semibold`}>
                             {example.confidence}% Confidence
                           </Badge>
-                          <div className="text-xs text-gray-400 mt-1">{example.framework}</div>
+                          <div className="text-xs text-gray-200 mt-1 font-semibold">{example.framework}</div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <div className="flex items-center gap-2 text-xs text-gray-200">
                         <Lightbulb className="w-4 h-4" />
-                        AI Match
+                        <span className="font-medium">AI Match</span>
                       </div>
                     </div>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/30">
+                      <div className="p-4 bg-gray-900/80 rounded-lg border border-gray-600/50">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="text-xs text-cyan-400 font-semibold">{example.framework}</div>
-                          <Badge variant="outline" className="text-xs">{example.code}</Badge>
+                          <div className="text-xs text-cyan-300 font-bold">{example.framework}</div>
+                          <Badge variant="outline" className="text-xs border-gray-400 text-gray-100">{example.code}</Badge>
                         </div>
-                        <div className="text-sm text-gray-200 leading-relaxed">{example.requirement}</div>
+                        <div className="text-sm text-gray-100 leading-relaxed font-medium">{example.requirement}</div>
                       </div>
                       
                       {/* Vector Visualization */}
@@ -701,15 +694,15 @@ export default function UltraAIShowcase() {
                         </motion.div>
                       </div>
                       
-                      <div className={`p-4 bg-gradient-to-r from-${example.color}-500/10 to-${example.color}-600/10 rounded-lg border border-${example.color}-400/30`}>
+                      <div className={`p-4 bg-gradient-to-r from-${example.color}-500/20 to-${example.color}-600/20 rounded-lg border border-${example.color}-400/50`}>
                         <div className="flex items-center justify-between mb-2">
-                          <div className="text-xs text-purple-400 font-semibold">Unified Category</div>
-                          <Badge className="bg-green-500/20 text-green-300 border-green-400/30 text-xs">
+                          <div className="text-xs text-purple-200 font-bold">Unified Category</div>
+                          <Badge className="bg-green-500/30 text-green-200 border-green-400/50 text-xs font-semibold">
                             Mapped
                           </Badge>
                         </div>
-                        <div className="text-sm font-medium text-white">{example.mappedTo}</div>
-                        <div className="text-xs text-gray-400 mt-1">{example.category}</div>
+                        <div className="text-sm font-bold text-white">{example.mappedTo}</div>
+                        <div className="text-xs text-gray-200 mt-1 font-medium">{example.category}</div>
                       </div>
                     </div>
                   </div>
