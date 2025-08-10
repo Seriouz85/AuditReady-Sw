@@ -1,4 +1,3 @@
-import React from 'react';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
 import SemanticMappingDashboard from '@/components/admin/SemanticMappingDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
