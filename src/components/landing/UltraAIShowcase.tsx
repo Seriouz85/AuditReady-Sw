@@ -56,7 +56,7 @@ interface ComplianceExample {
   color: string;
 }
 
-// Real compliance examples from NIS2, ISO 27002, and CIS Controls
+// Real compliance examples from NIS2, ISO 27002, and CIS Controls (2 examples for parallel display)
 const COMPLIANCE_EXAMPLES: ComplianceExample[] = [
   {
     framework: "NIS2 Directive",
@@ -78,29 +78,7 @@ const COMPLIANCE_EXAMPLES: ComplianceExample[] = [
     confidence: 91,
     category: "Incident Management",
     icon: <AlertTriangle className="w-4 h-4" />,
-    color: "red"
-  },
-  {
-    framework: "CIS Controls v8",
-    requirement: "Establish and maintain an inventory of authorized and unauthorized devices",
-    code: "CIS 1.1",
-    vector: [0.83, 0.79, 0.87, 0.85, 0.92, 0.78, 0.88, 0.81],
-    mappedTo: "Asset Management",
-    confidence: 89,
-    category: "Asset Inventory",
-    icon: <Database className="w-4 h-4" />,
-    color: "green"
-  },
-  {
-    framework: "NIS2 Directive",
-    requirement: "Risk assessment and management of network and information systems security risks",
-    code: "Art. 21.1",
-    vector: [0.91, 0.85, 0.78, 0.93, 0.87, 0.84, 0.90, 0.86],
-    mappedTo: "Risk Management & Assessment",
-    confidence: 93,
-    category: "Risk Management",
-    icon: <Target className="w-4 h-4" />,
-    color: "orange"
+    color: "purple"
   }
 ];
 
@@ -120,12 +98,12 @@ export default function UltraAIShowcase() {
   // Initialize neural network visualization with multiple layers
   useEffect(() => {
     const nodes: NeuralNode[] = [];
-    const layers = [6, 8, 12, 8, 4]; // Input, Hidden1, Hidden2, Hidden3, Output layers
+    const layers = [4, 6, 8, 6, 2]; // Input, Hidden1, Hidden2, Hidden3, Output layers (2 outputs for 2 cards)
     let nodeId = 0;
     
     layers.forEach((layerSize, layerIndex) => {
-      const layerX = (layerIndex * 180) + 50;
-      const startY = (400 - (layerSize * 30)) / 2;
+      const layerX = (layerIndex * 100) + 40; // Reduced spacing to fit better
+      const startY = (280 - (layerSize * 32)) / 2; // Adjusted for viewport
       
       for (let i = 0; i < layerSize; i++) {
         nodes.push({
@@ -343,7 +321,7 @@ export default function UltraAIShowcase() {
           </motion.p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 items-stretch">
           {/* Enhanced AI Processing Visualization */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -373,8 +351,8 @@ export default function UltraAIShowcase() {
                 </div>
               </div>
 
-              {/* Multi-Layer Neural Network Visualization */}
-              <div className="relative h-80 mb-8 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-xl border border-gray-700/50 overflow-hidden">
+              {/* Multi-Layer Neural Network Visualization - Adjusted height */}
+              <div className="relative h-72 mb-6 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-xl border border-gray-700/50 overflow-visible">
                 {/* Animated Background Matrix */}
                 <motion.div
                   className="absolute inset-0"
@@ -440,32 +418,107 @@ export default function UltraAIShowcase() {
                   </defs>
                 </svg>
 
-                {/* Neural nodes with enhanced animations */}
+                {/* Neural nodes with mind-blowing animations */}
                 {neuralNodes.map((node, index) => (
                   <motion.div
                     key={node.id}
-                    className={`absolute rounded-full transform -translate-x-1/2 -translate-y-1/2 ${
-                      node.activated 
-                        ? `bg-gradient-to-r from-cyan-400 to-purple-400 shadow-lg` 
-                        : 'bg-gray-600'
-                    }`}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2"
                     style={{ 
                       left: node.x, 
                       top: node.y,
-                      width: node.layer === 0 || node.layer === 4 ? '8px' : '6px',
-                      height: node.layer === 0 || node.layer === 4 ? '8px' : '6px',
-                      boxShadow: node.activated ? `0 0 ${12 + node.value * 8}px rgba(147, 51, 234, 0.6)` : 'none'
                     }}
-                    animate={node.activated ? {
-                      scale: [1, 1.3, 1],
-                      opacity: [0.7, 1, 0.7]
-                    } : {}}
-                    transition={{ 
-                      duration: 1.5 + (node.value * 0.5), 
-                      repeat: Infinity,
-                      delay: node.layer * 0.1
-                    }}
-                  />
+                  >
+                    {/* Outer pulse ring */}
+                    {node.activated && (
+                      <motion.div
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          left: '-10px',
+                          top: '-10px',
+                          background: `radial-gradient(circle, ${
+                            node.layer === 4 ? 'rgba(34, 197, 94, 0.3)' :
+                            node.layer === 3 ? 'rgba(236, 72, 153, 0.3)' :
+                            node.layer === 2 ? 'rgba(147, 51, 234, 0.3)' :
+                            node.layer === 1 ? 'rgba(59, 130, 246, 0.3)' :
+                            'rgba(6, 182, 212, 0.3)'
+                          } 0%, transparent 70%)`
+                        }}
+                        animate={{
+                          scale: [1, 2, 1],
+                          opacity: [0.8, 0, 0.8]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          delay: node.layer * 0.2
+                        }}
+                      />
+                    )}
+                    
+                    {/* Main node */}
+                    <motion.div
+                      className={`rounded-full ${
+                        node.activated 
+                          ? `bg-gradient-to-r ${
+                              node.layer === 4 ? 'from-green-400 to-emerald-500' :
+                              node.layer === 3 ? 'from-pink-400 to-purple-500' :
+                              node.layer === 2 ? 'from-purple-400 to-blue-500' :
+                              node.layer === 1 ? 'from-blue-400 to-cyan-500' :
+                              'from-cyan-400 to-teal-500'
+                            } shadow-lg` 
+                          : 'bg-gray-700/50 border border-gray-600/30'
+                      }`}
+                      style={{ 
+                        width: node.layer === 0 || node.layer === 4 ? '12px' : '8px',
+                        height: node.layer === 0 || node.layer === 4 ? '12px' : '8px',
+                        boxShadow: node.activated ? 
+                          `0 0 ${20 + node.value * 10}px ${
+                            node.layer === 4 ? 'rgba(34, 197, 94, 0.8)' :
+                            node.layer === 3 ? 'rgba(236, 72, 153, 0.8)' :
+                            node.layer === 2 ? 'rgba(147, 51, 234, 0.8)' :
+                            node.layer === 1 ? 'rgba(59, 130, 246, 0.8)' :
+                            'rgba(6, 182, 212, 0.8)'
+                          }` : 'none'
+                      }}
+                      animate={node.activated ? {
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 180, 360]
+                      } : {
+                        scale: 1
+                      }}
+                      transition={{ 
+                        duration: 2 + (node.value * 1), 
+                        repeat: Infinity,
+                        delay: (node.layer * 0.1) + (index * 0.05)
+                      }}
+                    />
+                    
+                    {/* Energy wave for output nodes */}
+                    {node.layer === 4 && node.activated && (
+                      <motion.div
+                        className="absolute rounded-full"
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          left: '-20px',
+                          top: '-20px',
+                          border: '2px solid',
+                          borderColor: index % 2 === 0 ? 'rgba(34, 197, 94, 0.5)' : 'rgba(147, 51, 234, 0.5)'
+                        }}
+                        animate={{
+                          scale: [1, 3, 1],
+                          opacity: [1, 0, 1]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          delay: index * 0.5
+                        }}
+                      />
+                    )}
+                  </motion.div>
                 ))}
 
                 {/* Layer Labels */}
@@ -480,12 +533,12 @@ export default function UltraAIShowcase() {
                 </div>
               </div>
 
-              {/* Enhanced Processing Phases */}
-              <div className="space-y-3">
+              {/* Enhanced Processing Phases - Compact */}
+              <div className="space-y-2">
                 {phases.map((phase, index) => (
                   <motion.div
                     key={phase.id}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-500 ${
+                    className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${
                       currentPhase === index && isProcessing
                         ? `bg-gradient-to-r from-${phase.color}-500/20 to-${phase.color}-600/20 border border-${phase.color}-400/30`
                         : currentPhase > index
@@ -559,8 +612,8 @@ export default function UltraAIShowcase() {
               <p className="text-gray-400">Real requirements from global standards</p>
             </motion.div>
 
-            {/* Real Compliance Examples Mapping */}
-            <AnimatePresence mode="wait">
+            {/* Real Compliance Examples Mapping - Only 2 cards aligned with outputs */}
+            <div className="space-y-4">
               {COMPLIANCE_EXAMPLES.map((example, index) => (
                 <motion.div
                   key={`${example.framework}-${index}`}
@@ -669,9 +722,38 @@ export default function UltraAIShowcase() {
                       transition={{ delay: index * 0.3 + 0.5, duration: 0.8 }}
                     />
                   )}
+                  {/* Visual connection from neural network to this card */}
+                  {currentPhase >= 3 && index < 2 && (
+                    <motion.div
+                      className="absolute -left-8 top-1/2 transform -translate-y-1/2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <svg width="32" height="2" className="overflow-visible">
+                        <motion.line
+                          x1="0"
+                          y1="1"
+                          x2="32"
+                          y2="1"
+                          stroke={`url(#connection-gradient-${index})`}
+                          strokeWidth="2"
+                          initial={{ pathLength: 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ duration: 0.5, delay: index * 0.3 }}
+                        />
+                        <defs>
+                          <linearGradient id={`connection-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor={index === 0 ? "#22c55e" : "#a855f7"} stopOpacity="0.8" />
+                            <stop offset="100%" stopColor={index === 0 ? "#06b6d4" : "#ec4899"} stopOpacity="0.8" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
-            </AnimatePresence>
+            </div>
 
             {/* Enhanced Performance Stats */}
             <motion.div
