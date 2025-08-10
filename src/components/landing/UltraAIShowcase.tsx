@@ -102,14 +102,14 @@ export default function UltraAIShowcase() {
     let nodeId = 0;
     
     layers.forEach((layerSize, layerIndex) => {
-      const layerX = (layerIndex * 80) + 60; // Increased left padding and reduced spacing
-      const startY = (280 - (layerSize * 32)) / 2; // Adjusted for viewport
+      const layerX = (layerIndex * 110) + 80; // Increased spacing and padding for better visibility
+      const startY = (320 - (layerSize * 40)) / 2; // Increased viewport height and node spacing
       
       for (let i = 0; i < layerSize; i++) {
         nodes.push({
           id: nodeId++,
           x: layerX,
-          y: startY + (i * 35),
+          y: startY + (i * 40),
           activated: false,
           value: Math.random(),
           layer: layerIndex
@@ -305,7 +305,7 @@ export default function UltraAIShowcase() {
             transition={{ delay: 0.6 }}
             className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed"
           >
-            Watch our neural networks automatically map real compliance requirements.
+            Watch our neural networks automatically categorize requirements, detect overlap, and simplify your compliance journey.
             <br />
             <span className="text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text font-semibold">
               NIS2, ISO 27002, CIS Controls → Unified Intelligence
@@ -343,8 +343,8 @@ export default function UltraAIShowcase() {
                 </div>
               </div>
 
-              {/* Multi-Layer Neural Network Visualization - Adjusted height */}
-              <div className="relative h-72 mb-6 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-xl border border-gray-700/50 overflow-visible">
+              {/* Multi-Layer Neural Network Visualization - Increased height */}
+              <div className="relative h-80 mb-6 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-xl border border-gray-700/50 overflow-visible">
                 {/* Animated Background Matrix */}
                 <motion.div
                   className="absolute inset-0"
@@ -513,14 +513,14 @@ export default function UltraAIShowcase() {
                   </motion.div>
                 ))}
 
-                {/* Layer Labels */}
-                <div className="absolute bottom-2 left-2 text-xs text-gray-400 font-mono">
-                  <div className="flex gap-4">
-                    <span className="opacity-60">Input</span>
-                    <span className="opacity-60">Hidden1</span>
-                    <span className="opacity-60">Hidden2</span>
-                    <span className="opacity-60">Hidden3</span>
-                    <span className="opacity-60">Output</span>
+                {/* Layer Labels - Improved spacing and visibility */}
+                <div className="absolute bottom-2 left-2 text-xs text-gray-300 font-mono">
+                  <div className="flex gap-8">
+                    <span className="opacity-80 font-semibold">Input</span>
+                    <span className="opacity-80 font-semibold">Hidden1</span>
+                    <span className="opacity-80 font-semibold">Hidden2</span>
+                    <span className="opacity-80 font-semibold">Hidden3</span>
+                    <span className="opacity-80 font-semibold">Output</span>
                   </div>
                 </div>
               </div>
