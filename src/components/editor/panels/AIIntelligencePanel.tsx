@@ -208,6 +208,17 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
       industry: 'compliance' as const
     },
     {
+      id: 'cyber-risk-management',
+      title: 'Cyber Risk Management Process',
+      prompt: 'Create a comprehensive cybersecurity risk management process including: 1) Risk Identification (asset inventory, threat identification, vulnerability assessment), 2) Risk Analysis (likelihood assessment, impact evaluation, risk rating matrix), 3) Risk Evaluation (risk tolerance, acceptance criteria, stakeholder review), 4) Risk Treatment (mitigation strategies, control implementation, residual risk assessment), 5) Risk Monitoring (continuous monitoring, KRI tracking, regular reviews), 6) Risk Communication (reporting, stakeholder updates, incident response integration), 7) Risk Review (periodic assessment, process improvement, lessons learned). Include decision points, feedback loops, and integration with business continuity planning.',
+      category: 'Risk Management',
+      diagramType: 'flowchart' as const,
+      icon: Shield,
+      color: 'from-red-500 to-orange-500',
+      complexity: 'complex' as const,
+      industry: 'compliance' as const
+    },
+    {
       id: 'decision-tree',
       title: 'Risk Assessment Decision Tree',
       prompt: 'Create a risk assessment decision tree for evaluating cybersecurity threats with likelihood, impact, and mitigation decision points',

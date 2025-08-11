@@ -216,14 +216,53 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   }, []);
 
   // Node Update Handler - with store sync
-  const handleNodeUpdate = useCallback((nodeId: string, updates: Partial<Node>) => {
+  const handleNodeUpdate = useCallback((nodeId: string, updates: any) => {
     setNodes(nodes => {
-      const updatedNodes = nodes.map(node => 
-        node.id === nodeId 
-          ? { ...node, ...updates, data: { ...node.data, ...updates.data } }
-          : node
-      );
-      // Sync with store immediately for color changes
+      const updatedNodes = nodes.map(node => {
+        if (node.id === nodeId) {
+          // Handle updates that are direct properties (like label, description, fillColor, etc.)
+          const dataUpdates = { ...node.data };
+          Object.keys(updates).forEach(key => {
+            dataUpdates[key] = updates[key];
+          });
+          
+          // Build style updates based on data changes
+          const styleUpdates: any = { ...node.style };
+          
+          if (updates.fillColor) {
+            if (updates.fillColor.includes('gradient')) {
+              styleUpdates.background = updates.fillColor;
+              styleUpdates.backgroundColor = 'transparent';
+            } else {
+              styleUpdates.backgroundColor = updates.fillColor;
+              styleUpdates.background = updates.fillColor;
+            }
+          }
+          
+          if (updates.strokeColor) {
+            styleUpdates.borderColor = updates.strokeColor;
+            styleUpdates.border = `${updates.strokeWidth || 2}px solid ${updates.strokeColor}`;
+          }
+          
+          if (updates.strokeWidth) {
+            const currentColor = updates.strokeColor || node.data.strokeColor || '#e2e8f0';
+            styleUpdates.border = `${updates.strokeWidth}px solid ${currentColor}`;
+          }
+          
+          if (updates.textColor) {
+            styleUpdates.color = updates.textColor;
+          }
+          
+          return {
+            ...node,
+            data: dataUpdates,
+            style: styleUpdates
+          };
+        }
+        return node;
+      });
+      
+      // Sync with store immediately
       requestAnimationFrame(() => {
         storeSetNodes(updatedNodes);
       });
