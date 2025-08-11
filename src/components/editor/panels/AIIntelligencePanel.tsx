@@ -64,7 +64,7 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
     {
       id: 'welcome',
       role: 'assistant',
-      content: "🚀 **Welcome to One-Shot AI Diagram Generation!**\n\nI'm your advanced AI diagram assistant powered by Google Gemini. I can create complete, professional diagrams instantly with a single click.\n\n**🎯 One-Shot Features:**\n• **Instant Generation** - Complete diagrams in seconds\n• **Smart Gantt Charts** - Automatic timeline calculations with dependencies\n• **Industry Templates** - Specialized for audit, compliance, software development\n• **Professional Styling** - Publication-ready diagrams\n\n**💡 Quick Start:**\n1. Choose a template above for instant generation\n2. Or type a custom prompt below\n3. Watch as I create a complete diagram instantly!\n\n**🔥 Try saying:** \"Create a mobile app development Gantt chart\" or \"Design a cybersecurity incident response flow\"\n\nReady to create something amazing?",
+      content: "🚀 **Welcome to Intelligent AI Diagram Generation!**\n\nI'm your advanced AI diagram assistant with smart template recognition. I can create complete, professional diagrams instantly and automatically choose the best specialized template based on your request.\n\n**🎯 Intelligent Features:**\n• **Auto-Detection** - I automatically recognize what type of diagram you need\n• **Specialized Templates** - Professional templates for risk management, incident response, audits, software development\n• **Smart Routing** - Custom prompts are intelligently routed to the best template\n• **Industry Standards** - Follows compliance and security best practices\n\n**💡 Just type naturally and I'll figure out the rest:**\n• \"Risk management process\" → Uses comprehensive cyber security risk template\n• \"Incident response workflow\" → Uses NIST-compliant incident response template  \n• \"Software project timeline\" → Uses development Gantt chart template\n• \"Audit compliance process\" → Uses ISO 27001 audit template\n\n**🔥 The AI gets smarter with every query - try any process or workflow idea!**\n\nReady to create something amazing?",
       timestamp: new Date(),
       type: 'text'
     }
@@ -236,6 +236,186 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Intelligent prompt analyzer to route to specialized templates
+  const analyzePromptAndGetTemplate = (promptText: string): any => {
+    const promptLower = promptText.toLowerCase();
+    
+    // Risk Management Process Detection
+    if ((promptLower.includes('risk') && (promptLower.includes('management') || promptLower.includes('assessment') || promptLower.includes('analysis'))) ||
+        (promptLower.includes('cyber') && promptLower.includes('risk')) ||
+        (promptLower.includes('security') && promptLower.includes('risk')) ||
+        (promptLower.includes('threat') && promptLower.includes('assessment')) ||
+        promptLower.includes('risk register') ||
+        promptLower.includes('risk matrix') ||
+        promptLower.includes('risk mitigation') ||
+        promptLower.includes('risk evaluation') ||
+        promptLower.includes('risk treatment')) {
+      
+      // Find the cyber risk management preset
+      const riskPreset = presetPrompts.find(p => p.id === 'cyber-risk-management');
+      if (riskPreset) {
+        return {
+          ...riskPreset,
+          prompt: promptText // Use user's custom prompt but with specialized template settings
+        };
+      }
+    }
+    
+    // Incident Response Detection
+    if ((promptLower.includes('incident') && promptLower.includes('response')) ||
+        (promptLower.includes('security') && promptLower.includes('incident')) ||
+        (promptLower.includes('cyber') && promptLower.includes('incident')) ||
+        promptLower.includes('incident handling') ||
+        promptLower.includes('breach response') ||
+        promptLower.includes('security breach') ||
+        promptLower.includes('incident management')) {
+      
+      const incidentPreset = presetPrompts.find(p => p.id === 'incident-response');
+      if (incidentPreset) {
+        return {
+          ...incidentPreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Software Development Gantt Detection
+    if (((promptLower.includes('software') || promptLower.includes('app') || promptLower.includes('development')) && 
+         (promptLower.includes('timeline') || promptLower.includes('schedule') || promptLower.includes('gantt') || promptLower.includes('project plan'))) ||
+        (promptLower.includes('mobile') && promptLower.includes('development')) ||
+        (promptLower.includes('web') && promptLower.includes('development')) ||
+        promptLower.includes('sdlc') ||
+        promptLower.includes('software project')) {
+      
+      const softwarePreset = presetPrompts.find(p => p.id === 'software-gantt');
+      if (softwarePreset) {
+        return {
+          ...softwarePreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Audit/Compliance Process Detection
+    if (promptLower.includes('audit') || 
+        promptLower.includes('compliance') ||
+        promptLower.includes('iso 27001') ||
+        promptLower.includes('nis2') ||
+        promptLower.includes('gdpr') ||
+        promptLower.includes('sox') ||
+        promptLower.includes('regulatory')) {
+      
+      const auditPreset = presetPrompts.find(p => p.id === 'iso-process' || p.id === 'compliance-audit');
+      if (auditPreset) {
+        return {
+          ...auditPreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Network Architecture Detection
+    if ((promptLower.includes('network') && (promptLower.includes('architecture') || promptLower.includes('design') || promptLower.includes('diagram'))) ||
+        promptLower.includes('enterprise network') ||
+        promptLower.includes('network topology') ||
+        (promptLower.includes('security') && promptLower.includes('architecture'))) {
+      
+      const networkPreset = presetPrompts.find(p => p.id === 'network-architecture');
+      if (networkPreset) {
+        return {
+          ...networkPreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Business Process Detection
+    if (promptLower.includes('customer onboarding') ||
+        promptLower.includes('business process') ||
+        promptLower.includes('workflow') ||
+        (promptLower.includes('process') && promptLower.includes('flow'))) {
+      
+      const businessPreset = presetPrompts.find(p => p.id === 'customer-onboarding');
+      if (businessPreset) {
+        return {
+          ...businessPreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Data Pipeline Detection
+    if (promptLower.includes('etl') ||
+        promptLower.includes('data pipeline') ||
+        (promptLower.includes('data') && (promptLower.includes('processing') || promptLower.includes('transformation'))) ||
+        promptLower.includes('data warehouse') ||
+        promptLower.includes('data flow')) {
+      
+      const dataPreset = presetPrompts.find(p => p.id === 'data-pipeline');
+      if (dataPreset) {
+        return {
+          ...dataPreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Decision Tree Detection
+    if (promptLower.includes('decision tree') ||
+        promptLower.includes('decision flow') ||
+        (promptLower.includes('decision') && promptLower.includes('process'))) {
+      
+      const decisionPreset = presetPrompts.find(p => p.id === 'decision-tree');
+      if (decisionPreset) {
+        return {
+          ...decisionPreset,
+          prompt: promptText
+        };
+      }
+    }
+    
+    // Default: Analyze for diagram type and complexity
+    let diagramType: any = 'flowchart';
+    let complexity: any = 'medium';
+    let industry: any = 'general';
+    
+    // Diagram type detection
+    if (promptLower.includes('gantt') || promptLower.includes('timeline') || promptLower.includes('schedule')) {
+      diagramType = 'gantt';
+    } else if (promptLower.includes('network') || promptLower.includes('architecture')) {
+      diagramType = 'network';
+    } else if (promptLower.includes('decision')) {
+      diagramType = 'decision';
+    } else if (promptLower.includes('swimlane') || promptLower.includes('swim lane')) {
+      diagramType = 'swimlane';
+    }
+    
+    // Complexity detection
+    if (promptLower.includes('simple') || promptLower.includes('basic') || promptLower.includes('quick')) {
+      complexity = 'simple';
+    } else if (promptLower.includes('complex') || promptLower.includes('detailed') || promptLower.includes('comprehensive') || promptLower.includes('enterprise')) {
+      complexity = 'complex';
+    }
+    
+    // Industry detection
+    if (promptLower.includes('audit') || promptLower.includes('compliance') || promptLower.includes('security')) {
+      industry = 'compliance';
+    } else if (promptLower.includes('software') || promptLower.includes('development') || promptLower.includes('tech')) {
+      industry = 'software';
+    } else if (promptLower.includes('business') || promptLower.includes('corporate')) {
+      industry = 'business';
+    }
+    
+    return {
+      prompt: promptText,
+      diagramType,
+      complexity,
+      industry,
+      title: `Custom ${diagramType.charAt(0).toUpperCase() + diagramType.slice(1)} Diagram`,
+      category: 'Custom Request'
+    };
+  };
+
   // Handle one-shot diagram generation
   const handleOneShotGeneration = async (presetPrompt?: any) => {
     const messageText = presetPrompt?.prompt || inputValue.trim();
@@ -254,15 +434,27 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
     setIsLoading(true);
 
     try {
-      // Prepare one-shot diagram request
+      // Use intelligent prompt analysis if no preset provided
+      const templateConfig = presetPrompt || analyzePromptAndGetTemplate(messageText);
+      
+      // Prepare one-shot diagram request with intelligent routing
       const request: OneShotDiagramRequest = {
         prompt: messageText,
-        diagramType: presetPrompt?.diagramType || 'flowchart',
-        complexity: presetPrompt?.complexity || 'medium',
-        industry: presetPrompt?.industry || 'general',
-        includeTimeline: presetPrompt?.includeTimeline,
-        projectDuration: presetPrompt?.projectDuration
+        diagramType: templateConfig.diagramType || 'flowchart',
+        complexity: templateConfig.complexity || 'medium',
+        industry: templateConfig.industry || 'general',
+        includeTimeline: templateConfig.includeTimeline,
+        projectDuration: templateConfig.projectDuration
       };
+      
+      // Add debug info for better user feedback
+      console.log('🤖 AI Prompt Analysis:', {
+        originalPrompt: messageText,
+        detectedType: templateConfig.diagramType,
+        detectedComplexity: templateConfig.complexity,
+        detectedIndustry: templateConfig.industry,
+        usingTemplate: templateConfig.title || 'Custom Analysis'
+      });
 
       console.log('🚀 Starting one-shot generation with request:', request);
 
@@ -287,13 +479,18 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
         response.nodes.forEach(node => addNode(node));
         response.edges.forEach(edge => addEdge(edge));
 
+        // Enhanced success message with template detection info
+        const templateInfo = templateConfig.title && templateConfig.title !== 'Custom Request' 
+          ? `\n🎯 **Smart Template Used:** ${templateConfig.title} (${templateConfig.category})\n💡 Detected as: ${templateConfig.industry} industry, ${templateConfig.complexity} complexity`
+          : `\n🤖 **AI Analysis:** Custom ${templateConfig.diagramType} diagram`;
+
         const assistantMessage: AIMessage = {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
-          content: `🎉 **${response.title}** generated successfully!\n\n${response.description}\n\n**Generated:**\n• ${response.nodes.length} nodes\n• ${response.edges.length} connections\n• Processing time: ${response.processingTime}ms\n• Confidence: ${Math.round(response.confidence * 100)}%\n\n**Suggestions for improvement:**\n${response.suggestions.map(s => `• ${s}`).join('\n')}`,
+          content: `🎉 **${response.title}** generated successfully!${templateInfo}\n\n${response.description}\n\n**Generated:**\n• ${response.nodes.length} nodes\n• ${response.edges.length} connections\n• Processing time: ${response.processingTime}ms\n• Confidence: ${Math.round(response.confidence * 100)}%\n\n**Suggestions for improvement:**\n${response.suggestions.map(s => `• ${s}`).join('\n')}`,
           timestamp: new Date(),
           type: 'diagram',
-          metadata: response
+          metadata: { ...response, templateUsed: templateConfig.title }
         };
 
         setMessages(prev => [...prev, assistantMessage]);
@@ -305,10 +502,16 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
     } catch (error) {
       console.error('❌ One-shot generation failed:', error);
       
+      // Provide intelligent fallback suggestions based on the detected template
+      const templateType = templateConfig.diagramType || 'flowchart';
+      const templateSuggestions = templateConfig.title !== 'Custom Request' 
+        ? `\n🎯 **Detected Template:** ${templateConfig.title}\n💡 **Try these specific examples:**\n• "Create a ${templateType} for ${templateConfig.industry} risk management"\n• "Design a ${templateConfig.complexity} ${templateType} process"\n• "Show me a ${templateConfig.industry} workflow diagram"`
+        : `\n💡 **Try these specific examples:**\n• "Risk management process"\n• "Incident response workflow" \n• "Software development timeline"\n• "Audit compliance process"`;
+
       const errorMessage: AIMessage = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: `❌ **Generation Failed**\n\nI encountered an error while generating your diagram: ${error instanceof Error ? error.message : 'Unknown error'}\n\n**Try these solutions:**\n• Simplify your prompt\n• Check your internet connection\n• Try a different diagram type\n• Contact support if the issue persists\n\n💡 **Tip:** The system will automatically fall back to intelligent templates when AI services are unavailable.`,
+        content: `❌ **Generation Failed**\n\nI encountered an error while generating your diagram: ${error instanceof Error ? error.message : 'Unknown error'}${templateSuggestions}\n\n**Quick fixes:**\n• Simplify your prompt (remove complex technical jargon)\n• Use the quick examples below for guaranteed results\n• Try clicking a preset template above\n• Check your internet connection\n\n💡 **Note:** I detected your request as "${templateConfig.diagramType}" type with "${templateConfig.complexity}" complexity.`,
         timestamp: new Date(),
         type: 'text'
       };
@@ -732,16 +935,19 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
             {/* Quick Examples */}
             <div className="mt-2 flex flex-wrap gap-1">
               {[
-                'Software project timeline',
-                'Audit process flow',
-                'Network architecture',
-                'Customer journey'
+                'Risk management process',
+                'Cyber security risk assessment',
+                'Incident response workflow', 
+                'Software development timeline',
+                'Audit compliance process',
+                'Network security architecture'
               ].map((example, index) => (
                 <button
                   key={index}
                   onClick={() => setInputValue(example)}
                   className="text-xs px-2 py-1 bg-blue-100/70 hover:bg-blue-200/70 text-blue-700 rounded transition-colors"
                   disabled={isLoading}
+                  title={`Try: "${example}" - AI will auto-detect the best template`}
                 >
                   {example}
                 </button>
