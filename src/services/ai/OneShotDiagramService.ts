@@ -1594,17 +1594,25 @@ class OneShotDiagramService {
     
     return `You are an expert diagram designer specializing in ${processContext.domain} processes. Create a professional ${request.diagramType} diagram using ReactFlow node/edge format.
 
+🚫 ABSOLUTELY FORBIDDEN:
+- Do NOT create simple linear "Step 1, Step 2, Step 3..." sequences
+- Do NOT use generic labels like "Process Step 1", "Task 2", etc.  
+- Do NOT create workflows without decision points
+- Do NOT make straight-line processes without branches or loops
+
+✅ MANDATORY REQUIREMENTS:
 ${processContext.specificInstructions}
 
-CRITICAL REQUIREMENTS:
+TECHNICAL REQUIREMENTS:
 - Return ONLY valid JSON with "nodes" and "edges" arrays
 - Each node must have: id, type: "custom", position: {x, y}, data: {label, shape, fillColor, strokeColor, textColor}
 - Each edge must have: id, source, target, type, style, markerEnd
 - Use professional ${request.diagramType} conventions for ${processContext.domain}
 - Include meaningful process-specific labels and logical connections
 - Apply industry-standard styling and colors
-- Include decision points where appropriate (diamond shapes)
-- Show parallel processes and feedback loops where relevant
+- MUST include multiple decision points (diamond shapes)
+- MUST show parallel processes and feedback loops
+- MUST use specific business terminology, not generic steps
 
 ${processContext.shapeGuidance}
 
@@ -1697,21 +1705,33 @@ Example Response Structure:
         simpleNodeCount: '5-7',
         mediumNodeCount: '8-12',
         complexNodeCount: '15',
-        specificInstructions: `Focus on risk management methodology with proper decision gates, assessment criteria, and mitigation strategies. Include risk registers, likelihood vs impact analysis, and treatment options.`,
-        requirements: `Risk Management Process Requirements:
-- Start with Risk Identification phase
-- Include Risk Assessment with likelihood and impact evaluation (use diamond shapes)
-- Show Risk Analysis and prioritization steps
-- Include all 4 Risk Treatment options: Accept, Mitigate, Transfer, Avoid (use decision diamonds)
-- Add Risk Monitoring and Review phases
-- Include feedback loops for continuous risk management
-- Show escalation paths and approval processes
-- Add risk register updates and communication steps`,
-        shapeGuidance: `Shape Usage:
-- Circles: Start/End points (Risk Identification, Risk Acceptance)
-- Rectangles: Process steps (Risk Analysis, Risk Register Update)
-- Diamonds: Decision points (Risk Assessment, Treatment Selection, Approval Gates)
-- Parallelograms: Documentation (Risk Register, Reports)`
+        specificInstructions: `Create a comprehensive risk management flowchart with proper decision points, parallel processes, and feedback loops. NEVER create simple linear "Step 1, Step 2" processes. This must be a professional risk management workflow with:
+- Multiple decision diamonds for risk evaluation gates
+- Parallel processing paths for different risk categories
+- Feedback loops from monitoring back to identification
+- Branch points for different treatment options
+- Approval gates and escalation paths`,
+        requirements: `Risk Management Process Requirements (MANDATORY DECISION POINTS):
+1. START: Risk Identification (circle, blue)
+2. Risk Register Check (diamond): "Risk already in register?" → Yes/No paths
+3. Risk Assessment (rectangle): Analyze likelihood and impact
+4. Risk Level Decision (diamond): "Risk level?" → Low/Medium/High/Critical paths
+5. Treatment Strategy (diamond): "Treatment approach?" → Accept/Mitigate/Transfer/Avoid
+6. For MITIGATE path: Risk Mitigation Planning → Implementation → Monitoring
+7. For TRANSFER path: Insurance/Outsourcing evaluation → Contract setup
+8. For AVOID path: Process redesign → Alternative approach
+9. For ACCEPT path: Direct to monitoring
+10. Monitoring & Review (rectangle) → feeds back to Risk Assessment
+11. Escalation Decision (diamond): "Requires escalation?" → Management/Board approval
+12. Risk Register Update (parallelogram) 
+13. END: Risk Accepted/Mitigated (circle, green)
+
+CRITICAL: Include at least 4-5 decision diamonds, show parallel paths, and feedback loops.`,
+        shapeGuidance: `Shape Usage (ENFORCED):
+- Circles: Start/End points only (Risk Identification, Final Acceptance)
+- Rectangles: Process activities (Analysis, Planning, Implementation, Monitoring)
+- Diamonds: ALL decision points (Register check, Risk level, Treatment choice, Escalation needs)
+- Parallelograms: Documentation outputs (Risk Register, Reports, Contracts)`
       };
     }
     

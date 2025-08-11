@@ -54,6 +54,7 @@ import StunningTemplateGallery from './components/StunningTemplateGallery';
 import FlowAnimationControls from './components/FlowAnimationControls';
 import EnterpriseToolbar from './components/EnterpriseToolbar';
 import EditorSettings from './components/EditorSettings';
+import ColorPalettePopup from './components/ColorPalettePopup';
 import { NodePropertiesPanel } from './NodePropertiesPanel';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
 // import { BackgroundColorPicker } from './BackgroundColorPicker'; // TODO: Implement background picker
@@ -83,6 +84,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const [showMiniMap, setShowMiniMap] = useState(true);
   const [animationSpeed, setAnimationSpeed] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
+  const [showColorPalette, setShowColorPalette] = useState(false);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showEdgePropertiesPanel, setShowEdgePropertiesPanel] = useState(false);
   // const [showBackgroundPicker, setShowBackgroundPicker] = useState(false); // TODO: Implement background picker
@@ -91,7 +93,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Hooks
-  const { currentTheme, setTheme, availableThemes } = useTheme();
+  const { currentTheme } = useTheme();
   const { } = useAccessibility();
   const { } = useReactFlow();
   
@@ -234,6 +236,32 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       )
     );
   }, []);
+
+  // Color Selection Handler
+  const handleColorSelect = useCallback((color: string, type: 'fill' | 'stroke' | 'text') => {
+    if (selectedNode) {
+      const updates: any = {};
+      if (type === 'fill') {
+        updates.style = { ...selectedNode.style, background: color };
+        updates.data = { ...selectedNode.data, fillColor: color };
+      } else if (type === 'stroke') {
+        updates.style = { ...selectedNode.style, border: `2px solid ${color}` };
+        updates.data = { ...selectedNode.data, strokeColor: color };
+      } else if (type === 'text') {
+        updates.style = { ...selectedNode.style, color };
+        updates.data = { ...selectedNode.data, textColor: color };
+      }
+      handleNodeUpdate(selectedNode.id, updates);
+    } else if (selectedEdge) {
+      const updates: any = {};
+      updates.style = { ...selectedEdge.style, stroke: color };
+      updates.data = { ...selectedEdge.data, strokeColor: color };
+      handleEdgeUpdate(selectedEdge.id, updates);
+    } else {
+      // Apply to all selected nodes/edges if any, or show notification
+      console.log(`🎨 Applied ${type} color ${color} - Select a node or edge first`);
+    }
+  }, [selectedNode, selectedEdge, handleNodeUpdate, handleEdgeUpdate]);
 
   // Drag and drop handlers
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -402,21 +430,38 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     setEdges(storeEdges);
   }, [storeEdges, setEdges]);
 
-  // Sync ReactFlow changes back to store
+  // Optimized ReactFlow changes handlers - reduced store syncing for smoother dragging
   const handleNodesChange = useCallback((changes: any) => {
     onNodesChange(changes);
-    // Sync back to store after a short delay
-    setTimeout(() => {
-      storeSetNodes(nodes);
-    }, 100);
+    
+    // Only sync to store on drag end, not during dragging for smoother performance
+    const hasDragEnd = changes.some((change: any) => 
+      change.type === 'position' && change.dragging === false
+    );
+    
+    if (hasDragEnd || changes.some((change: any) => 
+      ['add', 'remove', 'select', 'dimensions'].includes(change.type)
+    )) {
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        storeSetNodes(nodes);
+      });
+    }
   }, [onNodesChange, nodes, storeSetNodes]);
 
   const handleEdgesChange = useCallback((changes: any) => {
     onEdgesChange(changes);
-    // Sync back to store after a short delay
-    setTimeout(() => {
-      storeSetEdges(edges);
-    }, 100);
+    
+    // Only sync significant changes to store
+    const hasSignificantChange = changes.some((change: any) => 
+      ['add', 'remove', 'select'].includes(change.type)
+    );
+    
+    if (hasSignificantChange) {
+      requestAnimationFrame(() => {
+        storeSetEdges(edges);
+      });
+    }
   }, [onEdgesChange, edges, storeSetEdges]);
 
   // Keyboard shortcuts
@@ -603,6 +648,19 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             style={{
               background: 'transparent'
             }}
+            // Performance optimizations for smooth dragging
+            nodesDraggable={true}
+            nodesConnectable={true}
+            elementsSelectable={true}
+            selectNodesOnDrag={false}
+            panOnDrag={true}
+            zoomOnScroll={true}
+            zoomOnPinch={true}
+            minZoom={0.1}
+            maxZoom={4}
+            defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+            snapToGrid={false}
+            snapGrid={[15, 15]}
           >
             <Background
               variant={backgroundPatterns.dots}
@@ -722,15 +780,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             size="sm"
             variant="outline"
             className="bg-white/80 backdrop-blur-xl border-gray-200/50"
-            onClick={() => {
-              const themeIds = availableThemes.map(t => t.id);
-              const currentIndex = themeIds.indexOf(currentTheme?.id || '');
-              const nextIndex = (currentIndex + 1) % themeIds.length;
-              const nextTheme = themeIds[nextIndex];
-              if (nextTheme) {
-                setTheme(nextTheme);
-              }
-            }}
+            onClick={() => setShowColorPalette(true)}
+            title="Color Palette - Select colors for nodes and edges"
           >
             <Palette className="w-4 h-4" />
           </Button>
@@ -776,6 +827,15 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       <EditorSettings
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
+      />
+
+      {/* Color Palette Popup */}
+      <ColorPalettePopup
+        isOpen={showColorPalette}
+        onClose={() => setShowColorPalette(false)}
+        onColorSelect={handleColorSelect}
+        currentColor={selectedNode?.data?.fillColor || selectedEdge?.data?.strokeColor || '#3b82f6'}
+        selectedType="fill"
       />
 
       {/* Properties Panels */}
