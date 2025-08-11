@@ -55,16 +55,53 @@ const ColorPalettePopup: React.FC<ColorPalettePopupProps> = ({
     purple: {
       name: 'Purple',
       colors: ['#7c2d12', '#9333ea', '#a855f7', '#c084fc', '#d8b4fe', '#f3e8ff']
-    },
-    gradient: {
-      name: 'Gradients',
-      colors: [
+    }
+  };
+
+  // Professional gradient palettes
+  const gradientPalettes = {
+    professional: {
+      name: 'Professional',
+      gradients: [
         'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #2D3748 0%, #4A5568 100%)',
+        'linear-gradient(135deg, #1A365D 0%, #2C5282 100%)',
+        'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)',
+        'linear-gradient(135deg, #4A5568 0%, #718096 100%)',
+        'linear-gradient(135deg, #2B6CB0 0%, #3182CE 100%)'
+      ]
+    },
+    vibrant: {
+      name: 'Vibrant',
+      gradients: [
         'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
         'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
         'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
         'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+      ]
+    },
+    subtle: {
+      name: 'Subtle',
+      gradients: [
+        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+        'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
+        'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)',
+        'linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%)',
+        'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+        'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+      ]
+    },
+    radial: {
+      name: 'Radial',
+      gradients: [
+        'radial-gradient(circle, #667eea 0%, #764ba2 100%)',
+        'radial-gradient(circle, #ffecd2 0%, #fcb69f 100%)',
+        'radial-gradient(circle, #a8edea 0%, #fed6e3 100%)',
+        'radial-gradient(circle, #89f7fe 0%, #66a6ff 100%)',
+        'radial-gradient(circle, #fddb92 0%, #d1fdff 100%)',
+        'radial-gradient(circle, #9890e3 0%, #b1f4cf 100%)'
       ]
     }
   };
@@ -136,8 +173,9 @@ const ColorPalettePopup: React.FC<ColorPalettePopupProps> = ({
 
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="presets" className="text-xs">Presets</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="presets" className="text-xs">Colors</TabsTrigger>
+                  <TabsTrigger value="gradients" className="text-xs">Gradients</TabsTrigger>
                   <TabsTrigger value="custom" className="text-xs">Custom</TabsTrigger>
                   <TabsTrigger value="recent" className="text-xs">Recent</TabsTrigger>
                 </TabsList>
@@ -170,6 +208,78 @@ const ColorPalettePopup: React.FC<ColorPalettePopupProps> = ({
                       </div>
                     </div>
                   ))}
+                </TabsContent>
+
+                <TabsContent value="gradients" className="space-y-4 mt-4">
+                  {Object.entries(gradientPalettes).map(([key, palette]) => (
+                    <div key={key}>
+                      <Label className="text-xs font-medium text-gray-700 mb-2 flex items-center space-x-1">
+                        <span>{palette.name}</span>
+                        {key === 'professional' && <Star className="w-3 h-3 text-yellow-500" />}
+                      </Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {palette.gradients.map((gradient, index) => (
+                          <motion.button
+                            key={`${key}-${index}`}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleColorClick(gradient)}
+                            className="relative h-12 rounded-lg border-2 border-gray-200 hover:border-gray-400 transition-all overflow-hidden shadow-sm hover:shadow-md"
+                            style={{ 
+                              background: gradient
+                            }}
+                          >
+                            {currentColor === gradient && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                <Check className="w-5 h-5 text-white drop-shadow-lg" />
+                              </div>
+                            )}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="pt-4 border-t border-gray-200">
+                    <Label className="text-xs font-medium text-gray-700 mb-2">Quick Gradient Builder</Label>
+                    <div className="space-y-2">
+                      <div className="flex space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const gradient = `linear-gradient(90deg, ${customColor} 0%, #ffffff 100%)`;
+                            handleColorClick(gradient);
+                          }}
+                          className="text-xs flex-1"
+                        >
+                          → Horizontal
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const gradient = `linear-gradient(180deg, ${customColor} 0%, #ffffff 100%)`;
+                            handleColorClick(gradient);
+                          }}
+                          className="text-xs flex-1"
+                        >
+                          ↓ Vertical
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const gradient = `linear-gradient(135deg, ${customColor} 0%, #ffffff 100%)`;
+                            handleColorClick(gradient);
+                          }}
+                          className="text-xs flex-1"
+                        >
+                          ↘ Diagonal
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="custom" className="space-y-4 mt-4">

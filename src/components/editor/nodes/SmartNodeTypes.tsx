@@ -16,12 +16,33 @@ export const ProcessNode = ({ data, selected }: any) => {
     return <GanttChartNode data={data} selected={selected} />;
   }
   
-  // Base styles
+  // Base styles - check for custom colors from data
+  const hasCustomStyle = data.fillColor || data.strokeColor || data.textColor;
   const baseClasses = `transition-all duration-200 min-w-[120px] ${
-    selected 
+    !hasCustomStyle && selected 
       ? 'bg-gradient-to-r from-blue-500 to-purple-500 border-blue-400 shadow-lg text-white' 
-      : 'bg-white border-gray-300 shadow-sm hover:shadow-md hover:border-blue-300'
+      : !hasCustomStyle 
+        ? 'bg-white border-gray-300 shadow-sm hover:shadow-md hover:border-blue-300'
+        : 'shadow-sm hover:shadow-md'
   }`;
+  
+  // Apply custom styles from data
+  const customStyles: React.CSSProperties = {};
+  if (data.fillColor) {
+    if (data.fillColor.includes('gradient')) {
+      customStyles.background = data.fillColor;
+    } else {
+      customStyles.backgroundColor = data.fillColor;
+    }
+  }
+  if (data.strokeColor) {
+    customStyles.borderColor = data.strokeColor;
+    customStyles.borderWidth = '2px';
+    customStyles.borderStyle = 'solid';
+  }
+  if (data.textColor) {
+    customStyles.color = data.textColor;
+  }
   
   // Shape-specific styles
   const shapeClasses = {
@@ -36,7 +57,10 @@ export const ProcessNode = ({ data, selected }: any) => {
                         shape === 'parallelogram' ? 'transform -skew-x-12' : '';
   
   return (
-    <div className={`${baseClasses} ${shapeClasses[shape as keyof typeof shapeClasses] || shapeClasses.rectangle}`}>
+    <div 
+      className={`${baseClasses} ${shapeClasses[shape as keyof typeof shapeClasses] || shapeClasses.rectangle}`}
+      style={customStyles}
+    >
       <Handle type="target" position={Position.Top} className="w-3 h-3" />
       <div className={`text-center ${contentClasses}`}>
         <div className="text-sm font-semibold">{data.label}</div>

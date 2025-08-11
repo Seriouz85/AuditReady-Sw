@@ -215,51 +215,95 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     setSelectedEdge(null);
   }, []);
 
-  // Node Update Handler
+  // Node Update Handler - with store sync
   const handleNodeUpdate = useCallback((nodeId: string, updates: Partial<Node>) => {
-    setNodes(nodes => 
-      nodes.map(node => 
+    setNodes(nodes => {
+      const updatedNodes = nodes.map(node => 
         node.id === nodeId 
           ? { ...node, ...updates, data: { ...node.data, ...updates.data } }
           : node
-      )
-    );
-  }, []);
+      );
+      // Sync with store immediately for color changes
+      requestAnimationFrame(() => {
+        storeSetNodes(updatedNodes);
+      });
+      return updatedNodes;
+    });
+  }, [storeSetNodes]);
 
-  // Edge Update Handler  
+  // Edge Update Handler - with store sync
   const handleEdgeUpdate = useCallback((edgeId: string, updates: Partial<Edge>) => {
-    setEdges(edges => 
-      edges.map(edge => 
+    setEdges(edges => {
+      const updatedEdges = edges.map(edge => 
         edge.id === edgeId 
           ? { ...edge, ...updates, data: { ...edge.data, ...updates.data } }
           : edge
-      )
-    );
-  }, []);
+      );
+      // Sync with store immediately for color changes
+      requestAnimationFrame(() => {
+        storeSetEdges(updatedEdges);
+      });
+      return updatedEdges;
+    });
+  }, [storeSetEdges]);
 
-  // Color Selection Handler
+  // Color Selection Handler - Enhanced with gradient support
   const handleColorSelect = useCallback((color: string, type: 'fill' | 'stroke' | 'text') => {
+    const isGradient = color.startsWith('linear-gradient') || color.startsWith('radial-gradient');
+    
     if (selectedNode) {
-      const updates: any = {};
+      const updates: any = {
+        style: { ...selectedNode.style },
+        data: { ...selectedNode.data }
+      };
+      
       if (type === 'fill') {
-        updates.style = { ...selectedNode.style, background: color };
-        updates.data = { ...selectedNode.data, fillColor: color };
+        // Support both solid colors and gradients
+        if (isGradient) {
+          updates.style.background = color;
+          updates.style.backgroundColor = 'transparent';
+        } else {
+          updates.style.backgroundColor = color;
+          updates.style.background = color;
+        }
+        updates.data.fillColor = color;
       } else if (type === 'stroke') {
-        updates.style = { ...selectedNode.style, border: `2px solid ${color}` };
-        updates.data = { ...selectedNode.data, strokeColor: color };
+        // For gradients on stroke, we'll use a solid fallback color
+        const strokeColor = isGradient ? '#3b82f6' : color;
+        updates.style.border = `2px solid ${strokeColor}`;
+        updates.style.borderColor = strokeColor;
+        updates.data.strokeColor = strokeColor;
       } else if (type === 'text') {
-        updates.style = { ...selectedNode.style, color };
-        updates.data = { ...selectedNode.data, textColor: color };
+        updates.style.color = color;
+        updates.data.textColor = color;
       }
+      
       handleNodeUpdate(selectedNode.id, updates);
+      console.log(`🎨 Applied ${type} ${isGradient ? 'gradient' : 'color'} to node ${selectedNode.id}`);
+      
     } else if (selectedEdge) {
-      const updates: any = {};
-      updates.style = { ...selectedEdge.style, stroke: color };
-      updates.data = { ...selectedEdge.data, strokeColor: color };
+      const updates: any = {
+        style: { ...selectedEdge.style },
+        data: { ...selectedEdge.data }
+      };
+      
+      // Edges don't support gradients in ReactFlow, use solid color
+      const edgeColor = isGradient ? '#3b82f6' : color;
+      updates.style.stroke = edgeColor;
+      updates.data.strokeColor = edgeColor;
+      
       handleEdgeUpdate(selectedEdge.id, updates);
+      console.log(`🎨 Applied color to edge ${selectedEdge.id}`);
+      
     } else {
-      // Apply to all selected nodes/edges if any, or show notification
-      console.log(`🎨 Applied ${type} color ${color} - Select a node or edge first`);
+      // If no selection, apply to canvas background
+      const canvasElement = document.querySelector('.react-flow') as HTMLElement;
+      if (canvasElement && type === 'fill') {
+        canvasElement.style.background = color;
+        console.log(`🎨 Applied ${isGradient ? 'gradient' : 'color'} to canvas background`);
+      } else {
+        console.log(`💡 Select a node or edge first to apply ${type} color`);
+      }
     }
   }, [selectedNode, selectedEdge, handleNodeUpdate, handleEdgeUpdate]);
 
