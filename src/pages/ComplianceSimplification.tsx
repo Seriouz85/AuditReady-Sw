@@ -12,6 +12,8 @@ import {
   CheckCircle,
   ArrowRight,
   FileSpreadsheet,
+  Download,
+  ChevronDown,
   Lightbulb,
   Users,
   BookOpen,
@@ -28,6 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
 import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
@@ -35,7 +38,7 @@ import { PentagonVisualization } from '@/components/compliance/PentagonVisualiza
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
 import { useQueryClient } from '@tanstack/react-query';
 import { FrameworkFilterService } from '@/services/compliance/FrameworkFilterService';
-// Removed xlsx import - will use CSV export instead for better compatibility
+import * as XLSX from 'xlsx';
 
 export default function ComplianceSimplification() {
   const navigate = useNavigate();
@@ -590,49 +593,552 @@ For more specific guidance on this category, please consult with your compliance
   };
 
   const exportToCSV = () => {
-    // Create CSV data
-    const headers = [
-      'AuditReady Category',
-      'AuditReady Requirement', 
-      'Sub-requirement',
-      'ISO 27001 Controls',
-      'ISO 27002 Controls',
-      'CIS Controls',
-      'NIS2 Articles',
-      'Unified Description'
+    // Get selected frameworks for dynamic column generation
+    const selectedFrameworksList = Object.entries(selectedFrameworks)
+      .filter(([_, selected]) => selected !== false && selected !== null)
+      .map(([framework, value]) => {
+        if (framework === 'cisControls' && typeof value === 'string') {
+          return `${framework} (${value.toUpperCase()})`;
+        }
+        return framework;
+      });
+
+    // Create dynamic headers based on selected frameworks
+    const baseHeaders = [
+      'Category',
+      'Description of Category',
+      'Unified Requirements',
+      'Unified Guidance'
     ];
+    
+    // Add framework-specific columns only for selected frameworks
+    const frameworkHeaders = [];
+    if (selectedFrameworks.iso27001) frameworkHeaders.push('ISO 27001 Controls');
+    if (selectedFrameworks.iso27002) frameworkHeaders.push('ISO 27002 Controls');
+    if (selectedFrameworks.cisControls) {
+      const igLevel = selectedFrameworks.cisControls.toUpperCase();
+      frameworkHeaders.push(`CIS Controls (${igLevel})`);
+    }
+    if (selectedFrameworks.gdpr) frameworkHeaders.push('GDPR Articles');
+    if (selectedFrameworks.nis2) frameworkHeaders.push('NIS2 Articles');
+    
+    // Add industry-specific column if sector is selected
+    if (selectedIndustrySector) {
+      const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || 'Industry-Specific';
+      frameworkHeaders.push(`${sectorName} Requirements`);
+    }
 
-    const rows = (filteredUnifiedMappings || []).flatMap(mapping => 
-      (mapping.auditReadyUnified?.subRequirements || []).map((subReq) => [
-        mapping.category,
+    const headers = [...baseHeaders, ...frameworkHeaders];
+    
+    // Create enhanced rows with better formatting
+    const rows = (filteredUnifiedMappings || []).map(mapping => {
+      const baseRow = [
+        mapping.category || '',
+        cleanMarkdownFormatting(mapping.auditReadyUnified?.description || ''),
         mapping.auditReadyUnified?.title || '',
-        subReq,
-        mapping.frameworks?.['iso27001']?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
-        mapping.frameworks?.['iso27002']?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
-        mapping.frameworks?.['cisControls']?.map(r => `${r.code}: ${r.title}`).join('; ') || '',
-        (mapping.frameworks?.['nis2'] || []).map(r => `${r.code}: ${r.title}`).join('; '),
-        mapping.auditReadyUnified?.description || ''
-      ])
-    );
+        // Format sub-requirements with proper line breaks for CSV
+        (mapping.auditReadyUnified?.subRequirements || [])
+          .map((req, index) => `${index + 1}. ${cleanComplianceSubRequirement(req)}`)
+          .join('\n• ')
+      ];
 
-    // Convert to CSV format
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
-    ].join('\n');
+      // Add framework-specific data only for selected frameworks
+      const frameworkData = [];
+      
+      if (selectedFrameworks.iso27001) {
+        const iso27001Controls = (mapping.frameworks?.['iso27001'] || [])
+          .map(r => `${r.code}: ${cleanMarkdownFormatting(r.title)}\n${cleanMarkdownFormatting(r.description).substring(0, 150)}...`)
+          .join('\n\n• ');
+        frameworkData.push(iso27001Controls);
+      }
+      
+      if (selectedFrameworks.iso27002) {
+        const iso27002Controls = (mapping.frameworks?.['iso27002'] || [])
+          .map(r => `${r.code}: ${cleanMarkdownFormatting(r.title)}\n${cleanMarkdownFormatting(r.description).substring(0, 150)}...`)
+          .join('\n\n• ');
+        frameworkData.push(iso27002Controls);
+      }
+      
+      if (selectedFrameworks.cisControls) {
+        const cisControls = (mapping.frameworks?.['cisControls'] || [])
+          .map(r => `${r.code}: ${cleanMarkdownFormatting(r.title)}\n${cleanMarkdownFormatting(r.description).substring(0, 150)}...`)
+          .join('\n\n• ');
+        frameworkData.push(cisControls);
+      }
+      
+      if (selectedFrameworks.gdpr) {
+        const gdprArticles = (mapping.frameworks?.['gdpr'] || [])
+          .map(r => `${r.code}: ${cleanMarkdownFormatting(r.title)}\n${cleanMarkdownFormatting(r.description).substring(0, 150)}...`)
+          .join('\n\n• ');
+        frameworkData.push(gdprArticles);
+      }
+      
+      if (selectedFrameworks.nis2) {
+        const nis2Articles = (mapping.frameworks?.['nis2'] || [])
+          .map(r => `${r.code}: ${cleanMarkdownFormatting(r.title)}\n${cleanMarkdownFormatting(r.description).substring(0, 150)}...`)
+          .join('\n\n• ');
+        frameworkData.push(nis2Articles);
+      }
 
-    // Create download link
+      // Add industry-specific requirements if available
+      if (selectedIndustrySector && mapping.industrySpecific) {
+        const industryReqs = mapping.industrySpecific
+          .map(r => `[${r.relevanceLevel.toUpperCase()}] ${r.code}: ${cleanMarkdownFormatting(r.title)}\n${cleanMarkdownFormatting(r.description).substring(0, 120)}...`)
+          .join('\n\n• ');
+        frameworkData.push(industryReqs);
+      }
+
+      return [...baseRow, ...frameworkData];
+    });
+
+    // Create enhanced CSV with better formatting
+    const csvRows = [];
+    
+    // Add title and metadata
+    csvRows.push([`AuditReady Compliance Simplification Report`]);
+    csvRows.push([`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`]);
+    csvRows.push([`Selected Frameworks: ${selectedFrameworksList.join(', ')}`]);
+    if (selectedIndustrySector) {
+      const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || '';
+      csvRows.push([`Industry Sector: ${sectorName}`]);
+    }
+    csvRows.push(['']); // Empty row for spacing
+    
+    // Add headers
+    csvRows.push(headers);
+    
+    // Add data rows
+    csvRows.push(...rows);
+    
+    // Add footer with summary
+    csvRows.push(['']); // Empty row
+    csvRows.push([`Total Categories: ${rows.length}`]);
+    csvRows.push([`Export Format: Professional CSV with Enhanced Formatting`]);
+    csvRows.push([`Note: Import into Excel or Google Sheets for optimal formatting`]);
+
+    // Convert to CSV format with enhanced escaping
+    const csvContent = csvRows.map(row => 
+      row.map(cell => {
+        // Enhanced cell formatting for better readability
+        const cleanCell = String(cell || '')
+          .replace(/"/g, '""') // Escape quotes
+          .replace(/\n/g, '\n') // Preserve line breaks
+          .replace(/\r/g, ''); // Remove carriage returns
+        
+        // Always quote cells to preserve formatting
+        return `"${cleanCell}"`;
+      }).join(',')
+    ).join('\n');
+
+    // Create download with enhanced filename
+    const timestamp = new Date().toISOString().split('T')[0];
+    const frameworkSuffix = selectedFrameworksList.length > 0 
+      ? `_${selectedFrameworksList.join('_').replace(/[^a-zA-Z0-9]/g, '_')}` 
+      : '';
+    const filename = `AuditReady_Compliance_Report_${timestamp}${frameworkSuffix}.csv`;
+    
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     
     link.setAttribute('href', url);
-    link.setAttribute('download', 'AuditReady_Compliance_Simplification.csv');
+    link.setAttribute('download', filename);
     link.style.visibility = 'hidden';
     
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    // Show success message
+    console.log(`✅ Exported ${rows.length} compliance categories to ${filename}`);
+  };
+
+  const exportToXLSX = () => {
+    // Get selected frameworks for dynamic column generation
+    const selectedFrameworksList = Object.entries(selectedFrameworks)
+      .filter(([_, selected]) => selected !== false && selected !== null)
+      .map(([framework, value]) => {
+        if (framework === 'cisControls' && typeof value === 'string') {
+          return `${framework} (${value.toUpperCase()})`;
+        }
+        return framework;
+      });
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    
+    // 🎨 ENTERPRISE-GRADE REPORT INFO WORKSHEET
+    const currentDate = new Date();
+    const metaData = [
+      // Title Section with branding
+      ['🛡️ AuditReady Enterprise Compliance Report', ''],
+      ['', ''],
+      ['📊 EXECUTIVE SUMMARY', ''],
+      ['', ''],
+      ['Report Generated:', currentDate.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }) + ' at ' + currentDate.toLocaleTimeString()],
+      ['Compliance Frameworks:', selectedFrameworksList.join(', ') || 'All Available'],
+      ['Total Categories Analyzed:', (filteredUnifiedMappings || []).length],
+      ['Coverage Assessment:', selectedFrameworksList.length > 3 ? 'Comprehensive Multi-Framework Analysis' : 'Focused Framework Analysis'],
+      ['', ''],
+      ['📋 REPORT SPECIFICATIONS', ''],
+      ['', ''],
+      ['✓ Category Analysis:', 'Complete coverage of all security domains'],
+      ['✓ Framework Mapping:', 'Cross-referenced compliance requirements'],
+      ['✓ Unified Guidance:', 'Consolidated implementation roadmap'],
+      ['✓ Industry Alignment:', selectedIndustrySector ? 'Sector-specific customization included' : 'General applicability'],
+      ['', ''],
+      ['🎯 USAGE GUIDELINES', ''],
+      ['', ''],
+      ['• Executive Review:', 'Focus on Category and Unified Requirements columns'],
+      ['• Technical Implementation:', 'Reference Framework-specific control mappings'],
+      ['• Audit Preparation:', 'Use Unified Guidance for evidence collection'],
+      ['• Risk Assessment:', 'Prioritize categories based on organizational context']
+    ];
+
+    if (selectedIndustrySector) {
+      const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || '';
+      metaData.splice(7, 0, ['Industry Sector Focus:', `${sectorName} - Enhanced Requirements`]);
+    }
+
+    const metaWS = XLSX.utils.aoa_to_sheet(metaData);
+    
+    // 🎨 STUNNING METADATA STYLING
+    metaWS['!cols'] = [
+      { wch: 35 }, // Column A - Labels
+      { wch: 65 }  // Column B - Values
+    ];
+
+    // Apply cell styling for metadata
+    const metaRange = XLSX.utils.decode_range(metaWS['!ref'] || 'A1:B25');
+    for (let row = metaRange.s.r; row <= metaRange.e.r; row++) {
+      for (let col = metaRange.s.c; col <= metaRange.e.c; col++) {
+        const cellAddr = XLSX.utils.encode_cell({ r: row, c: col });
+        if (!metaWS[cellAddr]) continue;
+        
+        // Style different sections
+        if (row === 0) {
+          // Title row
+          metaWS[cellAddr].s = {
+            font: { bold: true, size: 18, color: { rgb: "1F4E79" } },
+            fill: { fgColor: { rgb: "E7F3FF" } },
+            alignment: { horizontal: "left", vertical: "center" }
+          };
+        } else if ([2, 9, 17].includes(row)) {
+          // Section headers
+          metaWS[cellAddr].s = {
+            font: { bold: true, size: 14, color: { rgb: "2F5233" } },
+            fill: { fgColor: { rgb: "F0F8F0" } },
+            alignment: { horizontal: "left", vertical: "center" }
+          };
+        } else if ([4, 5, 6, 7, 8, 11, 12, 13, 14, 19, 20, 21, 22].includes(row) && col === 0) {
+          // Data labels
+          metaWS[cellAddr].s = {
+            font: { bold: true, size: 11, color: { rgb: "404040" } },
+            alignment: { horizontal: "left", vertical: "center" }
+          };
+        }
+      }
+    }
+
+    // 🎨 MAIN DATA WORKSHEET - ENTERPRISE GRADE
+    const baseHeaders = [
+      '📂 Category',
+      '📋 Description of Category',
+      '🎯 Unified Requirements',
+      '📖 Unified Guidance'
+    ];
+    
+    // Add framework-specific columns with icons
+    const frameworkHeaders = [];
+    const frameworkIcons = {
+      iso27001: '🔒 ISO 27001 Controls',
+      iso27002: '🛡️ ISO 27002 Controls',
+      cisControls: '⚙️ CIS Controls',
+      gdpr: '🇪🇺 GDPR Articles',
+      nis2: '🌐 NIS2 Articles'
+    };
+    
+    if (selectedFrameworks.iso27001) frameworkHeaders.push(frameworkIcons.iso27001);
+    if (selectedFrameworks.iso27002) frameworkHeaders.push(frameworkIcons.iso27002);
+    if (selectedFrameworks.cisControls) {
+      const igLevel = selectedFrameworks.cisControls.toUpperCase();
+      frameworkHeaders.push(`⚙️ CIS Controls (${igLevel})`);
+    }
+    if (selectedFrameworks.gdpr) frameworkHeaders.push(frameworkIcons.gdpr);
+    if (selectedFrameworks.nis2) frameworkHeaders.push(frameworkIcons.nis2);
+    
+    // Add industry-specific column with icon
+    if (selectedIndustrySector) {
+      const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || 'Industry-Specific';
+      frameworkHeaders.push(`🏢 ${sectorName} Requirements`);
+    }
+
+    const headers = [...baseHeaders, ...frameworkHeaders];
+    
+    // Create data rows with enhanced formatting
+    const xlsxRows = [headers];
+    
+    (filteredUnifiedMappings || []).forEach((mapping, index) => {
+      const baseRow = [
+        `${index + 1}. ${mapping.category || ''}`,
+        cleanMarkdownFormatting(mapping.auditReadyUnified?.description || ''),
+        mapping.auditReadyUnified?.title || '',
+        // Enhanced sub-requirements with professional formatting
+        (mapping.auditReadyUnified?.subRequirements || [])
+          .map((req, reqIndex) => `✓ ${cleanComplianceSubRequirement(req)}`)
+          .join('\n\n')
+      ];
+
+      // Add framework-specific data with enhanced formatting
+      const frameworkData = [];
+      
+      if (selectedFrameworks.iso27001) {
+        const iso27001Controls = (mapping.frameworks?.['iso27001'] || [])
+          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
+          .join('\n\n');
+        frameworkData.push(iso27001Controls || '— No specific mappings available');
+      }
+      
+      if (selectedFrameworks.iso27002) {
+        const iso27002Controls = (mapping.frameworks?.['iso27002'] || [])
+          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
+          .join('\n\n');
+        frameworkData.push(iso27002Controls || '— No specific mappings available');
+      }
+      
+      if (selectedFrameworks.cisControls) {
+        const cisControls = (mapping.frameworks?.['cisControls'] || [])
+          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
+          .join('\n\n');
+        frameworkData.push(cisControls || '— No specific mappings available');
+      }
+      
+      if (selectedFrameworks.gdpr) {
+        const gdprArticles = (mapping.frameworks?.['gdpr'] || [])
+          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
+          .join('\n\n');
+        frameworkData.push(gdprArticles || '— No specific mappings available');
+      }
+      
+      if (selectedFrameworks.nis2) {
+        const nis2Articles = (mapping.frameworks?.['nis2'] || [])
+          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
+          .join('\n\n');
+        frameworkData.push(nis2Articles || '— No specific mappings available');
+      }
+
+      // Add industry-specific requirements with relevance indicators
+      if (selectedIndustrySector && mapping.industrySpecific) {
+        const industryReqs = mapping.industrySpecific
+          .map(r => {
+            const priorityIcon = {
+              'critical': '🔴',
+              'high': '🟠',
+              'standard': '🟡',
+              'optional': '🟢'
+            }[r.relevanceLevel] || '⚪';
+            return `${priorityIcon} [${r.relevanceLevel.toUpperCase()}] ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`;
+          })
+          .join('\n\n');
+        frameworkData.push(industryReqs || '— No industry-specific requirements');
+      }
+
+      xlsxRows.push([...baseRow, ...frameworkData]);
+    });
+
+    const mainWS = XLSX.utils.aoa_to_sheet(xlsxRows);
+    
+    // 🎨 CALCULATE AUTO-ADJUSTED COLUMN WIDTHS
+    const calculateOptimalWidth = (text: string, isHeader = false) => {
+      if (!text) return 15;
+      const lines = text.split('\n');
+      const maxLineLength = Math.max(...lines.map(line => line.length));
+      let baseWidth = Math.min(Math.max(maxLineLength * 1.2, 15), isHeader ? 35 : 60);
+      if (isHeader) baseWidth += 5; // Extra space for headers
+      return baseWidth;
+    };
+
+    // Calculate optimal column widths based on content
+    const optimalWidths = headers.map((header, colIndex) => {
+      let maxWidth = calculateOptimalWidth(header, true);
+      
+      // Check content width for this column
+      xlsxRows.slice(1).forEach(row => {
+        if (row[colIndex]) {
+          const contentWidth = calculateOptimalWidth(String(row[colIndex]));
+          maxWidth = Math.max(maxWidth, contentWidth);
+        }
+      });
+      
+      return { wch: Math.min(maxWidth, 70) }; // Cap at 70 characters
+    });
+
+    mainWS['!cols'] = optimalWidths;
+
+    // 🎨 CALCULATE AUTO-ADJUSTED ROW HEIGHTS
+    const range = XLSX.utils.decode_range(mainWS['!ref'] || 'A1:A1');
+    mainWS['!rows'] = [];
+    
+    for (let i = 0; i <= range.e.r; i++) {
+      if (i === 0) {
+        // Header row with premium styling
+        mainWS['!rows'][i] = { hpx: 45 };
+      } else {
+        // Calculate row height based on content
+        let maxLines = 1;
+        for (let j = 0; j < headers.length; j++) {
+          const cellAddr = XLSX.utils.encode_cell({ r: i, c: j });
+          if (mainWS[cellAddr] && mainWS[cellAddr].v) {
+            const lines = String(mainWS[cellAddr].v).split('\n').length;
+            maxLines = Math.max(maxLines, lines);
+          }
+        }
+        // Set height based on content (minimum 25px, scale with content)
+        const optimalHeight = Math.max(25, Math.min(maxLines * 18, 200));
+        mainWS['!rows'][i] = { hpx: optimalHeight };
+      }
+    }
+
+    // 🎨 APPLY STUNNING CELL STYLING
+    for (let row = range.s.r; row <= range.e.r; row++) {
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cellAddr = XLSX.utils.encode_cell({ r: row, c: col });
+        if (!mainWS[cellAddr]) continue;
+
+        if (row === 0) {
+          // 🎨 PREMIUM HEADER STYLING
+          mainWS[cellAddr].s = {
+            font: { 
+              bold: true, 
+              size: 12, 
+              color: { rgb: "FFFFFF" },
+              name: "Calibri"
+            },
+            fill: { 
+              fgColor: { rgb: col < 4 ? "1F4E79" : "2F5233" } // Different colors for base vs framework columns
+            },
+            alignment: { 
+              horizontal: "center", 
+              vertical: "center",
+              wrapText: true 
+            },
+            border: {
+              top: { style: "thick", color: { rgb: "FFFFFF" } },
+              bottom: { style: "thick", color: { rgb: "FFFFFF" } },
+              left: { style: "thick", color: { rgb: "FFFFFF" } },
+              right: { style: "thick", color: { rgb: "FFFFFF" } }
+            }
+          };
+        } else {
+          // 🎨 ALTERNATING ROW COLORS WITH PREMIUM STYLING
+          const isEvenRow = (row - 1) % 2 === 0;
+          const backgroundColor = isEvenRow ? "F8F9FA" : "FFFFFF";
+          const textColor = col === 0 ? "1F4E79" : "404040"; // Category column in blue
+          
+          mainWS[cellAddr].s = {
+            font: { 
+              size: 10,
+              color: { rgb: textColor },
+              name: "Calibri",
+              bold: col === 0 // Bold category names
+            },
+            fill: { fgColor: { rgb: backgroundColor } },
+            alignment: { 
+              horizontal: col === 0 ? "left" : "left",
+              vertical: "top",
+              wrapText: true,
+              indent: col === 0 ? 1 : 0
+            },
+            border: {
+              top: { style: "thin", color: { rgb: "E0E0E0" } },
+              bottom: { style: "thin", color: { rgb: "E0E0E0" } },
+              left: { style: "thin", color: { rgb: "E0E0E0" } },
+              right: { style: "thin", color: { rgb: "E0E0E0" } }
+            }
+          };
+        }
+      }
+    }
+
+    // 🎨 CREATE SUMMARY STATISTICS WORKSHEET
+    const summaryData = [
+      ['📊 COMPLIANCE COVERAGE ANALYSIS', ''],
+      ['', ''],
+      ['Framework', 'Requirements Mapped', 'Coverage %', 'Status'],
+      ['', '', '', ''],
+    ];
+
+    // Add framework statistics
+    selectedFrameworksList.forEach(framework => {
+      const totalMapped = (filteredUnifiedMappings || []).reduce((count, mapping) => {
+        const frameworkKey = framework.includes('(') ? framework.split('(')[0].trim() : framework;
+        const mappedFrameworks = Object.keys(mapping.frameworks || {});
+        return count + (mappedFrameworks.includes(frameworkKey) ? 1 : 0);
+      }, 0);
+      
+      const coverage = Math.round((totalMapped / Math.max((filteredUnifiedMappings || []).length, 1)) * 100);
+      const status = coverage >= 90 ? '✅ Excellent' : coverage >= 70 ? '🟡 Good' : coverage >= 50 ? '🟠 Moderate' : '🔴 Limited';
+      
+      summaryData.push([framework, totalMapped.toString(), `${coverage}%`, status]);
+    });
+
+    summaryData.push(['', '', '', '']);
+    summaryData.push(['Total Categories Analyzed', (filteredUnifiedMappings || []).length.toString(), '100%', '✅ Complete']);
+    summaryData.push(['Report Generation Date', new Date().toLocaleDateString(), '', '']);
+    summaryData.push(['Compliance Readiness Score', 
+      selectedFrameworksList.length >= 3 ? 'High Multi-Framework Coverage' : 'Focused Framework Analysis', 
+      '', 
+      selectedFrameworksList.length >= 3 ? '🏆 Enterprise' : '⭐ Professional'
+    ]);
+
+    const summaryWS = XLSX.utils.aoa_to_sheet(summaryData);
+    summaryWS['!cols'] = [{ wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 20 }];
+
+    // Style summary worksheet
+    const summaryRange = XLSX.utils.decode_range(summaryWS['!ref'] || 'A1:D10');
+    for (let row = summaryRange.s.r; row <= summaryRange.e.r; row++) {
+      for (let col = summaryRange.s.c; col <= summaryRange.e.c; col++) {
+        const cellAddr = XLSX.utils.encode_cell({ r: row, c: col });
+        if (!summaryWS[cellAddr]) continue;
+        
+        if (row === 0) {
+          summaryWS[cellAddr].s = {
+            font: { bold: true, size: 16, color: { rgb: "1F4E79" } },
+            fill: { fgColor: { rgb: "E7F3FF" } },
+            alignment: { horizontal: "left", vertical: "center" }
+          };
+        } else if (row === 2) {
+          summaryWS[cellAddr].s = {
+            font: { bold: true, size: 11, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "1F4E79" } },
+            alignment: { horizontal: "center", vertical: "center" }
+          };
+        }
+      }
+    }
+
+    // Add worksheets to workbook in order
+    XLSX.utils.book_append_sheet(wb, metaWS, '📋 Report Overview');
+    XLSX.utils.book_append_sheet(wb, summaryWS, '📊 Coverage Analysis');
+    XLSX.utils.book_append_sheet(wb, mainWS, '🛡️ Compliance Mapping');
+
+    // Create premium filename
+    const timestamp = new Date().toISOString().split('T')[0];
+    const frameworkSuffix = selectedFrameworksList.length > 0 
+      ? `_${selectedFrameworksList.join('_').replace(/[^a-zA-Z0-9]/g, '_')}` 
+      : '';
+    const filename = `AuditReady_Enterprise_Compliance_Report_${timestamp}${frameworkSuffix}.xlsx`;
+
+    // Export with enterprise branding
+    XLSX.writeFile(wb, filename);
+    
+    console.log(`🏆 Exported enterprise-grade compliance report: ${filename}`);
+    console.log(`📊 ${(filteredUnifiedMappings || []).length} categories analyzed across ${selectedFrameworksList.length} frameworks`);
   };
 
   const filteredMappings = useMemo(() => {
@@ -978,13 +1484,30 @@ For more specific guidance on this category, please consult with your compliance
                 </div>
               </div>
             </div>
-            <Button
-              onClick={exportToCSV}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full self-start lg:self-auto"
-            >
-              <FileSpreadsheet className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Export to </span>CSV
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full self-start lg:self-auto"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Export Report</span>
+                  <span className="sm:hidden">Export</span>
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={exportToCSV} className="cursor-pointer">
+                  <FileSpreadsheet className="w-4 h-4 mr-2" />
+                  Export as CSV
+                  <span className="text-xs text-muted-foreground ml-auto">Compatible</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={exportToXLSX} className="cursor-pointer">
+                  <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" />
+                  Export as Excel
+                  <span className="text-xs text-muted-foreground ml-auto">Enhanced</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

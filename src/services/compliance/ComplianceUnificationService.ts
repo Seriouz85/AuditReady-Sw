@@ -75,6 +75,150 @@ export interface ComplianceMappingData {
 
 class ComplianceUnificationService {
   /**
+   * Fallback categories when database is unavailable
+   */
+  private getFallbackCategories(): UnifiedCategory[] {
+    return [
+      {
+        id: 'governance',
+        name: 'Governance & Leadership',
+        description: 'Organizational governance and leadership responsibilities',
+        sortOrder: 1,
+        icon: 'Users',
+        requirements: [{
+          id: 'governance-req-1',
+          categoryId: 'governance',
+          title: 'Information Security Governance',
+          description: 'Establish and maintain an information security governance framework',
+          subRequirements: [
+            'Define information security policy and strategy',
+            'Establish security governance committee',
+            'Assign security responsibilities and accountability',
+            'Ensure management commitment and support'
+          ],
+          sortOrder: 1
+        }]
+      },
+      {
+        id: 'risk-management',
+        name: 'Risk Management',
+        description: 'Information security risk assessment and management',
+        sortOrder: 2,
+        icon: 'Shield',
+        requirements: [{
+          id: 'risk-req-1',
+          categoryId: 'risk-management',
+          title: 'Risk Assessment and Treatment',
+          description: 'Systematic identification, analysis and treatment of information security risks',
+          subRequirements: [
+            'Conduct regular risk assessments',
+            'Identify and evaluate threats and vulnerabilities',
+            'Define risk treatment plans',
+            'Monitor and review risk management effectiveness'
+          ],
+          sortOrder: 1
+        }]
+      }
+    ];
+  }
+
+  /**
+   * Fallback industry sectors when database is unavailable
+   */
+  private getFallbackIndustrySectors(): IndustrySector[] {
+    return [
+      {
+        id: 'financial',
+        name: 'Financial Services',
+        description: 'Banking, insurance, and financial institutions',
+        nis2Essential: true,
+        nis2Important: false,
+        sortOrder: 1
+      },
+      {
+        id: 'healthcare',
+        name: 'Healthcare',
+        description: 'Hospitals, medical facilities, and healthcare providers',
+        nis2Essential: false,
+        nis2Important: true,
+        sortOrder: 2
+      }
+    ];
+  }
+
+  /**
+   * Fallback compliance mapping data when database is unavailable
+   */
+  private getFallbackComplianceMappingData(selectedFrameworks: string[]): ComplianceMappingData[] {
+    const fallbackData: ComplianceMappingData[] = [
+      {
+        id: 'governance',
+        category: 'Governance & Leadership',
+        auditReadyUnified: {
+          title: 'Information Security Governance',
+          description: 'Establish and maintain an information security governance framework',
+          subRequirements: [
+            'Define information security policy and strategy',
+            'Establish security governance committee',
+            'Assign security responsibilities and accountability',
+            'Ensure management commitment and support'
+          ]
+        },
+        frameworks: {
+          iso27001: selectedFrameworks.includes('iso27001') ? [
+            { code: 'A.5.1', title: 'Information security policies', description: 'A set of information security policies shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and interested parties, and reviewed at planned intervals or if significant changes occur.' }
+          ] : [],
+          iso27002: selectedFrameworks.includes('iso27002') ? [
+            { code: 'A.5.1', title: 'Information security policies', description: 'Information security policy and topic-specific policies shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and interested parties, and reviewed at planned intervals and if significant changes occur.' }
+          ] : [],
+          cisControls: selectedFrameworks.includes('cisControls') ? [
+            { code: 'CIS 1.1', title: 'Establish and Maintain Detailed Enterprise Asset Inventory', description: 'Establish and maintain an accurate, detailed, and up-to-date inventory of all enterprise assets with the potential to store or process data, to identify unauthorized assets and manage authorized assets.' }
+          ] : [],
+          nis2: selectedFrameworks.includes('nis2') ? [
+            { code: 'Art. 21.1', title: 'Cybersecurity Risk Management', description: 'Member States shall ensure that essential and important entities take appropriate and proportionate technical, operational and organisational measures to manage the risks posed to the security of network and information systems which those entities use for their operations or for the provision of their services.' }
+          ] : [],
+          gdpr: selectedFrameworks.includes('gdpr') ? [
+            { code: 'Art. 32', title: 'Security of processing', description: 'The controller and the processor shall implement appropriate technical and organisational measures to ensure a level of security appropriate to the risk.' }
+          ] : []
+        }
+      },
+      {
+        id: 'risk-management',
+        category: 'Risk Management',
+        auditReadyUnified: {
+          title: 'Risk Assessment and Treatment',
+          description: 'Systematic identification, analysis and treatment of information security risks',
+          subRequirements: [
+            'Conduct regular risk assessments',
+            'Identify and evaluate threats and vulnerabilities',
+            'Define risk treatment plans',
+            'Monitor and review risk management effectiveness'
+          ]
+        },
+        frameworks: {
+          iso27001: selectedFrameworks.includes('iso27001') ? [
+            { code: 'A.8.2', title: 'Information security risk assessment', description: 'Information security risks shall be identified, analysed and evaluated at planned intervals or when significant changes are proposed or occur.' }
+          ] : [],
+          iso27002: selectedFrameworks.includes('iso27002') ? [
+            { code: 'A.8.2', title: 'Information security risk assessment', description: 'Information security risks shall be identified, analysed and evaluated at planned intervals or when significant changes are proposed or occur.' }
+          ] : [],
+          cisControls: selectedFrameworks.includes('cisControls') ? [
+            { code: 'CIS 18.1', title: 'Establish and Maintain a Penetration Testing Program', description: 'Establish and maintain a penetration testing program appropriate to the size, complexity, and maturity of the enterprise.' }
+          ] : [],
+          nis2: selectedFrameworks.includes('nis2') ? [
+            { code: 'Art. 21.2', title: 'Risk Assessment', description: 'The cybersecurity risk-management measures shall be based on an all-hazards approach that aims to protect network and information systems and the physical environment of those systems from incidents.' }
+          ] : [],
+          gdpr: selectedFrameworks.includes('gdpr') ? [
+            { code: 'Art. 35', title: 'Data protection impact assessment', description: 'Where a type of processing in particular using new technologies, and taking into account the nature, scope, context and purposes of processing, is likely to result in a high risk to the rights and freedoms of natural persons, the controller shall carry out an assessment of the impact of the envisaged processing operations on the protection of personal data.' }
+          ] : []
+        }
+      }
+    ];
+
+    return fallbackData;
+  }
+
+  /**
    * Get unified compliance categories with their requirements
    */
   async getUnifiedCategories(): Promise<UnifiedCategory[]> {
@@ -148,7 +292,7 @@ class ComplianceUnificationService {
       return transformedCategories;
     } catch (error) {
       console.error('Error fetching unified categories:', error);
-      throw error;
+      return this.getFallbackCategories();
     }
   }
 
@@ -223,7 +367,7 @@ class ComplianceUnificationService {
       }));
     } catch (error) {
       console.error('Error fetching industry sectors:', error);
-      return [];
+      return this.getFallbackIndustrySectors();
     }
   }
 
@@ -303,8 +447,8 @@ class ComplianceUnificationService {
       return result;
     } catch (error) {
       console.error('Error fetching compliance mapping data:', error);
-      // Return empty array instead of throwing to prevent UI crashes
-      return [];
+      // Return fallback data instead of empty array to prevent UI crashes
+      return this.getFallbackComplianceMappingData(selectedFrameworks);
     }
   }
 

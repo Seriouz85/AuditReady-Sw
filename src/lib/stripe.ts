@@ -8,7 +8,14 @@ let stripePromise: Promise<any> | null = null;
 
 export const getStripe = () => {
   if (!stripePromise) {
-    stripePromise = loadStripe(stripePublishableKey);
+    if (!stripePublishableKey) {
+      console.warn('Stripe publishable key not configured');
+      return Promise.resolve(null);
+    }
+    stripePromise = loadStripe(stripePublishableKey).catch(error => {
+      console.error('Failed to load Stripe:', error);
+      return null;
+    });
   }
   return stripePromise;
 };
