@@ -53,7 +53,8 @@ export class CorrectedGovernanceService {
           'l) Relationships - Establish documented procedures for: GDPR supervisory authority cooperation (including breach notifications), NIS2 competent authority reporting (incident warnings), law enforcement cooperation, and industry information sharing. Maintain current contact lists and communication templates',
           'm) Incident response governance - Designate incident response manager plus backup (review annually). Establish 24/7 contact information for incident reporting. Define incident classification with clear thresholds for: significant incidents (NIS2), high risk breaches (GDPR)',
           'n) Third party governance - ALL service provider contracts MUST include: security, incident notification (specify timeframes), audit rights, data protection clauses, termination procedures with data return/destruction, and verification. Monitor providers monthly and conduct annual security reviews',
-          'o) Continuous improvement - Implement formal processes for: learning from incidents, updating policies based on new threats, addressing audit findings within 30 days, tracking security metrics, and demonstrating year over year improvement'
+          'o) Continuous improvement - Implement formal processes for: learning from incidents, updating policies based on new threats, addressing audit findings within 30 days, tracking security metrics, and demonstrating year over year improvement',
+          'p) Awareness training - Establish comprehensive security awareness training program at governance level: define training strategy, allocate resources, measure effectiveness, and ensure management commitment. This governance requirement oversees the detailed training requirements found in Security Awareness & Skills Training category'
         ]
       },
       
@@ -100,9 +101,9 @@ export class CorrectedGovernanceService {
       errors.push(`HR section must have exactly 2 requirements, found ${structure.sections['HR']?.length}`);
     }
 
-    // Check Monitoring & Compliance has 6 requirements
-    if (structure.sections['Monitoring & Compliance']?.length !== 6) {
-      errors.push(`Monitoring & Compliance section must have exactly 6 requirements, found ${structure.sections['Monitoring & Compliance']?.length}`);
+    // Check Monitoring & Compliance has 7 requirements
+    if (structure.sections['Monitoring & Compliance']?.length !== 7) {
+      errors.push(`Monitoring & Compliance section must have exactly 7 requirements, found ${structure.sections['Monitoring & Compliance']?.length}`);
     }
 
     // Check proper a, b, c ordering
@@ -112,7 +113,7 @@ export class CorrectedGovernanceService {
       ...(structure.sections['Monitoring & Compliance'] || [])
     ];
 
-    const expectedLetters = 'abcdefghijklmno'.split('');
+    const expectedLetters = 'abcdefghijklmnop'.split('');
     for (let i = 0; i < allReqs.length; i++) {
       if (!allReqs[i]?.startsWith(`${expectedLetters[i]})`)) {
         errors.push(`Requirement ${i + 1} should start with "${expectedLetters[i]})" but starts with "${allReqs[i]?.substring(0, 3)}"`);

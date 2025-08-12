@@ -14,6 +14,7 @@ import {
   FileSpreadsheet,
   Download,
   ChevronDown,
+  FileText,
   Lightbulb,
   Users,
   BookOpen,
@@ -33,12 +34,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
 import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
+import { UnifiedGuidanceValidationService } from '../services/compliance/UnifiedGuidanceValidationService';
+import { RequirementDeduplicationService, type DeduplicationResult } from '../services/compliance/RequirementDeduplicationService';
+import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
 import { useQueryClient } from '@tanstack/react-query';
 import { FrameworkFilterService } from '@/services/compliance/FrameworkFilterService';
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+// Type declaration for jsPDF with autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    lastAutoTable: {
+      finalY: number;
+    };
+  }
+}
 
 export default function ComplianceSimplification() {
   const navigate = useNavigate();
@@ -77,6 +92,10 @@ export default function ComplianceSimplification() {
   // Unified Guidance modal state
   const [showUnifiedGuidance, setShowUnifiedGuidance] = useState(false);
   const [selectedGuidanceCategory, setSelectedGuidanceCategory] = useState<string>('');
+  
+  // Validation and deduplication states
+  const [deduplicationResults, setDeduplicationResults] = useState<Record<string, DeduplicationResult>>({});
+  const [validationResults, setValidationResults] = useState<any>({});
   const [frameworksSelected, setFrameworksSelected] = useState({
     iso27001: true,
     iso27002: true,
@@ -180,350 +199,178 @@ export default function ComplianceSimplification() {
       return references + '\n';
     };
 
-    // Placeholder functions for other categories
-    const getAssetReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Asset management requirements vary by selected standards.\n\n' : '';
-    const getPhysicalReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Physical security requirements vary by selected standards.\n\n' : '';
-    const getOperationsReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Operations management requirements vary by selected standards.\n\n' : '';
-    const getDevelopmentReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Development lifecycle requirements vary by selected standards.\n\n' : '';
-    const getIncidentReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Incident management requirements vary by selected standards.\n\n' : '';
-    const getContinuityReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Business continuity requirements vary by selected standards.\n\n' : '';
-    const getComplianceReferences = () => selectedFrameworksList.length > 0 ? '**Framework References:** Compliance requirements vary by selected standards.\n\n' : '';
-
-    const guidanceMap: Record<string, string> = {
-      'Governance & Leadership': `${getFrameworkReferences('Governance & Leadership')}
-
-**Strategic Business Foundation**
-
-Governance & Leadership establishes the executive framework and organizational structure necessary for systematic information security management. This forms the cornerstone of regulatory compliance and business resilience.
-
-**Leadership Requirements**
-
-Executive leadership must demonstrate measurable commitment through:
-
-**Board-Level Information Security Oversight**
-Quarterly reporting requirements with executive accountability for security performance and strategic direction
-
-**Documented Security Policies**
-Senior management approval and annual review cycles ensuring policies remain current and effective
-
-**Resource Allocation**
-Demonstrable security integration into business strategy through appropriate budget allocation and staffing
-
-**Clear Accountability Structures**
-Defined roles and responsibilities across all organizational levels with appropriate authority and decision-making power
-
-**Strategic Security Planning**
-Alignment with business objectives and regulatory requirements through integrated planning processes
-
-**Human Resources (HR) Security Framework**
-
-Personnel security controls ensure trustworthy workforce management:
-
-**Background Screening**
-Comprehensive verification procedures proportional to access levels, including criminal background checks, employment verification, and reference validation for positions handling sensitive information
-
-**Disciplinary Action Procedures**
-${selectedFrameworksList.includes('iso27002') ? 
-'Progressive disciplinary measures including verbal warnings, written warnings, suspension, and termination for security violations. Immediate termination procedures for serious security breaches with security clearance revocation and post-employment obligations enforcement.' : 
-'Established procedures for addressing security policy violations through appropriate disciplinary measures.'
-}
-
-**Security Competence Management**
-Role-based security training programs with documented completion tracking, specialized training for high-risk positions, and regular competence assessments to ensure personnel can fulfill security responsibilities effectively
-
-**Monitoring & Compliance Operations**
-
-Systematic oversight ensures ongoing effectiveness and regulatory adherence:
-
-**Management Reviews**
-Formal quarterly reviews of Information Security Management System (ISMS) performance, including security metrics analysis, incident trend evaluation, and corrective action tracking
-
-**Internal Audit Programs**
-Annual security audits conducted by qualified personnel, with documented findings, corrective action plans, and management response procedures
-
-**Continuous Improvement**
-Structured processes for identifying security improvements, implementing corrective actions, and measuring effectiveness through key performance indicators
-
-**Implementation Phases**
-
-**Foundation Phase**
-Define security governance charter, establish security committee structure, and create initial policy framework
-
-**Operationalization Phase**
-Implement management review processes, deploy training programs, and establish audit procedures
-
-**Maturation Phase**
-Develop advanced metrics, enhance continuous improvement processes, and integrate security governance with broader enterprise governance
-
-**Critical Success Factors**
-
-✅ Executive leadership actively champions security initiatives with visible commitment
-✅ Security roles and responsibilities are clearly defined and communicated across all organizational levels
-✅ Regular management reviews drive continuous improvement and strategic alignment
-✅ HR security processes ensure personnel trustworthiness and competence
-✅ Audit and monitoring activities provide objective assessment of security effectiveness
-      `,
+    // Enhanced framework reference functions for comprehensive guidance
+    const getAssetReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
       
-      'Risk Management': `${getFrameworkReferences('Risk Management')}
-
-**Strategic Risk Assessment Framework**
-
-Risk management provides the systematic foundation for identifying, analyzing, and treating information security risks across the enterprise. This process ensures business continuity while meeting regulatory compliance requirements.
-
-**Risk Identification and Assessment**
-
-Comprehensive risk evaluation encompasses:
-
-**Asset-Based Risk Analysis**
-Systematic identification of information assets, their vulnerabilities, and potential threats, including business process dependencies and technology infrastructure risks
-
-**Business Impact Analysis**
-Quantitative and qualitative assessment of potential consequences, including financial impact, operational disruption, regulatory penalties, and reputational damage
-
-**Threat Landscape Evaluation**
-Regular assessment of emerging threats, attack vectors, and industry-specific risks relevant to your business sector and geographic presence
-
-**Risk Register Maintenance**
-Dynamic documentation of identified risks with likelihood assessments, impact evaluations, and risk ownership assignments
-
-**Risk Treatment Strategies**
-
-Systematic approach to risk mitigation:
-
-**Risk Acceptance**
-Formal acceptance of risks within organizational tolerance levels, with documented justification and regular review cycles
-
-**Risk Mitigation**
-Implementation of security controls to reduce risk likelihood or impact to acceptable levels, with effectiveness monitoring and control testing
-
-**Risk Transfer**
-Strategic use of insurance, contractual arrangements, and third-party services to transfer specific risk exposures
-
-**Risk Avoidance**
-Elimination of activities or systems that present unacceptable risk levels when mitigation options are insufficient
-
-**Continuous Risk Monitoring**
-
-Ongoing risk oversight ensures current and effective risk management:
-
-**Key Risk Indicators (KRIs)**
-Measurable metrics that provide early warning of increasing risk exposure, with defined thresholds and escalation procedures
-
-**Regular Risk Reviews**
-Monthly operational risk assessments and quarterly strategic risk evaluations, with trend analysis and emerging risk identification
-
-**Change Impact Assessment**
-Evaluation of risk implications for all significant business, technology, and operational changes
-
-**Third-Party Risk Management**
-Ongoing assessment and monitoring of vendor and supplier risks, including due diligence, contract management, and performance monitoring
-
-**Implementation Methodology**
-
-Establish effective risk management through structured phases:
-1. **Foundation**: Develop risk management policy, establish risk appetite and tolerance levels, and create risk governance structure
-2. **Assessment**: Conduct comprehensive initial risk assessment, populate risk register, and prioritize treatment activities
-3. **Treatment**: Implement risk mitigation controls, establish monitoring procedures, and create risk reporting mechanisms
-4. **Optimization**: Mature risk management processes, enhance predictive capabilities, and integrate with strategic planning
-
-**Critical Success Indicators**
-
-✅ Comprehensive risk register maintained with current and accurate risk assessments
-✅ Risk treatment plans implemented with measurable effectiveness metrics
-✅ Regular risk monitoring provides actionable insights for decision-making
-✅ Risk management processes support compliance with applicable regulatory requirements
-✅ Risk-informed decision making demonstrated across all organizational levels
-      `,
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.8 (Asset Management), A.8.1 (Responsibility for Assets), A.8.2 (Information Classification)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.8.1.1 (Asset Inventory), A.8.1.2 (Asset Ownership), A.8.2.1 (Classification Guidelines)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 1 (Inventory of Authorized and Unauthorized Devices), Control 2 (Inventory of Authorized Software)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 30 (Records of Processing), Article 32 (Security of Processing)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Asset Management), Article 21 (Supply Chain Security)\n';
+      }
       
-      'Access Control & Identity Management': `${getFrameworkReferences('Access Control & Identity Management')}
+      return references + '\n';
+    };
 
-**Comprehensive Identity and Access Framework**
-
-Access control and identity management establish systematic controls for user authentication, authorization, and access lifecycle management across all information systems and resources.
-
-**Identity Lifecycle Management**
-
-Complete identity governance encompasses:
-
-**User Provisioning**
-Standardized onboarding processes with role-based access assignment, automated account creation workflows, and integration with HR systems for seamless identity management
-
-**Access Certification**  
-Regular access reviews and recertification processes, with manager attestation for direct reports and automated compliance reporting for audit purposes
-
-**Deprovisioning**
-Immediate account disabling upon termination or role changes, with systematic access removal procedures and asset recovery protocols
-
-**Identity Federation**
-Single sign-on (SSO) implementation supporting SAML, OAuth, and OpenID Connect protocols for streamlined user experience and centralized identity management
-
-**Authentication and Authorization Controls**
-
-Multi-layered security controls ensure appropriate access:
-
-**Multi-Factor Authentication (MFA)**
-Mandatory MFA for all privileged accounts and sensitive system access, supporting multiple authentication factors including hardware tokens, mobile applications, and biometric verification
-
-**Privileged Access Management**
-Dedicated PAM solutions with password vaulting, session recording, just-in-time access provisioning, and privileged activity monitoring with comprehensive audit trails
-
-**Role-Based Access Control (RBAC)**
-Systematic role design based on job functions and least privilege principles, with standardized role templates and automated role assignment workflows
-
-**Attribute-Based Access Control**
-Dynamic authorization decisions based on user attributes, resource sensitivity, environmental context, and risk-based authentication factors
-
-**Access Governance and Monitoring**
-
-Continuous oversight ensures access control effectiveness:
-
-**Access Analytics**
-Regular analysis of user access patterns, identification of excessive privileges, detection of dormant accounts, and monitoring of access policy violations
-
-**Segregation of Duties**
-Implementation of preventive and detective controls to prevent conflicting access combinations, with automated violation detection and remediation workflows
-
-**Network Access Control**  
-802.1X authentication for wired and wireless networks, device compliance verification, and dynamic VLAN assignment based on user identity and device trust status
-
-**Application Security**
-Fine-grained authorization controls within applications, API access management, and integration with enterprise identity providers
-
-**Regulatory Compliance Support**
-
-Access controls support multiple regulatory requirements:
-
-**GDPR Data Subject Rights**
-Identity verification procedures for data subject requests, access logging for audit purposes, and data subject consent management
-
-**SOX Compliance**
-Segregation of duties controls for financial systems, access certification processes, and IT general controls documentation
-
-**ISO 27001**
-Comprehensive access control framework addressing user access management, privileged access, and remote access security
-
-**Implementation Strategy**
-
-Systematic deployment across enterprise:
-
-**Phase 1: Assessment**
-Current state access review, gap analysis against security requirements, and risk-based prioritization of remediation activities
-
-**Phase 2: Foundation**  
-Core identity infrastructure deployment, basic RBAC implementation, and essential security controls activation
-
-**Phase 3: Enhancement**
-Advanced access controls, privileged access management, and automated governance processes
-
-**Phase 4: Optimization**
-Analytics-driven access optimization, zero-trust architecture elements, and advanced threat detection integration
-
-**Operational Excellence Indicators**
-
-✅ Comprehensive identity lifecycle management with automated provisioning and deprovisioning
-✅ Multi-factor authentication deployed across all privileged and remote access scenarios
-✅ Regular access certification processes with documented manager approval and audit trails
-✅ Privileged access management controls with session monitoring and just-in-time access
-✅ Access analytics providing insights into access patterns and policy compliance
-      `,
+    const getPhysicalReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
       
-      'Incident Response & Recovery': `
-**Comprehensive Incident Management Framework**
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.11 (Physical and Environmental Security), A.11.1 (Secure Areas), A.11.2 (Equipment)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.11.1.1 (Physical Security Perimeter), A.11.2.1 (Equipment Siting and Protection)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 12 (Boundary Defense), Control 13 (Data Protection)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 32 (Security of Processing), Recital 83 (Security Measures)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Physical Security), Article 21 (Environmental Controls)\n';
+      }
+      
+      return references + '\n';
+    };
 
-Incident response and recovery capabilities provide systematic procedures for detecting, responding to, and recovering from security incidents while meeting regulatory notification requirements and maintaining business continuity.
+    const getOperationsReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.12 (Operations Security), A.12.1 (Operational Procedures), A.12.6 (Technical Vulnerability Management)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.12.1.1 (Documented Operating Procedures), A.12.6.1 (Management of Technical Vulnerabilities)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 3 (Continuous Vulnerability Management), Control 11 (Secure Network Configuration)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 32 (Security of Processing), Article 25 (Data Protection by Design)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Operations Security), Article 21 (Network Security Management)\n';
+      }
+      
+      return references + '\n';
+    };
 
-**Critical Regulatory Notification Requirements**
+    const getDevelopmentReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.14 (System Acquisition, Development and Maintenance), A.14.1 (Security Requirements), A.14.2 (Security in Development)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.14.1.1 (Information Security Requirements Analysis), A.14.2.1 (Secure Development Policy)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 16 (Application Software Security), Control 18 (Penetration Tests)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 25 (Data Protection by Design and by Default), Article 32 (Security of Processing)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Secure Development), Article 21 (System Security Testing)\n';
+      }
+      
+      return references + '\n';
+    };
 
-Time-sensitive compliance obligations must be integrated into incident response procedures:
+    const getIncidentReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.16 (Information Security Incident Management), A.16.1 (Management of Information Security Incidents)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.16.1.1 (Responsibilities and Procedures), A.16.1.2 (Reporting Information Security Events)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 17 (Implement a Security Awareness and Training Program), Control 19 (Incident Response)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 33 (Notification of Personal Data Breach), Article 34 (Communication to Data Subject)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 23 (Incident Reporting), Article 24 (Computer Security Incident Response Teams)\n';
+      }
+      
+      return references + '\n';
+    };
 
-**GDPR Personal Data Breach Notification**
-Supervisory authority notification within 72 hours of awareness (Article 33), including breach nature, affected data categories and subjects, likely consequences, and remediation measures taken
+    const getContinuityReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.17 (Information Security Aspects of Business Continuity Management), A.17.1 (Information Security Continuity)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.17.1.1 (Planning Information Security Continuity), A.17.1.2 (Implementing Information Security Continuity)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 10 (Data Backup), Control 11 (Secure Network Configuration)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 32 (Security of Processing), Article 25 (Data Protection by Design)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Business Continuity), Article 21 (Backup and Recovery)\n';
+      }
+      
+      return references + '\n';
+    };
 
-**NIS2 Early Warning System**
-Essential and important entities must provide early warning notifications within 24 hours to competent national authorities for significant incidents affecting service availability
+    const getComplianceReferences = () => {
+      let references = '**Framework References for Selected Standards:**\n\n';
+      
+      if (selectedFrameworksList.includes('iso27001')) {
+        references += '**ISO 27001:** A.18 (Compliance), A.18.1 (Compliance with Legal and Contractual Requirements), A.18.2 (Information Security Reviews)\n';
+      }
+      if (selectedFrameworksList.includes('iso27002')) {
+        references += '**ISO 27002:** A.18.1.1 (Identification of Applicable Legislation), A.18.2.1 (Independent Review)\n';
+      }
+      if (selectedFrameworksList.includes('cisControls')) {
+        references += '**CIS Controls:** Control 17 (Security Awareness and Training), Control 18 (Application Software Security)\n';
+      }
+      if (selectedFrameworksList.includes('gdpr')) {
+        references += '**GDPR:** Article 5 (Principles), Article 24 (Responsibility of the Controller)\n';
+      }
+      if (selectedFrameworksList.includes('nis2')) {
+        references += '**NIS2:** Article 20 (Compliance Management), Article 21 (Regulatory Oversight)\n';
+      }
+      
+      return references + '\n';
+    };
 
-**NIS2 Detailed Incident Reports**
-Comprehensive incident analysis and final report submission within 72 hours, including technical root cause analysis, impact assessment, and remediation timeline
-
-**Data Subject Notification**
-Individual notification requirements when breaches likely result in high risk to personal rights and freedoms, using clear language explaining consequences and mitigation actions
-
-**Incident Detection and Classification**
-
-Systematic incident identification and prioritization:
-
-**24/7 Security Monitoring**
-Continuous threat detection using SIEM platforms, threat intelligence integration, and automated alerting systems with defined escalation thresholds
-
-**Incident Classification Framework**
-Severity-based categorization (Critical, High, Medium, Low) considering service impact, data exposure, regulatory implications, and business disruption potential
-
-**Automated Response Triggers**
-Integration with security tools for immediate containment actions, threat intelligence correlation, and stakeholder notification based on incident type and severity
-
-**Evidence Preservation**
-Forensic evidence collection procedures maintaining chain of custody for potential legal proceedings and regulatory investigations
-
-**Response Team Structure and Procedures**
-
-Organized response capabilities ensure effective incident management:
-- **Incident Response Team**: Cross-functional team including Incident Commander, Technical Lead, Communications Lead, Legal Counsel, and Business Continuity Manager with 24/7 availability
-- **Escalation Procedures**: Clear decision-making authority and escalation paths, including criteria for executive notification and external assistance engagement
-- **Communication Management**: Internal stakeholder updates, customer notifications, media response coordination, and regulatory communications using pre-approved templates and messaging
-- **Containment Strategy**: Immediate isolation procedures, short-term remediation measures, and long-term security improvements with documented effectiveness assessment
-
-**Recovery and Business Continuity**
-
-Systematic restoration of normal operations:
-- **Recovery Planning**: Prioritized system restoration procedures, backup validation and restoration processes, and alternative operational procedures during recovery phases
-- **Service Restoration**: Phased approach to service recovery with security validation, performance testing, and enhanced monitoring during initial restoration periods
-- **Post-Incident Activities**: Comprehensive after-action reviews, lessons learned documentation, procedure updates, and improvement recommendations implementation
-- **Stakeholder Communication**: Regular updates to customers, partners, and regulators throughout recovery process with transparent status reporting
-
-**Continuous Improvement and Preparedness**
-
-Ongoing enhancement of incident response capabilities:
-- **Regular Testing**: Quarterly tabletop exercises, annual full-scale simulations, and scenario-based training programs with documented improvement actions
-- **Metrics and Reporting**: Incident response performance metrics, regulatory compliance tracking, and effectiveness measurements with trend analysis
-- **Threat Intelligence Integration**: Incorporation of current threat landscape information, attack pattern analysis, and industry-specific threat indicators
-- **Supply Chain Coordination**: Incident response procedures for third-party service providers, vendor notification requirements, and coordinated response activities
-
-**Implementation Requirements**
-
-Essential elements for effective incident response:
-1. **Foundation**: Incident response policy, team structure establishment, and basic procedure development with regulatory requirement integration
-2. **Operationalization**: Response team training, communication procedure testing, and technology infrastructure deployment
-3. **Optimization**: Advanced threat detection capabilities, automated response procedures, and comprehensive recovery testing
-
-**Performance Indicators**
-
-✅ Mean time to detection (MTTD) and mean time to response (MTTR) meet organizational targets
-✅ Regulatory notification requirements consistently met within required timeframes
-✅ Incident response team demonstrates competence through regular testing and actual incident performance
-✅ Post-incident reviews result in measurable improvements to response capabilities
-✅ Business continuity objectives achieved during incident response and recovery activities
-      `
+    // Old guidanceMap removed - now using EnhancedUnifiedGuidanceService
+    // }; // End of old guidanceMap - now using EnhancedUnifiedGuidanceService
+    
+    // Use the enhanced guidance service with clean formatting and exact references
+    const selectedFrameworksObj = {
+      iso27001: Boolean(frameworksSelected.iso27001),
+      iso27002: Boolean(frameworksSelected.iso27002), 
+      cisControls: frameworksSelected.cisControls || false,
+      gdpr: Boolean(frameworksSelected.gdpr),
+      nis2: Boolean(frameworksSelected.nis2)
     };
     
-    return guidanceMap[cleanCategory] || `
-**Guidance for ${cleanCategory}**
-
-This category covers important compliance requirements that help ensure your organization meets industry standards and regulations.
-
-**Key Focus Areas:**
-- Understanding the specific requirements for this category
-- Implementing practical controls and procedures
-- Maintaining documentation and evidence
-- Regular monitoring and improvement
-
-**Next Steps:**
-1. Review the detailed requirements below
-2. Assess your current state against these requirements
-3. Create an implementation plan for any gaps
-4. Document your procedures and controls
-
-For more specific guidance on this category, please consult with your compliance team or external advisors.
-    `;
+    // Get professional guidance with exact requirement references
+    return EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+      cleanCategory,
+      selectedFrameworksObj
+    );
   };
 
   // Fetch industry sectors
@@ -847,108 +694,72 @@ For more specific guidance on this category, please consult with your compliance
 
     // 🎨 MAIN DATA WORKSHEET - ENTERPRISE GRADE
     const baseHeaders = [
-      '📂 Category',
-      '📋 Description of Category',
+      '📂 Category', 
       '🎯 Unified Requirements',
-      '📖 Unified Guidance'
+      '📖 Unified Guidance',
+      '📚 References'
     ];
     
-    // Add framework-specific columns with icons
-    const frameworkHeaders = [];
-    const frameworkIcons = {
-      iso27001: '🔒 ISO 27001 Controls',
-      iso27002: '🛡️ ISO 27002 Controls',
-      cisControls: '⚙️ CIS Controls',
-      gdpr: '🇪🇺 GDPR Articles',
-      nis2: '🌐 NIS2 Articles'
-    };
-    
-    if (selectedFrameworks.iso27001) frameworkHeaders.push(frameworkIcons.iso27001);
-    if (selectedFrameworks.iso27002) frameworkHeaders.push(frameworkIcons.iso27002);
-    if (selectedFrameworks.cisControls) {
-      const igLevel = selectedFrameworks.cisControls.toUpperCase();
-      frameworkHeaders.push(`⚙️ CIS Controls (${igLevel})`);
-    }
-    if (selectedFrameworks.gdpr) frameworkHeaders.push(frameworkIcons.gdpr);
-    if (selectedFrameworks.nis2) frameworkHeaders.push(frameworkIcons.nis2);
-    
-    // Add industry-specific column with icon
-    if (selectedIndustrySector) {
-      const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || 'Industry-Specific';
-      frameworkHeaders.push(`🏢 ${sectorName} Requirements`);
-    }
-
-    const headers = [...baseHeaders, ...frameworkHeaders];
+    // Use the simplified structure: Category, Unified Requirements, Unified Guidance, References
+    const headers = baseHeaders;
     
     // Create data rows with enhanced formatting
     const xlsxRows = [headers];
     
     (filteredUnifiedMappings || []).forEach((mapping, index) => {
-      const baseRow = [
+      // Get unified requirements (sub-requirements)
+      const unifiedRequirements = (mapping.auditReadyUnified?.subRequirements || [])
+        .map((req) => `✓ ${cleanComplianceSubRequirement(req)}`)
+        .join('\n\n');
+      
+      // Get unified guidance content using the enhanced service
+      const selectedFrameworksForGuidance = {
+        iso27001: Boolean(selectedFrameworks.iso27001),
+        iso27002: Boolean(selectedFrameworks.iso27002), 
+        cisControls: selectedFrameworks.cisControls || false,
+        gdpr: Boolean(selectedFrameworks.gdpr),
+        nis2: Boolean(selectedFrameworks.nis2)
+      };
+      
+      const guidanceContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+        mapping.category,
+        selectedFrameworksForGuidance
+      );
+      const unifiedGuidance = cleanMarkdownFormatting(
+        guidanceContent.length > 1000 
+          ? guidanceContent.substring(guidanceContent.indexOf('**') + 50, 1000) + '\\n\\n[Complete guidance available in application]'
+          : guidanceContent.substring(guidanceContent.indexOf('**') + 50) || 'Enhanced guidance with actionable insights available in application'
+      );
+      
+      // Collect all framework references for the References column
+      const references: string[] = [];
+      
+      if (selectedFrameworks.iso27001 && mapping.frameworks?.['iso27001']?.length) {
+        references.push('ISO 27001: ' + mapping.frameworks.iso27001.map(r => r.code).join(', '));
+      }
+      if (selectedFrameworks.iso27002 && mapping.frameworks?.['iso27002']?.length) {
+        references.push('ISO 27002: ' + mapping.frameworks.iso27002.map(r => r.code).join(', '));
+      }
+      if (selectedFrameworks.cisControls && mapping.frameworks?.['cisControls']?.length) {
+        references.push('CIS Controls: ' + mapping.frameworks.cisControls.map(r => r.code).join(', '));
+      }
+      if (selectedFrameworks.gdpr && mapping.frameworks?.['gdpr']?.length) {
+        references.push('GDPR: ' + mapping.frameworks.gdpr.map(r => r.code).join(', '));
+      }
+      if (selectedFrameworks.nis2 && mapping.frameworks?.['nis2']?.length) {
+        references.push('NIS2: ' + mapping.frameworks.nis2.map(r => r.code).join(', '));
+      }
+      
+      const referencesText = references.join('\n') || 'No specific framework mappings found';
+      
+      const row = [
         `${index + 1}. ${mapping.category || ''}`,
-        cleanMarkdownFormatting(mapping.auditReadyUnified?.description || ''),
-        mapping.auditReadyUnified?.title || '',
-        // Enhanced sub-requirements with professional formatting
-        (mapping.auditReadyUnified?.subRequirements || [])
-          .map((req, reqIndex) => `✓ ${cleanComplianceSubRequirement(req)}`)
-          .join('\n\n')
+        unifiedRequirements,
+        unifiedGuidance,
+        referencesText
       ];
 
-      // Add framework-specific data with enhanced formatting
-      const frameworkData = [];
-      
-      if (selectedFrameworks.iso27001) {
-        const iso27001Controls = (mapping.frameworks?.['iso27001'] || [])
-          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
-          .join('\n\n');
-        frameworkData.push(iso27001Controls || '— No specific mappings available');
-      }
-      
-      if (selectedFrameworks.iso27002) {
-        const iso27002Controls = (mapping.frameworks?.['iso27002'] || [])
-          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
-          .join('\n\n');
-        frameworkData.push(iso27002Controls || '— No specific mappings available');
-      }
-      
-      if (selectedFrameworks.cisControls) {
-        const cisControls = (mapping.frameworks?.['cisControls'] || [])
-          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
-          .join('\n\n');
-        frameworkData.push(cisControls || '— No specific mappings available');
-      }
-      
-      if (selectedFrameworks.gdpr) {
-        const gdprArticles = (mapping.frameworks?.['gdpr'] || [])
-          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
-          .join('\n\n');
-        frameworkData.push(gdprArticles || '— No specific mappings available');
-      }
-      
-      if (selectedFrameworks.nis2) {
-        const nis2Articles = (mapping.frameworks?.['nis2'] || [])
-          .map((r, idx) => `🔹 ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`)
-          .join('\n\n');
-        frameworkData.push(nis2Articles || '— No specific mappings available');
-      }
-
-      // Add industry-specific requirements with relevance indicators
-      if (selectedIndustrySector && mapping.industrySpecific) {
-        const industryReqs = mapping.industrySpecific
-          .map(r => {
-            const priorityIcon = {
-              'critical': '🔴',
-              'high': '🟠',
-              'standard': '🟡',
-              'optional': '🟢'
-            }[r.relevanceLevel] || '⚪';
-            return `${priorityIcon} [${r.relevanceLevel.toUpperCase()}] ${r.code}: ${cleanMarkdownFormatting(r.title)}\n   ${cleanMarkdownFormatting(r.description)}`;
-          })
-          .join('\n\n');
-        frameworkData.push(industryReqs || '— No industry-specific requirements');
-      }
-
-      xlsxRows.push([...baseRow, ...frameworkData]);
+      xlsxRows.push(row);
     });
 
     const mainWS = XLSX.utils.aoa_to_sheet(xlsxRows);
@@ -1088,12 +899,12 @@ For more specific guidance on this category, please consult with your compliance
     });
 
     summaryData.push(['', '', '', '']);
-    summaryData.push(['Total Categories Analyzed', (filteredUnifiedMappings || []).length.toString(), '100%', '✅ Complete']);
+    summaryData.push(['Total Categories Analyzed', (filteredUnifiedMappings || []).length.toString(), '100%', 'Complete']);
     summaryData.push(['Report Generation Date', new Date().toLocaleDateString(), '', '']);
     summaryData.push(['Compliance Readiness Score', 
       selectedFrameworksList.length >= 3 ? 'High Multi-Framework Coverage' : 'Focused Framework Analysis', 
       '', 
-      selectedFrameworksList.length >= 3 ? '🏆 Enterprise' : '⭐ Professional'
+      selectedFrameworksList.length >= 3 ? 'Enterprise' : 'Professional'
     ]);
 
     const summaryWS = XLSX.utils.aoa_to_sheet(summaryData);
@@ -1139,6 +950,422 @@ For more specific guidance on this category, please consult with your compliance
     
     console.log(`🏆 Exported enterprise-grade compliance report: ${filename}`);
     console.log(`📊 ${(filteredUnifiedMappings || []).length} categories analyzed across ${selectedFrameworksList.length} frameworks`);
+  };
+
+  const exportToPDF = () => {
+    // Get selected frameworks for dynamic content
+    const selectedFrameworksList = Object.entries(selectedFrameworks)
+      .filter(([_, selected]) => selected !== false && selected !== null)
+      .map(([framework, value]) => {
+        if (framework === 'cisControls' && typeof value === 'string') {
+          return `${framework} (${value.toUpperCase()})`;
+        }
+        return framework;
+      });
+
+    // Create new PDF with premium settings
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    
+    // 🎨 DEFINE STUNNING COLOR PALETTE
+    const colors = {
+      primary: '#1F4E79',      // Corporate Blue
+      secondary: '#2F5233',    // Forest Green  
+      accent: '#E74C3C',       // Professional Red
+      gold: '#F39C12',         // Executive Gold
+      lightBlue: '#E7F3FF',    // Light Blue Background
+      lightGreen: '#F0F8F0',   // Light Green Background
+      darkGray: '#2C3E50',     // Professional Dark
+      mediumGray: '#7F8C8D',   // Medium Gray
+      lightGray: '#ECF0F1',    // Light Gray
+      white: '#FFFFFF'
+    };
+
+    // 🎨 PREMIUM HEADER DESIGN
+    const createPremiumHeader = (pageNum = 1, totalPages = 1) => {
+      // Background gradient effect (simulated with rectangles)
+      doc.setFillColor(31, 78, 121); // Primary blue
+      doc.rect(0, 0, pageWidth, 25, 'F');
+      
+      // Subtle accent line
+      doc.setFillColor(239, 156, 18); // Gold accent
+      doc.rect(0, 22, pageWidth, 3, 'F');
+      
+      // Company logo placeholder - clean design without symbols
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(margin, 5, 15, 15, 2, 2, 'F');
+      doc.setFillColor(31, 78, 121);
+      doc.roundedRect(margin + 2, 7, 11, 11, 1, 1, 'F');
+      
+      // Main title - clean text without symbols
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('AuditReady Enterprise Compliance Report', margin + 25, 15);
+      
+      // Subtitle with date - clean formatting
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const currentDate = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric', 
+        month: 'long',
+        day: 'numeric'
+      });
+      doc.text(`Generated on ${currentDate} | Page ${pageNum} of ${totalPages}`, margin + 25, 20);
+      
+      // Page number in top right
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${pageNum}/${totalPages}`, pageWidth - margin - 15, 15);
+      
+      return 35; // Return Y position after header
+    };
+
+    let currentY = createPremiumHeader(1, 3);
+    
+    // 🎨 EXECUTIVE SUMMARY SECTION
+    doc.setFillColor(231, 243, 255); // Light blue background
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 35, 3, 3, 'F');
+    
+    // Summary title - clean text
+    doc.setTextColor(31, 78, 121);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('EXECUTIVE SUMMARY', margin + 5, currentY + 10);
+    
+    // Two-column layout for summary
+    const colWidth = (pageWidth - (2 * margin) - 10) / 2;
+    
+    // Left column
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Selected Frameworks:', margin + 5, currentY + 18);
+    doc.setFont('helvetica', 'normal');
+    doc.text(selectedFrameworksList.join(', ') || 'All Available', margin + 5, currentY + 23);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text('Total Categories:', margin + 5, currentY + 28);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${(filteredUnifiedMappings || []).length} compliance domains analyzed`, margin + 5, currentY + 33);
+    
+    // Right column
+    doc.setFont('helvetica', 'bold');
+    doc.text('Coverage Assessment:', margin + colWidth + 10, currentY + 18);
+    doc.setFont('helvetica', 'normal');
+    const coverageText = selectedFrameworksList.length > 3 ? 'Comprehensive Multi-Framework' : 'Focused Framework Analysis';
+    doc.text(coverageText, margin + colWidth + 10, currentY + 23);
+    
+    if (selectedIndustrySector) {
+      const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || '';
+      doc.setFont('helvetica', 'bold');
+      doc.text('Industry Focus:', margin + colWidth + 10, currentY + 28);
+      doc.setFont('helvetica', 'normal');
+      doc.text(sectorName, margin + colWidth + 10, currentY + 33);
+    }
+    
+    currentY += 45;
+
+    // 🎨 FRAMEWORKS LEGEND WITH VISUAL INDICATORS
+    doc.setFillColor(240, 248, 240); // Light green background
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 25, 3, 3, 'F');
+    
+    doc.setTextColor(47, 82, 51);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FRAMEWORK LEGEND', margin + 5, currentY + 8);
+    
+    // Framework legend with clean text and colors
+    const frameworkLegend = [
+      { name: 'ISO 27001', color: '#3498DB' },
+      { name: 'ISO 27002', color: '#2ECC71' },
+      { name: 'CIS Controls', color: '#E67E22' },
+      { name: 'GDPR', color: '#9B59B6' },
+      { name: 'NIS2', color: '#E74C3C' }
+    ];
+    
+    let legendX = margin + 5;
+    frameworkLegend.forEach((framework, index) => {
+      if (selectedFrameworksList.some(f => f.toLowerCase().includes(framework.name.toLowerCase().replace(/\s/g, '')))) {
+        // Color indicator
+        const rgb = framework.color.match(/\w\w/g)?.map(hex => parseInt(hex, 16)) || [0, 0, 0];
+        doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+        doc.roundedRect(legendX, currentY + 12, 4, 4, 1, 1, 'F');
+        
+        // Framework text - clean without symbols
+        doc.setTextColor(44, 62, 80);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text(framework.name, legendX + 6, currentY + 16);
+        
+        legendX += 35;
+      }
+    });
+    
+    currentY += 35;
+
+    // 🎨 MAIN DATA TABLE - CLEAN AND COMPLETE
+    const createStunningTable = (data: any[], startY: number, pageNum: number) => {
+      // Updated structure: Category, Unified Requirements, Unified Guidance, References  
+      const allHeaders = ['#', 'Category', 'Unified Requirements', 'Unified Guidance', 'References'];
+      
+      // Clean text helper function
+      const cleanText = (text: string, maxLength?: number) => {
+        const cleaned = cleanMarkdownFormatting(text || '')
+          .replace(/[^\x20-\x7E\n]/g, '') // Remove non-ASCII characters except newlines
+          .replace(/\s+/g, ' ') // Normalize whitespace
+          .trim();
+        return maxLength ? cleaned : cleaned;
+      };
+      
+      // Prepare table data with new structure: #, Category, Unified Requirements, Unified Guidance, References
+      const tableData = data.map((mapping, index) => {
+        // Get unified requirements (sub-requirements) 
+        const unifiedRequirements = (mapping.auditReadyUnified?.subRequirements || [])
+          .map(req => `• ${cleanText(cleanComplianceSubRequirement(req))}`)
+          .join('\n');
+        
+        // Get unified guidance content using the enhanced service
+        const selectedFrameworksForGuidance = {
+          iso27001: Boolean(selectedFrameworks.iso27001),
+          iso27002: Boolean(selectedFrameworks.iso27002), 
+          cisControls: selectedFrameworks.cisControls || false,
+          gdpr: Boolean(selectedFrameworks.gdpr),
+          nis2: Boolean(selectedFrameworks.nis2)
+        };
+        
+        const guidanceContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+          mapping.category,
+          selectedFrameworksForGuidance
+        );
+        
+        const unifiedGuidance = cleanText(
+          guidanceContent.length > 800
+            ? guidanceContent.substring(0, 800) + '\\n\\n[Complete guidance available in application]'
+            : guidanceContent || 'Enhanced guidance with actionable insights available in application'
+        );
+        
+        // Collect all framework references for the References column
+        const references: string[] = [];
+        
+        if (selectedFrameworks.iso27001 && mapping.frameworks?.['iso27001']?.length) {
+          references.push('ISO 27001: ' + mapping.frameworks.iso27001.map(r => r.code).join(', '));
+        }
+        if (selectedFrameworks.iso27002 && mapping.frameworks?.['iso27002']?.length) {
+          references.push('ISO 27002: ' + mapping.frameworks.iso27002.map(r => r.code).join(', '));
+        }
+        if (selectedFrameworks.cisControls && mapping.frameworks?.['cisControls']?.length) {
+          references.push('CIS Controls: ' + mapping.frameworks.cisControls.map(r => r.code).join(', '));
+        }
+        if (selectedFrameworks.gdpr && mapping.frameworks?.['gdpr']?.length) {
+          references.push('GDPR: ' + mapping.frameworks.gdpr.map(r => r.code).join(', '));
+        }
+        if (selectedFrameworks.nis2 && mapping.frameworks?.['nis2']?.length) {
+          references.push('NIS2: ' + mapping.frameworks.nis2.map(r => r.code).join(', '));
+        }
+        
+        const referencesText = references.join('\n') || 'No specific framework mappings found';
+        
+        return [
+          (index + 1).toString(),
+          cleanText(mapping.category || ''),
+          unifiedRequirements,
+          unifiedGuidance,
+          referencesText
+        ];
+      });
+
+      // 🎨 CREATE THE STUNNING TABLE WITH PROPER FITTING
+      autoTable(doc, {
+        head: [allHeaders],
+        body: tableData,
+        startY: startY,
+        margin: { left: margin, right: margin },
+        styles: {
+          fontSize: 7,
+          cellPadding: { top: 4, right: 3, bottom: 4, left: 3 },
+          lineColor: [224, 224, 224],
+          lineWidth: 0.5,
+          font: 'helvetica',
+          valign: 'top',
+          overflow: 'linebreak',
+          cellWidth: 'wrap'
+        },
+        headStyles: {
+          fillColor: [31, 78, 121],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+          halign: 'center',
+          valign: 'middle',
+          cellPadding: { top: 6, right: 4, bottom: 6, left: 4 }
+        },
+        columnStyles: {
+          0: { cellWidth: 8, halign: 'center', fillColor: [247, 249, 252] }, // Index
+          1: { cellWidth: 35, fontStyle: 'bold', fillColor: [231, 243, 255] }, // Category  
+          2: { cellWidth: 55, overflow: 'linebreak' }, // Unified Requirements
+          3: { cellWidth: 65, overflow: 'linebreak' }, // Unified Guidance
+          4: { cellWidth: 45, overflow: 'linebreak' }, // References
+        },
+        alternateRowStyles: {
+          fillColor: [248, 249, 250]
+        },
+        didDrawCell: (data: any) => {
+          // Enhanced cell styling
+          if (data.section === 'head') {
+            doc.setDrawColor(21, 58, 101);
+            doc.setLineWidth(1);
+            doc.line(data.cell.x, data.cell.y + data.cell.height, 
+                    data.cell.x + data.cell.width, data.cell.y + data.cell.height);
+          }
+          
+          // Category column special styling
+          if (data.column.index === 1 && data.section === 'body') {
+            doc.setTextColor(31, 78, 121);
+            doc.setFont('helvetica', 'bold');
+          }
+        },
+        didParseCell: (data: any) => {
+          // Framework columns get different header colors
+          if (data.section === 'head' && data.column.index >= 5) {
+            data.cell.styles.fillColor = [47, 82, 51];
+          }
+          
+          // Auto-adjust row height based on content
+          if (data.section === 'body') {
+            const lines = (data.cell.text || []).length;
+            if (lines > 3) {
+              data.cell.styles.minCellHeight = Math.max(15, lines * 3);
+            }
+          }
+        },
+        showHead: 'everyPage',
+        theme: 'grid',
+        tableWidth: 'auto',
+        pageBreak: 'auto'
+      });
+
+      // Get the final Y position after the table
+      const finalY = doc.lastAutoTable?.finalY || startY + 100;
+      return finalY + 10;
+    };
+
+    // Create table with all data - let autoTable handle page breaks
+    const allData = filteredUnifiedMappings || [];
+    currentY = createStunningTable(allData, currentY, 1);
+
+    // Add footer to first page
+    doc.setTextColor(127, 140, 141);
+    doc.setFontSize(8);
+    doc.text('This report contains confidential compliance analysis. © AuditReady Enterprise', 
+             margin, pageHeight - 10);
+    
+    // Check if we need additional pages based on final Y position
+    const finalY = doc.lastAutoTable?.finalY || currentY;
+    const totalPages = Math.ceil((finalY - 35) / (pageHeight - 80)) || 1;
+
+    // Add statistics page
+    doc.addPage();
+    const statsPageNum = totalPages + 1;
+    currentY = createPremiumHeader(statsPageNum, statsPageNum);
+    
+    // 🎨 STATISTICS AND INSIGHTS PAGE - CLEAN VERSION
+    doc.setFillColor(247, 249, 252);
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 60, 3, 3, 'F');
+    
+    doc.setTextColor(31, 78, 121);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('COMPLIANCE ANALYTICS DASHBOARD', margin + 5, currentY + 12);
+    
+    // Coverage statistics
+    currentY += 25;
+    const statsData = [];
+    selectedFrameworksList.forEach((framework, index) => {
+      const mapped = (filteredUnifiedMappings || []).reduce((count, mapping) => {
+        const frameworkKey = framework.includes('(') ? framework.split('(')[0].trim() : framework;
+        return count + (Object.keys(mapping.frameworks || {}).includes(frameworkKey) ? 1 : 0);
+      }, 0);
+      
+      const coverage = Math.round((mapped / Math.max((filteredUnifiedMappings || []).length, 1)) * 100);
+      const status = coverage >= 90 ? 'Excellent' : coverage >= 70 ? 'Good' : 'Needs Review';
+      
+      statsData.push([framework, mapped.toString(), `${coverage}%`, status]);
+    });
+
+    // Statistics table
+    autoTable(doc, {
+      head: [['Framework', 'Mapped Categories', 'Coverage %', 'Status']],
+      body: statsData,
+      startY: currentY,
+      margin: { left: margin + 20, right: margin + 20 },
+      styles: {
+        fontSize: 10,
+        cellPadding: 4
+      },
+      headStyles: {
+        fillColor: [47, 82, 51],
+        textColor: [255, 255, 255],
+        fontSize: 11,
+        fontStyle: 'bold'
+      },
+      columnStyles: {
+        0: { cellWidth: 60 },
+        1: { halign: 'center', cellWidth: 30 },
+        2: { halign: 'center', cellWidth: 25 },
+        3: { halign: 'center', cellWidth: 40 }
+      },
+      theme: 'striped'
+    });
+
+    currentY = (doc.lastAutoTable?.finalY || currentY) + 20;
+    
+    // 🎨 RECOMMENDATIONS SECTION
+    doc.setFillColor(240, 248, 240);
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 45, 3, 3, 'F');
+    
+    doc.setTextColor(47, 82, 51);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('EXECUTIVE RECOMMENDATIONS', margin + 5, currentY + 10);
+    
+    const recommendations = [
+      '• Prioritize categories with multi-framework coverage for maximum compliance ROI',
+      '• Focus implementation efforts on areas with highest regulatory impact',
+      '• Establish continuous monitoring for all mapped compliance requirements',
+      '• Schedule quarterly reviews to maintain compliance posture effectiveness'
+    ];
+    
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    recommendations.forEach((rec, index) => {
+      doc.text(rec, margin + 5, currentY + 18 + (index * 6));
+    });
+
+    // Final footer - clean version
+    doc.setTextColor(127, 140, 141);
+    doc.setFontSize(8);
+    doc.text('Enterprise-Grade Compliance Analysis | Confidential Report', 
+             margin, pageHeight - 15);
+    doc.text(`Report ID: AR-${Date.now().toString(36).toUpperCase()}`, 
+             pageWidth - margin - 60, pageHeight - 15);
+
+    // 🎨 SAVE THE MASTERPIECE
+    const timestamp = new Date().toISOString().split('T')[0];
+    const frameworkSuffix = selectedFrameworksList.length > 0 
+      ? `_${selectedFrameworksList.join('_').replace(/[^a-zA-Z0-9]/g, '_')}` 
+      : '';
+    const filename = `AuditReady_Premium_Compliance_Report_${timestamp}${frameworkSuffix}.pdf`;
+
+    doc.save(filename);
+    
+    console.log(`🎨 Exported stunning PDF compliance report: ${filename}`);
+    console.log(`📄 ${(filteredUnifiedMappings || []).length} categories across 3 premium-designed pages`);
   };
 
   const filteredMappings = useMemo(() => {
@@ -1505,6 +1732,11 @@ For more specific guidance on this category, please consult with your compliance
                   <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" />
                   Export as Excel
                   <span className="text-xs text-muted-foreground ml-auto">Enhanced</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={exportToPDF} className="cursor-pointer">
+                  <FileText className="w-4 h-4 mr-2 text-red-600" />
+                  Export as PDF
+                  <span className="text-xs text-muted-foreground ml-auto">Premium</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -2974,67 +3206,167 @@ For more specific guidance on this category, please consult with your compliance
           </DialogHeader>
           <div className="prose dark:prose-invert max-w-none pt-6">
             {getGuidanceContent(selectedGuidanceCategory).split('\n').map((line, index) => {
-              // Remove any remaining asterisks from content
-              const cleanLine = line.replace(/\*/g, '');
+              // Clean line but preserve basic formatting markers
+              const cleanLine = line.replace(/\*\*/g, '').trim();
               
-              if (cleanLine.trim() === '') return <div key={index} className="h-2" />;
+              if (cleanLine === '') return <div key={index} className="h-3" />;
               
-              // Framework References section with special styling
-              if (cleanLine.includes('Framework References for Selected Standards:')) {
+              // 🎯 Special styling for Operational Excellence Indicators header
+              if (cleanLine.includes('🎯 OPERATIONAL EXCELLENCE INDICATORS')) {
                 return (
-                  <div key={index} className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
-                    <h4 className="text-base font-semibold text-blue-800 dark:text-blue-200 mb-2">
-                      📋 Framework References for Selected Standards
-                    </h4>
-                  </div>
-                );
-              }
-              
-              // Framework-specific references
-              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2):/)) {
-                return (
-                  <div key={index} className="ml-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg mb-2">
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                      {cleanLine}
+                  <div key={index} className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 border-2 border-emerald-400 p-6 mb-6 rounded-xl shadow-lg">
+                    <h3 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 mb-2 flex items-center">
+                      <span className="text-3xl mr-3">🎯</span>
+                      OPERATIONAL EXCELLENCE INDICATORS
+                    </h3>
+                    <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
+                      Your Compliance Scorecard - Track these metrics to demonstrate audit readiness
                     </p>
                   </div>
                 );
               }
               
-              if (cleanLine.startsWith('**') && cleanLine.endsWith('**')) {
+              // Section headers for the scorecard categories
+              if (cleanLine.includes('FOUNDATIONAL CONTROLS') || 
+                  cleanLine.includes('ADVANCED CONTROLS') || 
+                  cleanLine.includes('AUDIT-READY DOCUMENTATION') || 
+                  cleanLine.includes('CONTINUOUS IMPROVEMENT')) {
+                
+                const colors = {
+                  'FOUNDATIONAL CONTROLS': 'bg-blue-600 text-white',
+                  'ADVANCED CONTROLS': 'bg-purple-600 text-white', 
+                  'AUDIT-READY DOCUMENTATION': 'bg-orange-600 text-white',
+                  'CONTINUOUS IMPROVEMENT': 'bg-green-600 text-white'
+                };
+                
+                const color = Object.keys(colors).find(key => cleanLine.includes(key));
+                const colorClass = color ? colors[color] : 'bg-gray-600 text-white';
+                
                 return (
-                  <h3 key={index} className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-                    {cleanLine.replace(/\*\*/g, '')}
-                  </h3>
+                  <div key={index} className={`${colorClass} p-4 rounded-lg mb-4 mt-6`}>
+                    <h4 className="font-bold text-lg flex items-center">
+                      <span className="text-2xl mr-3">✅</span>
+                      {cleanLine}
+                    </h4>
+                  </div>
                 );
               }
               
+              // Framework References section with special styling
+              if (cleanLine.includes('Framework References for Selected Standards:')) {
+                return (
+                  <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-l-4 border-blue-500 p-5 mb-6 rounded-r-lg shadow-sm">
+                    <h4 className="text-lg font-bold text-blue-800 dark:text-blue-200 mb-2 flex items-center">
+                      <span className="text-xl mr-2">📋</span>
+                      Framework References for Selected Standards
+                    </h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      Specific control references mapped to your selected compliance frameworks
+                    </p>
+                  </div>
+                );
+              }
+              
+              // Framework-specific references with enhanced styling
+              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2):/)) {
+                const framework = cleanLine.split(':')[0];
+                const content = cleanLine.split(':')[1];
+                
+                const frameworkColors = {
+                  'ISO 27001': 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 text-blue-800 dark:text-blue-200',
+                  'ISO 27002': 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-400 text-cyan-800 dark:text-cyan-200',
+                  'CIS Controls': 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 text-purple-800 dark:text-purple-200',
+                  'GDPR': 'bg-orange-50 dark:bg-orange-900/20 border-orange-400 text-orange-800 dark:text-orange-200',
+                  'NIS2': 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 text-indigo-800 dark:text-indigo-200'
+                };
+                
+                const colorClass = frameworkColors[framework] || 'bg-gray-50 dark:bg-gray-800/50 border-gray-400 text-gray-800 dark:text-gray-200';
+                
+                return (
+                  <div key={index} className={`ml-4 p-4 rounded-lg mb-3 border-l-4 ${colorClass}`}>
+                    <div className="flex items-start space-x-3">
+                      <span className="font-bold text-base shrink-0">{framework}:</span>
+                      <p className="text-sm leading-relaxed">{content}</p>
+                    </div>
+                  </div>
+                );
+              }
+              
+              // Major section headers (without **)
+              if (line.startsWith('**') && line.endsWith('**') && !cleanLine.includes('✅')) {
+                const headerText = line.replace(/\*\*/g, '');
+                return (
+                  <div key={index} className="mt-8 mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white pb-3 border-b-2 border-gray-300 dark:border-gray-600 flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 mr-3"></span>
+                      {headerText}
+                    </h3>
+                  </div>
+                );
+              }
+              
+              // Subsection headers (bold but not wrapped in **)
+              if (line.match(/^\*\*[^*]+\*\*$/) && !cleanLine.includes('✅')) {
+                return (
+                  <h4 key={index} className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3 flex items-center">
+                    <span className="w-1 h-6 bg-emerald-400 mr-3 rounded"></span>
+                    {cleanLine}
+                  </h4>
+                );
+              }
+              
+              // ✅ Checkmark items with enhanced styling
               if (cleanLine.startsWith('✅')) {
+                const content = cleanLine.replace('✅ ', '');
+                const isBold = content.includes('**');
+                const cleanContent = content.replace(/\*\*/g, '');
+                
                 return (
-                  <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg mb-3">
-                    <span className="text-green-600 dark:text-green-400 text-lg">✅</span>
-                    <p className="text-sm text-green-800 dark:text-green-200">{cleanLine.replace('✅ ', '')}</p>
+                  <div key={index} className="flex items-start space-x-4 p-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg mb-3 shadow-sm">
+                    <span className="text-green-600 dark:text-green-400 text-xl shrink-0 mt-0.5">✅</span>
+                    <p className={`text-green-800 dark:text-green-200 leading-relaxed ${isBold ? 'font-semibold text-base' : 'text-sm'}`}>
+                      {cleanContent}
+                    </p>
                   </div>
                 );
               }
               
-              if (cleanLine.startsWith('❌')) {
+              // 💡 PRO TIP styling
+              if (cleanLine.startsWith('💡 PRO TIP:')) {
                 return (
-                  <div key={index} className="flex items-start space-x-3 p-3 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg mb-3">
-                    <span className="text-red-600 dark:text-red-400 text-lg">❌</span>
-                    <p className="text-sm text-red-800 dark:text-red-200">{cleanLine.replace('❌ ', '')}</p>
+                  <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-l-4 border-yellow-400 p-5 mb-6 rounded-r-lg shadow-lg">
+                    <div className="flex items-start space-x-3">
+                      <span className="text-2xl">💡</span>
+                      <div>
+                        <h4 className="font-bold text-yellow-800 dark:text-yellow-200 text-base mb-1">PRO TIP</h4>
+                        <p className="text-yellow-700 dark:text-yellow-300 text-sm leading-relaxed">
+                          {cleanLine.replace('💡 PRO TIP: ', '')}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 );
               }
               
-              if (cleanLine.match(/^\d+\./)) {
+              // Phase headers (Phase 1:, Phase 2:, etc.)
+              if (cleanLine.match(/^Phase \d+:/)) {
                 return (
                   <div key={index} className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg mb-3 border-l-4 border-indigo-400">
-                    <p className="font-medium text-indigo-800 dark:text-indigo-200">{cleanLine}</p>
+                    <p className="font-semibold text-indigo-800 dark:text-indigo-200 text-base">{cleanLine}</p>
                   </div>
                 );
               }
               
+              // Implementation phases or numbered items
+              if (cleanLine.match(/^\d+\./)) {
+                return (
+                  <div key={index} className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg mb-2 border-l-2 border-gray-400">
+                    <p className="font-medium text-gray-800 dark:text-gray-200 text-sm">{cleanLine}</p>
+                  </div>
+                );
+              }
+              
+              // Regular paragraph text
               return (
                 <p key={index} className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 text-sm">
                   {cleanLine}
