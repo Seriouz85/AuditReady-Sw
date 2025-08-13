@@ -43,14 +43,14 @@ export class ProfessionalGuidanceService {
   static formatFrameworkName(framework: string): string {
     const frameworkMap: Record<string, string> = {
       'iso27001': 'ISO 27001:2022',
-      'iso27002': 'ISO 27002:2022',
-      'ciscontrols': 'CIS Controls v8',
-      'cis controls': 'CIS Controls v8',
-      'ciscontrols (ig1)': 'CIS Controls v8 (IG1)',
-      'ciscontrols (ig2)': 'CIS Controls v8 (IG2)',
-      'ciscontrols (ig3)': 'CIS Controls v8 (IG3)',
-      'gdpr': 'GDPR',
-      'nis2': 'NIS2 Directive'
+      'iso27002': 'ISO 27002:2022', 
+      'ciscontrols': 'CIS Controls - v8.1.2',
+      'cis controls': 'CIS Controls - v8.1.2',
+      'ciscontrols (ig1)': 'CIS Controls - IG1 (v8.1.2)',
+      'ciscontrols (ig2)': 'CIS Controls - IG2 (v8.1.2)', 
+      'ciscontrols (ig3)': 'CIS Controls - IG3 (v8.1.2)',
+      'gdpr': 'GDPR (EU 2016/679)',
+      'nis2': 'NIS2 Directive (EU 2022/2555)'
     };
 
     const key = framework.toLowerCase().replace(/\s+/g, '');
@@ -164,5 +164,36 @@ export class ProfessionalGuidanceService {
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
+  }
+
+  /**
+   * Format structured guidance with bold headers maintained for readability
+   */
+  static formatStructuredGuidanceForPDF(guidance: string): string {
+    if (!guidance) return '';
+    
+    return guidance
+      .replace(/\n{3,}/g, '\n\n') // Normalize line breaks
+      .trim();
+  }
+
+  /**
+   * Create structured requirements with proper lettering
+   */
+  static formatRequirementsWithLettering(requirements: string[]): string {
+    if (!requirements || requirements.length === 0) {
+      return 'Complete requirements available in application interface';
+    }
+    
+    return requirements.map((req, index) => {
+      // Check if requirement already has lettering
+      if (req.match(/^[a-z]\)|^\d+\.|^[A-Z]\)/)) {
+        return req;
+      }
+      
+      // Add letter formatting
+      const letter = String.fromCharCode(97 + index); // a, b, c, etc.
+      return `${letter}) ${req}`;
+    }).join('\n\n');
   }
 }

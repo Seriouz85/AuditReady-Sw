@@ -964,11 +964,17 @@ export default function ComplianceSimplification() {
         return ProfessionalGuidanceService.formatFrameworkName(framework);
       });
 
-    // Create new PDF with premium settings
-    const doc = new jsPDF('landscape', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 10; // Reduced margin for more content space
+    // Create new PDF with normal A4 portrait dimensions
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm', 
+      format: [210, 297], // Standard A4 portrait dimensions
+      compress: true,
+      putOnlyUsedFonts: true
+    });
+    const pageWidth = 210; // Standard A4 portrait width
+    const pageHeight = 297; // Standard A4 portrait height
+    const margin = 15; // Professional margin for A4
     
     // 🎨 DEFINE STUNNING COLOR PALETTE
     const colors = {
@@ -988,25 +994,25 @@ export default function ComplianceSimplification() {
     const createPremiumHeader = (pageNum = 1, totalPages = 1) => {
       // Background gradient effect (simulated with rectangles)
       doc.setFillColor(31, 78, 121); // Primary blue
-      doc.rect(0, 0, pageWidth, 25, 'F');
+      doc.rect(0, 0, pageWidth, 30, 'F');
       
       // Subtle accent line
       doc.setFillColor(239, 156, 18); // Gold accent
-      doc.rect(0, 22, pageWidth, 3, 'F');
+      doc.rect(0, 27, pageWidth, 3, 'F');
       
-      // Company logo placeholder - clean design without symbols
+      // Company logo placeholder - portrait optimized
       doc.setFillColor(255, 255, 255);
-      doc.roundedRect(margin, 5, 15, 15, 2, 2, 'F');
+      doc.roundedRect(margin, 6, 16, 16, 2, 2, 'F');
       doc.setFillColor(31, 78, 121);
-      doc.roundedRect(margin + 2, 7, 11, 11, 1, 1, 'F');
+      doc.roundedRect(margin + 2, 8, 12, 12, 1, 1, 'F');
       
-      // Main title - clean text without symbols
+      // Main title - portrait A4 optimized
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(24);
+      doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.text('AuditReady Enterprise Compliance Report', margin + 25, 15);
+      doc.text('AUDITREADY ENTERPRISE COMPLIANCE REPORT', margin + 25, 17);
       
-      // Subtitle with date - clean formatting
+      // Subtitle with date - portrait formatting
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       const currentDate = new Date().toLocaleDateString('en-US', {
@@ -1015,76 +1021,69 @@ export default function ComplianceSimplification() {
         month: 'long',
         day: 'numeric'
       });
-      doc.text(`Generated on ${currentDate} | Page ${pageNum} of ${totalPages}`, margin + 25, 20);
+      doc.text(`Generated on ${currentDate} | Page ${pageNum} of ${totalPages}`, margin + 25, 23);
       
-      // Page number in top right
+      // Page number in top right - portrait optimized
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text(`${pageNum}/${totalPages}`, pageWidth - margin - 15, 15);
+      doc.text(`${pageNum}/${totalPages}`, pageWidth - margin - 15, 17);
       
-      return 35; // Return Y position after header
+      return 40; // Return Y position after header
     };
 
     let currentY = createPremiumHeader(1, 3);
     
-    // EXECUTIVE SUMMARY SECTION
+    // EXECUTIVE SUMMARY SECTION - portrait A4 optimized
     doc.setFillColor(231, 243, 255); // Light blue background
-    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 40, 3, 3, 'F');
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 50, 3, 3, 'F');
     
-    // Summary title
+    // Summary title - portrait optimized
     doc.setTextColor(31, 78, 121);
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('EXECUTIVE SUMMARY', margin + 5, currentY + 10);
+    doc.text('EXECUTIVE SUMMARY', margin + 8, currentY + 12);
     
-    // Two-column layout for summary
-    const colWidth = (pageWidth - (2 * margin) - 10) / 2;
+    // Single column layout for portrait format
+    const colWidth = pageWidth - (2 * margin) - 10;
     
-    // Left column
+    // Single column layout with enhanced formatting
     doc.setTextColor(44, 62, 80);
-    doc.setFontSize(11);
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('Selected Frameworks:', margin + 5, currentY + 20);
+    doc.text('SELECTED FRAMEWORKS:', margin + 8, currentY + 22);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    // Format frameworks properly on multiple lines if needed
-    const frameworksPerLine = 2;
-    const frameworkLines = [];
-    for (let i = 0; i < selectedFrameworksList.length; i += frameworksPerLine) {
-      frameworkLines.push(selectedFrameworksList.slice(i, i + frameworksPerLine).join(', '));
-    }
-    frameworkLines.forEach((line, index) => {
-      doc.text(line, margin + 5, currentY + 25 + (index * 4));
+    // Format frameworks properly for portrait
+    let yOffset = currentY + 28;
+    selectedFrameworksList.forEach((framework) => {
+      const capitalizedFramework = framework.charAt(0).toUpperCase() + framework.slice(1);
+      doc.text(`• ${capitalizedFramework}`, margin + 12, yOffset);
+      yOffset += 5;
     });
     
-    doc.setFontSize(11);
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('Total Categories:', margin + 5, currentY + 35);
+    const totalCatY = Math.max(yOffset + 2, currentY + 38);
+    doc.text('TOTAL CATEGORIES:', margin + 8, totalCatY);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`${(filteredUnifiedMappings || []).length} compliance domains analyzed`, margin + 45, currentY + 35);
+    doc.setFontSize(11);
+    doc.text(`${(filteredUnifiedMappings || []).length} compliance domains analyzed`, margin + 55, totalCatY);
     
-    // Right column
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Coverage Assessment:', margin + colWidth + 10, currentY + 20);
-    doc.setFont('helvetica', 'normal');
+    // Coverage assessment on same line
     doc.setFontSize(10);
-    const coverageText = selectedFrameworksList.length > 3 ? 'Comprehensive Multi-Framework' : 'Focused Framework Analysis';
-    doc.text(coverageText, margin + colWidth + 10, currentY + 25);
+    doc.setFont('helvetica', 'normal');
+    const coverageText = selectedFrameworksList.length > 3 ? 'Comprehensive Analysis' : 'Focused Analysis';
+    doc.text(`Coverage: ${coverageText}`, margin + 8, totalCatY + 6);
     
     if (selectedIndustrySector) {
       const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || '';
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Industry Focus:', margin + colWidth + 10, currentY + 31);
-      doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      doc.text(sectorName, margin + colWidth + 10, currentY + 36);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Industry Focus: ${sectorName}`, margin + 8, totalCatY + 12);
     }
     
-    currentY += 50;
+    currentY += 60;
 
     // FRAMEWORK LEGEND - Removed duplicate section since frameworks are already shown in Executive Summary
     // This reduces redundancy and cleans up the report
@@ -1093,38 +1092,66 @@ export default function ComplianceSimplification() {
     // MAIN DATA TABLE - CLEAN AND COMPLETE
     const createStunningTable = (data: any[], startY: number, pageNum: number, categoryNum?: number, totalCategories?: number) => {
       // Updated structure: Category, Unified Requirements, Unified Guidance, References  
-      const allHeaders = ['Category', 'Unified Requirements', 'Unified Guidance', 'References'];
+      const allHeaders = ['CATEGORY', 'UNIFIED REQUIREMENTS', 'UNIFIED GUIDANCE', 'REFERENCES'];
       
-      // Add category header for single category pages
+      // Add category header for single category pages with better visibility
       if (data.length === 1 && categoryNum && totalCategories) {
         doc.setFillColor(231, 243, 255); // Light blue background
-        doc.roundedRect(margin, startY, pageWidth - (2 * margin), 20, 3, 3, 'F');
+        doc.roundedRect(margin, startY, pageWidth - (2 * margin), 25, 3, 3, 'F');
         
         doc.setTextColor(31, 78, 121);
-        doc.setFontSize(14);
+        doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         const categoryName = ProfessionalGuidanceService.formatCategoryName(data[0].category).replace(/^\d+\.\s*/, '');
-        doc.text(`CATEGORY ${categoryNum} OF ${totalCategories}: ${categoryName.toUpperCase()}`, margin + 10, startY + 12);
+        doc.text(`CATEGORY ${categoryNum} OF ${totalCategories}: ${categoryName.toUpperCase()}`, margin + 10, startY + 15);
         
-        startY += 30;
+        startY += 35;
       }
       
-      // Use professional service for cleaning text
-      const cleanText = (text: string) => ProfessionalGuidanceService.cleanText(text);
-      
-      // Prepare table data with new structure: #, Category, Unified Requirements, Unified Guidance, References
-      const tableData = data.map((mapping, index) => {
-        // Get unified requirements with clean formatting
+      // Prepare table data with COMPLETE content from actual service
+      // Loading real unified guidance content from getGuidanceContent function
+      const tableData = data.map((mapping) => {
+        // Get unified requirements with clean formatting and better numbering
         const requirements = mapping.auditReadyUnified?.subRequirements || [];
-        const cleanedRequirements = requirements.map(req => {
+        const cleanedRequirements = requirements.map((req: any) => {
           const text = typeof req === 'string' ? req : req.description || req.text || '';
           return ProfessionalGuidanceService.cleanText(text);
-        });
-        const unifiedRequirements = cleanedRequirements.length > 0
-          ? cleanedRequirements.map((req, idx) => `${idx + 1}. ${req}`).join('\n\n')
-          : 'No specific unified requirements identified';
+        }).filter((req: string) => req && req.trim().length > 0); // Preserve all non-empty requirements
         
-        // Get unified guidance content using the enhanced service
+        // Also check for requirements in the title if subrequirements are minimal
+        if (cleanedRequirements.length === 0 && mapping.auditReadyUnified?.title) {
+          const titleText = ProfessionalGuidanceService.cleanText(mapping.auditReadyUnified.title);
+          if (titleText.length > 10) {
+            cleanedRequirements.push(titleText);
+          }
+        }
+        
+        // Format ALL requirements with proper lettering - ensure complete content
+        let unifiedRequirements = '';
+        if (cleanedRequirements.length > 0) {
+          unifiedRequirements = cleanedRequirements.map((req: string, idx: number) => {
+            const letter = String.fromCharCode(97 + idx); // a, b, c, d, ... p, etc.
+            
+            // Clean the requirement text
+            let cleanReq = req.trim();
+            
+            // Remove any existing numbering/lettering to avoid duplication
+            cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '').replace(/^\d+\.\s*/, '');
+            
+            return `${letter}) ${cleanReq}`;
+          }).join('\n\n');
+        } else {
+          // Fallback: try to extract from title or description
+          const fallbackContent = mapping.auditReadyUnified?.title || mapping.auditReadyUnified?.description || '';
+          if (fallbackContent) {
+            const cleanTitle = ProfessionalGuidanceService.cleanText(fallbackContent);
+            unifiedRequirements = `a) ${cleanTitle}`;
+          } else {
+            unifiedRequirements = 'Complete unified requirements available in application interface';
+          }
+        }
+        
+        // Get unified guidance content using the enhanced service with better formatting
         const selectedFrameworksForGuidance = {
           iso27001: Boolean(selectedFrameworks.iso27001),
           iso27002: Boolean(selectedFrameworks.iso27002), 
@@ -1138,110 +1165,247 @@ export default function ComplianceSimplification() {
           selectedFrameworksForGuidance
         );
         
-        // Extract pure guidance content without references
-        const pureGuidance = ProfessionalGuidanceService.extractPureGuidance(guidanceContent || '');
-        const unifiedGuidance = pureGuidance || 'Enhanced guidance with actionable insights available in application';
+        // Get ACTUAL unified guidance content from the service (same as buttons)
+        const actualGuidanceContent = getGuidanceContent(mapping.category || '');
         
-        // Collect all framework references for the References column
+        // Clean and format the actual guidance content for PDF
+        let unifiedGuidance = '';
+        if (actualGuidanceContent && actualGuidanceContent.length > 100) {
+          // Process the actual guidance content line by line for proper formatting
+          const guidanceLines = actualGuidanceContent.split('\n');
+          const formattedLines: string[] = [];
+          
+          let currentSection = '';
+          let isInRequirementsSection = false;
+          
+          guidanceLines.forEach((line, index) => {
+            const cleanLine = line.replace(/\*\*/g, '').trim();
+            
+            if (cleanLine === '') {
+              if (currentSection) formattedLines.push(''); // Add spacing between sections
+              return;
+            }
+            
+            // Skip operational excellence indicators and other non-guidance sections
+            if (cleanLine.includes('OPERATIONAL EXCELLENCE') || 
+                cleanLine.includes('SCORECARD') ||
+                cleanLine.includes('COMPLIANCE ANALYTICS') ||
+                cleanLine.includes('Track these metrics')) {
+              return;
+            }
+            
+            // Look for "UNDERSTANDING THE REQUIREMENTS" section
+            if (cleanLine.includes('UNDERSTANDING THE REQUIREMENTS')) {
+              isInRequirementsSection = true;
+              formattedLines.push('IMPLEMENTATION GUIDANCE:');
+              formattedLines.push('');
+              return;
+            }
+            
+            // Process requirements explanation if we're in the right section
+            if (isInRequirementsSection && cleanLine.length > 10) {
+              // Format subsection headers (a), b), c), etc.)
+              if (cleanLine.match(/^[a-z]\)/)) {
+                formattedLines.push(`${cleanLine.toUpperCase()}`); // Make headers uppercase
+              } else {
+                // Regular content with proper formatting
+                const cleanedContent = ProfessionalGuidanceService.cleanText(cleanLine);
+                if (cleanedContent.length > 20) {
+                  formattedLines.push(cleanedContent);
+                }
+              }
+            }
+          });
+          
+          // Join the formatted lines
+          unifiedGuidance = formattedLines.join('\n').trim();
+        }
+        
+        // Fallback if no proper guidance content found
+        if (!unifiedGuidance || unifiedGuidance.length < 50) {
+          unifiedGuidance = 'Detailed implementation guidance available in application interface';
+        }
+        
+        // Collect all framework references for the References column with proper formatting
         const references: string[] = [];
         
-        // Add framework mappings with clean formatting
-        if (selectedFrameworks.iso27001 && mapping.frameworks?.['iso27001']?.length) {
-          const codes = mapping.frameworks.iso27001.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
-          references.push(`ISO 27001: ${codes}`);
-        }
-        if (selectedFrameworks.iso27002 && mapping.frameworks?.['iso27002']?.length) {
-          const codes = mapping.frameworks.iso27002.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
-          references.push(`ISO 27002: ${codes}`);
-        }
-        if (selectedFrameworks.cisControls && mapping.frameworks?.['cisControls']?.length) {
-          const codes = mapping.frameworks.cisControls.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
-          references.push(`CIS v8: ${codes}`);
-        }
-        if (selectedFrameworks.gdpr && mapping.frameworks?.['gdpr']?.length) {
-          const codes = mapping.frameworks.gdpr.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
-          references.push(`GDPR: ${codes}`);
-        }
-        if (selectedFrameworks.nis2 && mapping.frameworks?.['nis2']?.length) {
-          const codes = mapping.frameworks.nis2.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
-          references.push(`NIS2: ${codes}`);
-        }
+        // Collect ALL framework references with proper formatting and titles
+        const frameworksToCheck = [
+          { key: 'iso27001', title: 'ISO 27001:2022', selected: selectedFrameworks.iso27001 },
+          { key: 'iso27002', title: 'ISO 27002:2022', selected: selectedFrameworks.iso27002 },
+          { key: 'cisControls', title: `CIS Controls - ${selectedFrameworks.cisControls?.toUpperCase() || 'IG3'} (v8.1.2)`, selected: selectedFrameworks.cisControls },
+          { key: 'gdpr', title: 'GDPR (EU 2016/679)', selected: selectedFrameworks.gdpr },
+          { key: 'nis2', title: 'NIS2 Directive (EU 2022/2555)', selected: selectedFrameworks.nis2 }
+        ];
         
-        // Clean up references text - remove "FRAMEWORK MAPPINGS" header
+        frameworksToCheck.forEach(framework => {
+          if (framework.selected && mapping.frameworks?.[framework.key]?.length) {
+            const items = mapping.frameworks[framework.key];
+            
+            // Get all codes and titles
+            const codesList: string[] = [];
+            items.forEach((item: any) => {
+              const code = ProfessionalGuidanceService.cleanText(item.code || '');
+              const title = ProfessionalGuidanceService.cleanText(item.title || '');
+              
+              if (code) {
+                if (title && title.length > 0 && title !== code) {
+                  codesList.push(`${code}: ${title.substring(0, 60)}${title.length > 60 ? '...' : ''}`);
+                } else {
+                  codesList.push(code);
+                }
+              }
+            });
+            
+            if (codesList.length > 0) {
+              references.push(`**${framework.title}:**\n${codesList.join('\n')}`);
+            }
+          }
+        });
+        
+        // Format references with proper structure
         const referencesText = references.length > 0 
-          ? references.join('\n') 
-          : 'No specific framework mappings found';
+          ? references.join('\n\n')
+          : 'Complete framework mappings available in application';
         
         return [
-          ProfessionalGuidanceService.formatCategoryName(mapping.category || ''),
+          ProfessionalGuidanceService.formatCategoryName(mapping.category || '').toUpperCase(),
           unifiedRequirements,
           unifiedGuidance,
           referencesText
         ];
       });
 
-      // 🎨 CREATE THE STUNNING TABLE WITH PROPER FITTING
+      // 🎨 CREATE THE STUNNING TABLE WITH ENHANCED VISIBILITY AND FORMATTING
       autoTable(doc, {
         head: [allHeaders],
         body: tableData,
         startY: startY,
         margin: { left: margin, right: margin },
         styles: {
-          fontSize: 7,
-          cellPadding: { top: 4, right: 3, bottom: 4, left: 3 },
-          lineColor: [224, 224, 224],
-          lineWidth: 0.5,
+          fontSize: 11,  // Enhanced readability for A4
+          cellPadding: { top: 10, right: 8, bottom: 10, left: 8 },  // A4-optimized padding
+          lineColor: [180, 180, 180],
+          lineWidth: 1.0,
           font: 'helvetica',
           valign: 'top',
           overflow: 'linebreak',
-          cellWidth: 'wrap'
+          cellWidth: 'wrap',
+          textColor: [40, 40, 40]
         },
         headStyles: {
           fillColor: [31, 78, 121],
           textColor: [255, 255, 255],
-          fontSize: 8,
+          fontSize: 12,  // Larger header font
           fontStyle: 'bold',
           halign: 'center',
           valign: 'middle',
-          cellPadding: { top: 6, right: 4, bottom: 6, left: 4 }
+          cellPadding: { top: 10, right: 6, bottom: 10, left: 6 } // Better header padding
         },
         columnStyles: {
-          0: { cellWidth: 38, fontStyle: 'bold', fillColor: [231, 243, 255] }, // Category  
-          1: { cellWidth: 70, overflow: 'linebreak', cellPadding: { top: 6, right: 5, bottom: 6, left: 5 } }, // Unified Requirements
-          2: { cellWidth: 85, overflow: 'linebreak', cellPadding: { top: 6, right: 5, bottom: 6, left: 5 } }, // Unified Guidance
-          3: { cellWidth: 80, overflow: 'linebreak', cellPadding: { top: 6, right: 5, bottom: 6, left: 5 } }, // References - Expanded width
+          0: { 
+            cellWidth: 35, // Category column - A4 portrait optimized
+            fontStyle: 'bold', 
+            fillColor: [231, 243, 255], 
+            fontSize: 11,
+            textColor: [31, 78, 121]
+          },
+          1: { 
+            cellWidth: 50, // Unified Requirements - portrait optimized
+            overflow: 'linebreak', 
+            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, 
+            fontSize: 10,
+            valign: 'top'
+          },
+          2: { 
+            cellWidth: 65, // Unified Guidance - largest for content
+            overflow: 'linebreak', 
+            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, 
+            fontSize: 10,
+            valign: 'top'
+          },
+          3: { 
+            cellWidth: 30, // References - compact for portrait
+            overflow: 'linebreak', 
+            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, 
+            fontSize: 9,
+            fontStyle: 'normal',
+            textColor: [44, 62, 80]
+          },
         },
         alternateRowStyles: {
           fillColor: [248, 249, 250]
         },
         didDrawCell: (data: any) => {
-          // Enhanced cell styling
+          // Enhanced cell styling with better borders
           if (data.section === 'head') {
             doc.setDrawColor(21, 58, 101);
-            doc.setLineWidth(1);
+            doc.setLineWidth(1.5);
             doc.line(data.cell.x, data.cell.y + data.cell.height, 
                     data.cell.x + data.cell.width, data.cell.y + data.cell.height);
           }
           
-          // Category column special styling
+          // Category column special styling with enhanced visibility
           if (data.column.index === 0 && data.section === 'body') {
             doc.setTextColor(31, 78, 121);
             doc.setFont('helvetica', 'bold');
           }
-        },
-        didParseCell: (data: any) => {
-          // Framework columns get different header colors
-          if (data.section === 'head' && data.column.index >= 5) {
-            data.cell.styles.fillColor = [47, 82, 51];
+          
+          // Enhanced styling for Unified Guidance column
+          if (data.column.index === 2 && data.section === 'body') {
+            // Set enhanced styling for guidance content
+            doc.setTextColor(40, 40, 40);
+            doc.setFont('helvetica', 'normal');
           }
           
-          // Auto-adjust row height based on content with better spacing
+          // Add enhanced borders to separate columns better
           if (data.section === 'body') {
-            const lines = (data.cell.text || []).length;
-            if (lines > 5) {
-              data.cell.styles.minCellHeight = Math.max(25, lines * 3.5);
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.5);
+            if (data.column.index < 3) {
+              doc.line(
+                data.cell.x + data.cell.width, data.cell.y,
+                data.cell.x + data.cell.width, data.cell.y + data.cell.height
+              );
+            }
+          }
+        },
+        willDrawCell: (data: any) => {
+          // Pre-process bold formatting in Unified Guidance column
+          if (data.column.index === 2 && data.section === 'body') {
+            const text = Array.isArray(data.cell.text) ? data.cell.text.join(' ') : data.cell.text;
+            if (typeof text === 'string' && text.includes('**')) {
+              // Process bold markers and adjust cell content
+              data.cell.text = text.split('\n');
+            }
+          }
+        },
+        
+        didParseCell: (data: any) => {
+          // Enhanced header styling for better A4 visibility
+          if (data.section === 'head') {
+            data.cell.styles.fontSize = 13;
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.textColor = [255, 255, 255];
+          }
+          
+          // Special formatting for Unified Guidance column
+          if (data.column.index === 2 && data.section === 'body') {
+            data.cell.styles.fontSize = 11;
+            data.cell.styles.textColor = [40, 40, 40];
+          }
+          
+          // Auto-adjust row height with enhanced A4 spacing
+          if (data.section === 'body') {
+            const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : (data.cell.text || '');
+            const lines = Math.ceil(text.length / 60); // Estimate lines for A4
+            
+            if (lines > 8) {
+              data.cell.styles.minCellHeight = Math.max(45, lines * 5.5);
+            } else if (lines > 5) {
+              data.cell.styles.minCellHeight = Math.max(35, lines * 4.5);
             } else if (lines > 3) {
-              data.cell.styles.minCellHeight = Math.max(20, lines * 3);
+              data.cell.styles.minCellHeight = Math.max(25, lines * 4);
             }
             
             // Enhanced padding for content columns
@@ -1304,10 +1468,10 @@ export default function ComplianceSimplification() {
     
     // Coverage statistics
     currentY += 25;
-    const statsData = [];
-    selectedFrameworksList.forEach((framework, index) => {
+    const statsData: string[][] = [];
+    selectedFrameworksList.forEach((framework) => {
       const mapped = (filteredUnifiedMappings || []).reduce((count, mapping) => {
-        const frameworkKey = framework.includes('(') ? framework.split('(')[0].trim() : framework;
+        const frameworkKey = framework.includes('(') ? framework.split('(')[0]?.trim() || framework : framework;
         return count + (Object.keys(mapping.frameworks || {}).includes(frameworkKey) ? 1 : 0);
       }, 0);
       
@@ -3253,7 +3417,7 @@ export default function ComplianceSimplification() {
                   cleanLine.includes('AUDIT-READY DOCUMENTATION') || 
                   cleanLine.includes('CONTINUOUS IMPROVEMENT')) {
                 
-                const colors = {
+                const colors: Record<string, string> = {
                   'FOUNDATIONAL CONTROLS': 'bg-blue-600 text-white',
                   'ADVANCED CONTROLS': 'bg-purple-600 text-white', 
                   'AUDIT-READY DOCUMENTATION': 'bg-orange-600 text-white',
@@ -3293,7 +3457,7 @@ export default function ComplianceSimplification() {
                 const framework = cleanLine.split(':')[0];
                 const content = cleanLine.split(':')[1];
                 
-                const frameworkColors = {
+                const frameworkColors: Record<string, string> = {
                   'ISO 27001': 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 text-blue-800 dark:text-blue-200',
                   'ISO 27002': 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-400 text-cyan-800 dark:text-cyan-200',
                   'CIS Controls': 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 text-purple-800 dark:text-purple-200',
@@ -3301,7 +3465,7 @@ export default function ComplianceSimplification() {
                   'NIS2': 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 text-indigo-800 dark:text-indigo-200'
                 };
                 
-                const colorClass = frameworkColors[framework] || 'bg-gray-50 dark:bg-gray-800/50 border-gray-400 text-gray-800 dark:text-gray-200';
+                const colorClass = frameworkColors[framework || ''] || 'bg-gray-50 dark:bg-gray-800/50 border-gray-400 text-gray-800 dark:text-gray-200';
                 
                 return (
                   <div key={index} className={`ml-4 p-4 rounded-lg mb-3 border-l-4 ${colorClass}`}>
