@@ -105,274 +105,36 @@ export default function ComplianceSimplification() {
     nis2: false
   });
 
-  // Function to get enhanced guidance content for categories with framework references
+  // Function to get enhanced guidance content for categories using EnhancedUnifiedGuidanceService
   const getGuidanceContent = (category: string) => {
     // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
     const cleanCategory = category.replace(/^\d+\.\s*/, '');
     
-    // Get selected frameworks to customize content
-    const selectedFrameworksList = Object.entries(frameworksSelected)
-      .filter(([_, selected]) => selected)
-      .map(([framework, _]) => framework);
-    
-    // Create framework-specific references
-    const getFrameworkReferences = (categoryName: string) => {
-      const references: Record<string, string> = {
-        'Governance & Leadership': getGovernanceReferences(),
-        'Risk Management': getRiskReferences(),
-        'Access Control & Identity Management': getAccessControlReferences(),
-        'Asset Management': getAssetReferences(),
-        'Physical & Environmental Security': getPhysicalReferences(),
-        'Communications & Operations Management': getOperationsReferences(),
-        'System Acquisition, Development & Maintenance': getDevelopmentReferences(),
-        'Information Security Incident Management': getIncidentReferences(),
-        'Business Continuity Management': getContinuityReferences(),
-        'Compliance': getComplianceReferences()
-      };
-      
-      return references[categoryName] || '';
-    };
-
-    // Framework reference functions
-    const getGovernanceReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** Clause 5.1 (Leadership), 7.2 (Competence), 9.3 (Management Review), A.7.1 (Personnel Security)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.6.1 (Security Roles), A.7.1.1 (Background Screening), A.7.1.2 (Terms of Employment), A.7.2.1 (Training), A.7.3.1 (Disciplinary Process)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 14 (Security Awareness), Control 17 (Security Skills Assessment)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 32 (Security Measures), Article 39 (DPO Tasks and Duties)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Cybersecurity Risk Management), Article 21 (Corporate Accountability)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getRiskReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** Clause 6.1.2 (Risk Assessment), 6.1.3 (Risk Treatment), 8.2 (Risk Assessment), 8.3 (Risk Treatment)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.5.1 (Information Security Policies), A.12.6 (Technical Vulnerability Management)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 4 (Secure Configuration), Control 7 (Continuous Vulnerability Management)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 35 (Data Protection Impact Assessment), Article 32 (Security of Processing)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Cybersecurity Risk Management), Article 23 (Incident Reporting)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getAccessControlReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.9 (Access Control), A.9.1 (Business Requirements), A.9.2 (User Access Management)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.9.1.1 (Access Control Policy), A.9.2.1 (User Registration), A.9.2.6 (Privileged Access Rights)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 5 (Account Management), Control 6 (Access Control Management), Control 16 (Application Security)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 32 (Security of Processing), Article 25 (Data Protection by Design)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Access Control), Article 21 (Identity Management)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    // Enhanced framework reference functions for comprehensive guidance
-    const getAssetReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.8 (Asset Management), A.8.1 (Responsibility for Assets), A.8.2 (Information Classification)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.8.1.1 (Asset Inventory), A.8.1.2 (Asset Ownership), A.8.2.1 (Classification Guidelines)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 1 (Inventory of Authorized and Unauthorized Devices), Control 2 (Inventory of Authorized Software)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 30 (Records of Processing), Article 32 (Security of Processing)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Asset Management), Article 21 (Supply Chain Security)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getPhysicalReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.11 (Physical and Environmental Security), A.11.1 (Secure Areas), A.11.2 (Equipment)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.11.1.1 (Physical Security Perimeter), A.11.2.1 (Equipment Siting and Protection)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 12 (Boundary Defense), Control 13 (Data Protection)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 32 (Security of Processing), Recital 83 (Security Measures)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Physical Security), Article 21 (Environmental Controls)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getOperationsReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.12 (Operations Security), A.12.1 (Operational Procedures), A.12.6 (Technical Vulnerability Management)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.12.1.1 (Documented Operating Procedures), A.12.6.1 (Management of Technical Vulnerabilities)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 3 (Continuous Vulnerability Management), Control 11 (Secure Network Configuration)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 32 (Security of Processing), Article 25 (Data Protection by Design)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Operations Security), Article 21 (Network Security Management)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getDevelopmentReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.14 (System Acquisition, Development and Maintenance), A.14.1 (Security Requirements), A.14.2 (Security in Development)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.14.1.1 (Information Security Requirements Analysis), A.14.2.1 (Secure Development Policy)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 16 (Application Software Security), Control 18 (Penetration Tests)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 25 (Data Protection by Design and by Default), Article 32 (Security of Processing)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Secure Development), Article 21 (System Security Testing)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getIncidentReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.16 (Information Security Incident Management), A.16.1 (Management of Information Security Incidents)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.16.1.1 (Responsibilities and Procedures), A.16.1.2 (Reporting Information Security Events)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 17 (Implement a Security Awareness and Training Program), Control 19 (Incident Response)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 33 (Notification of Personal Data Breach), Article 34 (Communication to Data Subject)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 23 (Incident Reporting), Article 24 (Computer Security Incident Response Teams)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getContinuityReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.17 (Information Security Aspects of Business Continuity Management), A.17.1 (Information Security Continuity)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.17.1.1 (Planning Information Security Continuity), A.17.1.2 (Implementing Information Security Continuity)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 10 (Data Backup), Control 11 (Secure Network Configuration)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 32 (Security of Processing), Article 25 (Data Protection by Design)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Business Continuity), Article 21 (Backup and Recovery)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    const getComplianceReferences = () => {
-      let references = '**Framework References for Selected Standards:**\n\n';
-      
-      if (selectedFrameworksList.includes('iso27001')) {
-        references += '**ISO 27001:** A.18 (Compliance), A.18.1 (Compliance with Legal and Contractual Requirements), A.18.2 (Information Security Reviews)\n';
-      }
-      if (selectedFrameworksList.includes('iso27002')) {
-        references += '**ISO 27002:** A.18.1.1 (Identification of Applicable Legislation), A.18.2.1 (Independent Review)\n';
-      }
-      if (selectedFrameworksList.includes('cisControls')) {
-        references += '**CIS Controls:** Control 17 (Security Awareness and Training), Control 18 (Application Software Security)\n';
-      }
-      if (selectedFrameworksList.includes('gdpr')) {
-        references += '**GDPR:** Article 5 (Principles), Article 24 (Responsibility of the Controller)\n';
-      }
-      if (selectedFrameworksList.includes('nis2')) {
-        references += '**NIS2:** Article 20 (Compliance Management), Article 21 (Regulatory Oversight)\n';
-      }
-      
-      return references + '\n';
-    };
-
-    // Old guidanceMap removed - now using EnhancedUnifiedGuidanceService
-    // }; // End of old guidanceMap - now using EnhancedUnifiedGuidanceService
-    
-    // Use the enhanced guidance service with clean formatting and exact references
-    const selectedFrameworksObj = {
-      iso27001: Boolean(frameworksSelected.iso27001),
-      iso27002: Boolean(frameworksSelected.iso27002), 
-      cisControls: frameworksSelected.cisControls || false,
-      gdpr: Boolean(frameworksSelected.gdpr),
-      nis2: Boolean(frameworksSelected.nis2)
+    // Convert selectedFrameworks to the format expected by EnhancedUnifiedGuidanceService
+    const frameworksForGuidance = {
+      iso27001: Boolean(selectedFrameworks.iso27001),
+      iso27002: Boolean(selectedFrameworks.iso27002),
+      cisControls: selectedFrameworks.cisControls || false,
+      gdpr: Boolean(selectedFrameworks.gdpr),
+      nis2: Boolean(selectedFrameworks.nis2)
     };
     
-    // Get professional guidance with exact requirement references
-    return EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+    // Get enhanced guidance from the service
+    const enhancedGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
       cleanCategory,
-      selectedFrameworksObj
+      frameworksForGuidance
     );
+    
+    // Return the enhanced guidance if available, otherwise use fallback
+    if (enhancedGuidance && enhancedGuidance.trim().length > 100) {
+      return enhancedGuidance;
+    }
+    
+    // Fallback: If no enhanced guidance available, return basic message
+    return `FRAMEWORK REFERENCES:\n\nSelected frameworks contain requirements relevant to ${cleanCategory}. This category provides important security and compliance guidance based on your framework selection.\n\nUNDERSTANDING THE REQUIREMENTS:\n\nThis compliance category addresses critical security requirements that help ensure your organization meets industry standards and regulatory obligations. Implementation requires systematic planning, appropriate controls, and ongoing monitoring to maintain compliance.\n\nFor detailed implementation guidance, please refer to the specific framework documentation or consult with your compliance team.`;
   };
+  
+  // All legacy functions removed - content now handled by EnhancedUnifiedGuidanceService
 
   // Fetch industry sectors
   const { data: industrySectors, isLoading: isLoadingSectors } = useIndustrySectors();
