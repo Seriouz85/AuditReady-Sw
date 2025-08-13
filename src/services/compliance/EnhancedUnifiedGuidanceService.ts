@@ -184,11 +184,53 @@ export class EnhancedUnifiedGuidanceService {
           { framework: 'cisControls', code: '1.1', title: 'Establish and Maintain Detailed Enterprise Asset Inventory', relevance: 'supporting' },
           { framework: 'iso27001', code: 'A.6.3', title: 'Information security awareness, education and training', relevance: 'cross-reference' }
         ],
-        foundationContent: `Governance and leadership form the foundation of any effective information security program. This category establishes the organizational structure, policies, and management commitment necessary to support all other security activities.
+        foundationContent: `**a) Leadership commitment** 
+Your organization's top management must actively lead information security initiatives. This means documented commitment, regular reviews (at least quarterly), and personal accountability. Leadership commitment includes assigning adequate resources, participating in security decisions, and setting the security culture tone throughout the organization.
 
-Leadership commitment means more than signing policies - it requires active participation in security decisions, adequate resource allocation, and visible support for security initiatives. Without genuine executive commitment, security programs lack authority and resources to succeed.
+**b) Scope and boundaries**
+Clearly document your Information Security Management System (ISMS) scope including physical locations, logical boundaries, included/excluded systems, interfaces with third parties, and business processes covered. Make scope statement publicly available and review it with any significant organizational changes.
 
-The governance framework includes policy development, role definition, management oversight, and accountability structures. These elements work together to ensure security is integrated into business operations rather than treated as a separate concern.`,
+**c) Organizational structure** 
+Define and document all security roles including Information Security Officer, Data Protection Officer (if GDPR applicable), Incident Response Manager, Risk Owners, and Asset Owners. Each role must have clear written responsibilities, authorities, and reporting lines. Review and update annually or when organizational changes occur.
+
+**d) Policy framework**
+Your information security policy becomes the cornerstone document where governance is documented, approved, and communicated. Set real deadlines - establish comprehensive security policies with specific timelines, have incident response plans ready for notifications, notify supervisory authority within 72h when personal data breaches likely result in high risk to individuals, notify national competent authority within 24h for significant incidents, keep audit logs for at least 90 days, and patch vulnerabilities monthly.
+
+**e) Project management**
+Security must be integrated into all project processes including planning, development, and deployment. Project managers must include security in project planning, conduct security reviews at key milestones, and perform testing before deployment. All projects must complete security impact assessments and maintain security documentation throughout the project lifecycle.
+
+**f) Asset use and disposal policies**
+Define acceptable use and secure disposal procedures for all information assets. Define acceptable use policies for information and associated assets covering permitted activities, prohibited actions, and monitoring procedures. Establish asset return and disposal procedures ensuring secure data destruction, documentation of disposal activities, and proper handling of both physical and digital assets during termination, transfer, or end of life.
+
+**g) Documented procedures and evidence**
+Maintain documented operating procedures for ALL security processes. Keep evidence of lawful basis for data processing, risk assessments, incident reports, audit results, management decisions, training records, and certifications. Documentation must be version controlled.
+
+**h) Personnel security framework**
+Comprehensive employment security including terms, screening, NDAs, and termination procedures. Leadership framework with leadership responsibilities - employment terms and conditions with defined security responsibilities and accountabilities, confidentiality/non-disclosure agreements.
+
+**i) Competence management**
+Determine and ensure the necessary competence of persons doing work that affects information security performance. This includes defining competence for each security role, providing appropriate education/training/experience, evaluating effectiveness of competence actions, and maintaining documented evidence of competence.
+
+**j) Monitoring and reporting**
+Conduct internal ISMS audits at planned intervals (minimum annually), management reviews (minimum quarterly), and maintain continuous monitoring. Document ALL activities, findings, and corrective actions. Report status to management with specific metrics and KPIs.
+
+**k) Change management and control**
+Establish formal change management processes for ISMS. All system changes must follow documented procedures with security impact assessments, testing, and approval workflows. Implement change advisory boards for significant changes and maintain detailed change logs for audit purposes.
+
+**l) Relationships**
+Documented procedures for supervisory authority cooperation (including breach notifications), competent authority reporting (incident warnings), law enforcement cooperation, and industry information sharing. Maintain current contact lists and communication templates.
+
+**m) Incident response governance**
+Designate incident response manager plus backup (review annually). Establish 24/7 contact information for incident reporting. Define procedures including clear thresholds for significant incidents. Establish incident classifications with escalation procedures.
+
+**n) Third party governance**
+ALL service provider contracts MUST include security, incident notification (specify timeframes), audit rights, data protection clauses, termination procedures with data return/destruction, and verification. Monitor providers monthly and conduct annual security reviews.
+
+**o) Continuous improvement**
+Implement formal processes for learning from incidents, updating policies based on new threats, addressing audit findings within 30 days, tracking security metrics, and demonstrating year over year improvement.
+
+**p) Awareness training**
+Establish comprehensive security awareness training program at governance level - define training strategy, allocate resources, measure effectiveness, and ensure management commitment. This governance requirement oversees the detailed training requirements found in Security Awareness & Skills Training category.`,
         implementationSteps: [
           'Secure executive sponsorship through board resolution or senior management directive',
           'Develop comprehensive information security policy with clear scope and objectives',
@@ -277,7 +319,7 @@ Risk management is not a one-time activity but a continuous process that adapts 
           { framework: 'iso27001', code: 'A.5.15', title: 'Access control', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.5.16', title: 'Identity management', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.5.17', title: 'Authentication information', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.18', title: 'Access rights', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.5.18', title: 'Authentication rights', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.8.2', title: 'Privileged access rights', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.8.3', title: 'Information access restriction', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.8.5', title: 'Secure authentication', relevance: 'primary' },
@@ -287,11 +329,35 @@ Risk management is not a one-time activity but a continuous process that adapts 
           { framework: 'cisControls', code: '6.1', title: 'Establish an Access Granting Process', relevance: 'primary' },
           { framework: 'gdpr', code: 'Article 32.1.b', title: 'Ability to ensure ongoing confidentiality', relevance: 'supporting' }
         ],
-        foundationContent: `Access control and identity management form the cornerstone of information security by ensuring only authorized individuals can access organizational resources. This category encompasses the complete lifecycle of digital identities from creation through termination.
+        foundationContent: `**a) Access control policy**
+Establish comprehensive access control policy defining how access to information systems and data is granted, managed, and revoked. Policy must specify role-based access control principles, least privilege enforcement, segregation of duties requirements, and business justification processes. Document clear procedures for access request, approval, provisioning, and regular review cycles.
 
-Identity management establishes unique identities for all users, devices, and services requiring system access. Access control then governs what these identities can access, when, and under what conditions. Together, they prevent unauthorized access while enabling legitimate business activities.
+**b) Identity lifecycle management**
+Implement systematic identity management covering the complete user lifecycle from onboarding to termination. Create unique identifiers for all users, devices, and services requiring system access. Establish identity proofing procedures for new accounts, maintain central identity repository, and implement automated provisioning and deprovisioning workflows.
 
-Modern access control must address complex scenarios including remote work, cloud services, mobile devices, and third-party integrations. Zero-trust principles assume no inherent trust and verify every access request regardless of location or previous authentication.`,
+**c) Authentication and credentials**
+Protect authentication information to prevent unauthorized access to systems and data. Enforce strong password requirements, implement multi-factor authentication for sensitive access, protect stored credentials with encryption, require password changes for default accounts, monitor for compromised credentials, and provide user education on credential protection.
+
+**d) Access rights management**
+Manage access rights to ensure users have appropriate permissions aligned with job responsibilities. Document access request and approval processes, implement formal access provisioning workflows, conduct regular access reviews (quarterly), remove or modify access for role changes, monitor privileged access usage, and maintain access rights audit trails.
+
+**e) Privileged access controls**
+Implement enhanced controls for privileged access including administrative accounts, system accounts, and elevated permissions. Deploy privileged access management solutions with session monitoring, require additional approval workflows, implement break-glass emergency access procedures, and maintain detailed logging of all privileged activities.
+
+**f) System and application access**
+Control access to information systems and applications based on business requirements and security policies. Implement role-based access control (RBAC), apply principle of least privilege throughout systems, limit access based on network location and device compliance, and ensure proper access control for both on-premises and cloud-based systems.
+
+**g) Network access controls**
+Manage and control access to networks and network services. Implement network segmentation to limit lateral movement, deploy secure remote access solutions, control wireless network access, and monitor network access patterns for anomalous behavior.
+
+**h) Access monitoring and logging**
+Monitor and log access to sensitive resources and systems. Implement comprehensive logging of authentication events, access attempts, privilege escalation, and administrative activities. Deploy automated alerting for access violations, failed authentication attempts, and unusual access patterns.
+
+**i) Regular access reviews**
+Conduct systematic reviews of user access rights and permissions. Perform quarterly access recertification, validate business justification for access rights, identify and remediate excessive permissions, and document review results with corrective actions taken.
+
+**j) Automated account management**
+Deploy automated solutions for account lifecycle management. Implement automated dormant account detection (45-day threshold), automated account disabling for terminated users, integration with HR systems for role changes, and automated compliance reporting for access management activities.`,
         implementationSteps: [
           'Implement identity lifecycle management with automated provisioning and deprovisioning',
           'Deploy multi-factor authentication for all privileged and remote access',
@@ -300,7 +366,8 @@ Modern access control must address complex scenarios including remote work, clou
           'Implement regular access reviews and recertification processes',
           'Deploy single sign-on to reduce password proliferation and improve user experience',
           'Establish access control monitoring with automated alerting for violations',
-          'Create emergency access procedures with proper controls and auditing'
+          'Create emergency access procedures with proper controls and auditing',
+          'Deploy automated dormant account detection (45-day threshold) with disable workflow'
         ],
         practicalTools: [
           'Identity management platforms: Microsoft Azure AD, Okta, or Ping Identity',
@@ -316,7 +383,9 @@ Modern access control must address complex scenarios including remote work, clou
           'Access review reports with evidence of regular recertification',
           'Privileged access management logs showing session monitoring',
           'Access violation reports and incident response records',
-          'Role definitions with associated permissions and business justifications'
+          'Role definitions with associated permissions and business justifications',
+          'Automated dormant account reports showing 45-day detection and disable actions',
+          'Account reactivation approval workflows and verification procedures'
         ],
         crossReferences: [
           'Governance & Leadership (establishes access control policies and oversight)',
@@ -325,110 +394,229 @@ Modern access control must address complex scenarios including remote work, clou
         ]
       },
 
-      'Information Security Incident Management': {
-        category: 'Information Security Incident Management',
+      'Business Continuity Management': {
+        category: 'Business Continuity Management',
         requirementReferences: [
-          { framework: 'iso27001', code: 'A.5.24', title: 'Information security incident management planning', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.25', title: 'Assessment and decision on information security events', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.26', title: 'Response to information security incidents', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.27', title: 'Learning from information security incidents', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.28', title: 'Collection of evidence', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.6.8', title: 'Information security event reporting', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 23', title: 'Reporting of significant incidents', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.e', title: 'Incident handling', relevance: 'primary' },
-          { framework: 'cisControls', code: '17.1', title: 'Designate Personnel to Manage Incident Handling', relevance: 'primary' },
-          { framework: 'gdpr', code: 'Article 33', title: 'Notification of a personal data breach to supervisory authority', relevance: 'supporting' },
-          { framework: 'gdpr', code: 'Article 34', title: 'Communication of personal data breach to data subject', relevance: 'supporting' }
+          { framework: 'iso27001', code: 'A.5.29', title: 'Information security during disruption', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.5.30', title: 'ICT readiness for business continuity', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.8.14', title: 'Redundancy of information processing facilities', relevance: 'primary' },
+          { framework: 'iso27002', code: 'A.5.29.1', title: 'Information security during disruption', relevance: 'primary' },
+          { framework: 'iso27002', code: 'A.5.30.1', title: 'ICT readiness for business continuity', relevance: 'primary' },
+          { framework: 'nis2', code: 'Article 21.2.c', title: 'Business continuity measures', relevance: 'primary' },
+          { framework: 'cisControls', code: '11.1', title: 'Establish and Maintain a Data Recovery Process', relevance: 'primary' },
+          { framework: 'cisControls', code: '11.2', title: 'Perform Automated Backups', relevance: 'primary' },
+          { framework: 'gdpr', code: 'Article 32.1.c', title: 'Ability to restore availability and access to personal data', relevance: 'supporting' }
         ],
-        foundationContent: `Information security incident management provides the systematic capability to detect, respond to, and recover from security incidents while minimizing business impact. This process determines whether organizations survive security events or suffer catastrophic damage.
+        foundationContent: `**a) Business impact analysis**
+Conduct comprehensive business impact analysis to identify critical business functions, dependencies, and recovery priorities. Document maximum tolerable downtime for each critical process, identify resource requirements for recovery operations, analyze financial and operational impacts of disruptions, and establish recovery time objectives (RTO) and recovery point objectives (RPO) for each critical system and process.
 
-Incident management extends beyond technical response to include business continuity, legal compliance, communication management, and organizational learning. The goal is not just to contain incidents but to improve organizational resilience and prevent similar incidents.
+**b) Business continuity strategy**
+Develop business continuity strategy based on business impact analysis results. Define recovery strategies for different disruption scenarios, establish alternate processing facilities and communication channels, plan for workforce continuity including remote work capabilities, and ensure strategy aligns with business priorities and budget constraints.
 
-Modern incident response must address complex scenarios including advanced persistent threats, insider threats, supply chain attacks, and privacy breaches. Response teams need technical skills, business understanding, and regulatory knowledge to make appropriate decisions under pressure.`,
+**c) Business continuity planning**
+Create detailed business continuity plans with step-by-step recovery procedures. Document recovery procedures for all critical systems and processes, define roles and responsibilities for business continuity teams, establish communication plans and notification procedures, and integrate business continuity planning with incident response and crisis management procedures.
+
+**d) Information security during disruption**
+Ensure information security controls remain effective during business disruption scenarios. Maintain security controls during emergency operations, implement secure remote access for business continuity operations, protect information assets during recovery activities, and ensure backup systems maintain equivalent security controls to primary systems.
+
+**e) ICT readiness and redundancy**
+Implement ICT infrastructure redundancy and readiness measures to support business continuity. Deploy redundant information processing facilities, implement network and communication redundancy, establish backup power and environmental controls, and ensure ICT systems can support business continuity requirements during disruptions.
+
+**f) Data recovery and backup management**
+Establish and maintain comprehensive data recovery processes with automated backup solutions. Implement automated backup scheduling and monitoring, define backup retention policies aligned with business and compliance requirements, conduct regular backup verification and integrity testing, and maintain backup system architecture documentation with recovery procedures.
+
+**g) Recovery testing and validation**
+Conduct regular testing of business continuity and recovery procedures. Schedule recovery testing for all critical systems, perform tabletop exercises and full-scale simulations, document test results and lessons learned, validate recovery procedures work within defined RTO and RPO objectives, and update plans based on testing outcomes.
+
+**h) Business continuity team management**
+Create and train business continuity teams with clearly defined roles and responsibilities. Establish business continuity team structure with primary and backup personnel, provide regular training and awareness programs, maintain current contact information and escalation procedures, and ensure team members understand their roles during different types of disruptions.
+
+**i) Supplier and third-party continuity**
+Ensure business continuity arrangements cover suppliers and third-party dependencies. Assess business continuity capabilities of critical suppliers, include business continuity requirements in supplier contracts, establish alternative supplier arrangements where feasible, and coordinate business continuity planning with key suppliers and partners.
+
+**j) Continuous improvement**
+Implement continuous improvement processes for business continuity management. Review and update business continuity plans based on organizational changes, incorporate lessons learned from incidents and exercises, update plans based on emerging threats and changing business environment, and ensure business continuity management evolves with business needs and technological changes.`,
         implementationSteps: [
-          'Establish incident response team with defined roles and 24/7 contact information',
-          'Develop incident classification criteria with escalation thresholds and response procedures',
-          'Create incident response playbooks for common scenarios including ransomware and data breaches',
-          'Implement security monitoring with automated detection and alerting capabilities',
-          'Establish evidence collection and forensic analysis capabilities',
-          'Create communication templates for internal stakeholders and external parties',
-          'Develop regulatory notification procedures with specific timelines and requirements',
-          'Implement post-incident review process with lessons learned and improvement actions'
+          'Conduct business impact analysis to identify critical functions and dependencies',
+          'Define recovery time objectives (RTO) and recovery point objectives (RPO) for each critical system',
+          'Implement automated backup solutions with regular testing and verification',
+          'Develop detailed recovery procedures with step-by-step instructions',
+          'Establish alternate processing facilities and communication channels',
+          'Create and train business continuity teams with defined roles and responsibilities',
+          'Conduct regular business continuity exercises and tabletop scenarios',
+          'Integrate business continuity planning with incident response procedures'
         ],
         practicalTools: [
-          'SIEM platforms: Splunk, IBM QRadar, or Microsoft Sentinel for detection and monitoring',
-          'Incident response platforms: Phantom, Demisto, or ServiceNow Security Operations',
-          'Forensic tools: EnCase, FTK, or open-source alternatives like Autopsy',
-          'Communication tools: Slack, Microsoft Teams, or specialized crisis communication platforms',
-          'Threat intelligence: Recorded Future, ThreatConnect, or government sources like CISA'
+          'Business continuity planning software: Fusion Risk Management, MetricStream, or Resolver',
+          'Backup and recovery solutions: Veeam, Acronis, or cloud-native backup services',
+          'Disaster recovery as a service: AWS Disaster Recovery, Azure Site Recovery, or Zerto',
+          'Communication platforms: Emergency notification systems and collaboration tools',
+          'Testing frameworks: Recovery testing automation and validation tools'
         ],
         auditEvidence: [
-          'Incident response plan with current team contact information and procedures',
-          'Incident classification criteria with examples and escalation triggers',
-          'Evidence of incident response exercises and testing with results documentation',
-          'Incident logs showing detection, response, and resolution times',
-          'Communication records demonstrating proper stakeholder notification',
-          'Post-incident review reports with lessons learned and improvement actions',
-          'Training records for incident response team members'
+          'Business impact analysis with criticality ratings and recovery objectives',
+          'Business continuity plan with procedures for all critical systems and processes',
+          'Backup system configuration showing automated schedules and retention policies',
+          'Recovery testing results demonstrating successful restoration within RTO/RPO',
+          'Business continuity team training records and contact information',
+          'Emergency communication procedures and notification system testing',
+          'Tabletop exercise results and lessons learned documentation',
+          'Integration documentation showing alignment with incident response procedures'
         ],
         crossReferences: [
-          'Security Awareness & Skills Training (trains employees to recognize and report incidents)',
-          'Business Continuity Management (provides recovery capabilities during incidents)',
-          'Risk Management (incident data feeds back into risk assessments)'
+          'Risk Management (provides input for business impact analysis)',
+          'Information Security Incident Management (coordinates response to disruptions)',
+          'Asset Management (identifies critical assets requiring protection and recovery)'
+        ]
+      },
+
+      'Security Awareness & Skills Training': {
+        category: 'Security Awareness & Skills Training',
+        requirementReferences: [
+          { framework: 'iso27001', code: 'A.6.3', title: 'Information security awareness, education and training', relevance: 'primary' },
+          { framework: 'iso27002', code: 'A.6.3.1', title: 'Information security awareness, education and training', relevance: 'primary' },
+          { framework: 'nis2', code: 'Article 21.2.d', title: 'Human resource security measures', relevance: 'primary' },
+          { framework: 'cisControls', code: '14.1', title: 'Establish and Maintain a Security Awareness Program', relevance: 'primary' },
+          { framework: 'cisControls', code: '14.2', title: 'Train Workforce Members to Recognize Social Engineering Attacks', relevance: 'primary' },
+          { framework: 'cisControls', code: '14.3', title: 'Train Workforce Members on Authentication Best Practices', relevance: 'primary' },
+          { framework: 'gdpr', code: 'Article 32.4', title: 'Steps to ensure personnel are aware of security measures', relevance: 'supporting' }
+        ],
+        foundationContent: `**a) Security awareness program establishment**
+Establish and maintain a comprehensive security awareness program with documented charter and objectives. Define program scope covering all personnel and relevant external parties, develop program governance structure with management oversight, allocate adequate resources including budget and personnel, and establish program metrics and effectiveness measurement criteria.
+
+**b) Training curriculum development**
+Develop comprehensive training curriculum addressing all relevant security topics and role-specific requirements. Create annual security awareness training materials, develop role-specific training content for different job functions, design engaging and interactive training delivery methods, and establish training schedules and mandatory participation requirements.
+
+**c) Social engineering awareness**
+Train workforce members to recognize and respond to social engineering attacks including phishing, vishing, smishing, and physical social engineering attempts. Implement phishing simulation programs with progressive difficulty levels, provide immediate feedback and remedial training for failures, track improvement metrics and behavioral change, and integrate social engineering awareness into regular security communications.
+
+**d) Authentication and password security**
+Train workforce members on authentication best practices and password security. Educate users on strong password creation and management, provide guidance on multi-factor authentication usage, train users on recognizing credential theft attempts, and establish clear procedures for reporting compromised accounts or suspicious authentication activities.
+
+**e) Data protection and handling**
+Provide training on proper data protection and information handling procedures. Educate personnel on data classification schemes and handling requirements, train users on secure data transmission and storage practices, provide guidance on data retention and disposal procedures, and ensure understanding of privacy requirements and personal data protection obligations.
+
+**f) Incident reporting and response**
+Train all personnel on security incident identification and reporting procedures. Establish clear incident reporting channels and contact information, provide training on recognizing different types of security incidents, educate users on proper incident response procedures and their roles, and ensure understanding of incident escalation and communication requirements.
+
+**g) Physical security awareness**
+Provide training on physical security practices and environmental controls. Educate personnel on physical access control procedures, train users on proper visitor management and tailgating prevention, provide guidance on clean desk policies and information protection, and ensure understanding of device security and theft prevention measures.
+
+**h) Mobile device and remote work security**
+Train users on secure mobile device usage and remote work practices. Provide guidance on mobile device security configurations and management, educate users on secure remote access procedures and VPN usage, train personnel on public Wi-Fi risks and secure communication practices, and establish clear policies for personal device usage and BYOD security.
+
+**i) Program effectiveness measurement**
+Implement comprehensive measurement and evaluation of security awareness program effectiveness. Conduct regular security culture surveys and behavior assessments, measure training completion rates and knowledge retention, track security incident trends and correlation with training activities, and implement continuous improvement processes based on measurement results.
+
+**j) Ongoing reinforcement and communication**
+Establish ongoing security awareness reinforcement and communication activities. Implement regular security awareness campaigns and communications, provide timely security alerts and threat intelligence updates, conduct security awareness events and recognition programs, and ensure continuous reinforcement of security messages through multiple channels and formats.`,
+        implementationSteps: [
+          'Develop security awareness program charter with clear objectives and success metrics',
+          'Conduct role-based security training needs assessment',
+          'Create engaging, relevant training content for different audiences and delivery methods',
+          'Implement learning management system with tracking and reporting capabilities',
+          'Deploy phishing simulation programs with progressive difficulty and remedial training',
+          'Establish security awareness communication campaigns and reinforcement activities',
+          'Measure program effectiveness through behavior change metrics and incident correlation',
+          'Continuously update training content based on emerging threats and organizational changes'
+        ],
+        practicalTools: [
+          'Learning management systems: Cornerstone OnDemand, Docebo, or specialized security training platforms',
+          'Phishing simulation platforms: KnowBe4, Proofpoint Security Awareness, or Microsoft Defender for Office 365',
+          'Security awareness content: SANS Security Awareness, NIST training materials, or custom development',
+          'Behavior measurement tools: Security culture surveys and incident correlation analytics',
+          'Communication platforms: Internal newsletters, intranet portals, and digital signage systems'
+        ],
+        auditEvidence: [
+          'Security awareness program documentation and charter with management approval',
+          'Training curriculum and materials with role-specific content and delivery schedules',
+          'Learning management system reports showing training completion and effectiveness metrics',
+          'Phishing simulation results with click rates, reporting rates, and improvement trends',
+          'Security awareness campaign materials and communication records',
+          'Program effectiveness surveys and behavior change measurement results',
+          'Training needs assessment and content update documentation',
+          'Integration records showing alignment with incident response and policy awareness'
+        ],
+        crossReferences: [
+          'Governance & Leadership (provides oversight and resources for awareness programs)',
+          'Access Control & Identity Management (reinforces proper authentication and access practices)',
+          'Information Security Incident Management (integrates reporting and response training)'
         ]
       },
 
       'Asset Management': {
-        category: 'Asset Management', 
+        category: 'Asset Management',
         requirementReferences: [
-          { framework: 'iso27001', code: 'A.5.9', title: 'Inventory of information and associated assets', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.10', title: 'Acceptable use of information and associated assets', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.5.9', title: 'Inventory of information and other associated assets', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.5.10', title: 'Acceptable use of information and other associated assets', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.5.11', title: 'Return of assets', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.5.12', title: 'Classification of information', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.13', title: 'Labelling of information', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.9', title: 'Security of assets off-premises', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.14', title: 'Secure disposal or re-use of equipment', relevance: 'primary' },
           { framework: 'iso27002', code: 'A.8.1.1', title: 'Inventory of assets', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.8.2.1', title: 'Classification of information', relevance: 'primary' },
           { framework: 'cisControls', code: '1.1', title: 'Establish and Maintain Detailed Enterprise Asset Inventory', relevance: 'primary' },
-          { framework: 'cisControls', code: '2.1', title: 'Establish and Maintain a Software Inventory', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.c', title: 'Asset management', relevance: 'primary' }
+          { framework: 'cisControls', code: '1.2', title: 'Address Unauthorized Assets', relevance: 'primary' },
+          { framework: 'nis2', code: 'Article 21.2.a', title: 'Risk analysis and information system security policies', relevance: 'supporting' },
+          { framework: 'gdpr', code: 'Article 30', title: 'Records of processing activities', relevance: 'supporting' }
         ],
-        foundationContent: `Asset management establishes comprehensive visibility and control over all organizational information assets, from traditional IT infrastructure to cloud resources, data, and intellectual property. Without knowing what assets exist, organizations cannot adequately protect them.
+        foundationContent: `**a) Asset inventory establishment**
+Establish and maintain a detailed inventory of all information and other associated assets. Create comprehensive asset registers covering hardware, software, data, facilities, and personnel assets. Assign unique identifiers to all assets, document asset ownership and custodianship, and maintain current inventory records with regular updates and verification processes.
 
-Asset management encompasses the complete lifecycle from acquisition through disposal, including inventory maintenance, classification, ownership assignment, and protection controls. This foundation enables all other security controls by defining what needs protection and at what level.
+**b) Asset classification and labeling**
+Implement systematic classification of information assets based on their value, sensitivity, and criticality to business operations. Develop clear classification schemes with defined levels and criteria, apply appropriate labels and markings to classified assets, and ensure classification decisions consider legal, regulatory, and business requirements.
 
-Modern asset management must address hybrid environments including on-premises systems, cloud services, mobile devices, IoT sensors, and software applications. Dynamic environments require automated discovery and continuous monitoring to maintain accuracy.`,
+**c) Asset ownership and responsibility**
+Assign clear ownership and custodianship responsibilities for all assets throughout their lifecycle. Designate asset owners responsible for protection and acceptable use decisions, assign custodians responsible for day-to-day asset handling and maintenance, and document ownership assignments with clear accountability and reporting structures.
+
+**d) Acceptable use policies**
+Define and enforce acceptable use policies for information and associated assets. Establish clear guidelines for authorized asset usage, prohibit unauthorized activities and personal use, implement monitoring and enforcement mechanisms, and provide training and awareness on acceptable use requirements.
+
+**e) Asset handling and protection**
+Implement appropriate handling and protection procedures for all asset types. Establish secure storage and access controls for physical and digital assets, implement protection measures proportionate to asset classification levels, and ensure proper handling throughout asset lifecycle including creation, usage, transmission, and storage.
+
+**f) Asset return and transfer**
+Establish procedures for asset return and transfer during employment changes and termination. Implement systematic asset recovery processes, maintain records of asset assignments and returns, ensure complete data removal from returned devices, and establish procedures for emergency asset recovery situations.
+
+**g) Asset lifecycle management**
+Manage assets throughout their complete lifecycle from acquisition to disposal. Implement processes for asset procurement and onboarding, maintain assets during operational use with appropriate maintenance and updates, plan for asset retirement and replacement, and ensure secure disposal with proper data destruction.
+
+**h) Unauthorized asset management**
+Implement procedures to identify and address unauthorized assets on the network. Deploy automated discovery tools to detect unknown devices, establish processes for investigating and addressing unauthorized assets, implement network access controls to prevent unauthorized connections, and maintain logs of unauthorized asset incidents.
+
+**i) Asset vulnerability management**
+Maintain awareness of vulnerabilities affecting organizational assets. Implement vulnerability scanning and assessment programs, track vulnerabilities across all asset types, prioritize remediation based on asset criticality and risk exposure, and maintain vulnerability management databases with tracking and reporting capabilities.
+
+**j) Asset disposal and destruction**
+Implement secure disposal procedures for assets at end of lifecycle. Ensure complete data destruction before asset disposal, maintain documentation of disposal activities and certificates of destruction, implement environmentally responsible disposal methods, and establish procedures for emergency disposal situations.`,
         implementationSteps: [
-          'Deploy automated asset discovery tools for network scanning and endpoint detection',
-          'Create comprehensive asset inventory with technical details and business context',
-          'Implement information classification scheme with handling requirements',
-          'Assign asset owners with documented responsibilities for protection and management',
-          'Establish asset lifecycle procedures from acquisition through secure disposal',
-          'Deploy configuration management system to track changes and maintain baselines',
-          'Implement asset labeling and marking standards for physical and digital assets',
-          'Create regular asset review and verification processes with owner validation'
+          'Conduct comprehensive asset discovery and catalog all organizational assets',
+          'Implement asset classification scheme with clear levels and criteria',
+          'Assign asset ownership and custodianship with documented responsibilities',
+          'Develop and deploy acceptable use policies for all asset types',
+          'Implement asset protection measures appropriate to classification levels',
+          'Establish asset lifecycle management processes from acquisition to disposal',
+          'Deploy automated tools for asset tracking and unauthorized asset detection',
+          'Create secure asset disposal procedures with proper data destruction'
         ],
         practicalTools: [
-          'Asset discovery tools: Lansweeper, Armis, or Qualys VMDR for comprehensive scanning',
-          'CMDB platforms: ServiceNow, Device42, or Atlassian Assets for inventory management',
-          'Cloud asset management: AWS Config, Azure Resource Graph, or Google Cloud Asset Inventory',
-          'Data classification tools: Microsoft Purview, Varonis, or Forcepoint for automated labeling',
-          'Mobile device management: Microsoft Intune, VMware Workspace ONE, or Jamf for endpoint control'
+          'Asset discovery tools: Lansweeper, ManageEngine AssetExplorer, or Tanium',
+          'Configuration management databases (CMDB): ServiceNow, Device42, or Freshservice',
+          'Data classification tools: Microsoft Purview, Varonis, or Forcepoint',
+          'Mobile device management: Microsoft Intune, VMware Workspace ONE, or Jamf',
+          'Vulnerability management: Qualys, Rapid7, or Tenable'
         ],
         auditEvidence: [
-          'Asset inventory reports showing completeness and accuracy metrics',
-          'Asset classification scheme with handling procedures and examples',
-          'Asset ownership records with assigned responsibilities and contact information',
-          'Configuration baselines and change management records',
-          'Asset disposal certificates and data destruction verification',
-          'Asset review reports with owner validation and update records',
-          'Acceptable use policies with user acknowledgment records'
+          'Comprehensive asset inventory with ownership assignments and classifications',
+          'Asset classification policy and procedures with management approval',
+          'Acceptable use policies with employee acknowledgment records',
+          'Asset handling and protection procedures appropriate to classification levels',
+          'Asset return procedures and records of asset recovery activities',
+          'Asset disposal procedures with certificates of destruction',
+          'Unauthorized asset detection reports and remediation records',
+          'Asset lifecycle management procedures and implementation evidence'
         ],
         crossReferences: [
-          'Risk Management (asset inventory provides foundation for risk assessment)',
-          'Access Control & Identity Management (assets define what needs access controls)',
-          'Physical & Environmental Security (physical assets require physical protection)'
+          'Risk Management (uses asset inventory for risk assessment)',
+          'Access Control & Identity Management (protects access to classified assets)',
+          'Physical & Environmental Security (protects physical assets and facilities)'
         ]
       },
 
@@ -437,821 +625,227 @@ Modern asset management must address hybrid environments including on-premises s
         requirementReferences: [
           { framework: 'iso27001', code: 'A.7.1', title: 'Physical security perimeters', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.7.2', title: 'Physical entry', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.3', title: 'Securing offices, rooms and facilities', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.4', title: 'Physical security monitoring', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.5', title: 'Protecting against physical and environmental threats', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.6', title: 'Working in secure areas', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.7', title: 'Clear desk and clear screen', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.8', title: 'Equipment siting and protection', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.11', title: 'Supporting utilities', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.12', title: 'Cabling security', relevance: 'primary' },
-          { framework: 'cisControls', code: '11.1', title: 'Establish and Maintain a Data Recovery Process', relevance: 'supporting' },
-          { framework: 'nis2', code: 'Article 21.2.f', title: 'Physical and environmental security', relevance: 'primary' }
+          { framework: 'iso27001', code: 'A.7.3', title: 'Protection against environmental threats', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.7.4', title: 'Equipment siting and protection', relevance: 'primary' },
+          { framework: 'iso27002', code: 'A.11.1.1', title: 'Physical security perimeter', relevance: 'primary' },
+          { framework: 'nis2', code: 'Article 21.2.b', title: 'Physical and environmental security', relevance: 'primary' },
+          { framework: 'cisControls', code: '12.8', title: 'Establish and Maintain Dedicated Computing Resources for All Administrative Work', relevance: 'supporting' }
         ],
-        foundationContent: `Physical and environmental security provides the foundational layer that protects all digital assets and business operations. No amount of cyber security can defend against physical threats that bypass technical controls entirely.
+        foundationContent: `**a) Physical security perimeters**
+Establish physical security perimeters around areas containing information processing facilities. Define clear security perimeters with appropriate barriers and entry controls, implement layered perimeter security with multiple protection zones, ensure perimeters are clearly marked and monitored, and regularly review perimeter effectiveness against current threats.
 
-Physical security encompasses facility protection, environmental controls, equipment security, and personnel safety. These controls prevent unauthorized physical access, protect against environmental threats, and ensure business continuity during physical incidents.
+**b) Physical entry controls**
+Control physical entry to secure areas through appropriate access control systems. Implement access controls such as card readers, biometric systems, or security guards, maintain visitor management systems with logging and escort procedures, establish different access levels for different security zones, and ensure entry controls are regularly tested and maintained.
 
-Modern physical security must address distributed workforces, cloud facilities, remote locations, and supply chain facilities. Organizations must balance security requirements with operational efficiency and regulatory compliance.`,
+**c) Protection against environmental threats**
+Implement protection measures against environmental threats including natural disasters, extreme weather, and human-caused environmental hazards. Install environmental monitoring systems for temperature, humidity, smoke, and water detection, implement fire suppression and detection systems, establish earthquake and flood protection measures, and create emergency response procedures for environmental incidents.
+
+**d) Equipment siting and protection**
+Ensure information processing equipment is properly sited and protected from environmental hazards and unauthorized access. Position equipment away from environmental threats and unauthorized viewing, implement secure equipment rooms with appropriate access controls, provide adequate cooling, power, and ventilation for equipment operations, and establish equipment protection measures during maintenance activities.
+
+**e) Secure work areas**
+Establish secure work areas for processing sensitive information with appropriate physical and environmental controls. Implement clear desk and clear screen policies, control access to work areas containing sensitive information, provide secure storage for sensitive materials and media, and establish procedures for working with classified information in designated areas.
+
+**f) Equipment maintenance and disposal**
+Implement secure procedures for equipment maintenance and disposal activities. Ensure maintenance is performed by authorized personnel with appropriate security clearances, implement data protection measures during maintenance activities, establish secure disposal procedures with complete data destruction, and maintain records of all maintenance and disposal activities.
+
+**g) Removal of assets**
+Control the removal of assets from organizational premises with appropriate authorization and tracking procedures. Implement asset removal authorization processes with management approval, maintain logs of all asset movements and removals, ensure proper packaging and protection during transport, and establish procedures for emergency asset evacuation.
+
+**h) Cabling security**
+Protect network and power cabling from interception, interference, and physical damage. Route cables through secure areas and protected conduits, implement cable separation to prevent electromagnetic interference, establish cable inspection and maintenance procedures, and ensure cables are properly secured and protected from unauthorized access.
+
+**i) Supporting utilities**
+Ensure supporting utilities such as electricity, telecommunications, water, and gas are adequately protected and maintained. Implement backup power systems with adequate capacity and testing procedures, protect utility connections and distribution systems, establish utility monitoring and maintenance procedures, and create emergency procedures for utility failures.
+
+**j) Storage media handling**
+Implement secure procedures for handling storage media throughout its lifecycle. Establish media creation, handling, and distribution procedures, implement secure storage for media containing sensitive information, ensure proper media transportation with appropriate protection, and establish secure media disposal procedures with complete data destruction.`,
         implementationSteps: [
-          'Define physical security perimeters with appropriate barriers and access controls',
-          'Implement access control systems with authentication and logging for secure areas',
-          'Deploy environmental monitoring for temperature, humidity, water, and power quality',
-          'Install surveillance systems with appropriate coverage and retention periods',
-          'Establish visitor management procedures with registration and escort requirements',
-          'Implement clear desk and screen policies with secure storage for sensitive materials',
-          'Create equipment protection standards for placement, cabling, and maintenance',
-          'Develop emergency response procedures for physical security incidents'
+          'Conduct physical security risk assessment of all organizational facilities',
+          'Implement layered physical security perimeters with appropriate controls',
+          'Deploy physical access control systems with proper authentication methods',
+          'Install environmental monitoring and protection systems',
+          'Establish secure work areas with clear desk and screen policies',
+          'Implement equipment maintenance and disposal security procedures',
+          'Deploy cabling security measures and utility protection systems',
+          'Create comprehensive physical security policies and procedures'
         ],
         practicalTools: [
-          'Access control systems: HID, Lenel, or Software House for facility access management',
-          'Surveillance systems: Axis, Hikvision, or Dahua with appropriate analytics capabilities',
-          'Environmental monitoring: APC, Geist, or Sensaphone for data center monitoring',
-          'Visitor management: Proxyclick, Envoy, or Traction Guest for registration and tracking',
-          'Physical security assessment tools: Risk assessment templates and facility audit checklists'
+          'Physical access control systems: HID, Honeywell, or Johnson Controls',
+          'Environmental monitoring: APC, Schneider Electric, or Vertiv',
+          'Video surveillance: Axis, Hikvision, or Bosch security cameras',
+          'Intrusion detection: DSC, Honeywell, or Bosch alarm systems',
+          'Fire suppression: FM-200, Novec 1230, or water-based systems'
         ],
         auditEvidence: [
-          'Physical security assessment reports with current facility layouts and controls',
-          'Access control system logs showing entry and exit records',
-          'Surveillance system documentation with coverage maps and retention policies',
-          'Environmental monitoring logs with alert thresholds and response records',
-          'Visitor access logs with registration and escort verification',
-          'Clear desk policy compliance monitoring reports',
-          'Equipment inventory with security controls and protection measures'
+          'Physical security risk assessment and perimeter design documentation',
+          'Physical access control system configuration and user access records',
+          'Environmental monitoring system logs and alert records',
+          'Equipment maintenance records and security procedures',
+          'Asset removal logs and authorization records',
+          'Cabling security implementation and inspection records',
+          'Utility protection measures and backup system test records',
+          'Storage media handling procedures and disposal certificates'
         ],
         crossReferences: [
-          'Asset Management (physical assets require physical protection controls)',
-          'Business Continuity Management (physical threats can disrupt operations)',
-          'Information Security Incident Management (physical incidents require response procedures)'
+          'Asset Management (protects physical assets and equipment)',
+          'Access Control & Identity Management (integrates with physical access controls)',
+          'Business Continuity Management (supports facility continuity and recovery)'
         ]
       },
 
       'Communications & Operations Management': {
         category: 'Communications & Operations Management',
         requirementReferences: [
-          { framework: 'iso27001', code: 'A.5.37', title: 'Documented operating procedures', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.6.7', title: 'Remote working', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.13', title: 'Equipment maintenance', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.1', title: 'User endpoint devices', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.8.1', title: 'Operational procedures and responsibilities', relevance: 'primary' },
           { framework: 'iso27001', code: 'A.8.6', title: 'Capacity management', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.17', title: 'Clock synchronization', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.19', title: 'Installation of software on operational systems', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.32', title: 'Change management', relevance: 'primary' },
-          { framework: 'cisControls', code: '4.1', title: 'Establish and Maintain a Secure Configuration Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '10.1', title: 'Deploy and Maintain Anti-Malware Software', relevance: 'supporting' },
-          { framework: 'nis2', code: 'Article 21.2.g', title: 'Network security', relevance: 'supporting' }
-        ],
-        foundationContent: `Communications and operations management ensures consistent security posture through standardized procedures, change control, and continuous monitoring. This category covers the day-to-day operational activities that maintain security while enabling business operations.
-
-Operations management encompasses system administration, network management, endpoint security, capacity planning, and maintenance activities. These processes must balance security requirements with operational efficiency and business continuity.
-
-Modern operations must address cloud services, remote work, DevOps practices, and continuous deployment while maintaining security standards. Automation and monitoring enable scalable operations without sacrificing security controls.`,
-        implementationSteps: [
-          'Document all operational procedures with version control and regular updates',
-          'Implement formal change management with security impact assessment and approval workflows',
-          'Deploy endpoint protection with centralized management and monitoring',
-          'Establish capacity monitoring with predictive analytics and automated alerting',
-          'Create remote work security standards with VPN access and endpoint controls',
-          'Implement software installation controls with approved application lists',
-          'Deploy time synchronization across all systems with redundant NTP sources',
-          'Establish maintenance procedures with security verification and testing'
-        ],
-        practicalTools: [
-          'Change management: ServiceNow, Jira Service Management, or Remedy for workflow automation',
-          'Endpoint protection: CrowdStrike, Microsoft Defender, or Carbon Black for comprehensive security',
-          'Capacity monitoring: SolarWinds, PRTG, or Nagios for infrastructure monitoring',
-          'Configuration management: Ansible, Puppet, or Chef for automated deployment',
-          'Remote access: Citrix, VMware Horizon, or Microsoft RDS for secure remote access'
-        ],
-        auditEvidence: [
-          'Documented operational procedures with version control and approval records',
-          'Change management logs with security assessments and approval workflows',
-          'Endpoint protection deployment reports with coverage and compliance metrics',
-          'Capacity monitoring reports with threshold alerts and response times',
-          'Remote access logs with user authentication and session monitoring',
-          'Software installation audit reports with approved application inventories',
-          'Maintenance records with security testing and verification procedures'
-        ],
-        crossReferences: [
-          'Asset Management (operations manage and maintain organizational assets)',
-          'Risk Management (operational risks must be identified and managed)',
-          'Information Security Incident Management (operations team often first to detect incidents)'
-        ]
-      },
-
-      'Business Continuity Management': {
-        category: 'Business Continuity Management',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.5.29', title: 'Information security during disruption', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.30', title: 'ICT readiness for business continuity', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.13', title: 'Information backup', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.14', title: 'Redundancy of information processing facilities', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.17.1.1', title: 'Planning information security continuity', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.17.1.2', title: 'Implementing information security continuity', relevance: 'primary' },
-          { framework: 'cisControls', code: '11.1', title: 'Establish and Maintain a Data Recovery Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '11.2', title: 'Perform Automated Backups', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.h', title: 'Business continuity', relevance: 'primary' },
-          { framework: 'gdpr', code: 'Article 32.1.c', title: 'Ability to restore availability and access to personal data', relevance: 'supporting' }
-        ],
-        foundationContent: `Business continuity management ensures organizational survival through disruptions by maintaining critical business functions and enabling rapid recovery. This capability determines whether organizations continue operating during incidents or suffer permanent business damage.
-
-Business continuity extends beyond disaster recovery to include crisis management, communication planning, supplier management, and stakeholder coordination. The goal is maintaining stakeholder confidence and market position during and after disruptive events.
-
-Modern business continuity must address cyber incidents, pandemic disruptions, supply chain failures, and climate-related events. Organizations need flexible response capabilities that can adapt to various scenarios and escalating situations.`,
-        implementationSteps: [
-          'Conduct business impact analysis to identify critical processes and dependencies',
-          'Define recovery time and recovery point objectives for all critical systems',
-          'Develop business continuity plans with detailed response procedures and contact information',
-          'Implement backup strategies following 3-2-1 rule with offsite and offline copies',
-          'Establish alternate processing sites with appropriate security and capacity',
-          'Create crisis communication plans for internal and external stakeholders',
-          'Conduct regular testing including tabletop exercises and full system recoveries',
-          'Maintain supplier continuity arrangements with service level agreements'
-        ],
-        practicalTools: [
-          'Business continuity planning: Fusion Framework, MetricStream, or Castellan for plan development',
-          'Backup solutions: Veeam, Commvault, or cloud-native services like AWS Backup',
-          'Recovery orchestration: Zerto, VMware Site Recovery, or Azure Site Recovery',
-          'Communication platforms: Everbridge, AlertMedia, or Rave Mobile Safety for crisis communication',
-          'Testing tools: Continuous availability testing platforms and simulation environments'
-        ],
-        auditEvidence: [
-          'Business impact analysis with critical process identification and dependencies',
-          'Business continuity plans with current procedures and contact information',
-          'Backup verification reports with successful restoration testing',
-          'Recovery testing results with actual versus target recovery times',
-          'Crisis communication records with stakeholder notification evidence',
-          'Supplier continuity agreements with service level commitments',
-          'Business continuity exercise reports with lessons learned and improvements'
-        ],
-        crossReferences: [
-          'Risk Management (continuity planning addresses identified risks)',
-          'Information Security Incident Management (incidents may trigger continuity responses)',
-          'Physical & Environmental Security (physical threats can disrupt business operations)'
-        ]
-      },
-
-      'System Acquisition, Development & Maintenance': {
-        category: 'System Acquisition, Development & Maintenance',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.25', title: 'Secure development life cycle', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.26', title: 'Application security requirements', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.27', title: 'Secure system architecture and engineering principles', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.28', title: 'Secure coding', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.29', title: 'Security testing in development and acceptance', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.30', title: 'Outsourced development', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.31', title: 'Separation of development, test and production environments', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.33', title: 'Test information', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.4', title: 'Access to source code', relevance: 'primary' },
-          { framework: 'cisControls', code: '16.1', title: 'Establish and Maintain a Secure Application Development Process', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.i', title: 'Supply chain security', relevance: 'supporting' },
-          { framework: 'gdpr', code: 'Article 25', title: 'Data protection by design and by default', relevance: 'supporting' }
-        ],
-        foundationContent: `System acquisition, development and maintenance integrates security throughout the system lifecycle to prevent vulnerabilities and ensure robust protection. Building security from inception is exponentially more cost-effective than retrofitting protection after deployment.
-
-Secure development encompasses requirements definition, architecture design, coding practices, testing procedures, and deployment controls. This systematic approach prevents common vulnerabilities and creates resilient systems that support business objectives.
-
-Modern development must address agile methodologies, DevSecOps practices, cloud-native applications, and continuous deployment while maintaining security standards. Security must be automated and integrated into development workflows without hindering productivity.`,
-        implementationSteps: [
-          'Define security requirements during project initiation with threat modeling and risk assessment',
-          'Implement secure development lifecycle with security gates and approval processes',
-          'Establish secure coding standards with developer training and reference materials',
-          'Deploy automated security testing tools in development and build processes',
-          'Create environment separation with appropriate access controls and data protection',
-          'Implement code review processes with security-focused checklists and tools',
-          'Establish security testing requirements including penetration testing for critical systems',
-          'Create secure deployment procedures with configuration management and monitoring'
-        ],
-        practicalTools: [
-          'Static analysis: SonarQube, Checkmarx, or Veracode for code vulnerability scanning',
-          'Dynamic testing: OWASP ZAP, Burp Suite, or Rapid7 AppSpider for runtime testing',
-          'Dependency scanning: Snyk, WhiteSource, or GitHub Dependabot for third-party vulnerabilities',
-          'Container security: Twistlock, Aqua, or Sysdig for containerized applications',
-          'DevSecOps platforms: GitLab, Azure DevOps, or Jenkins with security plugin ecosystems'
-        ],
-        auditEvidence: [
-          'Secure development lifecycle documentation with security gates and procedures',
-          'Security requirements documents with threat models and risk assessments',
-          'Code review records with security findings and resolution evidence',
-          'Security testing reports from static, dynamic, and penetration testing',
-          'Environment separation documentation with access controls and data flow diagrams',
-          'Developer training records with secure coding competency assessments',
-          'Deployment procedures with security configuration and monitoring requirements'
-        ],
-        crossReferences: [
-          'Access Control & Identity Management (development systems require access controls)',
-          'Risk Management (development introduces risks that must be managed)',
-          'Supplier & Third-Party Risk Management (outsourced development requires vendor management)'
-        ]
-      },
-
-      'Compliance': {
-        category: 'Compliance',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.5.31', title: 'Legal, statutory, regulatory and contractual requirements', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.32', title: 'Intellectual property rights', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.33', title: 'Protection of records', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.35', title: 'Independent review of information security', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.36', title: 'Compliance with policies, rules and standards', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.34', title: 'Protection of information systems during audit testing', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.5', title: 'Contact with authorities', relevance: 'supporting' },
-          { framework: 'iso27001', code: 'A.5.6', title: 'Contact with special interest groups', relevance: 'supporting' },
-          { framework: 'gdpr', code: 'Article 24', title: 'Responsibility of the controller', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 23', title: 'Reporting of significant incidents', relevance: 'primary' },
-          { framework: 'cisControls', code: '1.1', title: 'Establish and Maintain Detailed Enterprise Asset Inventory', relevance: 'supporting' }
-        ],
-        foundationContent: `Compliance management ensures organizational adherence to legal, regulatory, and contractual obligations while demonstrating security maturity to stakeholders. Effective compliance programs prevent penalties, enable market access, and build competitive advantage.
-
-Compliance extends beyond checkbox compliance to create operational excellence through structured processes, evidence management, and continuous improvement. Organizations must balance compliance requirements with business objectives and operational efficiency.
-
-Modern compliance must address multiple overlapping regulations, international requirements, sector-specific standards, and evolving privacy laws. Organizations need integrated compliance management that addresses all applicable requirements through unified controls.`,
-        implementationSteps: [
-          'Identify all applicable legal, regulatory, and contractual requirements',
-          'Create compliance register with requirements mapping to organizational controls',
-          'Establish compliance monitoring processes with regular assessment and reporting',
-          'Implement evidence management system for audit preparation and regulatory requests',
-          'Create relationships with regulatory authorities and industry groups',
-          'Establish independent review processes with external validation and assessment',
-          'Develop compliance training programs for all relevant personnel',
-          'Implement continuous compliance monitoring with automated evidence collection'
-        ],
-        practicalTools: [
-          'GRC platforms: ServiceNow GRC, MetricStream, or Resolver for compliance management',
-          'Evidence management: SharePoint, Confluence, or specialized tools like AuditBoard',
-          'Regulatory tracking: Thomson Reuters, Compliance.ai, or regulatory intelligence services',
-          'Assessment tools: Compliance assessment templates and gap analysis frameworks',
-          'Audit management: AuditBoard, Workiva, or MindBridge AI for audit coordination'
-        ],
-        auditEvidence: [
-          'Compliance register with all applicable requirements and current status',
-          'Regular compliance assessment reports with findings and remediation plans',
-          'Independent review reports with external validation of compliance programs',
-          'Evidence management system with audit trail and version control',
-          'Training records with compliance-specific competency requirements',
-          'Regulatory correspondence and authority relationship documentation',
-          'Compliance monitoring reports with key performance indicators and trending'
-        ],
-        crossReferences: [
-          'Governance & Leadership (provides compliance oversight and accountability)',
-          'Risk Management (compliance failures represent significant risks)',
-          'Information Security Incident Management (incidents may trigger compliance reporting)'
-        ]
-      },
-
-      'Security Awareness & Skills Training': {
-        category: 'Security Awareness & Skills Training',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.6.3', title: 'Information security awareness, education and training', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.7.2.2', title: 'Information security awareness, education and training', relevance: 'primary' },
-          { framework: 'cisControls', code: '14.1', title: 'Establish and Maintain a Security Awareness Program', relevance: 'primary' },
-          { framework: 'cisControls', code: '14.2', title: 'Train Workforce Members to Recognize Social Engineering', relevance: 'primary' },
-          { framework: 'cisControls', code: '14.3', title: 'Train Workforce Members on Authentication Best Practices', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.d', title: 'Human resources security and access privilege management', relevance: 'supporting' },
-          { framework: 'gdpr', code: 'Article 39', title: 'Tasks of the data protection officer', relevance: 'supporting' },
-          { framework: 'iso27001', code: 'A.5.2', title: 'Information security roles and responsibilities', relevance: 'cross-reference' }
-        ],
-        foundationContent: `Security awareness and skills training transforms employees from potential security risks into active security assets. This foundational control addresses the human element of cybersecurity by building security knowledge, skills, and culture throughout the organization.
-
-Training programs must address both general security awareness for all employees and specialized skills training for technical staff. The goal is creating a security-conscious culture where employees understand their role in protecting organizational assets and can recognize and respond appropriately to security threats.
-
-Modern security awareness must address sophisticated social engineering, remote work security, personal device usage, cloud service security, and emerging threats. Training must be engaging, relevant, and measurable to ensure behavioral change rather than simple compliance.`,
-        implementationSteps: [
-          'Develop comprehensive security awareness program with role-specific training modules',
-          'Create engaging training content using multiple delivery methods including videos and simulations',
-          'Implement phishing simulation program with regular testing and remedial training',
-          'Establish security awareness metrics with baseline measurements and improvement tracking',
-          'Deploy specialized technical training for IT staff and security personnel',
-          'Create security incident reporting training with clear procedures and contact information',
-          'Implement new employee security orientation as part of onboarding process',
-          'Establish security champions program with trained advocates in each business unit'
-        ],
-        practicalTools: [
-          'Learning management systems: Cornerstone OnDemand, Docebo, or Moodle for training delivery',
-          'Phishing simulation: KnowBe4, Proofpoint, or Cofense for social engineering testing',
-          'Content libraries: SANS, (ISC)2, or custom content development for specialized training',
-          'Assessment tools: Security awareness surveys, knowledge assessments, and behavioral metrics',
-          'Communication platforms: Internal communication tools for security messaging and updates'
-        ],
-        auditEvidence: [
-          'Security awareness training program documentation with curriculum and schedules',
-          'Training completion records with scores and remediation tracking',
-          'Phishing simulation results with click rates and improvement trends',
-          'Security awareness metrics reports with behavioral change measurements',
-          'New employee orientation records with security training completion',
-          'Security champions program documentation with activities and engagement metrics',
-          'Incident reporting training records with procedure acknowledgments'
-        ],
-        crossReferences: [
-          'Governance & Leadership (establishes awareness training requirements and oversight)',
-          'Information Security Incident Management (trained employees recognize and report incidents)',
-          'Access Control & Identity Management (training covers password and authentication best practices)'
-        ]
-      },
-
-      'Vulnerability Management': {
-        category: 'Vulnerability Management',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.8', title: 'Management of technical vulnerabilities', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.6.1', title: 'Management of technical vulnerabilities', relevance: 'primary' },
-          { framework: 'cisControls', code: '7.1', title: 'Establish and Maintain a Vulnerability Management Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '7.2', title: 'Establish and Maintain a Remediation Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '7.3', title: 'Perform Automated Operating System Patch Management', relevance: 'primary' },
-          { framework: 'cisControls', code: '7.4', title: 'Perform Automated Application Patch Management', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.c', title: 'Systems for handling security incidents', relevance: 'supporting' },
-          { framework: 'iso27001', code: 'A.8.7', title: 'Protection against malware', relevance: 'cross-reference' }
-        ],
-        foundationContent: `Vulnerability management provides systematic identification, assessment, and remediation of security weaknesses across all organizational systems and applications. This proactive approach prevents exploitation by addressing vulnerabilities before attackers can leverage them.
-
-Effective vulnerability management balances security risk with operational stability through risk-based prioritization, testing procedures, and coordinated deployment. The process must address both known vulnerabilities through patching and unknown vulnerabilities through security testing.
-
-Modern vulnerability management must handle cloud environments, containerized applications, mobile devices, and IoT systems while maintaining rapid response capabilities for critical vulnerabilities. Automation is essential for scalability and consistency.`,
-        implementationSteps: [
-          'Deploy vulnerability scanning tools for comprehensive asset discovery and assessment',
-          'Establish vulnerability assessment schedule with regular scanning and emergency procedures',
-          'Implement risk-based vulnerability prioritization using CVSS scores and business context',
-          'Create patch management process with testing, approval, and deployment procedures',
-          'Establish vulnerability response timelines based on risk levels and compliance requirements',
-          'Deploy automated patching for operating systems and applications where appropriate',
-          'Implement vulnerability metrics and reporting with trending and improvement tracking',
-          'Create emergency response procedures for critical vulnerabilities and zero-day threats'
-        ],
-        practicalTools: [
-          'Vulnerability scanners: Qualys, Rapid7, or Tenable for comprehensive assessment',
-          'Patch management: Microsoft WSUS, Red Hat Satellite, or Tanium Patch for automated deployment',
-          'Configuration management: Ansible, Puppet, or Chef for consistent system hardening',
-          'Risk scoring: CVSS calculator integration and business context weighting',
-          'Workflow management: ServiceNow, Jira, or dedicated vulnerability management platforms'
-        ],
-        auditEvidence: [
-          'Vulnerability management policy with procedures and responsibilities',
-          'Vulnerability scan reports with coverage verification and findings analysis',
-          'Patch management records with testing, approval, and deployment tracking',
-          'Vulnerability metrics reports with response times and remediation rates',
-          'Risk assessment documentation for vulnerability prioritization decisions',
-          'Emergency response records for critical vulnerability handling',
-          'System hardening evidence with configuration baselines and compliance verification'
-        ],
-        crossReferences: [
-          'Asset Management (vulnerability management requires complete asset inventory)',
-          'Risk Management (vulnerabilities represent risks requiring assessment and treatment)',
-          'System Acquisition, Development & Maintenance (secure development reduces vulnerabilities)'
-        ]
-      },
-
-      'Network Infrastructure Management': {
-        category: 'Network Infrastructure Management', 
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.20', title: 'Networks security', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.21', title: 'Security of network services', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.22', title: 'Segregation of networks', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.13.1.1', title: 'Network controls', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.13.1.2', title: 'Security of network services', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.13.1.3', title: 'Segregation in networks', relevance: 'primary' },
-          { framework: 'cisControls', code: '12.1', title: 'Maintain an Inventory of Network Boundaries', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.8.7', title: 'System installation', relevance: 'primary' },
+          { framework: 'cisControls', code: '12.1', title: 'Ensure Network Infrastructure is Up-to-Date', relevance: 'primary' },
           { framework: 'cisControls', code: '12.2', title: 'Establish and Maintain a Secure Network Architecture', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.g', title: 'Network security', relevance: 'primary' }
+          { framework: 'cisControls', code: '12.3', title: 'Securely Manage Network Assets', relevance: 'primary' },
+          { framework: 'nis2', code: 'Article 21.2.f', title: 'Network and information systems management', relevance: 'primary' },
+          { framework: 'iso27002', code: 'A.12.1.1', title: 'Documented operating procedures', relevance: 'primary' }
         ],
-        foundationContent: `Network infrastructure management provides the secure foundation for all business communications and data flows. This category encompasses network design, segmentation, monitoring, and access control to ensure confidentiality, integrity, and availability of network services.
+        foundationContent: `**a) Operational procedures and responsibilities**
+Establish documented operating procedures for all critical information systems and network infrastructure. Define clear operational responsibilities with detailed procedures, implement change control processes with proper approvals, establish maintenance windows and procedures, and ensure all operational activities are properly documented and monitored.
 
-Network security requires defense-in-depth architecture with multiple security layers, network segmentation, access controls, and continuous monitoring. The network must support business operations while preventing unauthorized access and lateral movement during security incidents.
+**b) Network infrastructure management**
+Ensure network infrastructure is up-to-date and securely configured for reliable operations. Maintain network infrastructure inventory with current firmware/software versions, implement patch management procedures for network devices, establish network device update testing and approval processes, and implement change management procedures for network infrastructure updates with proper documentation and rollback procedures.
 
-Modern network management must address hybrid cloud architectures, remote work requirements, mobile device access, and IoT connectivity while maintaining security standards. Software-defined networking and zero-trust architectures enable flexible, secure network design.`,
+**c) Secure network architecture**
+Establish and maintain a secure network architecture with proper segmentation and access controls. Implement network segmentation design to limit lateral movement, establish firewall rules with proper business justification, deploy network access control (NAC) configuration and policies, and conduct regular penetration testing to validate network segmentation effectiveness with proper monitoring of inter-zone network traffic.
+
+**d) Network asset security management**
+Securely manage network assets using secure protocols and credential management. Implement secure protocol usage (SSH, TLS, SNMPv3) for network device management, establish credential management and secure transmission procedures, deploy network device hardening and security configuration baselines, and implement network asset monitoring with privileged access controls and session recording.
+
+**e) System installation and configuration**
+Implement secure procedures for system installation and configuration management. Establish system installation procedures with security baseline implementation, deploy configuration management tools with automated compliance checking, implement system hardening procedures and security configuration baselines, and establish system acceptance testing procedures with security validation.
+
+**f) Capacity management and monitoring**
+Monitor and manage system capacity to ensure adequate performance and availability. Implement capacity monitoring tools with automated alerting for resource utilization, establish capacity planning procedures with growth projections, deploy performance monitoring with baseline establishment and trend analysis, and implement capacity optimization procedures with resource allocation management.
+
+**g) System maintenance and updates**
+Establish systematic procedures for system maintenance and security updates. Implement patch management procedures with testing and approval workflows, establish maintenance schedules with proper change control, deploy automated update management tools with compliance tracking, and implement system backup procedures before maintenance activities with verification testing.
+
+**h) Network and communications security**
+Protect network communications and ensure secure data transmission. Implement encryption for data in transit using approved protocols, establish secure communication channels with certificate management, deploy network monitoring tools with intrusion detection capabilities, and implement network access controls with proper authentication and authorization.
+
+**i) Operations monitoring and logging**
+Establish comprehensive monitoring and logging for all operational activities. Deploy centralized logging systems with log correlation and analysis, implement security information and event management (SIEM) with automated alerting, establish log retention policies with compliance requirements, and implement operational monitoring with performance and security metrics.
+
+**j) Administrative access management**
+Establish and maintain dedicated computing resources for all administrative work. Deploy dedicated administrative workstations with proper network segmentation, implement privileged access management (PAM) with session monitoring and recording, establish administrative network isolation with internet access restrictions, and implement administrative access controls with multi-factor authentication and proper monitoring of all administrative activities.`,
         implementationSteps: [
-          'Design secure network architecture with appropriate segmentation and access controls',
-          'Implement network access control with device authentication and compliance verification', 
-          'Deploy network monitoring tools for traffic analysis and threat detection',
-          'Establish firewall management with rule reviews and policy optimization',
-          'Create wireless network security with enterprise authentication and encryption',
-          'Implement network device hardening with secure configurations and management',
-          'Establish VPN services for secure remote access with multi-factor authentication',
-          'Deploy network security monitoring with intrusion detection and response capabilities'
+          'Document all operational procedures with clear responsibilities and escalation paths',
+          'Implement network infrastructure management with automated patching and configuration management',
+          'Deploy secure network architecture with proper segmentation and access controls',
+          'Establish secure network asset management with encrypted protocols and credential protection',
+          'Implement system installation procedures with security baselines and acceptance testing',
+          'Deploy capacity management tools with monitoring and automated alerting',
+          'Establish comprehensive logging and monitoring with SIEM integration',
+          'Create dedicated administrative workstations with proper isolation and controls'
         ],
         practicalTools: [
-          'Network monitoring: SolarWinds, PRTG, or Nagios for infrastructure monitoring',
-          'Network access control: Cisco ISE, Aruba ClearPass, or ForeScout for device authentication',
-          'Firewalls: Palo Alto Networks, Fortinet, or Cisco for perimeter and internal segmentation',
-          'Wireless management: Cisco, Aruba, or Ubiquiti for enterprise wireless security',
-          'SIEM integration: Network log analysis and correlation for security monitoring'
+          'Network management: SolarWinds, ManageEngine OpManager, or Cisco Prime',
+          'Configuration management: Ansible, Puppet, Chef, or Microsoft System Center',
+          'Monitoring and SIEM: Splunk, IBM QRadar, or Azure Sentinel',
+          'Privileged access management: CyberArk, BeyondTrust, or Thycotic',
+          'Network security: Cisco ASA, Palo Alto Networks, or Check Point firewalls'
         ],
         auditEvidence: [
-          'Network architecture diagrams with security zones and access controls',
-          'Network device inventory with configuration baselines and security hardening',
-          'Network access control logs with device authentication and compliance records',
-          'Network monitoring reports with traffic analysis and security event detection',
-          'Firewall rule reviews with change management and optimization records',
-          'Wireless network security configuration with authentication and encryption verification',
-          'VPN access logs with user authentication and session monitoring'
+          'Network infrastructure inventory with current firmware/software versions and patch management procedures',
+          'Network architecture documentation with security zones and firewall rule documentation with approval records',
+          'Network device security configuration baselines and secure protocol implementation evidence',
+          'System installation procedures and security baseline configuration evidence',
+          'Capacity monitoring configuration and performance trend analysis reports',
+          'Centralized logging system configuration and SIEM deployment evidence',
+          'Administrative workstation policy and network segmentation documentation with dedicated resource implementation evidence',
+          'Operational procedure documentation and responsibility assignment with change control records'
         ],
         crossReferences: [
-          'Access Control & Identity Management (network access requires identity verification)',
-          'Information Security Incident Management (network monitoring detects security incidents)',
-          'Physical & Environmental Security (network infrastructure requires physical protection)'
+          'Asset Management (manages network and system assets)',
+          'Access Control & Identity Management (controls access to operational systems)',
+          'Information Security Incident Management (responds to operational security events)'
         ]
       },
 
-      'Malware Defenses': {
-        category: 'Malware Defenses',
+      'Information Security Incident Management': {
+        category: 'Information Security Incident Management',
         requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.7', title: 'Protection against malware', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.2.1', title: 'Controls against malware', relevance: 'primary' },
-          { framework: 'cisControls', code: '10.1', title: 'Deploy and Maintain Anti-Malware Software', relevance: 'primary' },
-          { framework: 'cisControls', code: '10.2', title: 'Configure Automatic Anti-Malware Signature Updates', relevance: 'primary' },
-          { framework: 'cisControls', code: '10.3', title: 'Disable Autorun and Autoplay for Removable Media', relevance: 'primary' },
-          { framework: 'cisControls', code: '10.4', title: 'Configure Anti-Malware Scanning of Removable Media', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.b', title: 'Incident handling', relevance: 'supporting' },
-          { framework: 'iso27001', code: 'A.8.23', title: 'Web filtering', relevance: 'cross-reference' }
+          { framework: 'iso27001', code: 'A.5.25', title: 'Assessment and decision on information security events', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.5.26', title: 'Response to information security incidents', relevance: 'primary' },
+          { framework: 'iso27001', code: 'A.5.27', title: 'Learning from information security incidents', relevance: 'primary' },
+          { framework: 'iso27002', code: 'A.16.1.1', title: 'Responsibilities and procedures', relevance: 'primary' },
+          { framework: 'nis2', code: 'Article 23', title: 'Reporting significant incidents', relevance: 'primary' },
+          { framework: 'cisControls', code: '17.1', title: 'Designate Personnel to Manage Incident Handling', relevance: 'primary' },
+          { framework: 'cisControls', code: '17.2', title: 'Establish and Maintain Contact Information for Reporting Security Incidents', relevance: 'primary' },
+          { framework: 'cisControls', code: '17.3', title: 'Establish and Maintain an Enterprise Process for Reporting Incidents', relevance: 'primary' },
+          { framework: 'gdpr', code: 'Article 33', title: 'Notification of a personal data breach to the supervisory authority', relevance: 'primary' }
         ],
-        foundationContent: `Malware defenses provide comprehensive protection against malicious software including viruses, worms, trojans, ransomware, and advanced persistent threats. This multi-layered approach combines prevention, detection, and response capabilities to protect organizational systems and data.
+        foundationContent: `**a) Incident response organization**
+Establish and maintain an incident response organization with designated personnel to manage incident handling. Designate incident response manager plus backup personnel with clear roles and responsibilities, establish incident response team with appropriate skills and authority, define escalation procedures and contact information, and ensure 24/7 availability for critical incident response with documented contact information and response procedures.
 
-Effective malware protection requires endpoint security, email security, web filtering, network monitoring, and user education working together as integrated defense system. The approach must address both known malware signatures and unknown threats through behavioral analysis and sandboxing.
+**b) Incident reporting procedures**
+Establish and maintain an enterprise process for reporting security incidents with multiple accessible channels. Create clear incident reporting procedures that workforce members can follow quickly and easily, develop simple reporting forms and tools with anonymous reporting options, establish multiple incident reporting channels including phone, email, and web-based systems, and ensure prompt acknowledgment of all incident reports with tracking metrics and response times.
 
-Modern malware defenses must handle sophisticated attacks that use legitimate tools, fileless techniques, and social engineering. Next-generation endpoint protection, threat hunting, and incident response capabilities are essential for comprehensive protection.`,
+**c) Incident detection and analysis**
+Implement systematic procedures for detecting and analyzing security incidents to enable rapid response. Deploy automated detection tools with correlation and analysis capabilities, establish incident classification and severity levels with defined response criteria, implement security information and event management (SIEM) with automated alerting, and train workforce members to recognize potential security incidents with clear indicators and reporting procedures.
+
+**d) Incident containment and eradication**
+Develop procedures for containing and eradicating security incidents to minimize damage and prevent spread. Establish containment strategies for different incident types with isolation and quarantine procedures, implement eradication procedures to remove threats and restore systems, deploy forensic capabilities to preserve evidence and support investigation, and coordinate with law enforcement and external parties when required.
+
+**e) Incident recovery and restoration**
+Implement systematic procedures for recovering from security incidents and restoring normal operations. Establish recovery procedures with validation and testing requirements, implement system restoration with security verification, conduct post-incident monitoring to detect recurring issues, and validate system integrity and security before returning to production operations.
+
+**f) Incident communication and notification**
+Establish comprehensive communication procedures for internal and external incident notification. Maintain current contact information for internal and external parties including law enforcement and regulatory bodies, implement regulatory notification procedures (GDPR 72-hour breach notification, NIS2 24-hour significant incident reporting), establish communication templates and escalation procedures, and coordinate with public relations and legal teams for external communications.
+
+**g) Incident documentation and tracking**
+Implement comprehensive documentation and tracking for all security incidents throughout their lifecycle. Maintain detailed incident records with timeline, actions taken, and resolution details, track incident metrics including detection time, response time, and resolution time, document lessons learned and improvement opportunities, and generate incident reports for management and regulatory authorities.
+
+**h) Incident response testing and training**
+Conduct regular testing and training to ensure incident response procedures are effective and current. Conduct incident response tabletop exercises and simulations with scenario-based testing, provide incident response training for team members and general workforce, test incident response procedures and communication channels regularly, and update incident response plans based on exercise results and lessons learned.
+
+**i) Evidence collection and forensics**
+Establish procedures for collecting and preserving digital evidence during security incidents. Implement forensic capabilities with chain of custody procedures, train incident response team on evidence collection and preservation, establish legal hold procedures for incident-related data, and coordinate with law enforcement and legal teams for forensic investigation.
+
+**j) Continuous improvement**
+Implement continuous improvement processes for incident response capabilities based on lessons learned. Conduct post-incident reviews to identify improvement opportunities, update incident response procedures based on new threats and organizational changes, track incident trends and metrics to improve detection and prevention, and incorporate industry best practices and threat intelligence into response procedures.`,
         implementationSteps: [
-          'Deploy next-generation endpoint protection with behavioral analysis and machine learning',
-          'Implement email security with attachment scanning and link protection',
-          'Configure web filtering to block malicious websites and download categories',
-          'Establish automatic signature updates and real-time threat intelligence integration',
-          'Deploy network-based malware detection with traffic analysis and sandboxing',
-          'Create malware incident response procedures with isolation and remediation steps',
-          'Implement application whitelisting for critical systems and high-risk environments',
-          'Establish threat hunting capabilities with proactive malware detection and analysis'
+          'Designate incident response personnel with clear roles and 24/7 contact information',
+          'Establish multiple incident reporting channels with simple procedures and forms',
+          'Deploy incident detection tools with automated analysis and correlation',
+          'Develop incident containment and eradication procedures for different threat types',
+          'Create incident recovery procedures with validation and system integrity checking',
+          'Implement notification procedures for regulatory and external communication requirements',
+          'Establish incident documentation and tracking with comprehensive record keeping',
+          'Conduct regular incident response training and tabletop exercises with scenario testing'
         ],
         practicalTools: [
-          'Endpoint protection: CrowdStrike, Microsoft Defender, or Carbon Black for comprehensive security',
-          'Email security: Proofpoint, Mimecast, or Barracuda for message and attachment protection',
-          'Web filtering: Zscaler, Cisco Umbrella, or Forcepoint for URL and content filtering',
-          'Sandboxing: FireEye, Palo Alto WildFire, or Joe Sandbox for malware analysis',
-          'Threat intelligence: Recorded Future, ThreatConnect, or AlienVault for threat data'
+          'Incident response platforms: IBM Resilient, Phantom, or ServiceNow Security Incident Response',
+          'SIEM and detection: Splunk, IBM QRadar, or Microsoft Sentinel',
+          'Forensic tools: EnCase, FTK, or SANS SIFT Workstation',
+          'Communication tools: Emergency notification systems and secure messaging platforms',
+          'Documentation: Incident tracking systems and case management platforms'
         ],
         auditEvidence: [
-          'Malware protection policy with deployment standards and update procedures',
-          'Endpoint protection deployment records with coverage verification and compliance monitoring',
-          'Malware detection reports with incident counts, types, and response actions',
-          'Email security logs with blocked messages and malicious attachment detection',
-          'Web filtering reports with blocked sites and malware download prevention',
-          'Signature update logs with currency verification and automated distribution',
-          'Malware incident response records with containment and remediation evidence'
+          'Incident response plan with designated personnel and contact information',
+          'Incident reporting procedures and multiple accessible reporting channels',
+          'Incident detection system configuration and automated alerting evidence',
+          'Incident response exercise results and training completion records',
+          'Incident tracking database with documented cases and resolution details',
+          'Regulatory notification procedures and compliance documentation',
+          'Evidence collection procedures and forensic capability documentation',
+          'Post-incident review reports and continuous improvement documentation'
         ],
         crossReferences: [
-          'Security Awareness & Skills Training (user education prevents malware infections)',
-          'Information Security Incident Management (malware incidents require coordinated response)',
-          'Vulnerability Management (unpatched systems are vulnerable to malware exploitation)'
-        ]
-      },
-
-      'Data Protection': {
-        category: 'Data Protection',
-        requirementReferences: [
-          { framework: 'gdpr', code: 'Article 32', title: 'Security of processing', relevance: 'primary' },
-          { framework: 'gdpr', code: 'Article 25', title: 'Data protection by design and by default', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.24', title: 'Use of cryptography', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.10', title: 'Information deletion', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.11', title: 'Data masking', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.12', title: 'Data leakage prevention', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.7.10', title: 'Storage media', relevance: 'primary' },
-          { framework: 'cisControls', code: '3.1', title: 'Establish and Maintain a Data Management Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '3.3', title: 'Configure Data Access Control Lists', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.j', title: 'Measures to assess the effectiveness of cybersecurity risk-management measures', relevance: 'supporting' }
-        ],
-        foundationContent: `Data protection ensures the confidentiality, integrity, and availability of organizational information throughout its lifecycle. This comprehensive approach encompasses data classification, access controls, encryption, loss prevention, and privacy protection to safeguard valuable information assets.
-
-Data protection requires understanding information flows, implementing appropriate controls based on data sensitivity, and ensuring compliance with privacy regulations. Protection must address data at rest, in transit, and in use across all systems and environments.
-
-Modern data protection must handle cloud storage, mobile devices, remote work, and third-party sharing while maintaining privacy compliance and business functionality. Advanced capabilities like data discovery, classification, and rights management enable scalable protection.`,
-        implementationSteps: [
-          'Implement data discovery and classification tools for comprehensive data inventory',
-          'Deploy encryption for data at rest and in transit using industry-standard algorithms',
-          'Establish data loss prevention with content inspection and policy enforcement',
-          'Create data retention and disposal policies with automated enforcement capabilities',
-          'Implement data masking for non-production environments and analytics use cases',
-          'Deploy rights management for documents and sensitive information sharing',
-          'Establish data backup and recovery processes with encryption and integrity verification',
-          'Create privacy impact assessment procedures for new systems and processes'
-        ],
-        practicalTools: [
-          'Data discovery: Microsoft Purview, Varonis, or Spirion for sensitive data identification',
-          'Encryption: BitLocker, FileVault, or enterprise key management systems',
-          'DLP solutions: Forcepoint, Symantec, or Microsoft Information Protection',
-          'Data masking: Informatica, IBM InfoSphere, or Delphix for test data protection',
-          'Backup solutions: Veeam, Commvault, or cloud-native backup services'
-        ],
-        auditEvidence: [
-          'Data classification policy with handling procedures and labeling requirements',
-          'Data discovery reports with sensitive data inventory and location mapping',
-          'Encryption implementation records with key management and algorithm documentation',
-          'Data loss prevention logs with policy violations and remediation actions',
-          'Data retention records with disposal certificates and compliance verification',
-          'Backup and recovery test results with restoration verification and integrity checks',
-          'Privacy impact assessments with risk analysis and mitigation measures'
-        ],
-        crossReferences: [
-          'Asset Management (data classification drives asset protection requirements)',
-          'Access Control & Identity Management (data access controls enforce classification policies)',
-          'Compliance (data protection supports privacy regulation compliance)'
-        ]
-      },
-
-      'Secure Configuration of Hardware and Software': {
-        category: 'Secure Configuration of Hardware and Software',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.9', title: 'Configuration management', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.1.2', title: 'Change management', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.6.2', title: 'Restrictions on software installation', relevance: 'primary' },
-          { framework: 'cisControls', code: '4.1', title: 'Establish and Maintain a Secure Configuration Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '4.2', title: 'Establish and Maintain a Secure Configuration Process for Network Infrastructure', relevance: 'primary' },
-          { framework: 'cisControls', code: '4.3', title: 'Configure Automatic Session Locking on Enterprise Assets', relevance: 'primary' },
-          { framework: 'cisControls', code: '4.4', title: 'Implement and Manage a Firewall on Servers', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.a', title: 'Risk analysis and information system security policies', relevance: 'supporting' }
-        ],
-        foundationContent: `Secure configuration management establishes and maintains security-hardened system configurations that eliminate vulnerabilities, reduce attack surfaces, and ensure consistent security posture across all organizational technology assets.
-
-Configuration management requires establishing secure baselines, implementing change control processes, and continuously monitoring for configuration drift. This systematic approach prevents security gaps that arise from default configurations, unauthorized changes, or inconsistent deployments.
-
-Modern configuration management must address cloud infrastructure, containers, mobile devices, and IoT systems while supporting DevOps practices and continuous deployment. Infrastructure as code and automated configuration management enable scalable, consistent security.`,
-        implementationSteps: [
-          'Establish secure configuration baselines using industry standards and organizational requirements',
-          'Deploy configuration management tools for automated deployment and compliance monitoring',
-          'Implement change control processes with security impact assessment and approval workflows',
-          'Create configuration compliance monitoring with automated drift detection and remediation',
-          'Establish hardening procedures for operating systems, applications, and network devices',
-          'Deploy automated patching and configuration updates with testing and rollback capabilities',
-          'Implement configuration documentation and version control for audit and troubleshooting',
-          'Create exception management processes for configurations that cannot meet standard baselines'
-        ],
-        practicalTools: [
-          'Configuration management: Ansible, Puppet, or Chef for automated deployment',
-          'Compliance scanning: Nessus, Rapid7, or Qualys for configuration assessment',
-          'Infrastructure as code: Terraform, CloudFormation, or ARM templates for cloud resources',
-          'Baseline tools: CIS-CAT, SCAP scanners, or vendor-specific hardening tools',
-          'Change management: ServiceNow, Jira, or dedicated ITSM platforms'
-        ],
-        auditEvidence: [
-          'Secure configuration baselines with justification for settings and deviations',
-          'Configuration management tool deployment records with coverage and compliance metrics',
-          'Configuration compliance reports with drift detection and remediation tracking',
-          'Change control records with security assessments and approval documentation',
-          'Hardening procedure documentation with step-by-step implementation guides',
-          'Configuration testing results with validation of security controls and functionality',
-          'Exception management records with risk assessments and compensating controls'
-        ],
-        crossReferences: [
-          'Vulnerability Management (secure configurations reduce vulnerability exposure)',
-          'Asset Management (configuration management requires comprehensive asset inventory)',
-          'Communications & Operations Management (configuration changes require operational procedures)'
-        ]
-      },
-
-      'Audit Log Management': {
-        category: 'Audit Log Management',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.15', title: 'Logging', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.16', title: 'Monitoring activities', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.4.1', title: 'Event logging', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.4.2', title: 'Protection of log information', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.4.3', title: 'Administrator and operator logs', relevance: 'primary' },
-          { framework: 'cisControls', code: '8.1', title: 'Establish and Maintain an Audit Log Management Process', relevance: 'primary' },
-          { framework: 'cisControls', code: '8.2', title: 'Collect Audit Logs', relevance: 'primary' },
-          { framework: 'cisControls', code: 'A.8.3', title: 'Ensure Adequate Audit Log Storage', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.e', title: 'Incident handling', relevance: 'supporting' }
-        ],
-        foundationContent: `Audit log management provides the foundation for security monitoring, incident investigation, and compliance demonstration through comprehensive collection, protection, and analysis of system and security events.
-
-Effective log management encompasses log generation, collection, storage, protection, analysis, and retention across all systems and applications. This capability enables threat detection, forensic analysis, and regulatory compliance while supporting operational troubleshooting.
-
-Modern log management must handle high-volume environments, cloud services, mobile devices, and distributed applications while providing real-time analysis and long-term retention. Security information and event management platforms enable centralized analysis and correlation.`,
-        implementationSteps: [
-          'Establish logging standards defining what events to log across all systems and applications',
-          'Deploy centralized log collection with secure transmission and storage',
-          'Implement log integrity protection with cryptographic signatures and immutable storage',
-          'Create log analysis and correlation rules for security event detection',
-          'Establish log retention policies meeting operational and regulatory requirements',
-          'Deploy log monitoring with automated alerting for critical security events',
-          'Implement log backup and recovery processes with disaster recovery capabilities',
-          'Create log review procedures with regular analysis and investigation workflows'
-        ],
-        practicalTools: [
-          'SIEM platforms: Splunk, IBM QRadar, or Microsoft Sentinel for centralized analysis',
-          'Log collectors: Fluentd, Logstash, or native platform agents for data collection',
-          'Log storage: Elasticsearch, ClickHouse, or cloud-native storage for scalable retention',
-          'Analysis tools: Kibana, Grafana, or custom dashboards for visualization and investigation',
-          'Compliance tools: LogRhythm, ArcSight, or specialized compliance reporting platforms'
-        ],
-        auditEvidence: [
-          'Logging policy with standards for event types, retention, and protection requirements',
-          'Log collection configuration with coverage verification and transmission security',
-          'Log integrity verification records with hash validation and tamper detection',
-          'Log analysis reports with security event detection and incident correlation',
-          'Log retention documentation with policy compliance and storage management',
-          'Log monitoring alerts with response times and investigation records',
-          'Log backup and recovery test results with restoration verification'
-        ],
-        crossReferences: [
-          'Information Security Incident Management (logs provide evidence for incident investigation)',
-          'Access Control & Identity Management (access events must be logged and monitored)',
-          'Compliance (audit logs provide evidence for regulatory compliance)'
-        ]
-      },
-
-      'Supplier & Third-Party Risk Management': {
-        category: 'Supplier & Third-Party Risk Management',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.5.19', title: 'Information security in supplier relationships', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.20', title: 'Addressing information security within supplier agreements', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.21', title: 'Managing information security in the ICT supply chain', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.22', title: 'Monitoring, review and change management of supplier services', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.5.23', title: 'Information security for use of cloud services', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.30', title: 'Outsourced development', relevance: 'primary' },
-          { framework: 'cisControls', code: '15.1', title: 'Establish and Maintain an Inventory of Authorized Service Providers', relevance: 'primary' },
-          { framework: 'cisControls', code: '15.2', title: 'Establish and Maintain a Service Provider Management Policy', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.i', title: 'Supply chain security', relevance: 'primary' },
-          { framework: 'gdpr', code: 'Article 28', title: 'Processor', relevance: 'supporting' }
-        ],
-        foundationContent: `Supplier and third-party risk management addresses security risks introduced through external relationships, outsourcing arrangements, and supply chain dependencies. This systematic approach ensures third parties meet organizational security requirements and do not introduce unacceptable risks.
-
-Effective supplier management encompasses due diligence, contract management, ongoing monitoring, and incident coordination across all third-party relationships. The process must address both direct suppliers and extended supply chain risks including fourth-party relationships.
-
-Modern supplier risk management must address cloud services, software as a service, development outsourcing, and global supply chains while maintaining security standards and regulatory compliance. Continuous monitoring and assessment are essential for dynamic risk management.`,
-        implementationSteps: [
-          'Create comprehensive supplier inventory with risk classifications and dependencies',
-          'Establish supplier security assessment process with risk-based evaluation criteria',
-          'Develop standard security requirements and contract clauses for supplier agreements',
-          'Implement ongoing supplier monitoring with performance metrics and incident tracking',
-          'Create supplier onboarding process with security verification and documentation',
-          'Establish supplier incident response coordination with notification and escalation procedures',
-          'Deploy supply chain security monitoring with threat intelligence and risk scoring',
-          'Create supplier termination procedures with data return and access revocation'
-        ],
-        practicalTools: [
-          'Vendor risk management: ServiceNow VRM, Resolver, or ProcessUnity for supplier assessment',
-          'Contract management: Agiloft, ContractWorks, or legal department systems for agreement tracking',
-          'Security assessments: StandardFusion, SHPS, or custom questionnaire platforms',
-          'Supply chain monitoring: BitSight, SecurityScorecard, or RiskRecon for continuous assessment',
-          'Due diligence platforms: Dun & Bradstreet, LexisNexis, or Thomson Reuters for background checks'
-        ],
-        auditEvidence: [
-          'Supplier inventory with risk classifications and security assessment status',
-          'Supplier security assessment reports with findings and risk ratings',
-          'Supplier contracts with security requirements and service level agreements',
-          'Supplier monitoring reports with performance metrics and incident tracking',
-          'Supplier onboarding records with security verification and approval documentation',
-          'Supply chain incident records with coordination and response evidence',
-          'Supplier termination documentation with data return and access revocation verification'
-        ],
-        crossReferences: [
-          'Risk Management (supplier risks must be identified, assessed, and treated)',
-          'System Acquisition, Development & Maintenance (outsourced development requires supplier management)',
-          'Data Protection (data processors require specific contractual protections)'
-        ]
-      },
-
-      'Penetration Testing': {
-        category: 'Penetration Testing',
-        requirementReferences: [
-          { framework: 'cisControls', code: '18.1', title: 'Establish and Maintain a Penetration Testing Program', relevance: 'primary' },
-          { framework: 'cisControls', code: '18.2', title: 'Perform Periodic External Penetration Tests', relevance: 'primary' },
-          { framework: 'cisControls', code: '18.3', title: 'Remediate Penetration Test Findings', relevance: 'primary' },
-          { framework: 'iso27001', code: 'A.8.34', title: 'Protection of information systems during audit testing', relevance: 'supporting' },
-          { framework: 'iso27002', code: 'A.14.2.8', title: 'System security testing', relevance: 'supporting' },
-          { framework: 'nis2', code: 'Article 21.2.j', title: 'Measures to assess the effectiveness of cybersecurity risk-management measures', relevance: 'supporting' },
-          { framework: 'iso27001', code: 'A.8.29', title: 'Security testing in development and acceptance', relevance: 'cross-reference' }
-        ],
-        foundationContent: `Penetration testing provides independent validation of security controls through simulated cyberattacks that identify vulnerabilities and assess organizational security posture. This proactive assessment complements vulnerability scanning with human expertise and real-world attack scenarios.
-
-Effective penetration testing encompasses external and internal testing, web application testing, wireless security testing, and social engineering assessments. Testing must be conducted safely with appropriate scoping, authorization, and coordination to prevent operational disruption.
-
-Modern penetration testing must address cloud environments, mobile applications, API security, and DevSecOps integration while providing actionable findings that improve security posture. Continuous security testing and red team exercises enhance ongoing validation.`,
-        implementationSteps: [
-          'Establish penetration testing program with regular testing schedules and scope definitions',
-          'Engage qualified penetration testing providers with relevant certifications and experience',
-          'Define testing scope and rules of engagement with appropriate authorizations and limitations',
-          'Coordinate testing activities with operations teams to minimize business disruption',
-          'Establish findings remediation process with priorities, timelines, and verification procedures',
-          'Create retesting procedures to validate remediation effectiveness and closure',
-          'Implement red team exercises for advanced persistent threat simulation',
-          'Establish testing integration with development processes for application security validation'
-        ],
-        practicalTools: [
-          'Testing frameworks: OWASP Testing Guide, NIST SP 800-115, or PTES for methodology',
-          'Testing tools: Metasploit, Burp Suite, or Nmap for vulnerability exploitation and verification',
-          'Reporting platforms: Dradis, PlexTrac, or custom reporting for findings management',
-          'Scoping tools: Asset discovery and network mapping for comprehensive test coverage',
-          'Coordination platforms: Project management and communication tools for testing coordination'
-        ],
-        auditEvidence: [
-          'Penetration testing program documentation with schedules and scope definitions',
-          'Penetration testing reports with findings, risk ratings, and remediation recommendations',
-          'Testing authorization records with scope agreements and rules of engagement',
-          'Remediation tracking with finding status, responsible parties, and completion dates',
-          'Retest results with verification of remediation effectiveness and control validation',
-          'Testing coordination records with operational impact assessments and approvals',
-          'Testing provider qualifications with certifications and relevant experience validation'
-        ],
-        crossReferences: [
-          'Vulnerability Management (penetration testing validates vulnerability remediation effectiveness)',
-          'Risk Management (testing results inform risk assessments and treatment decisions)',
-          'System Acquisition, Development & Maintenance (application testing validates secure development)'
-        ]
-      },
-
-      'Email & Web Browser Protections': {
-        category: 'Email & Web Browser Protections',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.23', title: 'Web filtering', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.13.2.1', title: 'Information transfer policies and procedures', relevance: 'supporting' },
-          { framework: 'cisControls', code: '9.1', title: 'Ensure Use of Only Fully Supported Browsers and Email Clients', relevance: 'primary' },
-          { framework: 'cisControls', code: '9.2', title: 'Use DNS Filtering Services', relevance: 'primary' },
-          { framework: 'cisControls', code: '9.3', title: 'Maintain and Enforce Network-Based URL Filters', relevance: 'primary' },
-          { framework: 'cisControls', code: '9.4', title: 'Restrict Unnecessary or Unauthorized Browser and Email Client Extensions', relevance: 'primary' },
-          { framework: 'cisControls', code: '9.5', title: 'Implement DMARC and Enable Receiver-Side Verification', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.b', title: 'Incident handling', relevance: 'supporting' }
-        ],
-        foundationContent: `Email and web browser protections defend against the most common attack vectors used by cybercriminals to deliver malware, conduct phishing attacks, and establish initial access to organizational systems. These controls protect users during their most vulnerable online activities.
-
-Email security requires comprehensive protection including attachment scanning, link protection, spam filtering, and anti-phishing measures. Web browsing protection encompasses URL filtering, malicious site blocking, browser hardening, and safe browsing policies.
-
-Modern email and web protection must address sophisticated attacks including business email compromise, zero-day exploits, and social engineering while enabling legitimate business communications and web usage. Cloud-based security services provide scalable, up-to-date protection.`,
-        implementationSteps: [
-          'Deploy comprehensive email security with attachment scanning, link protection, and anti-phishing',
-          'Implement web filtering with malicious site blocking and category-based restrictions',
-          'Configure DNS filtering to block malicious domains and command-and-control communications',
-          'Establish browser security policies with extension restrictions and security hardening',
-          'Deploy email authentication with SPF, DKIM, and DMARC to prevent spoofing',
-          'Create safe email and browsing policies with user guidelines and restrictions',
-          'Implement email encryption for sensitive communications and regulatory compliance',
-          'Establish incident response procedures for email and web-based security events'
-        ],
-        practicalTools: [
-          'Email security: Proofpoint, Mimecast, or Microsoft Defender for comprehensive protection',
-          'Web filtering: Zscaler, Cisco Umbrella, or Forcepoint for URL and content filtering',
-          'DNS filtering: Quad9, OpenDNS, or Cloudflare for malicious domain blocking',
-          'Browser management: Group Policy, Jamf, or mobile device management for configuration control',
-          'Email encryption: Microsoft Information Protection, Virtru, or Zix for sensitive communications'
-        ],
-        auditEvidence: [
-          'Email security policy with acceptable use guidelines and security procedures',
-          'Email security deployment records with protection coverage and configuration verification',
-          'Web filtering reports with blocked sites, malware prevention, and policy enforcement',
-          'Browser security configuration with hardening settings and extension management',
-          'Email authentication records with SPF, DKIM, and DMARC implementation verification',
-          'Security incident records related to email and web-based attacks with response actions',
-          'User training records for safe email and browsing practices'
-        ],
-        crossReferences: [
-          'Security Awareness & Skills Training (user education prevents email and web-based attacks)',
-          'Malware Defenses (email and web protections complement endpoint security)',
-          'Information Security Incident Management (email and web attacks often trigger incident response)'
-        ]
-      },
-
-      'Network Monitoring & Defense': {
-        category: 'Network Monitoring & Defense',
-        requirementReferences: [
-          { framework: 'iso27001', code: 'A.8.16', title: 'Monitoring activities', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.12.4.1', title: 'Event logging', relevance: 'primary' },
-          { framework: 'iso27002', code: 'A.13.1.1', title: 'Network controls', relevance: 'primary' },
-          { framework: 'cisControls', code: '13.1', title: 'Centralize Security Event Alerting', relevance: 'primary' },
-          { framework: 'cisControls', code: '13.2', title: 'Deploy a Host-Based Intrusion Detection System', relevance: 'primary' },
-          { framework: 'cisControls', code: '13.3', title: 'Deploy a Network Intrusion Detection System', relevance: 'primary' },
-          { framework: 'cisControls', code: '13.4', title: 'Perform Traffic Filtering Between Network Segments', relevance: 'primary' },
-          { framework: 'nis2', code: 'Article 21.2.e', title: 'Incident handling', relevance: 'supporting' }
-        ],
-        foundationContent: `Network monitoring and defense provides continuous visibility into network traffic and security events to detect, analyze, and respond to threats in real-time. This capability forms the foundation for threat detection, incident response, and security operations.
-
-Network defense combines intrusion detection, traffic analysis, behavioral monitoring, and threat hunting to identify both known and unknown threats. The approach must provide comprehensive coverage while minimizing false positives and enabling rapid response.
-
-Modern network monitoring must handle encrypted traffic, cloud environments, remote work, and high-speed networks while providing actionable intelligence for security teams. Machine learning and behavioral analysis enhance detection of sophisticated attacks.`,
-        implementationSteps: [
-          'Deploy network intrusion detection systems with comprehensive traffic monitoring coverage',
-          'Implement security information and event management for centralized analysis and correlation',
-          'Establish network traffic analysis with baseline behavior and anomaly detection',
-          'Create security monitoring procedures with alert triage and escalation workflows',
-          'Deploy threat hunting capabilities with proactive analysis and investigation',
-          'Implement network forensics with packet capture and analysis capabilities',
-          'Establish threat intelligence integration with automated indicator consumption',
-          'Create security operations center with 24/7 monitoring and response capabilities'
-        ],
-        practicalTools: [
-          'Network IDS: Suricata, Snort, or commercial platforms like Palo Alto Networks for traffic analysis',
-          'SIEM platforms: Splunk, IBM QRadar, or Microsoft Sentinel for event correlation',
-          'Network monitoring: SolarWinds, PRTG, or Nagios for infrastructure visibility',
-          'Threat hunting: Falcon X, CrowdStrike, or open-source tools like YARA for proactive detection',
-          'Packet analysis: Wireshark, NetworkMiner, or specialized forensics platforms'
-        ],
-        auditEvidence: [
-          'Network monitoring policy with coverage requirements and response procedures',
-          'Network IDS deployment records with sensor placement and configuration verification',
-          'SIEM configuration with use cases, correlation rules, and alert workflows',
-          'Network traffic analysis reports with baseline establishment and anomaly detection',
-          'Threat hunting reports with investigation findings and threat intelligence integration',
-          'Security incident records with network-based detection and response evidence',
-          'Security operations procedures with monitoring responsibilities and escalation processes'
-        ],
-        crossReferences: [
-          'Audit Log Management (network monitoring generates logs requiring management and analysis)',
-          'Information Security Incident Management (network monitoring detects incidents requiring response)',
-          'Network Infrastructure Management (monitoring requires comprehensive network visibility)'
+          'Governance & Leadership (provides incident response oversight and authority)',
+          'Communications & Operations Management (coordinates operational response activities)',
+          'Security Awareness & Skills Training (trains workforce on incident recognition and reporting)'
         ]
       }
+
+      // Additional categories will be implemented as needed...
     };
 
     return categoryMap[cleanCategory] || null;

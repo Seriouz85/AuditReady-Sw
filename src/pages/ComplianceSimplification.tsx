@@ -37,6 +37,7 @@ import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGover
 import { UnifiedGuidanceValidationService } from '../services/compliance/UnifiedGuidanceValidationService';
 import { RequirementDeduplicationService, type DeduplicationResult } from '../services/compliance/RequirementDeduplicationService';
 import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
+import { ProfessionalGuidanceService } from '../services/compliance/ProfessionalGuidanceService';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
@@ -953,21 +954,21 @@ export default function ComplianceSimplification() {
   };
 
   const exportToPDF = () => {
-    // Get selected frameworks for dynamic content
+    // Get selected frameworks with proper formatting
     const selectedFrameworksList = Object.entries(selectedFrameworks)
       .filter(([_, selected]) => selected !== false && selected !== null)
       .map(([framework, value]) => {
         if (framework === 'cisControls' && typeof value === 'string') {
-          return `${framework} (${value.toUpperCase()})`;
+          return ProfessionalGuidanceService.formatFrameworkName(`${framework} (${value})`);
         }
-        return framework;
+        return ProfessionalGuidanceService.formatFrameworkName(framework);
       });
 
     // Create new PDF with premium settings
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
+    const margin = 10; // Reduced margin for more content space
     
     // 🎨 DEFINE STUNNING COLOR PALETTE
     const colors = {
@@ -1027,11 +1028,11 @@ export default function ComplianceSimplification() {
 
     let currentY = createPremiumHeader(1, 3);
     
-    // 🎨 EXECUTIVE SUMMARY SECTION
+    // EXECUTIVE SUMMARY SECTION
     doc.setFillColor(231, 243, 255); // Light blue background
-    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 35, 3, 3, 'F');
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 40, 3, 3, 'F');
     
-    // Summary title - clean text
+    // Summary title
     doc.setTextColor(31, 78, 121);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
@@ -1044,90 +1045,84 @@ export default function ComplianceSimplification() {
     doc.setTextColor(44, 62, 80);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Selected Frameworks:', margin + 5, currentY + 18);
+    doc.text('Selected Frameworks:', margin + 5, currentY + 20);
     doc.setFont('helvetica', 'normal');
-    doc.text(selectedFrameworksList.join(', ') || 'All Available', margin + 5, currentY + 23);
+    doc.setFontSize(10);
+    // Format frameworks properly on multiple lines if needed
+    const frameworksPerLine = 2;
+    const frameworkLines = [];
+    for (let i = 0; i < selectedFrameworksList.length; i += frameworksPerLine) {
+      frameworkLines.push(selectedFrameworksList.slice(i, i + frameworksPerLine).join(', '));
+    }
+    frameworkLines.forEach((line, index) => {
+      doc.text(line, margin + 5, currentY + 25 + (index * 4));
+    });
     
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Total Categories:', margin + 5, currentY + 28);
+    doc.text('Total Categories:', margin + 5, currentY + 35);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${(filteredUnifiedMappings || []).length} compliance domains analyzed`, margin + 5, currentY + 33);
+    doc.setFontSize(10);
+    doc.text(`${(filteredUnifiedMappings || []).length} compliance domains analyzed`, margin + 45, currentY + 35);
     
     // Right column
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Coverage Assessment:', margin + colWidth + 10, currentY + 18);
+    doc.text('Coverage Assessment:', margin + colWidth + 10, currentY + 20);
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
     const coverageText = selectedFrameworksList.length > 3 ? 'Comprehensive Multi-Framework' : 'Focused Framework Analysis';
-    doc.text(coverageText, margin + colWidth + 10, currentY + 23);
+    doc.text(coverageText, margin + colWidth + 10, currentY + 25);
     
     if (selectedIndustrySector) {
       const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || '';
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
-      doc.text('Industry Focus:', margin + colWidth + 10, currentY + 28);
+      doc.text('Industry Focus:', margin + colWidth + 10, currentY + 31);
       doc.setFont('helvetica', 'normal');
-      doc.text(sectorName, margin + colWidth + 10, currentY + 33);
+      doc.setFontSize(10);
+      doc.text(sectorName, margin + colWidth + 10, currentY + 36);
     }
     
-    currentY += 45;
+    currentY += 50;
 
-    // 🎨 FRAMEWORKS LEGEND WITH VISUAL INDICATORS
-    doc.setFillColor(240, 248, 240); // Light green background
-    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 25, 3, 3, 'F');
-    
-    doc.setTextColor(47, 82, 51);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('FRAMEWORK LEGEND', margin + 5, currentY + 8);
-    
-    // Framework legend with clean text and colors
-    const frameworkLegend = [
-      { name: 'ISO 27001', color: '#3498DB' },
-      { name: 'ISO 27002', color: '#2ECC71' },
-      { name: 'CIS Controls', color: '#E67E22' },
-      { name: 'GDPR', color: '#9B59B6' },
-      { name: 'NIS2', color: '#E74C3C' }
-    ];
-    
-    let legendX = margin + 5;
-    frameworkLegend.forEach((framework, index) => {
-      if (selectedFrameworksList.some(f => f.toLowerCase().includes(framework.name.toLowerCase().replace(/\s/g, '')))) {
-        // Color indicator
-        const rgb = framework.color.match(/\w\w/g)?.map(hex => parseInt(hex, 16)) || [0, 0, 0];
-        doc.setFillColor(rgb[0], rgb[1], rgb[2]);
-        doc.roundedRect(legendX, currentY + 12, 4, 4, 1, 1, 'F');
-        
-        // Framework text - clean without symbols
-        doc.setTextColor(44, 62, 80);
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
-        doc.text(framework.name, legendX + 6, currentY + 16);
-        
-        legendX += 35;
-      }
-    });
-    
-    currentY += 35;
+    // FRAMEWORK LEGEND - Removed duplicate section since frameworks are already shown in Executive Summary
+    // This reduces redundancy and cleans up the report
+    currentY += 5;
 
-    // 🎨 MAIN DATA TABLE - CLEAN AND COMPLETE
-    const createStunningTable = (data: any[], startY: number, pageNum: number) => {
+    // MAIN DATA TABLE - CLEAN AND COMPLETE
+    const createStunningTable = (data: any[], startY: number, pageNum: number, categoryNum?: number, totalCategories?: number) => {
       // Updated structure: Category, Unified Requirements, Unified Guidance, References  
-      const allHeaders = ['#', 'Category', 'Unified Requirements', 'Unified Guidance', 'References'];
+      const allHeaders = ['Category', 'Unified Requirements', 'Unified Guidance', 'References'];
       
-      // Clean text helper function
-      const cleanText = (text: string, maxLength?: number) => {
-        const cleaned = cleanMarkdownFormatting(text || '')
-          .replace(/[^\x20-\x7E\n]/g, '') // Remove non-ASCII characters except newlines
-          .replace(/\s+/g, ' ') // Normalize whitespace
-          .trim();
-        return maxLength ? cleaned : cleaned;
-      };
+      // Add category header for single category pages
+      if (data.length === 1 && categoryNum && totalCategories) {
+        doc.setFillColor(231, 243, 255); // Light blue background
+        doc.roundedRect(margin, startY, pageWidth - (2 * margin), 20, 3, 3, 'F');
+        
+        doc.setTextColor(31, 78, 121);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        const categoryName = ProfessionalGuidanceService.formatCategoryName(data[0].category).replace(/^\d+\.\s*/, '');
+        doc.text(`CATEGORY ${categoryNum} OF ${totalCategories}: ${categoryName.toUpperCase()}`, margin + 10, startY + 12);
+        
+        startY += 30;
+      }
+      
+      // Use professional service for cleaning text
+      const cleanText = (text: string) => ProfessionalGuidanceService.cleanText(text);
       
       // Prepare table data with new structure: #, Category, Unified Requirements, Unified Guidance, References
       const tableData = data.map((mapping, index) => {
-        // Get unified requirements (sub-requirements) 
-        const unifiedRequirements = (mapping.auditReadyUnified?.subRequirements || [])
-          .map(req => `• ${cleanText(cleanComplianceSubRequirement(req))}`)
-          .join('\n');
+        // Get unified requirements with clean formatting
+        const requirements = mapping.auditReadyUnified?.subRequirements || [];
+        const cleanedRequirements = requirements.map(req => {
+          const text = typeof req === 'string' ? req : req.description || req.text || '';
+          return ProfessionalGuidanceService.cleanText(text);
+        });
+        const unifiedRequirements = cleanedRequirements.length > 0
+          ? cleanedRequirements.map((req, idx) => `${idx + 1}. ${req}`).join('\n\n')
+          : 'No specific unified requirements identified';
         
         // Get unified guidance content using the enhanced service
         const selectedFrameworksForGuidance = {
@@ -1143,36 +1138,42 @@ export default function ComplianceSimplification() {
           selectedFrameworksForGuidance
         );
         
-        const unifiedGuidance = cleanText(
-          guidanceContent.length > 800
-            ? guidanceContent.substring(0, 800) + '\\n\\n[Complete guidance available in application]'
-            : guidanceContent || 'Enhanced guidance with actionable insights available in application'
-        );
+        // Extract pure guidance content without references
+        const pureGuidance = ProfessionalGuidanceService.extractPureGuidance(guidanceContent || '');
+        const unifiedGuidance = pureGuidance || 'Enhanced guidance with actionable insights available in application';
         
         // Collect all framework references for the References column
         const references: string[] = [];
         
+        // Add framework mappings with clean formatting
         if (selectedFrameworks.iso27001 && mapping.frameworks?.['iso27001']?.length) {
-          references.push('ISO 27001: ' + mapping.frameworks.iso27001.map(r => r.code).join(', '));
+          const codes = mapping.frameworks.iso27001.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
+          references.push(`ISO 27001: ${codes}`);
         }
         if (selectedFrameworks.iso27002 && mapping.frameworks?.['iso27002']?.length) {
-          references.push('ISO 27002: ' + mapping.frameworks.iso27002.map(r => r.code).join(', '));
+          const codes = mapping.frameworks.iso27002.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
+          references.push(`ISO 27002: ${codes}`);
         }
         if (selectedFrameworks.cisControls && mapping.frameworks?.['cisControls']?.length) {
-          references.push('CIS Controls: ' + mapping.frameworks.cisControls.map(r => r.code).join(', '));
+          const codes = mapping.frameworks.cisControls.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
+          references.push(`CIS v8: ${codes}`);
         }
         if (selectedFrameworks.gdpr && mapping.frameworks?.['gdpr']?.length) {
-          references.push('GDPR: ' + mapping.frameworks.gdpr.map(r => r.code).join(', '));
+          const codes = mapping.frameworks.gdpr.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
+          references.push(`GDPR: ${codes}`);
         }
         if (selectedFrameworks.nis2 && mapping.frameworks?.['nis2']?.length) {
-          references.push('NIS2: ' + mapping.frameworks.nis2.map(r => r.code).join(', '));
+          const codes = mapping.frameworks.nis2.map(r => ProfessionalGuidanceService.cleanText(r.code)).join(', ');
+          references.push(`NIS2: ${codes}`);
         }
         
-        const referencesText = references.join('\n') || 'No specific framework mappings found';
+        // Clean up references text - remove "FRAMEWORK MAPPINGS" header
+        const referencesText = references.length > 0 
+          ? references.join('\n') 
+          : 'No specific framework mappings found';
         
         return [
-          (index + 1).toString(),
-          cleanText(mapping.category || ''),
+          ProfessionalGuidanceService.formatCategoryName(mapping.category || ''),
           unifiedRequirements,
           unifiedGuidance,
           referencesText
@@ -1205,11 +1206,10 @@ export default function ComplianceSimplification() {
           cellPadding: { top: 6, right: 4, bottom: 6, left: 4 }
         },
         columnStyles: {
-          0: { cellWidth: 8, halign: 'center', fillColor: [247, 249, 252] }, // Index
-          1: { cellWidth: 35, fontStyle: 'bold', fillColor: [231, 243, 255] }, // Category  
-          2: { cellWidth: 55, overflow: 'linebreak' }, // Unified Requirements
-          3: { cellWidth: 65, overflow: 'linebreak' }, // Unified Guidance
-          4: { cellWidth: 45, overflow: 'linebreak' }, // References
+          0: { cellWidth: 38, fontStyle: 'bold', fillColor: [231, 243, 255] }, // Category  
+          1: { cellWidth: 70, overflow: 'linebreak', cellPadding: { top: 6, right: 5, bottom: 6, left: 5 } }, // Unified Requirements
+          2: { cellWidth: 85, overflow: 'linebreak', cellPadding: { top: 6, right: 5, bottom: 6, left: 5 } }, // Unified Guidance
+          3: { cellWidth: 80, overflow: 'linebreak', cellPadding: { top: 6, right: 5, bottom: 6, left: 5 } }, // References - Expanded width
         },
         alternateRowStyles: {
           fillColor: [248, 249, 250]
@@ -1224,7 +1224,7 @@ export default function ComplianceSimplification() {
           }
           
           // Category column special styling
-          if (data.column.index === 1 && data.section === 'body') {
+          if (data.column.index === 0 && data.section === 'body') {
             doc.setTextColor(31, 78, 121);
             doc.setFont('helvetica', 'bold');
           }
@@ -1235,11 +1235,18 @@ export default function ComplianceSimplification() {
             data.cell.styles.fillColor = [47, 82, 51];
           }
           
-          // Auto-adjust row height based on content
+          // Auto-adjust row height based on content with better spacing
           if (data.section === 'body') {
             const lines = (data.cell.text || []).length;
-            if (lines > 3) {
-              data.cell.styles.minCellHeight = Math.max(15, lines * 3);
+            if (lines > 5) {
+              data.cell.styles.minCellHeight = Math.max(25, lines * 3.5);
+            } else if (lines > 3) {
+              data.cell.styles.minCellHeight = Math.max(20, lines * 3);
+            }
+            
+            // Enhanced padding for content columns
+            if (data.column.index >= 2) {
+              data.cell.styles.cellPadding = { top: 8, right: 6, bottom: 8, left: 6 };
             }
           }
         },
@@ -1254,9 +1261,22 @@ export default function ComplianceSimplification() {
       return finalY + 10;
     };
 
-    // Create table with all data - let autoTable handle page breaks
+    // Create separate sections for each category with page breaks
     const allData = filteredUnifiedMappings || [];
-    currentY = createStunningTable(allData, currentY, 1);
+    let pageNum = 1;
+    let totalDataPages = allData.length;
+    
+    allData.forEach((mapping, categoryIndex) => {
+      // Add page break before each category (except the first one)
+      if (categoryIndex > 0) {
+        doc.addPage();
+        pageNum++;
+        currentY = createPremiumHeader(pageNum, totalDataPages + 2); // +2 for summary and stats pages
+      }
+      
+      // Create a beautiful category section for this single category
+      currentY = createStunningTable([mapping], currentY, pageNum, categoryIndex + 1, allData.length);
+    });
 
     // Add footer to first page
     doc.setTextColor(127, 140, 141);
@@ -1273,7 +1293,7 @@ export default function ComplianceSimplification() {
     const statsPageNum = totalPages + 1;
     currentY = createPremiumHeader(statsPageNum, statsPageNum);
     
-    // 🎨 STATISTICS AND INSIGHTS PAGE - CLEAN VERSION
+    // STATISTICS AND INSIGHTS PAGE - CLEAN VERSION
     doc.setFillColor(247, 249, 252);
     doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 60, 3, 3, 'F');
     
@@ -1324,7 +1344,7 @@ export default function ComplianceSimplification() {
 
     currentY = (doc.lastAutoTable?.finalY || currentY) + 20;
     
-    // 🎨 RECOMMENDATIONS SECTION
+    // RECOMMENDATIONS SECTION
     doc.setFillColor(240, 248, 240);
     doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 45, 3, 3, 'F');
     
@@ -1334,17 +1354,18 @@ export default function ComplianceSimplification() {
     doc.text('EXECUTIVE RECOMMENDATIONS', margin + 5, currentY + 10);
     
     const recommendations = [
-      '• Prioritize categories with multi-framework coverage for maximum compliance ROI',
-      '• Focus implementation efforts on areas with highest regulatory impact',
-      '• Establish continuous monitoring for all mapped compliance requirements',
-      '• Schedule quarterly reviews to maintain compliance posture effectiveness'
+      'Prioritize categories with multi-framework coverage for maximum compliance ROI',
+      'Focus implementation efforts on areas with highest regulatory impact',
+      'Establish continuous monitoring for all mapped compliance requirements',
+      'Schedule quarterly reviews to maintain compliance posture effectiveness'
     ];
     
     doc.setTextColor(44, 62, 80);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     recommendations.forEach((rec, index) => {
-      doc.text(rec, margin + 5, currentY + 18 + (index * 6));
+      // Add bullet point for each recommendation
+      doc.text(`\u2022 ${rec}`, margin + 5, currentY + 18 + (index * 6));
     });
 
     // Final footer - clean version
@@ -1355,7 +1376,7 @@ export default function ComplianceSimplification() {
     doc.text(`Report ID: AR-${Date.now().toString(36).toUpperCase()}`, 
              pageWidth - margin - 60, pageHeight - 15);
 
-    // 🎨 SAVE THE MASTERPIECE
+    // SAVE THE PDF
     const timestamp = new Date().toISOString().split('T')[0];
     const frameworkSuffix = selectedFrameworksList.length > 0 
       ? `_${selectedFrameworksList.join('_').replace(/[^a-zA-Z0-9]/g, '_')}` 
