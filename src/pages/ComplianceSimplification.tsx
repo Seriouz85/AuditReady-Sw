@@ -1006,11 +1006,13 @@ export default function ComplianceSimplification() {
       doc.setFillColor(31, 78, 121);
       doc.roundedRect(margin + 2, 8, 12, 12, 1, 1, 'F');
       
-      // Main title - portrait A4 optimized
+      // Main title - portrait A4 optimized with proper width constraint
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(22);
+      doc.setFontSize(18); // Reduced from 22 to prevent bleeding
       doc.setFont('helvetica', 'bold');
-      doc.text('AUDITREADY ENTERPRISE COMPLIANCE REPORT', margin + 25, 17);
+      // Ensure title fits within available width (pageWidth - margin - logo space - page number space)
+      const maxTitleWidth = pageWidth - margin - 25 - 30; // Leave space for logo and page number
+      doc.text('AUDITREADY ENTERPRISE COMPLIANCE', margin + 25, 17, { maxWidth: maxTitleWidth });
       
       // Subtitle with date - portrait formatting
       doc.setFontSize(10);
@@ -1032,7 +1034,10 @@ export default function ComplianceSimplification() {
       return 40; // Return Y position after header
     };
 
-    let currentY = createPremiumHeader(1, 3);
+    // Calculate actual number of pages needed based on content
+    const totalCategories = (filteredUnifiedMappings || []).length;
+    const estimatedPages = Math.max(1, Math.ceil(totalCategories / 3) + 1); // +1 for summary page
+    let currentY = createPremiumHeader(1, estimatedPages);
     
     // EXECUTIVE SUMMARY SECTION - portrait A4 optimized
     doc.setFillColor(231, 243, 255); // Light blue background
@@ -1112,7 +1117,18 @@ export default function ComplianceSimplification() {
       // Loading real unified guidance content from getGuidanceContent function
       const tableData = data.map((mapping) => {
         // Get unified requirements with clean formatting and better numbering
-        const requirements = mapping.auditReadyUnified?.subRequirements || [];
+        // Special handling for Governance & Leadership category to use corrected structure
+        let requirements = mapping.auditReadyUnified?.subRequirements || [];
+        if (CorrectedGovernanceService.isGovernanceCategory(mapping.category)) {
+          const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
+          // Flatten all requirements from all sections with proper lettering
+          requirements = [
+            ...correctedStructure.sections['Leadership'] || [],
+            ...correctedStructure.sections['HR'] || [],
+            ...correctedStructure.sections['Monitoring & Compliance'] || []
+          ];
+        }
+        
         const cleanedRequirements = requirements.map((req: any) => {
           const text = typeof req === 'string' ? req : req.description || req.text || '';
           return ProfessionalGuidanceService.cleanText(text);
@@ -1129,16 +1145,23 @@ export default function ComplianceSimplification() {
         // Format ALL requirements with proper lettering - ensure complete content
         let unifiedRequirements = '';
         if (cleanedRequirements.length > 0) {
+          // Check if this is governance category (already has lettering) or needs lettering added
+          const isGovernance = CorrectedGovernanceService.isGovernanceCategory(mapping.category);
+          
           unifiedRequirements = cleanedRequirements.map((req: string, idx: number) => {
             const letter = String.fromCharCode(97 + idx); // a, b, c, d, ... p, etc.
             
             // Clean the requirement text
             let cleanReq = req.trim();
             
-            // Remove any existing numbering/lettering to avoid duplication
-            cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '').replace(/^\d+\.\s*/, '');
-            
-            return `${letter}) ${cleanReq}`;
+            if (isGovernance) {
+              // For governance, requirements already have proper lettering, just clean up
+              return cleanReq;
+            } else {
+              // For other categories, remove existing numbering/lettering and add proper lettering
+              cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '').replace(/^\d+\.\s*/, '');
+              return `${letter}) ${cleanReq}`;
+            }
           }).join('\n\n');
         } else {
           // Fallback: try to extract from title or description
@@ -1283,10 +1306,10 @@ export default function ComplianceSimplification() {
         startY: startY,
         margin: { left: margin, right: margin },
         styles: {
-          fontSize: 11,  // Enhanced readability for A4
-          cellPadding: { top: 10, right: 8, bottom: 10, left: 8 },  // A4-optimized padding
+          fontSize: 9,  // Compact font for better fitting
+          cellPadding: { top: 6, right: 4, bottom: 6, left: 4 },  // Compact padding
           lineColor: [180, 180, 180],
-          lineWidth: 1.0,
+          lineWidth: 0.5,
           font: 'helvetica',
           valign: 'top',
           overflow: 'linebreak',
@@ -1296,39 +1319,40 @@ export default function ComplianceSimplification() {
         headStyles: {
           fillColor: [31, 78, 121],
           textColor: [255, 255, 255],
-          fontSize: 12,  // Larger header font
+          fontSize: 10,  // Appropriately sized header
           fontStyle: 'bold',
           halign: 'center',
           valign: 'middle',
-          cellPadding: { top: 10, right: 6, bottom: 10, left: 6 } // Better header padding
+          cellPadding: { top: 8, right: 4, bottom: 8, left: 4 }
         },
         columnStyles: {
           0: { 
-            cellWidth: 35, // Category column - A4 portrait optimized
+            cellWidth: 32, // Category - properly sized to fit
             fontStyle: 'bold', 
             fillColor: [231, 243, 255], 
-            fontSize: 11,
-            textColor: [31, 78, 121]
+            fontSize: 10,
+            textColor: [31, 78, 121],
+            halign: 'center'
           },
           1: { 
-            cellWidth: 50, // Unified Requirements - portrait optimized
+            cellWidth: 48, // Unified Requirements - fits within bounds
             overflow: 'linebreak', 
-            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, 
-            fontSize: 10,
+            cellPadding: { top: 8, right: 6, bottom: 8, left: 6 }, 
+            fontSize: 9,
             valign: 'top'
           },
           2: { 
-            cellWidth: 65, // Unified Guidance - largest for content
+            cellWidth: 68, // Unified Guidance - largest but contained
             overflow: 'linebreak', 
-            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, 
-            fontSize: 10,
+            cellPadding: { top: 8, right: 6, bottom: 8, left: 6 }, 
+            fontSize: 9,
             valign: 'top'
           },
           3: { 
-            cellWidth: 30, // References - compact for portrait
+            cellWidth: 38, // References - adequate space
             overflow: 'linebreak', 
-            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, 
-            fontSize: 9,
+            cellPadding: { top: 8, right: 6, bottom: 8, left: 6 }, 
+            fontSize: 8,
             fontStyle: 'normal',
             textColor: [44, 62, 80]
           },
@@ -1389,29 +1413,45 @@ export default function ComplianceSimplification() {
             data.cell.styles.textColor = [255, 255, 255];
           }
           
-          // Special formatting for Unified Guidance column
-          if (data.column.index === 2 && data.section === 'body') {
-            data.cell.styles.fontSize = 11;
-            data.cell.styles.textColor = [40, 40, 40];
+          // Column-specific font size optimizations
+          if (data.section === 'body') {
+            switch (data.column.index) {
+              case 0: // Category column
+                data.cell.styles.fontSize = 9;
+                data.cell.styles.fontStyle = 'bold';
+                break;
+              case 1: // Requirements column
+                data.cell.styles.fontSize = 8;
+                break;
+              case 2: // Guidance column
+                data.cell.styles.fontSize = 8;
+                break;
+              case 3: // References column
+                data.cell.styles.fontSize = 7;
+                break;
+            }
           }
           
-          // Auto-adjust row height with enhanced A4 spacing
+          // Optimized auto-adjust row height for proper fitting
           if (data.section === 'body') {
             const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : (data.cell.text || '');
-            const lines = Math.ceil(text.length / 60); // Estimate lines for A4
+            const lines = Math.ceil(text.length / 45); // Better estimation for compact fitting
             
-            if (lines > 8) {
-              data.cell.styles.minCellHeight = Math.max(45, lines * 5.5);
-            } else if (lines > 5) {
-              data.cell.styles.minCellHeight = Math.max(35, lines * 4.5);
+            // Compact row heights to prevent text bleeding
+            if (lines > 15) {
+              data.cell.styles.minCellHeight = Math.max(35, lines * 2.2);
+            } else if (lines > 10) {
+              data.cell.styles.minCellHeight = Math.max(28, lines * 2.5);
+            } else if (lines > 6) {
+              data.cell.styles.minCellHeight = Math.max(22, lines * 2.8);
             } else if (lines > 3) {
-              data.cell.styles.minCellHeight = Math.max(25, lines * 4);
+              data.cell.styles.minCellHeight = Math.max(18, lines * 3.0);
+            } else {
+              data.cell.styles.minCellHeight = 16; // Compact minimum
             }
             
-            // Enhanced padding for content columns
-            if (data.column.index >= 2) {
-              data.cell.styles.cellPadding = { top: 8, right: 6, bottom: 8, left: 6 };
-            }
+            // Compact and consistent padding
+            data.cell.styles.cellPadding = { top: 4, right: 3, bottom: 4, left: 3 };
           }
         },
         showHead: 'everyPage',
