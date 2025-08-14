@@ -106,17 +106,18 @@ export default function ComplianceSimplification() {
   });
 
   // Function to get enhanced guidance content for categories using EnhancedUnifiedGuidanceService
-  const getGuidanceContent = (category: string) => {
+  const getGuidanceContent = (category: string, useActiveFrameworks: boolean = true) => {
     // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
     const cleanCategory = category.replace(/^\d+\.\s*/, '');
     
-    // Convert selectedFrameworks to the format expected by EnhancedUnifiedGuidanceService
+    // Use the currently active frameworks (not the initial selection state)
+    // This ensures we show guidance for the frameworks that are actually selected and visible
     const frameworksForGuidance = {
-      iso27001: Boolean(selectedFrameworks.iso27001),
-      iso27002: Boolean(selectedFrameworks.iso27002),
-      cisControls: selectedFrameworks.cisControls || false,
-      gdpr: Boolean(selectedFrameworks.gdpr),
-      nis2: Boolean(selectedFrameworks.nis2)
+      iso27001: Boolean(useActiveFrameworks ? selectedFrameworks.iso27001 : frameworksSelected.iso27001),
+      iso27002: Boolean(useActiveFrameworks ? selectedFrameworks.iso27002 : frameworksSelected.iso27002),
+      cisControls: useActiveFrameworks ? (selectedFrameworks.cisControls ? true : false) : (frameworksSelected.cisControls ? true : false),
+      gdpr: Boolean(useActiveFrameworks ? selectedFrameworks.gdpr : frameworksSelected.gdpr),
+      nis2: Boolean(useActiveFrameworks ? selectedFrameworks.nis2 : frameworksSelected.nis2)
     };
     
     // Get enhanced guidance from the service
@@ -3322,16 +3323,16 @@ export default function ComplianceSimplification() {
               }
               
               // Framework-specific references with enhanced styling
-              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2):/)) {
+              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls v8|GDPR|NIS2 Directive):/)) {
                 const framework = cleanLine.split(':')[0];
                 const content = cleanLine.split(':')[1];
                 
                 const frameworkColors: Record<string, string> = {
                   'ISO 27001': 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 text-blue-800 dark:text-blue-200',
                   'ISO 27002': 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-400 text-cyan-800 dark:text-cyan-200',
-                  'CIS Controls': 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 text-purple-800 dark:text-purple-200',
+                  'CIS Controls v8': 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 text-purple-800 dark:text-purple-200',
                   'GDPR': 'bg-orange-50 dark:bg-orange-900/20 border-orange-400 text-orange-800 dark:text-orange-200',
-                  'NIS2': 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 text-indigo-800 dark:text-indigo-200'
+                  'NIS2 Directive': 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 text-indigo-800 dark:text-indigo-200'
                 };
                 
                 const colorClass = frameworkColors[framework || ''] || 'bg-gray-50 dark:bg-gray-800/50 border-gray-400 text-gray-800 dark:text-gray-200';
@@ -3416,6 +3417,30 @@ export default function ComplianceSimplification() {
                 return (
                   <div key={index} className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg mb-2 border-l-2 border-gray-400">
                     <p className="font-medium text-gray-800 dark:text-gray-200 text-sm">{cleanLine}</p>
+                  </div>
+                );
+              }
+
+              // Handle indented requirement subcategories (Primary Requirements, Supporting Requirements, Cross-References)
+              if (line.trim().match(/^(Primary Requirements|Supporting Requirements|Cross-References):/)) {
+                const subcategoryText = line.trim();
+                return (
+                  <div key={index} className="ml-8 mt-3 mb-2">
+                    <h5 className="font-semibold text-gray-700 dark:text-gray-300 text-sm">{subcategoryText}</h5>
+                  </div>
+                );
+              }
+
+              // Handle deeply indented requirement items (individual requirements under subcategories)
+              if (line.match(/^    [A-Z0-9.\-]+:/)) {
+                const requirementText = line.trim();
+                const [code, title] = requirementText.split(': ');
+                return (
+                  <div key={index} className="ml-12 mb-1 flex items-start space-x-2">
+                    <span className="font-mono text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-700 dark:text-gray-300 shrink-0">
+                      {code}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{title}</span>
                   </div>
                 );
               }
