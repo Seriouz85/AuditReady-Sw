@@ -785,13 +785,16 @@ export default function ComplianceSimplification() {
         month: 'long',
         day: 'numeric'
       });
-      doc.text(`Generated on ${currentDate} | Page ${pageNum} of ${totalPages}`, margin + 25, 23);
+      doc.text(`Generated on ${currentDate}`, margin + 25, 23);
       
-      // Page number in top right - portrait optimized
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${pageNum}/${totalPages}`, pageWidth - margin - 15, 17);
+      // Only show page number at bottom right if not first page
+      if (pageNum > 1) {
+        // Add page number at bottom right
+        doc.setTextColor(127, 140, 141);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${pageNum}`, pageWidth - margin - 10, pageHeight - 10);
+      }
       
       return 40; // Return Y position after header
     };
@@ -837,11 +840,12 @@ export default function ComplianceSimplification() {
     doc.setFontSize(11);
     doc.text(`${(filteredUnifiedMappings || []).length} compliance domains analyzed`, margin + 55, totalCatY);
     
-    // Coverage assessment on same line
+    // Coverage assessment with proper width constraint
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     const coverageText = selectedFrameworksList.length > 3 ? 'Comprehensive Analysis' : 'Focused Analysis';
-    doc.text(`Coverage: ${coverageText}`, margin + 8, totalCatY + 6);
+    const maxCoverageWidth = pageWidth - (2 * margin) - 20; // Ensure it fits within blue design
+    doc.text(`Coverage: ${coverageText}`, margin + 8, totalCatY + 6, { maxWidth: maxCoverageWidth });
     
     if (selectedIndustrySector) {
       const sectorName = industrySectors?.find(s => s.id === selectedIndustrySector)?.name || '';
@@ -850,7 +854,64 @@ export default function ComplianceSimplification() {
       doc.text(`Industry Focus: ${sectorName}`, margin + 8, totalCatY + 12);
     }
     
-    currentY += 60;
+    // Add introduction section on first page
+    currentY = totalCatY + 30;
+    
+    // Introduction section with professional content
+    doc.setFillColor(248, 251, 253); // Very light gray-blue background
+    doc.roundedRect(margin, currentY, pageWidth - (2 * margin), 120, 3, 3, 'F');
+    
+    // Introduction title
+    doc.setTextColor(31, 78, 121);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('UNIFIED COMPLIANCE REQUIREMENTS', margin + 8, currentY + 15);
+    
+    // Introduction subtitle
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(52, 73, 94);
+    doc.text('Streamlined Framework Integration for Enterprise Compliance', margin + 8, currentY + 22);
+    
+    // Introduction content
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    const introText = [
+      'This comprehensive compliance report presents unified requirements where multiple regulatory',
+      'frameworks have been consolidated to simplify implementation across organizational departments.',
+      '',
+      'Our unified approach enables:',
+      '• Streamlined compliance management across multiple standards simultaneously',
+      '• Reduced complexity through intelligently consolidated requirements',
+      '• Enhanced departmental coordination and consistent implementation',
+      '• Clear mapping between different regulatory frameworks and standards',
+      '• Simplified audit preparation with comprehensive evidence collection',
+      '',
+      'Each category on the following pages contains:',
+      '• Unified requirements combining all selected frameworks',
+      '• Detailed implementation guidance for practical deployment',
+      '• Complete framework references with specific control mappings',
+      '',
+      'This approach reduces duplication and ensures comprehensive coverage while maintaining',
+      'compliance with all selected standards.'
+    ];
+    
+    let introY = currentY + 35;
+    introText.forEach((line: string) => {
+      if (line.startsWith('•')) {
+        doc.setTextColor(31, 78, 121); // Blue for bullet points
+        doc.text(line.substring(0, 1), margin + 8, introY);
+        doc.setTextColor(44, 62, 80);
+        doc.text(line.substring(1), margin + 11, introY);
+      } else {
+        doc.text(line, margin + 8, introY);
+      }
+      introY += line === '' ? 3 : 5;
+    });
+    
+    currentY += 130;
 
     // FRAMEWORK LEGEND - Removed duplicate section since frameworks are already shown in Executive Summary
     // This reduces redundancy and cleans up the report
@@ -867,10 +928,12 @@ export default function ComplianceSimplification() {
         doc.roundedRect(margin, startY, pageWidth - (2 * margin), 25, 3, 3, 'F');
         
         doc.setTextColor(31, 78, 121);
-        doc.setFontSize(16);
+        doc.setFontSize(13); // Reduced from 16 to prevent text overflow
         doc.setFont('helvetica', 'bold');
         const categoryName = ProfessionalGuidanceService.formatCategoryName(data[0].category).replace(/^\d+\.\s*/, '');
-        doc.text(`CATEGORY ${categoryNum} OF ${totalCategories}: ${categoryName.toUpperCase()}`, margin + 10, startY + 15);
+        const maxTitleWidth = pageWidth - (2 * margin) - 20; // Ensure title fits within blue box
+        const titleText = `CATEGORY ${categoryNum} OF ${totalCategories}: ${categoryName.toUpperCase()}`;
+        doc.text(titleText, margin + 10, startY + 15, { maxWidth: maxTitleWidth });
         
         startY += 35;
       }
@@ -1043,7 +1106,7 @@ export default function ComplianceSimplification() {
             });
             
             if (codesList.length > 0) {
-              references.push(`**${framework.title}:**\n${codesList.join('\n')}`);
+              references.push(`${framework.title}:\n${codesList.join('\n')}`);
             }
           }
         });
@@ -1081,11 +1144,11 @@ export default function ComplianceSimplification() {
         headStyles: {
           fillColor: [31, 78, 121],
           textColor: [255, 255, 255],
-          fontSize: 10,  // Appropriately sized header
+          fontSize: 8,  // Smaller headers for better fit
           fontStyle: 'bold',
           halign: 'center',
           valign: 'middle',
-          cellPadding: { top: 8, right: 4, bottom: 8, left: 4 }
+          cellPadding: { top: 6, right: 3, bottom: 6, left: 3 }
         },
         columnStyles: {
           0: { 
@@ -1227,9 +1290,13 @@ export default function ComplianceSimplification() {
       return finalY + 10;
     };
 
+    // Start categories on page 2 - Add new page after introduction
+    doc.addPage();
+    let pageNum = 2;
+    currentY = createPremiumHeader(pageNum, estimatedPages);
+    
     // Create separate sections for each category with page breaks
     const allData = filteredUnifiedMappings || [];
-    let pageNum = 1;
     let totalDataPages = allData.length;
     
     allData.forEach((mapping, categoryIndex) => {
@@ -1237,7 +1304,7 @@ export default function ComplianceSimplification() {
       if (categoryIndex > 0) {
         doc.addPage();
         pageNum++;
-        currentY = createPremiumHeader(pageNum, totalDataPages + 2); // +2 for summary and stats pages
+        currentY = createPremiumHeader(pageNum, totalDataPages + 2); // +2 for intro and stats pages
       }
       
       // Create a beautiful category section for this single category
