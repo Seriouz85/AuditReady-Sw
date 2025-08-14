@@ -93,6 +93,7 @@ export default function ComplianceSimplification() {
   // Unified Guidance modal state
   const [showUnifiedGuidance, setShowUnifiedGuidance] = useState(false);
   const [selectedGuidanceCategory, setSelectedGuidanceCategory] = useState<string>('');
+  const [showFrameworkReferences, setShowFrameworkReferences] = useState(false);
   
   // Validation and deduplication states
   const [deduplicationResults, setDeduplicationResults] = useState<Record<string, DeduplicationResult>>({});
@@ -120,10 +121,18 @@ export default function ComplianceSimplification() {
       nis2: Boolean(useActiveFrameworks ? selectedFrameworks.nis2 : frameworksSelected.nis2)
     };
     
-    // Get enhanced guidance from the service
+    // Find the actual mapping data for this category to get dynamic requirements
+    const currentMappings = useActiveFrameworks ? filteredUnifiedMappings : filteredMappings;
+    const categoryMapping = currentMappings?.find(mapping => {
+      const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
+      return mappingCategory === cleanCategory;
+    });
+    
+    // Get enhanced guidance from the service with dynamic requirements
     const enhancedGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
       cleanCategory,
-      frameworksForGuidance
+      frameworksForGuidance,
+      categoryMapping // Pass the actual mapping data for dynamic requirement injection
     );
     
     // Return the enhanced guidance if available, otherwise use fallback
@@ -3242,19 +3251,30 @@ export default function ComplianceSimplification() {
       <Dialog open={showUnifiedGuidance} onOpenChange={setShowUnifiedGuidance}>
         <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
           <DialogHeader className="pb-4 border-b border-gray-200 dark:border-gray-700">
-            <DialogTitle className="flex items-center space-x-3 text-xl">
-              <div className="p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                <Lightbulb className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div>
-                <span className="text-gray-900 dark:text-white">
-                  {selectedGuidanceCategory.replace(/^\d+\. /, '')}
-                </span>
-                <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mt-1">
-                  Implementation Guidance
+            <div className="flex items-start justify-between">
+              <DialogTitle className="flex items-center space-x-3 text-xl">
+                <div className="p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                  <Lightbulb className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
-              </div>
-            </DialogTitle>
+                <div>
+                  <span className="text-gray-900 dark:text-white">
+                    {selectedGuidanceCategory.replace(/^\d+\. /, '')}
+                  </span>
+                  <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mt-1">
+                    Implementation Guidance
+                  </div>
+                </div>
+              </DialogTitle>
+              <Button
+                variant={showFrameworkReferences ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowFrameworkReferences(!showFrameworkReferences)}
+                className="flex items-center space-x-2 text-xs font-medium"
+              >
+                <Eye className="w-4 h-4" />
+                <span>Show References</span>
+              </Button>
+            </div>
             <DialogDescription className="text-gray-600 dark:text-gray-300 mt-2">
               Framework-specific guidance and best practices tailored to your selected compliance standards
             </DialogDescription>
@@ -3265,6 +3285,17 @@ export default function ComplianceSimplification() {
               const cleanLine = line.replace(/\*\*/g, '').trim();
               
               if (cleanLine === '') return <div key={index} className="h-3" />;
+              
+              // Hide FRAMEWORK REFERENCES header and sub-sections when toggle is off
+              if (!showFrameworkReferences) {
+                if (cleanLine.startsWith('FRAMEWORK REFERENCES:') ||
+                    cleanLine.includes('Primary Requirements:') ||
+                    cleanLine.includes('Supporting Requirements:') ||
+                    cleanLine.includes('Cross-References:') ||
+                    cleanLine.match(/^\s*[A-Z\d\.]+:\s/)) { // Framework requirement codes like "A.5.1:", "14.1:", etc.
+                  return null;
+                }
+              }
               
               // 🎯 Special styling for Operational Excellence Indicators header
               if (cleanLine.includes('🎯 OPERATIONAL EXCELLENCE INDICATORS')) {
@@ -3309,6 +3340,9 @@ export default function ComplianceSimplification() {
               
               // Framework References section with special styling
               if (cleanLine.includes('Framework References for Selected Standards:')) {
+                if (!showFrameworkReferences) {
+                  return null; // Hide when references are not shown
+                }
                 return (
                   <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-l-4 border-blue-500 p-5 mb-6 rounded-r-lg shadow-sm">
                     <h4 className="text-lg font-bold text-blue-800 dark:text-blue-200 mb-2 flex items-center">
@@ -3324,6 +3358,9 @@ export default function ComplianceSimplification() {
               
               // Framework-specific references with enhanced styling
               if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls v8|GDPR|NIS2 Directive):/)) {
+                if (!showFrameworkReferences) {
+                  return null; // Hide when references are not shown
+                }
                 const framework = cleanLine.split(':')[0];
                 const content = cleanLine.split(':')[1];
                 

@@ -25,23 +25,130 @@ export class EnhancedUnifiedGuidanceService {
   
   /**
    * Get comprehensive guidance for a category with exact requirement references
+   * Enhanced with dynamic requirement injection from actual framework mappings
    */
   static getEnhancedGuidance(
     category: string, 
-    selectedFrameworks: Record<string, boolean | string>
+    selectedFrameworks: Record<string, boolean | string>,
+    dynamicRequirements?: any // Optional: actual requirements from compliance simplification mapping
   ): string {
     const categoryData = this.getCategoryData(category);
     if (!categoryData) {
       return this.getDefaultGuidance(category);
     }
 
+    // Use dynamic requirements if provided, otherwise fall back to static ones
+    const requirementReferences = dynamicRequirements 
+      ? this.buildDynamicRequirementReferences(dynamicRequirements, selectedFrameworks)
+      : categoryData.requirementReferences;
+
     // Build framework-specific references
-    const references = this.buildFrameworkReferences(categoryData.requirementReferences, selectedFrameworks);
+    const references = this.buildFrameworkReferences(requirementReferences, selectedFrameworks);
     
     // Build main content
     const content = this.buildGuidanceContent(categoryData);
     
     return `${references}\n\n${content}`;
+  }
+
+  /**
+   * Build dynamic requirement references from actual mapping data
+   * This ensures unified guidance shows the EXACT requirements that are mapped to each category
+   */
+  private static buildDynamicRequirementReferences(
+    mappingData: any,
+    selectedFrameworks: Record<string, boolean | string>
+  ): RequirementReference[] {
+    const references: RequirementReference[] = [];
+
+    // Debug logging for development (only in browser console)
+    if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+      console.log('🔍 Dynamic Requirements - Building references for category:', mappingData?.category);
+      console.log('📋 Available frameworks in mapping:', Object.keys(mappingData?.frameworks || {}));
+      console.log('✅ Selected frameworks:', selectedFrameworks);
+    }
+
+    // Process each framework if it's selected and has data
+    if (selectedFrameworks.iso27001 && mappingData.frameworks?.iso27001) {
+      mappingData.frameworks.iso27001.forEach((req: any) => {
+        references.push({
+          framework: 'iso27001',
+          code: req.code,
+          title: req.title,
+          relevance: 'primary'
+        });
+      });
+      
+      if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+        console.log('📖 Added ISO 27001 requirements:', mappingData.frameworks.iso27001.length);
+      }
+    }
+
+    if (selectedFrameworks.iso27002 && mappingData.frameworks?.iso27002) {
+      mappingData.frameworks.iso27002.forEach((req: any) => {
+        references.push({
+          framework: 'iso27002',
+          code: req.code,
+          title: req.title,
+          relevance: 'primary'
+        });
+      });
+      
+      if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+        console.log('📖 Added ISO 27002 requirements:', mappingData.frameworks.iso27002.length);
+      }
+    }
+
+    if (selectedFrameworks.cisControls && mappingData.frameworks?.cisControls) {
+      mappingData.frameworks.cisControls.forEach((req: any) => {
+        references.push({
+          framework: 'cisControls',
+          code: req.code,
+          title: req.title,
+          relevance: 'primary'
+        });
+      });
+      
+      if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+        console.log('📖 Added CIS Controls requirements:', mappingData.frameworks.cisControls.length);
+      }
+    }
+
+    if (selectedFrameworks.gdpr && mappingData.frameworks?.gdpr) {
+      mappingData.frameworks.gdpr.forEach((req: any) => {
+        references.push({
+          framework: 'gdpr',
+          code: req.code,
+          title: req.title,
+          relevance: 'primary'
+        });
+      });
+      
+      if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+        console.log('📖 Added GDPR requirements:', mappingData.frameworks.gdpr.length);
+      }
+    }
+
+    if (selectedFrameworks.nis2 && mappingData.frameworks?.nis2) {
+      mappingData.frameworks.nis2.forEach((req: any) => {
+        references.push({
+          framework: 'nis2',
+          code: req.code,
+          title: req.title,
+          relevance: 'primary'
+        });
+      });
+      
+      if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+        console.log('📖 Added NIS2 requirements:', mappingData.frameworks.nis2.length);
+      }
+    }
+
+    if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+      console.log('🎯 Total dynamic requirements generated:', references.length);
+    }
+
+    return references;
   }
 
   /**
