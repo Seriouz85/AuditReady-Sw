@@ -302,19 +302,19 @@ This typically takes 10-20 seconds for optimal results.
       return mappingCategory === cleanCategory;
     });
     
-    // Build guidance from actual unified requirements (this is now the standard approach)
-    const enhancedGuidance = buildGuidanceFromUnifiedRequirements(
+    // Use EnhancedUnifiedGuidanceService as primary source for pedagogical content
+    const enhancedGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+      cleanCategory,
+      frameworksForGuidance,
+      categoryMapping
+    );
+    
+    // Fallback to buildGuidanceFromUnifiedRequirements only if enhanced service fails
+    const fallbackGuidance = enhancedGuidance || buildGuidanceFromUnifiedRequirements(
       cleanCategory,
       categoryMapping,
       frameworksForGuidance,
       selectedIndustrySector
-    );
-    
-    // Fallback to legacy service only if enhanced guidance fails
-    const legacyGuidance = enhancedGuidance || EnhancedUnifiedGuidanceService.getEnhancedGuidance(
-      cleanCategory,
-      frameworksForGuidance,
-      categoryMapping
     );
     
     // Show error state if AI failed
@@ -326,16 +326,16 @@ This typically takes 10-20 seconds for optimal results.
 ${aiGuidanceErrors[cleanCategory]}
 
 **Fallback Content Available:**
-${legacyGuidance}
+${fallbackGuidance}
 
 ---
 
 *You can try regenerating AI content or switch to standard guidance mode.*`;
     }
     
-    // Return the enhanced guidance (now standard) or legacy fallback
-    if (legacyGuidance && legacyGuidance.trim().length > 100) {
-      return legacyGuidance;
+    // Return the enhanced guidance (now standard) or fallback
+    if (fallbackGuidance && fallbackGuidance.trim().length > 100) {
+      return fallbackGuidance;
     }
     
     // Final fallback with debug information
@@ -3840,6 +3840,28 @@ For detailed implementation guidance, please refer to the specific framework doc
                     <span className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{title}</span>
                   </div>
                 );
+              }
+              
+              // Subsection titles (a), b), c) etc. with bold styling
+              if (cleanLine.match(/^[a-z]\)\s+/)) {
+                // Match only the letter and the title part (until first period, colon, or end of reasonable title)
+                const subsectionMatch = cleanLine.match(/^([a-z]\)\s+[^.\n]*(?:\.[^a-z]|$)?)/);
+                if (subsectionMatch && subsectionMatch[1]) {
+                  // Find a better breaking point - look for title that's reasonable length
+                  const letterMatch = cleanLine.match(/^([a-z]\))\s+([^.\n]{1,80})/);
+                  if (letterMatch) {
+                    const letter = letterMatch[1];
+                    const titleText = letterMatch[2].trim();
+                    const remainingText = cleanLine.substring((letter + ' ' + titleText).length);
+                    
+                    return (
+                      <p key={index} className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 text-sm">
+                        <span className="font-bold text-gray-900 dark:text-gray-100">{letter} {titleText}</span>
+                        {remainingText}
+                      </p>
+                    );
+                  }
+                }
               }
               
               // Regular paragraph text
