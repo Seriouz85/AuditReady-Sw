@@ -74,7 +74,15 @@ export class OptimizedDemoDataService {
         .select('id, requirement_id, status')
         .eq('organization_id', this.DEMO_ORG_ID);
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        // RLS policy error - this is expected for demo users without organization access
+        if (fetchError.code === '42501') {
+          console.log('ℹ️ Skipping organization requirements enhancement (demo mode - no login required)');
+          await this.markDemoDataAsEnhanced(); // Mark as enhanced to prevent repeated attempts
+          return;
+        }
+        throw fetchError;
+      }
       if (!requirements || requirements.length === 0) {
         console.log('No requirements found for demo org');
         return;
@@ -158,6 +166,11 @@ export class OptimizedDemoDataService {
           });
 
         if (batchError) {
+          // RLS policy error - handle gracefully for demo users
+          if (batchError.code === '42501') {
+            console.log(`ℹ️ Batch ${Math.floor(i/this.BATCH_SIZE) + 1}: Skipping due to RLS policy (demo mode)`);
+            continue; // Skip this batch and continue with others
+          }
           console.error(`Batch update error:`, batchError);
           throw batchError;
         }
