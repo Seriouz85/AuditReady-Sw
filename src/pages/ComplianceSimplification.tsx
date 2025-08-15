@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cleanMarkdownFormatting, cleanComplianceSubRequirement } from '@/utils/textFormatting';
@@ -38,6 +38,8 @@ import { UnifiedGuidanceValidationService } from '../services/compliance/Unified
 import { RequirementDeduplicationService, type DeduplicationResult } from '../services/compliance/RequirementDeduplicationService';
 import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
 import { ProfessionalGuidanceService } from '../services/compliance/ProfessionalGuidanceService';
+import { aiGuidanceOrchestrator, type GuidanceGenerationRequest, type UnifiedGuidanceResponse } from '../services/ai';
+import { validateAIEnvironment, getAIProviderInfo, getAIErrorMessage, shouldEnableAIByDefault } from '../utils/aiEnvironmentValidator';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
@@ -95,6 +97,16 @@ export default function ComplianceSimplification() {
   const [selectedGuidanceCategory, setSelectedGuidanceCategory] = useState<string>('');
   const [showFrameworkReferences, setShowFrameworkReferences] = useState(false);
   
+  // AI Environment validation
+  const aiEnvironment = useMemo(() => validateAIEnvironment(), []);
+  const aiProviderInfo = useMemo(() => getAIProviderInfo(aiEnvironment.provider), [aiEnvironment.provider]);
+  
+  // AI Guidance state
+  const [aiGuidanceContent, setAiGuidanceContent] = useState<Record<string, string>>({});
+  const [aiGuidanceLoading, setAiGuidanceLoading] = useState<Record<string, boolean>>({});
+  const [aiGuidanceErrors, setAiGuidanceErrors] = useState<Record<string, string>>({});
+  const [useAIGuidance, setUseAIGuidance] = useState(shouldEnableAIByDefault()); // Auto-enable if configured
+  
   // Validation and deduplication states
   const [deduplicationResults, setDeduplicationResults] = useState<Record<string, DeduplicationResult>>({});
   const [validationResults, setValidationResults] = useState<any>({});
@@ -106,13 +118,166 @@ export default function ComplianceSimplification() {
     nis2: false
   });
 
-  // Function to get enhanced guidance content for categories using EnhancedUnifiedGuidanceService
+  // Function to build guidance content from actual unified requirements
+  const buildGuidanceFromUnifiedRequirements = (
+    category: string,
+    categoryMapping: any,
+    selectedFrameworks: any,
+    selectedIndustrySector: string | null
+  ): string | null => {
+    // Debug information for customers
+    if (!category || category.trim() === '') {
+      console.warn(`[Unified Guidance Debug] Empty category name provided`);
+      return null;
+    }
+    
+    if (!categoryMapping) {
+      console.warn(`[Unified Guidance Debug] No category mapping found for: "${category}"`);
+      return null;
+    }
+    
+    if (!categoryMapping?.auditReadyUnified?.subRequirements) {
+      console.warn(`[Unified Guidance Debug] No unified requirements found for: ${category}`, categoryMapping);
+      return null;
+    }
+    
+    console.log(`[Unified Guidance Debug] Building guidance for: ${category}`, {
+      hasMapping: !!categoryMapping,
+      requirementsCount: categoryMapping.auditReadyUnified?.subRequirements?.length || 0,
+      selectedFrameworks,
+      selectedIndustrySector
+    });
+
+    // Apply the same special handling that's used throughout the application
+    let baseRequirements = categoryMapping.auditReadyUnified.subRequirements || [];
+    
+    // Special handling for Governance & Leadership category
+    if (CorrectedGovernanceService.isGovernanceCategory(categoryMapping.category)) {
+      const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
+      baseRequirements = [
+        ...correctedStructure.sections['Leadership'] || [],
+        ...correctedStructure.sections['HR'] || [],
+        ...correctedStructure.sections['Monitoring & Compliance'] || []
+      ];
+    }
+    
+    // Apply sector-specific enhancements
+    const requirements = SectorSpecificEnhancer.enhanceSubRequirements(
+      baseRequirements,
+      category,
+      selectedIndustrySector,
+      selectedFrameworks['nis2']
+    );
+    const frameworkMappings = categoryMapping.frameworks || {};
+    
+    // Build framework references section
+    let frameworkRefs = '';
+    const activeFrameworks = Object.keys(selectedFrameworks).filter(fw => selectedFrameworks[fw]);
+    
+    if (activeFrameworks.length > 0) {
+      frameworkRefs += 'FRAMEWORK REFERENCES:\n\n';
+      frameworkRefs += 'Framework References for Selected Standards:\n\n';
+      
+      activeFrameworks.forEach(framework => {
+        const frameworkData = frameworkMappings[framework];
+        if (frameworkData && frameworkData.length > 0) {
+          const frameworkName = {
+            iso27001: 'ISO 27001',
+            iso27002: 'ISO 27002', 
+            cisControls: 'CIS Controls v8',
+            gdpr: 'GDPR',
+            nis2: 'NIS2 Directive'
+          }[framework] || framework;
+          
+          frameworkRefs += `${frameworkName}: ${frameworkData.map((req: any) => `${req.code} (${req.title})`).join(', ')}\n\n`;
+        }
+      });
+    }
+    
+    // Build requirements content using actual unified requirements
+    let content = frameworkRefs;
+    content += 'UNDERSTANDING THE REQUIREMENTS:\n\n';
+    content += `${category} encompasses the following key areas based on your selected compliance frameworks:\n\n`;
+    
+    requirements.forEach((req: string, index: number) => {
+      const letter = String.fromCharCode(97 + index); // a, b, c, etc.
+      // Apply the same cleaning that's used in the unified requirements display
+      const text = typeof req === 'string' ? req : req.description || req.text || '';
+      let cleanReq = cleanComplianceSubRequirement(text.trim());
+      
+      // Remove any existing letter prefixes to avoid duplication (a) a), b) b), etc.
+      cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '');
+      
+      // Use normal text weight instead of bold to match the unified requirements display
+      content += `${letter}) ${cleanReq}\n\n`;
+    });
+    
+    // Add implementation guidance
+    content += '\n🎯 OPERATIONAL EXCELLENCE INDICATORS\n\n';
+    content += 'Your Compliance Scorecard - Track these metrics to demonstrate audit readiness\n\n';
+    
+    content += '✅ FOUNDATIONAL CONTROLS\n\n';
+    content += '✅ **Policy Documentation** - Comprehensive policies covering all requirement areas\n';
+    content += '✅ **Process Implementation** - Documented and implemented procedures\n';
+    content += '✅ **Resource Allocation** - Adequate resources assigned to implementation\n';
+    content += '✅ **Training Programs** - Staff training on relevant requirements\n\n';
+    
+    content += '✅ ADVANCED CONTROLS\n\n';
+    content += '✅ **Continuous Monitoring** - Automated monitoring where applicable\n';
+    content += '✅ **Regular Reviews** - Periodic assessment and improvement\n';
+    content += '✅ **Integration** - Integration with other business processes\n';
+    content += '✅ **Metrics and KPIs** - Measurable performance indicators\n\n';
+    
+    content += '✅ AUDIT-READY DOCUMENTATION\n\n';
+    content += '✅ **Evidence Collection** - Systematic evidence gathering\n';
+    content += '✅ **Compliance Records** - Complete audit trails\n';
+    content += '✅ **Gap Analysis** - Regular assessment against requirements\n';
+    content += '✅ **Corrective Actions** - Documented remediation activities\n\n';
+    
+    content += '💡 PRO TIP: Phase implementation over 6-12 months: Start with foundational controls (policies, access management, basic monitoring), then advance to sophisticated automation and measurement. Key success metrics include >95% policy compliance, <24hr incident response time, and quarterly management reviews. Use automation tools where possible to reduce manual effort and ensure consistent evidence collection for audits.\n\n';
+    
+    return content;
+  };
+
+  // Function to get enhanced guidance content with AI-powered generation
   const getGuidanceContent = (category: string, useActiveFrameworks: boolean = true) => {
     // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
     const cleanCategory = category.replace(/^\d+\.\s*/, '');
     
+    // Debug: Log what category we're trying to get guidance for
+    if (!cleanCategory || cleanCategory.trim() === '') {
+      console.warn(`[Guidance Debug] Empty category after cleaning. Original: "${category}"`);
+      return 'Error: No category specified';
+    }
+    
+    // Return cached AI content if available and AI mode is enabled
+    if (useAIGuidance && aiGuidanceContent[cleanCategory]) {
+      return aiGuidanceContent[cleanCategory];
+    }
+    
+    // Return loading state if AI is generating
+    if (useAIGuidance && aiGuidanceLoading[cleanCategory]) {
+      return `# ${cleanCategory}
+
+🤖 **AI-Enhanced Guidance Generation in Progress**
+
+Our advanced AI system is analyzing your selected frameworks and generating comprehensive, CISO-grade compliance guidance specifically tailored to your needs.
+
+⏳ **Please wait while we:**
+- Analyze framework requirements and mappings
+- Generate strategic implementation guidance  
+- Provide actionable recommendations
+- Include specific tools and audit evidence
+- Ensure executive-level quality standards
+
+This typically takes 10-20 seconds for optimal results.
+
+---
+
+*Powered by Google Gemini AI with specialized compliance knowledge*`;
+    }
+    
     // Use the currently active frameworks (not the initial selection state)
-    // This ensures we show guidance for the frameworks that are actually selected and visible
     const frameworksForGuidance = {
       iso27001: Boolean(useActiveFrameworks ? selectedFrameworks.iso27001 : frameworksSelected.iso27001),
       iso27002: Boolean(useActiveFrameworks ? selectedFrameworks.iso27002 : frameworksSelected.iso27002),
@@ -123,26 +288,172 @@ export default function ComplianceSimplification() {
     
     // Find the actual mapping data for this category to get dynamic requirements
     const currentMappings = useActiveFrameworks ? filteredUnifiedMappings : filteredMappings;
+    
+    // Debug: Log available categories
+    if (currentMappings && currentMappings.length > 0) {
+      const availableCategories = currentMappings.map(m => m.category?.replace(/^\d+\.\s*/, '') || 'EMPTY').filter(Boolean);
+      console.log(`[Guidance Debug] Looking for "${cleanCategory}" in available categories:`, availableCategories);
+    } else {
+      console.warn(`[Guidance Debug] No mappings available. CurrentMappings:`, currentMappings);
+    }
+    
     const categoryMapping = currentMappings?.find(mapping => {
       const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
       return mappingCategory === cleanCategory;
     });
     
-    // Get enhanced guidance from the service with dynamic requirements
-    const enhancedGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+    // Build guidance from actual unified requirements (this is now the standard approach)
+    const enhancedGuidance = buildGuidanceFromUnifiedRequirements(
       cleanCategory,
+      categoryMapping,
       frameworksForGuidance,
-      categoryMapping // Pass the actual mapping data for dynamic requirement injection
+      selectedIndustrySector
     );
     
-    // Return the enhanced guidance if available, otherwise use fallback
-    if (enhancedGuidance && enhancedGuidance.trim().length > 100) {
-      return enhancedGuidance;
+    // Fallback to legacy service only if enhanced guidance fails
+    const legacyGuidance = enhancedGuidance || EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+      cleanCategory,
+      frameworksForGuidance,
+      categoryMapping
+    );
+    
+    // Show error state if AI failed
+    if (useAIGuidance && aiGuidanceErrors[cleanCategory]) {
+      return `# ${cleanCategory}
+
+⚠️ **AI Guidance Generation Failed**
+
+${aiGuidanceErrors[cleanCategory]}
+
+**Fallback Content Available:**
+${legacyGuidance}
+
+---
+
+*You can try regenerating AI content or switch to standard guidance mode.*`;
     }
     
-    // Fallback: If no enhanced guidance available, return basic message
-    return `FRAMEWORK REFERENCES:\n\nSelected frameworks contain requirements relevant to ${cleanCategory}. This category provides important security and compliance guidance based on your framework selection.\n\nUNDERSTANDING THE REQUIREMENTS:\n\nThis compliance category addresses critical security requirements that help ensure your organization meets industry standards and regulatory obligations. Implementation requires systematic planning, appropriate controls, and ongoing monitoring to maintain compliance.\n\nFor detailed implementation guidance, please refer to the specific framework documentation or consult with your compliance team.`;
+    // Return the enhanced guidance (now standard) or legacy fallback
+    if (legacyGuidance && legacyGuidance.trim().length > 100) {
+      return legacyGuidance;
+    }
+    
+    // Final fallback with debug information
+    console.warn(`[Unified Guidance Debug] Using fallback content for category: ${cleanCategory}. This may indicate missing data.`);
+    return `# ${cleanCategory}
+
+⚠️ **Content Loading Notice**
+
+We're having trouble loading the specific unified requirements for this category. This could be due to:
+
+• Missing mapping data for: ${cleanCategory}
+• Network connectivity issues
+• Database synchronization delay
+
+**What's Available:**
+Selected frameworks contain requirements relevant to ${cleanCategory}. This category provides important security and compliance guidance based on your framework selection.
+
+**Troubleshooting:**
+1. Try refreshing the page
+2. Check that your frameworks are properly selected
+3. If the issue persists, contact support
+
+**Next Steps:**
+For detailed implementation guidance, please refer to the specific framework documentation or consult with your compliance team.
+
+---
+*Debug info logged to browser console for technical support*`;
   };
+
+  // Function to generate AI-powered guidance for a category
+  const generateAIGuidance = async (category: string) => {
+    const cleanCategory = category.replace(/^\d+\.\s*/, '');
+    
+    // Set loading state
+    setAiGuidanceLoading(prev => ({ ...prev, [cleanCategory]: true }));
+    setAiGuidanceErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[cleanCategory];
+      return newErrors;
+    });
+    
+    try {
+      // Build frameworks object
+      const frameworks: Record<string, boolean | string> = {
+        'ISO 27001': Boolean(selectedFrameworks.iso27001),
+        'ISO 27002': Boolean(selectedFrameworks.iso27002),
+        'CIS Controls': Boolean(selectedFrameworks.cisControls),
+        'GDPR': Boolean(selectedFrameworks.gdpr),
+        'NIS2': Boolean(selectedFrameworks.nis2)
+      };
+      
+      // Find requirements for this category
+      const currentMappings = filteredUnifiedMappings || [];
+      const categoryRequirements = currentMappings.filter(mapping => {
+        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
+        return mappingCategory === cleanCategory;
+      });
+      
+      // Prepare AI guidance request
+      const guidanceRequest: GuidanceGenerationRequest = {
+        category: cleanCategory,
+        frameworks,
+        requirements: categoryRequirements,
+        userContext: {
+          industry: selectedIndustrySector || undefined,
+          organizationSize: 'enterprise', // Could be made configurable
+          userRole: 'ciso',
+          experienceLevel: 'expert',
+          preferences: {
+            showReferences: showFrameworkReferences,
+            detailLevel: 'comprehensive',
+            outputFormat: 'markdown'
+          }
+        },
+        options: {
+          quality: 'ciso-grade',
+          useCache: true,
+          includeReferences: showFrameworkReferences,
+          timeout: 30000 // 30 seconds timeout
+        }
+      };
+      
+      console.log(`[ComplianceSimplification] Generating AI guidance for: ${cleanCategory}`);
+      
+      // Generate AI guidance
+      const aiResponse: UnifiedGuidanceResponse = await aiGuidanceOrchestrator.generateGuidance(guidanceRequest);
+      
+      // Store the generated content
+      setAiGuidanceContent(prev => ({
+        ...prev,
+        [cleanCategory]: aiResponse.content
+      }));
+      
+      console.log(`[ComplianceSimplification] AI guidance generated successfully. Quality: ${aiResponse.metadata.qualityScore.toFixed(2)}`);
+      
+    } catch (error) {
+      console.error(`[ComplianceSimplification] AI guidance generation failed:`, error);
+      const userFriendlyError = getAIErrorMessage(error instanceof Error ? error : String(error));
+      setAiGuidanceErrors(prev => ({
+        ...prev,
+        [cleanCategory]: userFriendlyError
+      }));
+    } finally {
+      // Clear loading state
+      setAiGuidanceLoading(prev => ({ ...prev, [cleanCategory]: false }));
+    }
+  };
+
+  // Auto-generate AI content when dialog opens if AI is enabled
+  // AI generation is now optional - users can manually trigger it if they want AI enhancement
+  // The enhanced guidance from unified requirements is now the standard approach
+  useEffect(() => {
+    // Only auto-generate AI content if user explicitly enables it and requests it
+    // This makes the enhanced guidance the default experience
+    if (showUnifiedGuidance && useAIGuidance && selectedGuidanceCategory) {
+      console.log(`[AI Guidance] Available for: ${selectedGuidanceCategory}. User can manually generate if desired.`);
+    }
+  }, [showUnifiedGuidance, useAIGuidance, selectedGuidanceCategory]);
   
   // All legacy functions removed - content now handled by EnhancedUnifiedGuidanceService
 
@@ -1024,7 +1335,7 @@ export default function ComplianceSimplification() {
         );
         
         // Get ACTUAL unified guidance content from the service (same as buttons)
-        const actualGuidanceContent = getGuidanceContent(mapping.category || '');
+        const actualGuidanceContent = mapping.category ? getGuidanceContent(mapping.category) : 'No category specified';
         
         // Clean and format the actual guidance content for PDF
         let unifiedGuidance = '';
@@ -1064,7 +1375,7 @@ export default function ComplianceSimplification() {
             if (isInRequirementsSection && cleanLine.length > 10) {
               // Format subsection headers (a), b), c), etc.)
               if (cleanLine.match(/^[a-z]\)/)) {
-                formattedLines.push(`${cleanLine.toUpperCase()}`); // Make headers uppercase
+                formattedLines.push(`${cleanLine}`); // Keep normal case for better readability
               } else {
                 // Regular content with proper formatting
                 const cleanedContent = ProfessionalGuidanceService.cleanText(cleanLine);
@@ -3265,22 +3576,71 @@ export default function ComplianceSimplification() {
                   </div>
                 </div>
               </DialogTitle>
-              <Button
-                variant={showFrameworkReferences ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowFrameworkReferences(!showFrameworkReferences)}
-                className="flex items-center space-x-2 text-xs font-medium"
-              >
-                <Eye className="w-4 h-4" />
-                <span>Show References</span>
-              </Button>
+              <div className="flex items-center space-x-3 mr-8">
+                {/* Beautiful "Powered by AI" indicator - always shown when AI is available */}
+                {aiEnvironment.isValid && (
+                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full text-xs font-medium text-blue-700 dark:text-blue-300">
+                    <div className="flex items-center space-x-1.5">
+                      <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                      <span className="text-base">{aiProviderInfo.icon}</span>
+                      <span className="font-semibold">Powered by AI</span>
+                      <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Show unavailable status if AI is not configured */}
+                {!aiEnvironment.isValid && (
+                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 rounded-full text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span>⚙️</span>
+                    <span>AI Unavailable</span>
+                  </div>
+                )}
+                <Button
+                  variant={showFrameworkReferences ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setShowFrameworkReferences(!showFrameworkReferences)}
+                  className="flex items-center space-x-2 text-xs font-medium"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>Show References</span>
+                </Button>
+              </div>
             </div>
             <DialogDescription className="text-gray-600 dark:text-gray-300 mt-2">
               Framework-specific guidance and best practices tailored to your selected compliance standards
             </DialogDescription>
+            
+            {/* AI Environment Status */}
+            {!aiEnvironment.isValid && (
+              <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="flex items-start space-x-2">
+                  <span className="text-amber-600 dark:text-amber-400 text-lg">⚠️</span>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                      AI Features Unavailable
+                    </h4>
+                    <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                      AI-enhanced guidance requires an API key. You're currently viewing static content.
+                    </p>
+                    {aiEnvironment.setupInstructions.length > 0 && (
+                      <details className="mt-2">
+                        <summary className="text-xs cursor-pointer text-amber-600 dark:text-amber-400 hover:text-amber-700">
+                          Setup Instructions
+                        </summary>
+                        <div className="mt-1 text-xs text-amber-700 dark:text-amber-300 whitespace-pre-line">
+                          {aiEnvironment.setupInstructions.join('\n')}
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </DialogHeader>
           <div className="prose dark:prose-invert max-w-none pt-6">
-            {getGuidanceContent(selectedGuidanceCategory).split('\n').map((line, index) => {
+            {(selectedGuidanceCategory ? getGuidanceContent(selectedGuidanceCategory) : 'No category selected').split('\n').map((line, index) => {
               // Clean line but preserve basic formatting markers
               const cleanLine = line.replace(/\*\*/g, '').trim();
               
