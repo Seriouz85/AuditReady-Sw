@@ -13,7 +13,7 @@ export class ProfessionalGuidanceService {
     return text
       // Remove ALL Unicode emoji blocks and special characters
       .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
-      .replace(/[📋🎯💡🏛️⚙️🔒🛡️📊✅❌⚠️🌍🔄📈]/gu, '')
+      .replace(/📋|🎯|💡|🏛️|⚙️|🔒|🛡️|📊|✅|❌|⚠️|🌍|🔄|📈/gu, '')
       // Remove any corrupted/weird characters
       .replace(/[Ø=ÚÊÃê]/gi, '') // Remove corrupted chars like Ø=ÚÊ
       .replace(/Ø=.{2}/g, '') // Remove patterns like Ø=XX

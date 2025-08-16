@@ -34,12 +34,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
 import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
-import { UnifiedGuidanceValidationService } from '../services/compliance/UnifiedGuidanceValidationService';
-import { RequirementDeduplicationService, type DeduplicationResult } from '../services/compliance/RequirementDeduplicationService';
 import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
 import { ProfessionalGuidanceService } from '../services/compliance/ProfessionalGuidanceService';
-import { aiGuidanceOrchestrator, type GuidanceGenerationRequest, type UnifiedGuidanceResponse } from '../services/ai';
-import { validateAIEnvironment, getAIProviderInfo, getAIErrorMessage, shouldEnableAIByDefault } from '../utils/aiEnvironmentValidator';
+import { UnifiedRequirementsService } from '../services/compliance/UnifiedRequirementsService';
+import { UnifiedGuidanceGenerator } from '../services/compliance/UnifiedGuidanceGenerator';
+import { validateAIEnvironment, getAIProviderInfo, shouldEnableAIByDefault } from '../utils/aiEnvironmentValidator';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
@@ -96,20 +95,14 @@ export default function ComplianceSimplification() {
   const [showUnifiedGuidance, setShowUnifiedGuidance] = useState(false);
   const [selectedGuidanceCategory, setSelectedGuidanceCategory] = useState<string>('');
   const [showFrameworkReferences, setShowFrameworkReferences] = useState(false);
+  const [showOperationalExcellence, setShowOperationalExcellence] = useState(false);
   
   // AI Environment validation
   const aiEnvironment = useMemo(() => validateAIEnvironment(), []);
   const aiProviderInfo = useMemo(() => getAIProviderInfo(aiEnvironment.provider), [aiEnvironment.provider]);
   
   // AI Guidance state
-  const [aiGuidanceContent, setAiGuidanceContent] = useState<Record<string, string>>({});
-  const [aiGuidanceLoading, setAiGuidanceLoading] = useState<Record<string, boolean>>({});
-  const [aiGuidanceErrors, setAiGuidanceErrors] = useState<Record<string, string>>({});
-  const [useAIGuidance, setUseAIGuidance] = useState(shouldEnableAIByDefault()); // Auto-enable if configured
-  
-  // Validation and deduplication states
-  const [deduplicationResults, setDeduplicationResults] = useState<Record<string, DeduplicationResult>>({});
-  const [validationResults, setValidationResults] = useState<any>({});
+  const [useAIGuidance] = useState(shouldEnableAIByDefault()); // Auto-enable if configured
   const [frameworksSelected, setFrameworksSelected] = useState({
     iso27001: true,
     iso27002: true,
@@ -136,9 +129,36 @@ export default function ComplianceSimplification() {
       return null;
     }
     
-    if (!categoryMapping?.auditReadyUnified?.subRequirements) {
-      console.warn(`[Unified Guidance Debug] No unified requirements found for: ${category}`, categoryMapping);
-      return null;
+    // Use the new dynamic guidance generator instead of hardcoded content
+    try {
+      // Extract unified requirements using the service
+      const categoryRequirements = UnifiedRequirementsService.extractUnifiedRequirements(categoryMapping);
+      
+      // Use selectedFrameworks directly (passed as parameter)
+      const frameworksForGuidance = selectedFrameworks;
+      
+      // Extract real framework mappings from categoryMapping
+      const realFrameworkMappings = extractRealFrameworkMappings(categoryMapping, frameworksForGuidance);
+      
+      // Generate dynamic guidance based on the requirements
+      const generatedGuidance = UnifiedGuidanceGenerator.generateGuidance(categoryRequirements);
+      
+      // Store the complete guidance data globally so Show References can access it
+      (window as any).currentGuidanceData = generatedGuidance;
+      
+      // Build references section using REAL mappings, not fake ones
+      const referencesSection = buildReferencesSection(realFrameworkMappings);
+      
+      // Return the foundation content with optional references
+      return `${referencesSection}\n\n${generatedGuidance.foundationContent}`;
+    } catch (error) {
+      console.error(`[Unified Guidance Debug] Error generating guidance for ${category}:`, error);
+      
+      // Fallback to old method if new generator fails
+      if (!categoryMapping?.auditReadyUnified?.subRequirements) {
+        console.warn(`[Unified Guidance Debug] No unified requirements found for: ${category}`, categoryMapping);
+        return null;
+      }
     }
     
     console.log(`[Unified Guidance Debug] Building guidance for: ${category}`, {
@@ -199,7 +219,7 @@ export default function ComplianceSimplification() {
     content += 'UNDERSTANDING THE REQUIREMENTS:\n\n';
     content += `${category} encompasses the following key areas based on your selected compliance frameworks:\n\n`;
     
-    requirements.forEach((req: string, index: number) => {
+    requirements.forEach((req: any, index: number) => {
       const letter = String.fromCharCode(97 + index); // a, b, c, etc.
       // Apply the same cleaning that's used in the unified requirements display
       const text = typeof req === 'string' ? req : req.description || req.text || '';
@@ -239,6 +259,125 @@ export default function ComplianceSimplification() {
     return content;
   };
 
+  // Function to extract real framework mappings from categoryMapping
+  const extractRealFrameworkMappings = (categoryMapping: any, selectedFrameworks: any): any[] => {
+    console.log('[Framework Mappings Debug] categoryMapping structure:', categoryMapping);
+    console.log('[Framework Mappings Debug] selectedFrameworks:', selectedFrameworks);
+    
+    if (!categoryMapping) {
+      console.warn('[Framework Mappings] No categoryMapping provided');
+      return [];
+    }
+    
+    const realMappings: any[] = [];
+    
+    // Try different possible structures in categoryMapping
+    const possibleFrameworkSources = [
+      categoryMapping.frameworks,
+      categoryMapping.requirements,
+      categoryMapping.frameworkMappings,
+      categoryMapping
+    ];
+    
+    for (const frameworkSource of possibleFrameworkSources) {
+      if (!frameworkSource) continue;
+      
+      console.log('[Framework Mappings Debug] Trying framework source:', frameworkSource);
+      
+      // Extract mappings for each selected framework
+      Object.keys(selectedFrameworks).forEach(framework => {
+        if (selectedFrameworks[framework] && frameworkSource[framework]) {
+          const frameworkData = frameworkSource[framework];
+          console.log(`[Framework Mappings Debug] Found data for ${framework}:`, frameworkData);
+          
+          if (Array.isArray(frameworkData)) {
+            // If it's an array, add all requirements
+            frameworkData.forEach((req: any) => {
+              if (req && (req.code || req.id || req.requirement)) {
+                realMappings.push({
+                  framework: framework,
+                  code: req.code || req.id || req.requirement || req.number,
+                  title: req.title || req.description || req.name || req.text,
+                  relevance: req.relevance || req.type || 'primary'
+                });
+              }
+            });
+          } else if (frameworkData.requirements && Array.isArray(frameworkData.requirements)) {
+            // If requirements are nested
+            frameworkData.requirements.forEach((req: any) => {
+              if (req && (req.code || req.id || req.requirement)) {
+                realMappings.push({
+                  framework: framework,
+                  code: req.code || req.id || req.requirement || req.number,
+                  title: req.title || req.description || req.name || req.text,
+                  relevance: req.relevance || req.type || 'primary'
+                });
+              }
+            });
+          } else if (typeof frameworkData === 'object' && frameworkData.code) {
+            // If it's a single object
+            realMappings.push({
+              framework: framework,
+              code: frameworkData.code || frameworkData.id || frameworkData.requirement,
+              title: frameworkData.title || frameworkData.description || frameworkData.name,
+              relevance: frameworkData.relevance || frameworkData.type || 'primary'
+            });
+          }
+        }
+      });
+      
+      // If we found mappings, break out of the loop
+      if (realMappings.length > 0) {
+        break;
+      }
+    }
+    
+    console.log('[Framework Mappings] Extracted real mappings:', realMappings);
+    
+    // If no real mappings found, try to use the legacy approach as last resort
+    if (realMappings.length === 0) {
+      console.warn('[Framework Mappings] No real mappings found, this category may not have framework mappings configured');
+    }
+    
+    return realMappings;
+  };
+
+  // Function to build references section for dynamic guidance
+  const buildReferencesSection = (references: any[]): string => {
+    if (!references || references.length === 0) {
+      return '';
+    }
+    
+    let referencesContent = 'Framework References for Selected Standards:\n\n';
+    
+    // Group references by framework
+    const groupedRefs: Record<string, any[]> = {};
+    references.forEach(ref => {
+      const frameworkKey = ref.framework;
+      if (!groupedRefs[frameworkKey]) {
+        groupedRefs[frameworkKey] = [];
+      }
+      groupedRefs[frameworkKey].push(ref);
+    });
+    
+    // Add each framework group
+    Object.entries(groupedRefs).forEach(([framework, refs]) => {
+      const frameworkName = {
+        iso27001: 'ISO 27001',
+        iso27002: 'ISO 27002',
+        cisControls: 'CIS Controls v8',
+        gdpr: 'GDPR',
+        nis2: 'NIS2 Directive',
+        nist: 'NIST Framework'
+      }[framework] || framework.toUpperCase();
+      
+      const refStrings = refs.map(ref => `${ref.code} (${ref.title})`).join(', ');
+      referencesContent += `${frameworkName}: ${refStrings}\n\n`;
+    });
+    
+    return referencesContent;
+  };
+
   // Function to get enhanced guidance content with AI-powered generation
   const getGuidanceContent = (category: string, useActiveFrameworks: boolean = true) => {
     // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
@@ -250,32 +389,6 @@ export default function ComplianceSimplification() {
       return 'Error: No category specified';
     }
     
-    // Return cached AI content if available and AI mode is enabled
-    if (useAIGuidance && aiGuidanceContent[cleanCategory]) {
-      return aiGuidanceContent[cleanCategory];
-    }
-    
-    // Return loading state if AI is generating
-    if (useAIGuidance && aiGuidanceLoading[cleanCategory]) {
-      return `# ${cleanCategory}
-
-🤖 **AI-Enhanced Guidance Generation in Progress**
-
-Our advanced AI system is analyzing your selected frameworks and generating comprehensive, CISO-grade compliance guidance specifically tailored to your needs.
-
-⏳ **Please wait while we:**
-- Analyze framework requirements and mappings
-- Generate strategic implementation guidance  
-- Provide actionable recommendations
-- Include specific tools and audit evidence
-- Ensure executive-level quality standards
-
-This typically takes 10-20 seconds for optimal results.
-
----
-
-*Powered by Google Gemini AI with specialized compliance knowledge*`;
-    }
     
     // Use the currently active frameworks (not the initial selection state)
     const frameworksForGuidance = {
@@ -302,40 +415,30 @@ This typically takes 10-20 seconds for optimal results.
       return mappingCategory === cleanCategory;
     });
     
-    // Use EnhancedUnifiedGuidanceService as primary source for pedagogical content
-    const enhancedGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
-      cleanCategory,
-      frameworksForGuidance,
-      categoryMapping
-    );
-    
-    // Fallback to buildGuidanceFromUnifiedRequirements only if enhanced service fails
-    const fallbackGuidance = enhancedGuidance || buildGuidanceFromUnifiedRequirements(
+    // Use the new dynamic guidance generator as primary source
+    const dynamicGuidance = buildGuidanceFromUnifiedRequirements(
       cleanCategory,
       categoryMapping,
       frameworksForGuidance,
       selectedIndustrySector
     );
     
-    // Show error state if AI failed
-    if (useAIGuidance && aiGuidanceErrors[cleanCategory]) {
-      return `# ${cleanCategory}
-
-⚠️ **AI Guidance Generation Failed**
-
-${aiGuidanceErrors[cleanCategory]}
-
-**Fallback Content Available:**
-${fallbackGuidance}
-
----
-
-*You can try regenerating AI content or switch to standard guidance mode.*`;
+    // Return dynamic guidance if it worked
+    if (dynamicGuidance && dynamicGuidance.trim().length > 100) {
+      console.log(`[Guidance Debug] Successfully generated dynamic guidance for: ${cleanCategory}`);
+      return dynamicGuidance;
     }
     
-    // Return the enhanced guidance (now standard) or fallback
-    if (fallbackGuidance && fallbackGuidance.trim().length > 100) {
-      return fallbackGuidance;
+    // Fallback to legacy EnhancedUnifiedGuidanceService only if dynamic generation fails
+    console.warn(`[Guidance Debug] Dynamic guidance failed for ${cleanCategory}, trying legacy service`);
+    const legacyGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+      cleanCategory,
+      frameworksForGuidance,
+      categoryMapping
+    );
+    
+    if (legacyGuidance && legacyGuidance.trim().length > 100) {
+      return legacyGuidance;
     }
     
     // Final fallback with debug information
@@ -365,84 +468,6 @@ For detailed implementation guidance, please refer to the specific framework doc
 *Debug info logged to browser console for technical support*`;
   };
 
-  // Function to generate AI-powered guidance for a category
-  const generateAIGuidance = async (category: string) => {
-    const cleanCategory = category.replace(/^\d+\.\s*/, '');
-    
-    // Set loading state
-    setAiGuidanceLoading(prev => ({ ...prev, [cleanCategory]: true }));
-    setAiGuidanceErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors[cleanCategory];
-      return newErrors;
-    });
-    
-    try {
-      // Build frameworks object
-      const frameworks: Record<string, boolean | string> = {
-        'ISO 27001': Boolean(selectedFrameworks.iso27001),
-        'ISO 27002': Boolean(selectedFrameworks.iso27002),
-        'CIS Controls': Boolean(selectedFrameworks.cisControls),
-        'GDPR': Boolean(selectedFrameworks.gdpr),
-        'NIS2': Boolean(selectedFrameworks.nis2)
-      };
-      
-      // Find requirements for this category
-      const currentMappings = filteredUnifiedMappings || [];
-      const categoryRequirements = currentMappings.filter(mapping => {
-        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
-        return mappingCategory === cleanCategory;
-      });
-      
-      // Prepare AI guidance request
-      const guidanceRequest: GuidanceGenerationRequest = {
-        category: cleanCategory,
-        frameworks,
-        requirements: categoryRequirements,
-        userContext: {
-          industry: selectedIndustrySector || undefined,
-          organizationSize: 'enterprise', // Could be made configurable
-          userRole: 'ciso',
-          experienceLevel: 'expert',
-          preferences: {
-            showReferences: showFrameworkReferences,
-            detailLevel: 'comprehensive',
-            outputFormat: 'markdown'
-          }
-        },
-        options: {
-          quality: 'ciso-grade',
-          useCache: true,
-          includeReferences: showFrameworkReferences,
-          timeout: 30000 // 30 seconds timeout
-        }
-      };
-      
-      console.log(`[ComplianceSimplification] Generating AI guidance for: ${cleanCategory}`);
-      
-      // Generate AI guidance
-      const aiResponse: UnifiedGuidanceResponse = await aiGuidanceOrchestrator.generateGuidance(guidanceRequest);
-      
-      // Store the generated content
-      setAiGuidanceContent(prev => ({
-        ...prev,
-        [cleanCategory]: aiResponse.content
-      }));
-      
-      console.log(`[ComplianceSimplification] AI guidance generated successfully. Quality: ${aiResponse.metadata.qualityScore.toFixed(2)}`);
-      
-    } catch (error) {
-      console.error(`[ComplianceSimplification] AI guidance generation failed:`, error);
-      const userFriendlyError = getAIErrorMessage(error instanceof Error ? error : String(error));
-      setAiGuidanceErrors(prev => ({
-        ...prev,
-        [cleanCategory]: userFriendlyError
-      }));
-    } finally {
-      // Clear loading state
-      setAiGuidanceLoading(prev => ({ ...prev, [cleanCategory]: false }));
-    }
-  };
 
   // Auto-generate AI content when dialog opens if AI is enabled
   // AI generation is now optional - users can manually trigger it if they want AI enhancement
@@ -819,19 +844,19 @@ For detailed implementation guidance, please refer to the specific framework doc
       const references: string[] = [];
       
       if (selectedFrameworks.iso27001 && mapping.frameworks?.['iso27001']?.length) {
-        references.push('ISO 27001: ' + mapping.frameworks.iso27001.map(r => r.code).join(', '));
+        references.push('ISO 27001: ' + mapping.frameworks['iso27001'].map(r => r.code).join(', '));
       }
       if (selectedFrameworks.iso27002 && mapping.frameworks?.['iso27002']?.length) {
-        references.push('ISO 27002: ' + mapping.frameworks.iso27002.map(r => r.code).join(', '));
+        references.push('ISO 27002: ' + mapping.frameworks['iso27002'].map(r => r.code).join(', '));
       }
       if (selectedFrameworks.cisControls && mapping.frameworks?.['cisControls']?.length) {
-        references.push('CIS Controls: ' + mapping.frameworks.cisControls.map(r => r.code).join(', '));
+        references.push('CIS Controls: ' + mapping.frameworks['cisControls'].map(r => r.code).join(', '));
       }
       if (selectedFrameworks.gdpr && mapping.frameworks?.['gdpr']?.length) {
-        references.push('GDPR: ' + mapping.frameworks.gdpr.map(r => r.code).join(', '));
+        references.push('GDPR: ' + mapping.frameworks['gdpr'].map(r => r.code).join(', '));
       }
       if (selectedFrameworks.nis2 && mapping.frameworks?.['nis2']?.length) {
-        references.push('NIS2: ' + mapping.frameworks.nis2.map(r => r.code).join(', '));
+        references.push('NIS2: ' + mapping.frameworks['nis2'].map(r => r.code).join(', '));
       }
       
       const referencesText = references.join('\n') || 'No specific framework mappings found';
@@ -971,7 +996,7 @@ For detailed implementation guidance, please refer to the specific framework doc
     // Add framework statistics
     selectedFrameworksList.forEach(framework => {
       const totalMapped = (filteredUnifiedMappings || []).reduce((count, mapping) => {
-        const frameworkKey = framework.includes('(') ? framework.split('(')[0].trim() : framework;
+        const frameworkKey = framework.includes('(') ? (framework.split('(')[0]?.trim() || framework) : framework;
         const mappedFrameworks = Object.keys(mapping.frameworks || {});
         return count + (mappedFrameworks.includes(frameworkKey) ? 1 : 0);
       }, 0);
@@ -1059,22 +1084,9 @@ For detailed implementation guidance, please refer to the specific framework doc
     const pageHeight = 297; // Standard A4 portrait height
     const margin = 15; // Professional margin for A4
     
-    // 🎨 DEFINE STUNNING COLOR PALETTE
-    const colors = {
-      primary: '#1F4E79',      // Corporate Blue
-      secondary: '#2F5233',    // Forest Green  
-      accent: '#E74C3C',       // Professional Red
-      gold: '#F39C12',         // Executive Gold
-      lightBlue: '#E7F3FF',    // Light Blue Background
-      lightGreen: '#F0F8F0',   // Light Green Background
-      darkGray: '#2C3E50',     // Professional Dark
-      mediumGray: '#7F8C8D',   // Medium Gray
-      lightGray: '#ECF0F1',    // Light Gray
-      white: '#FFFFFF'
-    };
 
     // 🎨 PREMIUM HEADER DESIGN
-    const createPremiumHeader = (pageNum = 1, totalPages = 1) => {
+    const createPremiumHeader = (pageNum = 1) => {
       // Background gradient effect (simulated with rectangles)
       doc.setFillColor(31, 78, 121); // Primary blue
       doc.rect(0, 0, pageWidth, 30, 'F');
@@ -1121,9 +1133,7 @@ For detailed implementation guidance, please refer to the specific framework doc
     };
 
     // Calculate actual number of pages needed based on content
-    const totalCategories = (filteredUnifiedMappings || []).length;
-    const estimatedPages = Math.max(1, Math.ceil(totalCategories / 3) + 1); // +1 for summary page
-    let currentY = createPremiumHeader(1, estimatedPages);
+    let currentY = createPremiumHeader(1);
     
     // EXECUTIVE SUMMARY SECTION - portrait A4 optimized
     doc.setFillColor(231, 243, 255); // Light blue background
@@ -1136,7 +1146,6 @@ For detailed implementation guidance, please refer to the specific framework doc
     doc.text('EXECUTIVE SUMMARY', margin + 8, currentY + 12);
     
     // Single column layout for portrait format
-    const colWidth = pageWidth - (2 * margin) - 10;
     
     // Single column layout with enhanced formatting
     doc.setTextColor(44, 62, 80);
@@ -1238,8 +1247,147 @@ For detailed implementation guidance, please refer to the specific framework doc
     // This reduces redundancy and cleans up the report
     currentY += 5;
 
+    // 🎯 OPERATIONAL EXCELLENCE FOOTER FUNCTION - Fixed dimensions and cleaned title
+    const createOperationalExcellenceFooter = (doc: jsPDF, startY: number, pageWidth: number, margin: number) => {
+      // Check if there's enough space for footer, otherwise add new page  
+      if (startY + 85 > pageHeight - margin) {
+        doc.addPage();
+        startY = 50;
+      }
+      
+      // Professional subtitle for section
+      doc.setTextColor(100, 116, 139); // slate-500
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('IMPLEMENTATION SCORECARD', margin, startY + 2);
+      
+      // Main header with clean title (no emoji/special chars)
+      doc.setFillColor(16, 185, 129); // emerald-500
+      doc.roundedRect(margin, startY + 5, pageWidth - (2 * margin), 12, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('OPERATIONAL EXCELLENCE INDICATORS', margin + 8, startY + 13);
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Track these metrics to demonstrate audit readiness', margin + 8, startY + 15.5);
+      
+      // Enhanced 4-section grid layout with better spacing and fixed dimensions
+      const totalGridWidth = pageWidth - (2 * margin);
+      const gapSize = 3; // Smaller gaps to prevent overflow
+      const sectionWidth = (totalGridWidth - (3 * gapSize)) / 4;
+      const sectionHeight = 58; // Taller sections for more content without overflow
+      let currentX = margin;
+      const sectionY = startY + 22;
+      
+      // Helper function to create rounded sections with proper text wrapping
+      const createSection = (x: number, bgColor: [number, number, number], borderColor: [number, number, number], textColor: [number, number, number], title: string, items: string[]) => {
+        // Background with rounded corners
+        doc.setFillColor(...bgColor);
+        doc.roundedRect(x, sectionY, sectionWidth, sectionHeight, 3, 3, 'F');
+        
+        // Border with rounded corners
+        doc.setDrawColor(...borderColor);
+        doc.setLineWidth(1.5);
+        doc.roundedRect(x, sectionY, sectionWidth, sectionHeight, 3, 3, 'S');
+        
+        // Title with proper positioning - remove any special characters
+        doc.setTextColor(...textColor);
+        doc.setFontSize(8); // Even smaller font to prevent bleeding
+        doc.setFont('helvetica', 'bold');
+        const cleanTitle = title.replace(/[✅💡🎯]/g, '').trim(); // Remove special chars
+        doc.text(cleanTitle, x + 2, sectionY + 6); // Move up slightly
+        
+        // Items with proper text wrapping and spacing
+        doc.setFontSize(7); // Smaller font for items
+        doc.setFont('helvetica', 'normal');
+        let currentItemY = sectionY + 12; // Start higher to give title more space
+        
+        items.forEach((item) => {
+          if (currentItemY + 4 > sectionY + sectionHeight - 3) return; // Prevent overflow
+          
+          const cleanItem = item.replace(/[•◆▪→]/g, '').trim(); // Remove bullet points
+          const maxWidth = sectionWidth - 4; // Leave margin
+          
+          // Simple text wrapping
+          const words = cleanItem.split(' ');
+          let line = '';
+          
+          for (const word of words) {
+            const testLine = line + (line ? ' ' : '') + word;
+            const textWidth = doc.getTextWidth(testLine);
+            
+            if (textWidth > maxWidth && line !== '') {
+              // Print current line and start new one
+              doc.text(line, x + 2, currentItemY);
+              currentItemY += 4;
+              if (currentItemY + 4 > sectionY + sectionHeight - 3) break; // Prevent overflow
+              line = word;
+            } else {
+              line = testLine;
+            }
+          }
+          
+          // Print final line
+          if (line && currentItemY + 4 <= sectionY + sectionHeight - 3) {
+            doc.text(line, x + 2, currentItemY);
+            currentItemY += 5;
+          }
+        });
+        
+        // Add subtle shadow effect (using light gray instead of transparency)
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.5);
+        doc.line(x + 1, sectionY + sectionHeight + 1, x + sectionWidth + 1, sectionY + sectionHeight + 1);
+        doc.line(x + sectionWidth + 1, sectionY + 1, x + sectionWidth + 1, sectionY + sectionHeight + 1);
+      };
+      
+      // Section 1: FOUNDATIONAL CONTROLS
+      createSection(currentX, [239, 246, 255], [59, 130, 246], [30, 64, 175], 'FOUNDATIONAL CONTROLS', [
+        'Comprehensive policy documentation',
+        'Documented security procedures', 
+        'Adequate resource allocation',
+        'Staff training and awareness',
+        'Management approval processes'
+      ]);
+      
+      // Section 2: ADVANCED CONTROLS
+      currentX += sectionWidth + gapSize;
+      createSection(currentX, [236, 253, 245], [34, 197, 94], [20, 83, 45], 'ADVANCED CONTROLS', [
+        '• Continuous monitoring systems',
+        '• Regular security reviews',
+        '• Integrated business processes',
+        '• Performance metrics & KPIs',
+        '• Automated control validation'
+      ]);
+      
+      // Section 3: AUDIT-READY DOCUMENTATION
+      currentX += sectionWidth + gapSize;
+      createSection(currentX, [254, 243, 199], [245, 158, 11], [180, 83, 9], 'AUDIT-READY DOCS', [
+        '• Systematic evidence collection',
+        '• Complete compliance records',
+        '• Regular gap analysis',
+        '• Documented corrective actions',
+        '• Audit trail maintenance'
+      ]);
+      
+      // Section 4: PRO IMPLEMENTATION TIP
+      currentX += sectionWidth + gapSize;
+      createSection(currentX, [252, 231, 243], [236, 72, 153], [157, 23, 77], 'IMPLEMENTATION GUIDE', [
+        '• Phase over 6-12 months',
+        '• Start with foundational controls',
+        '• Build monitoring capabilities',
+        '• Implement automation gradually',
+        '• Measure and demonstrate value'
+      ]);
+      
+      return startY + sectionHeight + 35; // Extra space for proper footer spacing
+    };
+
     // MAIN DATA TABLE - CLEAN AND COMPLETE
-    const createStunningTable = (data: any[], startY: number, pageNum: number, categoryNum?: number, totalCategories?: number) => {
+    const createStunningTable = (data: any[], startY: number, categoryNum?: number, totalCategories?: number) => {
       // Updated structure: Category, Unified Requirements, Unified Guidance, References  
       const allHeaders = ['CATEGORY', 'UNIFIED REQUIREMENTS', 'UNIFIED GUIDANCE', 'REFERENCES'];
       
@@ -1321,18 +1469,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         }
         
         // Get unified guidance content using the enhanced service with better formatting
-        const selectedFrameworksForGuidance = {
-          iso27001: Boolean(selectedFrameworks.iso27001),
-          iso27002: Boolean(selectedFrameworks.iso27002), 
-          cisControls: selectedFrameworks.cisControls || false,
-          gdpr: Boolean(selectedFrameworks.gdpr),
-          nis2: Boolean(selectedFrameworks.nis2)
-        };
         
-        const guidanceContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
-          mapping.category,
-          selectedFrameworksForGuidance
-        );
         
         // Get ACTUAL unified guidance content from the service (same as buttons)
         const actualGuidanceContent = mapping.category ? getGuidanceContent(mapping.category) : 'No category specified';
@@ -1347,47 +1484,107 @@ For detailed implementation guidance, please refer to the specific framework doc
           let currentSection = '';
           let isInRequirementsSection = false;
           
-          guidanceLines.forEach((line, index) => {
+          let inOperationalExcellenceSection = false;
+          
+          guidanceLines.forEach((line) => {
             const cleanLine = line.replace(/\*\*/g, '').trim();
             
             if (cleanLine === '') {
-              if (currentSection) formattedLines.push(''); // Add spacing between sections
+              if (currentSection && !inOperationalExcellenceSection) formattedLines.push(''); 
               return;
             }
             
-            // Skip operational excellence indicators and other non-guidance sections
-            if (cleanLine.includes('OPERATIONAL EXCELLENCE') || 
-                cleanLine.includes('SCORECARD') ||
-                cleanLine.includes('COMPLIANCE ANALYTICS') ||
-                cleanLine.includes('Track these metrics')) {
+            // Mark start of OPERATIONAL EXCELLENCE section to skip everything after
+            if (cleanLine.includes('🎯 OPERATIONAL EXCELLENCE INDICATORS')) {
+              inOperationalExcellenceSection = true;
               return;
             }
             
-            // Look for "UNDERSTANDING THE REQUIREMENTS" section
-            if (cleanLine.includes('UNDERSTANDING THE REQUIREMENTS')) {
+            // Skip everything in operational excellence section for PDF
+            if (inOperationalExcellenceSection) {
+              return;
+            }
+            
+            // For PDF, we want ALL content EXCEPT operational excellence
+            // No filtering of guidance content for PDF
+            
+            // Look for requirement patterns to start processing content
+            if (cleanLine.match(/^[a-z]\)/) || cleanLine.includes('**a)') || isInRequirementsSection) {
               isInRequirementsSection = true;
-              formattedLines.push('IMPLEMENTATION GUIDANCE:');
-              formattedLines.push('');
+            }
+            
+            // Skip the "UNDERSTANDING THE REQUIREMENTS" line but add our header once
+            if (cleanLine.includes('UNDERSTANDING THE REQUIREMENTS')) {
+              if (!formattedLines.some(line => line.includes('IMPLEMENTATION GUIDANCE:'))) {
+                formattedLines.push('IMPLEMENTATION GUIDANCE:');
+                formattedLines.push('');
+                formattedLines.push(''); // Extra spacing after header
+              }
               return;
             }
             
             // Process requirements explanation if we're in the right section
-            if (isInRequirementsSection && cleanLine.length > 10) {
-              // Format subsection headers (a), b), c), etc.)
+            if (isInRequirementsSection && cleanLine.length > 5) {
+              // Format subsection headers (a), b), c), etc.) with proper spacing
               if (cleanLine.match(/^[a-z]\)/)) {
-                formattedLines.push(`${cleanLine}`); // Keep normal case for better readability
+                // Extract letter and title, make title bold
+                const match = cleanLine.match(/^([a-z]\))\s*(.+)$/);
+                if (match && match[2]) {
+                  const letter = match[1];
+                  const title = match[2];
+                  
+                  // Add extra spacing before each new requirement section (except the first one)
+                  if (formattedLines.length > 0 && !formattedLines[formattedLines.length - 1]?.startsWith('IMPLEMENTATION GUIDANCE:')) {
+                    formattedLines.push(''); // Extra blank line before new requirement
+                    formattedLines.push(''); // Second blank line for visual separation
+                  }
+                  
+                  // Split at colon to make only the part before colon bold
+                  if (title?.includes(':')) {
+                    const parts = title.split(':');
+                    formattedLines.push(`${letter} ${parts[0]?.trim() || ''}:${parts.slice(1).join(':')}`);
+                  } else {
+                    formattedLines.push(`${letter} ${title?.trim() || ''}`);
+                  }
+                  formattedLines.push(''); // Add spacing after headers
+                }
               } else {
-                // Regular content with proper formatting
+                // Regular content with proper formatting and line breaks
                 const cleanedContent = ProfessionalGuidanceService.cleanText(cleanLine);
-                if (cleanedContent.length > 20) {
+                if (cleanedContent.length > 10) {  // Reduced threshold to capture more content
+                  // Wrap long content for better readability in PDF
+                  if (cleanedContent.length > 120) {
+                    // Split at logical break points (sentences, but preserve readability)
+                    const words = cleanedContent.split(' ');
+                    let currentLine = '';
+                    
+                    words.forEach(word => {
+                      if ((currentLine + word).length > 100 && currentLine.length > 0) {
+                        formattedLines.push(currentLine.trim());
+                        currentLine = word + ' ';
+                      } else {
+                        currentLine += word + ' ';
+                      }
+                    });
+                    
+                    if (currentLine.trim()) {
+                      formattedLines.push(currentLine.trim());
+                    }
+                    
+                    formattedLines.push(''); // Add spacing after wrapped content
+                  } else {
+                    formattedLines.push(cleanedContent);
+                  }
+                } else if (cleanedContent.length > 0) {
+                  // Include even shorter content to ensure nothing is missed
                   formattedLines.push(cleanedContent);
                 }
               }
             }
           });
           
-          // Join the formatted lines
-          unifiedGuidance = formattedLines.join('\n').trim();
+          // Join the formatted lines and clean markdown formatting
+          unifiedGuidance = cleanMarkdownFormatting(formattedLines.join('\n').trim());
         }
         
         // Fallback if no proper guidance content found
@@ -1453,7 +1650,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         margin: { left: margin, right: margin },
         styles: {
           fontSize: 9,  // Compact font for better fitting
-          cellPadding: { top: 6, right: 4, bottom: 6, left: 4 },  // Compact padding
+          cellPadding: { top: 8, right: 6, bottom: 8, left: 6 },  // Increased padding for better readability
           lineColor: [180, 180, 180],
           lineWidth: 0.5,
           font: 'helvetica',
@@ -1488,11 +1685,13 @@ For detailed implementation guidance, please refer to the specific framework doc
             valign: 'top'
           },
           2: { 
-            cellWidth: 68, // Unified Guidance - largest but contained
+            cellWidth: 58, // Unified Guidance - smaller without operational excellence content
             overflow: 'linebreak', 
-            cellPadding: { top: 8, right: 6, bottom: 8, left: 6 }, 
+            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, // Increased padding for better spacing
             fontSize: 9,
-            valign: 'top'
+            valign: 'top',
+            lineColor: [200, 200, 200],
+            lineWidth: 0.5
           },
           3: { 
             cellWidth: 38, // References - adequate space
@@ -1608,28 +1807,32 @@ For detailed implementation guidance, please refer to the specific framework doc
 
       // Get the final Y position after the table
       const finalY = doc.lastAutoTable?.finalY || startY + 100;
-      return finalY + 10;
+      
+      // Add OPERATIONAL EXCELLENCE INDICATORS as 4-section footer
+      const footerY = finalY + 15;
+      createOperationalExcellenceFooter(doc, footerY, pageWidth, margin);
+      
+      return finalY + 80; // Extra space for footer
     };
 
     // Start categories on page 2 - Add new page after introduction
     doc.addPage();
     let pageNum = 2;
-    currentY = createPremiumHeader(pageNum, estimatedPages);
+    currentY = createPremiumHeader(pageNum);
     
     // Create separate sections for each category with page breaks
     const allData = filteredUnifiedMappings || [];
-    let totalDataPages = allData.length;
     
     allData.forEach((mapping, categoryIndex) => {
       // Add page break before each category (except the first one)
       if (categoryIndex > 0) {
         doc.addPage();
         pageNum++;
-        currentY = createPremiumHeader(pageNum, totalDataPages + 2); // +2 for intro and stats pages
+        currentY = createPremiumHeader(pageNum); // Page number only
       }
       
       // Create a beautiful category section for this single category
-      currentY = createStunningTable([mapping], currentY, pageNum, categoryIndex + 1, allData.length);
+      currentY = createStunningTable([mapping], currentY, categoryIndex + 1, allData.length);
     });
 
     // Add footer to first page
@@ -1645,7 +1848,7 @@ For detailed implementation guidance, please refer to the specific framework doc
     // Add statistics page
     doc.addPage();
     const statsPageNum = totalPages + 1;
-    currentY = createPremiumHeader(statsPageNum, statsPageNum);
+    currentY = createPremiumHeader(statsPageNum);
     
     // STATISTICS AND INSIGHTS PAGE - CLEAN VERSION
     doc.setFillColor(247, 249, 252);
@@ -3652,7 +3855,28 @@ For detailed implementation guidance, please refer to the specific framework doc
                     cleanLine.includes('Primary Requirements:') ||
                     cleanLine.includes('Supporting Requirements:') ||
                     cleanLine.includes('Cross-References:') ||
-                    cleanLine.match(/^\s*[A-Z\d\.]+:\s/)) { // Framework requirement codes like "A.5.1:", "14.1:", etc.
+                    cleanLine.includes('Framework References for Selected Standards:') ||
+                    cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2 Directive):/i) ||
+                    cleanLine.match(/^Art\.\d+(\.\d+)*:/) || // NIS2 articles like "Art.20.1:", "Art.25.1:" etc.
+                    cleanLine.match(/^A\.\d+(\.\d+)*:/) || // ISO codes like "A.5.1:", "A.6.2:", etc.
+                    cleanLine.match(/^\d+\.\d+(\.\d+)?:/) || // All numeric codes like "7.5.1:", "9.3.2:", "14.1:" etc.
+                    cleanLine.match(/^Article \d+:/) || // GDPR articles like "Article 32:"
+                    cleanLine.match(/^Education\.\d+:/) || // Education.1: etc.
+                    cleanLine.match(/^Government\.\d+:/)) { // Government.1: etc.
+                  return null;
+                }
+              }
+              
+              // Track if we've hit OPERATIONAL EXCELLENCE section
+              const isAfterOperationalExcellence = index > 0 && 
+                getGuidanceContent(selectedGuidanceCategory).split('\n')
+                  .slice(0, index)
+                  .some(l => l.includes('🎯 OPERATIONAL EXCELLENCE INDICATORS'));
+              
+              // Hide EVERYTHING after OPERATIONAL EXCELLENCE when toggle is off
+              if (!showOperationalExcellence && isAfterOperationalExcellence) {
+                // Skip the header itself (it gets its own special rendering)
+                if (!cleanLine.includes('🎯 OPERATIONAL EXCELLENCE INDICATORS')) {
                   return null;
                 }
               }
@@ -3661,10 +3885,19 @@ For detailed implementation guidance, please refer to the specific framework doc
               if (cleanLine.includes('🎯 OPERATIONAL EXCELLENCE INDICATORS')) {
                 return (
                   <div key={index} className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 border-2 border-emerald-400 p-6 mb-6 rounded-xl shadow-lg">
-                    <h3 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 mb-2 flex items-center">
-                      <span className="text-3xl mr-3">🎯</span>
-                      OPERATIONAL EXCELLENCE INDICATORS
-                    </h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 flex items-center">
+                        <span className="text-3xl mr-3">🎯</span>
+                        OPERATIONAL EXCELLENCE INDICATORS
+                      </h3>
+                      <button
+                        onClick={() => setShowOperationalExcellence(!showOperationalExcellence)}
+                        className="px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 border border-emerald-300 hover:border-emerald-500 rounded-md transition-colors duration-200 flex items-center gap-1"
+                      >
+                        <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showOperationalExcellence ? 'transform rotate-180' : ''}`} />
+                        {showOperationalExcellence ? 'Hide Details' : 'Show Details'}
+                      </button>
+                    </div>
                     <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
                       Your Compliance Scorecard - Track these metrics to demonstrate audit readiness
                     </p>
@@ -3849,7 +4082,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                 if (subsectionMatch && subsectionMatch[1]) {
                   // Find a better breaking point - look for title that's reasonable length
                   const letterMatch = cleanLine.match(/^([a-z]\))\s+([^.\n]{1,80})/);
-                  if (letterMatch) {
+                  if (letterMatch && letterMatch[2]) {
                     const letter = letterMatch[1];
                     const titleText = letterMatch[2].trim();
                     const remainingText = cleanLine.substring((letter + ' ' + titleText).length);
