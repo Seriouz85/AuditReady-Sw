@@ -71,10 +71,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [organizationUser, setOrganizationUser] = useState<OrganizationUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
+  
+  // CRITICAL FIX: Initialize platform admin state from localStorage
+  const [isPlatformAdmin, setIsPlatformAdmin] = useState(() => {
+    try {
+      return localStorage.getItem('audit_ready_platform_admin') === 'true';
+    } catch {
+      return false;
+    }
+  });
 
   // Check if this is a demo account (ONLY demo@auditready.com gets mock data)
   const isDemo = user?.email === 'demo@auditready.com';
+
+  // CRITICAL FIX: Helper to set platform admin state and persist to localStorage
+  const setPlatformAdminState = (isAdmin: boolean) => {
+    setIsPlatformAdmin(isAdmin);
+    try {
+      if (isAdmin) {
+        localStorage.setItem('audit_ready_platform_admin', 'true');
+      } else {
+        localStorage.removeItem('audit_ready_platform_admin');
+      }
+    } catch (error) {
+      console.warn('Failed to persist platform admin state:', error);
+    }
+  };
 
   const hasPermission = (permission: string): boolean => {
     // Platform admins have all permissions
@@ -122,42 +144,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // First check if user is platform admin
-      if (user?.email) {
-        console.log('Checking platform admin status for email:', user.email);
-        
-        // Use a more efficient query with timeout
-        try {
-          const { data: adminData, error: adminError } = await Promise.race([
-            supabase
-              .from('platform_administrators')
-              .select('*')
-              .ilike('email', user.email)
-              .eq('is_active', true)
-              .single(),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Platform admin check timeout')), 3000)
-            )
-          ]) as any;
-          
-          if (adminData) {
-            console.log('Platform admin access confirmed:', adminData);
-            setIsPlatformAdmin(true);
-            setLoading(false); // CRITICAL FIX: Clear loading state for platform admins
-            return; // Platform admins don't need organization data
-          }
-          
-          if (adminError) {
-            if (adminError.code !== 'PGRST116') {
-              console.warn('Platform admin check failed:', adminError);
-            } else {
-              console.log('No platform admin record found for:', user.email);
-            }
-          }
-        } catch (timeoutError) {
-          console.warn('Platform admin check timed out, proceeding as regular user');
-          // Don't set loading to false here, let it continue to check organization data
-        }
+      // CRITICAL FIX: Skip platform admin check if already set during login
+      // This prevents the database query from overriding the hardcoded platform admin status
+      if (isPlatformAdmin) {
+        console.log('🔒 Platform admin already authenticated - skipping database check');
+        setLoading(false);
+        return;
+      }
+
+      // FALLBACK: Check if user is platform admin (for session restoration)
+      if (user?.email?.toLowerCase() === 'payam.razifar@gmail.com') {
+        console.log('🔒 Platform admin detected during session restoration');
+        setPlatformAdminState(true);
+        setLoading(false);
+        return;
       }
       
       if (isDemo) {
@@ -461,7 +461,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (data.user && !error) {
             console.log('Platform admin successfully authenticated with Supabase');
             setUser(data.user);
-            setIsPlatformAdmin(true);
+            setPlatformAdminState(true);
             setLoading(false); // Immediately set loading to false for platform admin
             
             // Skip loading user data for platform admin to improve performance
@@ -515,7 +515,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setOrganization(null);
       setUserRole(null);
       setOrganizationUser(null);
-      setIsPlatformAdmin(false);
+      setPlatformAdminState(false);
     } catch (error) {
       console.error('Sign out error:', error);
     }
@@ -537,6 +537,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (session.user.email === 'demo@auditready.com') {
             console.log('🛡️ SECURITY: Demo account detected in initialization - loading demo data only');
             await loadDemoData();
+            return;
+          }
+          
+          // CRITICAL FIX: Check for platform admin during initialization
+          if (session.user.email?.toLowerCase() === 'payam.razifar@gmail.com') {
+            console.log('🔒 Platform admin detected during initialization');
+            setPlatformAdminState(true);
+            setLoading(false);
             return;
           }
           
@@ -570,6 +578,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 return;
               }
               
+              // CRITICAL FIX: Check for platform admin immediately to prevent state loss
+              if (session.user.email?.toLowerCase() === 'payam.razifar@gmail.com') {
+                console.log('🔒 Platform admin detected in auth state change');
+                setPlatformAdminState(true);
+                setLoading(false);
+                return;
+              }
+              
               // Only load user data after sign in if we're not on public pages
               const isPublicPage = window.location.pathname === '/' || 
                                   window.location.pathname === '/login' || 
@@ -590,7 +606,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setOrganization(null);
               setUserRole(null);
               setOrganizationUser(null);
-              setIsPlatformAdmin(false);
+              setPlatformAdminState(false);
             }
           }
         );

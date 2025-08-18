@@ -42,6 +42,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { KnowledgeIngestionService } from '@/services/rag/KnowledgeIngestionService';
 import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
+import { ComprehensiveGuidanceService } from '@/services/rag/ComprehensiveGuidanceService';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Real types based on your actual database schema
@@ -113,6 +114,9 @@ export default function RealAIMappingDashboard() {
   
   // Sub-requirements editing focus
   const [editingSubRequirements, setEditingSubRequirements] = useState(false);
+  const [categoryGuidances, setCategoryGuidances] = useState<any[]>([]);
+  const [selectedCategoryGuidance, setSelectedCategoryGuidance] = useState<any | null>(null);
+  const [validationReport, setValidationReport] = useState<any>(null);
 
   // Load real data from your database
   useEffect(() => {
