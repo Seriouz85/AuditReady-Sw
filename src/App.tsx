@@ -70,7 +70,7 @@ const OrganizationDetail = lazy(() => import("./pages/admin/organizations/Organi
 const UserManagement = lazy(() => import("./pages/admin/users/UserManagement").then(m => ({ default: m.UserManagement })));
 const SystemSettings = lazy(() => import("./pages/admin/system/SystemSettings").then(m => ({ default: m.SystemSettings })));
 const ComplianceManagement = lazy(() => import("./pages/admin/compliance/ComplianceManagement"));
-const SemanticMappingAdmin = lazy(() => import("./pages/admin/semantic-mapping/SemanticMappingAdmin"));
+const RealAIMappingDashboard = lazy(() => import("./pages/admin/RealAIMappingDashboard"));
 const AIContentManagementPage = lazy(() => import("./pages/admin/ai-content/AIContentManagementPage"));
 import EntraCallbackPage from "./pages/auth/EntraCallbackPage";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -675,7 +675,17 @@ const App = () => {
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
                         <Suspense fallback={<AdminLoadingSpinner />}>
-                          <SemanticMappingAdmin />
+                          <RealAIMappingDashboard />
+                        </Suspense>
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/realaimappingdashboard" 
+                    element={
+                      <ProtectedRoute requiredPermission="platform_admin">
+                        <Suspense fallback={<AdminLoadingSpinner />}>
+                          <RealAIMappingDashboard />
                         </Suspense>
                       </ProtectedRoute>
                     } 

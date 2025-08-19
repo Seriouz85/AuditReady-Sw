@@ -43,6 +43,7 @@ import { supabase } from '@/lib/supabase';
 import { KnowledgeIngestionService } from '@/services/rag/KnowledgeIngestionService';
 import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
 import { ComprehensiveGuidanceService } from '@/services/rag/ComprehensiveGuidanceService';
+import { SubGuidanceGenerationService, SubGuidanceItem, SubGuidanceResult } from '@/services/rag/SubGuidanceGenerationService';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Real types based on your actual database schema
@@ -117,11 +118,37 @@ export default function RealAIMappingDashboard() {
   const [categoryGuidances, setCategoryGuidances] = useState<any[]>([]);
   const [selectedCategoryGuidance, setSelectedCategoryGuidance] = useState<any | null>(null);
   const [validationReport, setValidationReport] = useState<any>(null);
+  
+  // PHASE 2: URL Processing and Sub-guidance Generation
+  const [url1, setUrl1] = useState('');
+  const [url2, setUrl2] = useState('');
+  const [url3, setUrl3] = useState('');
+  const [isProcessingUrls, setIsProcessingUrls] = useState(false);
+  const [urlProcessingProgress, setUrlProcessingProgress] = useState(0);
+  const [subGuidanceItems, setSubGuidanceItems] = useState<SubGuidanceItem[]>([]);
+  const [subGuidanceResult, setSubGuidanceResult] = useState<SubGuidanceResult | null>(null);
+
+  // PHASE 3: Admin Review and Approval Workflow
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const [editReason, setEditReason] = useState('');
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [reviewComment, setReviewComment] = useState('');
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+  const [approvalAction, setApprovalAction] = useState<'approve' | 'reject' | null>(null);
+  const [isProcessingApproval, setIsProcessingApproval] = useState(false);
 
   // Load real data from your database
   useEffect(() => {
     loadRealData();
   }, [organization]);
+
+  // Load sub-guidance when category changes
+  useEffect(() => {
+    if (activeCategory && organization) {
+      loadSubGuidanceForReview();
+    }
+  }, [activeCategory?.id, organization?.id]);
 
   const loadRealData = async () => {
     setLoading(true);
@@ -297,6 +324,289 @@ export default function RealAIMappingDashboard() {
       console.error('Error generating guidance:', error);
     } finally {
       setIsGeneratingGuidance(false);
+    }
+  };
+
+  /**
+   * 🚀 PHASE 2: Process URLs and generate sub-guidance items
+   */
+  const handleProcessUrls = async () => {
+    if (!activeCategory || !organization) {
+      console.warn('No active category or organization selected');
+      return;
+    }
+
+    // Collect non-empty URLs
+    const urls = [url1, url2, url3].filter(url => url.trim().length > 0);
+    if (urls.length === 0) {
+      console.warn('No URLs provided for processing');
+      return;
+    }
+
+    // Get unified requirement from selected category guidance or create one
+    const unifiedRequirement = selectedCategoryGuidance?.comprehensive_guidance 
+      || `Implement comprehensive ${activeCategory.name.toLowerCase()} controls and procedures to ensure organizational compliance and security. Address all aspects including policy development, implementation procedures, monitoring mechanisms, and continuous improvement processes.`;
+
+    setIsProcessingUrls(true);
+    setUrlProcessingProgress(0);
+    setSubGuidanceResult(null);
+
+    try {
+      console.log('🚀 Starting URL processing for sub-guidance generation');
+      console.log('Category:', activeCategory.name);
+      console.log('URLs:', urls);
+      console.log('Unified requirement:', unifiedRequirement.slice(0, 200) + '...');
+
+      const result = await SubGuidanceGenerationService.generateSubGuidanceFromUrls(
+        {
+          categoryId: activeCategory.id,
+          categoryName: activeCategory.name,
+          unifiedRequirement,
+          authoritativeUrls: urls,
+          organizationId: organization.id
+        },
+        {
+          onProgress: (progress, message) => {
+            setUrlProcessingProgress(progress);
+            console.log(`📊 Progress: ${progress}% - ${message}`);
+          },
+          maxSubItems: 6
+        }
+      );
+
+      setSubGuidanceResult(result);
+
+      if (result.success) {
+        setSubGuidanceItems(result.subGuidanceItems);
+        console.log('✅ Sub-guidance generation completed successfully');
+        console.log('Generated items:', result.subGuidanceItems.length);
+        
+        // Store the results in database for persistence
+        if (result.subGuidanceItems.length > 0) {
+          await SubGuidanceGenerationService.storeSubGuidance(
+            organization.id,
+            activeCategory.id,
+            result.subGuidanceItems
+          );
+        }
+      } else {
+        console.error('❌ Sub-guidance generation failed:', result.error);
+      }
+
+    } catch (error) {
+      console.error('Error processing URLs:', error);
+      setSubGuidanceResult({
+        success: false,
+        subGuidanceItems: [],
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
+    } finally {
+      setIsProcessingUrls(false);
+      setUrlProcessingProgress(0);
+    }
+  };
+
+  /**
+   * 🔄 PHASE 3: Load existing sub-guidance for review
+   */
+  const loadSubGuidanceForReview = async () => {
+    if (!activeCategory || !organization) return;
+
+    try {
+      const items = await SubGuidanceGenerationService.loadSubGuidanceForReview(
+        organization.id,
+        activeCategory.id
+      );
+      
+      if (items.length > 0) {
+        setSubGuidanceItems(items);
+        console.log(`✅ Loaded ${items.length} sub-guidance items for review`);
+      }
+    } catch (error) {
+      console.error('Error loading sub-guidance for review:', error);
+    }
+  };
+
+  /**
+   * ✏️ Start editing a sub-guidance item
+   */
+  const handleStartEdit = (item: SubGuidanceItem) => {
+    setEditingItemId(item.id);
+    setEditContent(item.content);
+    setEditReason('');
+  };
+
+  /**
+   * 💾 Save edited sub-guidance item
+   */
+  const handleSaveEdit = async () => {
+    if (!editingItemId || !activeCategory || !organization || !user) return;
+
+    try {
+      const result = await SubGuidanceGenerationService.editSubGuidanceItem(
+        organization.id,
+        activeCategory.id,
+        editingItemId,
+        editContent,
+        user.id,
+        user.user_metadata?.full_name || user.email || 'Unknown User',
+        editReason
+      );
+
+      if (result.success) {
+        // Reload sub-guidance items
+        await loadSubGuidanceForReview();
+        
+        // Reset edit state
+        setEditingItemId(null);
+        setEditContent('');
+        setEditReason('');
+        
+        console.log('✅ Sub-guidance item edited successfully');
+      } else {
+        console.error('❌ Edit failed:', result.error);
+        alert(`Edit failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error saving edit:', error);
+      alert('An error occurred while saving the edit');
+    }
+  };
+
+  /**
+   * ❌ Cancel editing
+   */
+  const handleCancelEdit = () => {
+    setEditingItemId(null);
+    setEditContent('');
+    setEditReason('');
+  };
+
+  /**
+   * ✅ Approve individual sub-guidance item
+   */
+  const handleApproveItem = async (itemId: string) => {
+    if (!activeCategory || !organization || !user) return;
+
+    setIsProcessingApproval(true);
+    try {
+      const result = await SubGuidanceGenerationService.approveSubGuidanceItem(
+        organization.id,
+        activeCategory.id,
+        itemId,
+        user.id,
+        user.user_metadata?.full_name || user.email || 'Unknown Reviewer',
+        reviewComment
+      );
+
+      if (result.success) {
+        await loadSubGuidanceForReview();
+        setReviewComment('');
+        console.log('✅ Item approved successfully');
+      } else {
+        console.error('❌ Approval failed:', result.error);
+        alert(`Approval failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error approving item:', error);
+      alert('An error occurred during approval');
+    } finally {
+      setIsProcessingApproval(false);
+    }
+  };
+
+  /**
+   * ❌ Reject individual sub-guidance item
+   */
+  const handleRejectItem = async (itemId: string, comments: string) => {
+    if (!activeCategory || !organization || !user) return;
+
+    setIsProcessingApproval(true);
+    try {
+      const result = await SubGuidanceGenerationService.rejectSubGuidanceItem(
+        organization.id,
+        activeCategory.id,
+        itemId,
+        user.id,
+        user.user_metadata?.full_name || user.email || 'Unknown Reviewer',
+        comments
+      );
+
+      if (result.success) {
+        await loadSubGuidanceForReview();
+        setReviewComment('');
+        console.log('✅ Item rejected successfully');
+      } else {
+        console.error('❌ Rejection failed:', result.error);
+        alert(`Rejection failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error rejecting item:', error);
+      alert('An error occurred during rejection');
+    } finally {
+      setIsProcessingApproval(false);
+    }
+  };
+
+  /**
+   * 📦 Bulk approve selected items
+   */
+  const handleBulkApprove = async () => {
+    if (selectedItems.length === 0 || !activeCategory || !organization || !user) return;
+
+    setIsProcessingApproval(true);
+    try {
+      const result = await SubGuidanceGenerationService.bulkApproveSubGuidanceItems(
+        organization.id,
+        activeCategory.id,
+        selectedItems,
+        user.id,
+        user.user_metadata?.full_name || user.email || 'Unknown Reviewer',
+        reviewComment
+      );
+
+      if (result.success) {
+        await loadSubGuidanceForReview();
+        setSelectedItems([]);
+        setReviewComment('');
+        setShowApprovalDialog(false);
+        console.log(`✅ Bulk approval completed: ${result.approved} items approved`);
+      } else {
+        console.error('❌ Bulk approval failed:', result.error);
+        alert(`Bulk approval failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error in bulk approval:', error);
+      alert('An error occurred during bulk approval');
+    } finally {
+      setIsProcessingApproval(false);
+    }
+  };
+
+  /**
+   * 🔄 Submit items for review
+   */
+  const handleSubmitForReview = async () => {
+    if (selectedItems.length === 0 || !activeCategory || !organization) return;
+
+    try {
+      const result = await SubGuidanceGenerationService.submitForReview(
+        organization.id,
+        activeCategory.id,
+        selectedItems
+      );
+
+      if (result.success) {
+        await loadSubGuidanceForReview();
+        setSelectedItems([]);
+        console.log('✅ Items submitted for review');
+      } else {
+        console.error('❌ Submit for review failed:', result.error);
+        alert(`Submit for review failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error submitting for review:', error);
+      alert('An error occurred while submitting for review');
     }
   };
 
@@ -755,6 +1065,8 @@ export default function RealAIMappingDashboard() {
                       <input
                         type="url"
                         placeholder="https://www.nist.gov/cybersecurity-framework"
+                        value={url1}
+                        onChange={(e) => setUrl1(e.target.value)}
                         className="flex-1 px-4 py-2 bg-black/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 text-sm"
                       />
                     </div>
@@ -766,6 +1078,8 @@ export default function RealAIMappingDashboard() {
                       <input
                         type="url"
                         placeholder="https://csrc.nist.gov/publications/detail/sp/800-53"
+                        value={url2}
+                        onChange={(e) => setUrl2(e.target.value)}
                         className="flex-1 px-4 py-2 bg-black/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 text-sm"
                       />
                     </div>
@@ -777,10 +1091,49 @@ export default function RealAIMappingDashboard() {
                       <input
                         type="url"
                         placeholder="https://www.cisa.gov/cybersecurity-best-practices"
+                        value={url3}
+                        onChange={(e) => setUrl3(e.target.value)}
                         className="flex-1 px-4 py-2 bg-black/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 text-sm"
                       />
                     </div>
                   </div>
+                  
+                  {/* Process URLs Button */}
+                  <div className="mt-4">
+                    <Button
+                      onClick={handleProcessUrls}
+                      disabled={isProcessingUrls || !activeCategory || [url1, url2, url3].filter(url => url.trim()).length === 0}
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
+                    >
+                      {isProcessingUrls ? (
+                        <div className="flex items-center gap-2">
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          Processing URLs... ({urlProcessingProgress}%)
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Zap className="w-4 h-4" />
+                          Generate Sub-Guidance from URLs
+                        </div>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* URL Processing Progress */}
+                  {isProcessingUrls && (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between text-xs text-purple-300 mb-1">
+                        <span>Processing Progress</span>
+                        <span>{urlProcessingProgress}%</span>
+                      </div>
+                      <div className="w-full bg-purple-900/30 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${urlProcessingProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* URL Processing Status */}
                   <div className="mt-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
@@ -791,9 +1144,29 @@ export default function RealAIMappingDashboard() {
                   </div>
                   
                   {/* Processing Status */}
-                  <div className="mt-3 flex items-center gap-2 text-xs text-purple-300">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span>Ready to process authoritative sources</span>
+                  <div className="mt-3 flex items-center gap-2 text-xs">
+                    {subGuidanceResult ? (
+                      subGuidanceResult.success ? (
+                        <>
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span className="text-green-300">
+                            ✅ Generated {subGuidanceItems.length} sub-guidance items
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                          <span className="text-red-300">❌ Processing failed: {subGuidanceResult.error}</span>
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                        <span className="text-purple-300">
+                          {activeCategory ? 'Ready to process URLs for sub-guidance' : 'Select a category first'}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -966,6 +1339,316 @@ export default function RealAIMappingDashboard() {
                     </div>
                   </div>
                   ) : null}
+
+                  {/* Sub-Guidance Items Viewer */}
+                  {subGuidanceItems.length > 0 && (
+                    <div className="relative group mt-6">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                      <div className="relative bg-black/60 backdrop-blur-xl border border-green-500/20 rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                              <Target className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold text-white">Sub-Guidance Items (a, b, c...)</h3>
+                              <p className="text-xs text-green-300">
+                                {subGuidanceItems.length} items • 8-10 lines each • Generated from {[url1, url2, url3].filter(url => url.trim()).length} URLs
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {/* Validation Report Summary */}
+                          {subGuidanceResult?.validationReport && (
+                            <div className="flex gap-2">
+                              <div className="text-center p-2 bg-black/40 rounded-lg border border-green-500/10">
+                                <div className="text-sm font-bold text-white">
+                                  {subGuidanceResult.validationReport.qualityScore}%
+                                </div>
+                                <div className="text-xs text-green-300">Quality</div>
+                              </div>
+                              <div className="text-center p-2 bg-black/40 rounded-lg border border-green-500/10">
+                                <div className="text-sm font-bold text-white">
+                                  {subGuidanceResult.validationReport.lineCountCompliance ? '✅' : '⚠️'}
+                                </div>
+                                <div className="text-xs text-green-300">Lines</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Bulk Actions Header */}
+                        <div className="mb-4 p-3 bg-black/40 rounded-xl border border-green-500/10">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <input
+                                type="checkbox"
+                                checked={selectedItems.length === subGuidanceItems.length && subGuidanceItems.length > 0}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedItems(subGuidanceItems.map(item => item.id));
+                                  } else {
+                                    setSelectedItems([]);
+                                  }
+                                }}
+                                className="w-4 h-4 text-green-600 bg-black border-green-500/30 rounded focus:ring-green-500"
+                              />
+                              <span className="text-sm text-green-300">
+                                {selectedItems.length > 0 
+                                  ? `${selectedItems.length} selected` 
+                                  : 'Select all'
+                                }
+                              </span>
+                            </div>
+                            
+                            {selectedItems.length > 0 && (
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={handleSubmitForReview}
+                                  className="bg-blue-500/20 border border-blue-400/30 text-blue-200 hover:bg-blue-500/30"
+                                >
+                                  <Upload className="w-3 h-3 mr-1" />
+                                  Submit for Review
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => {
+                                    setApprovalAction('approve');
+                                    setShowApprovalDialog(true);
+                                  }}
+                                  disabled={isProcessingApproval}
+                                  className="bg-green-500/20 border border-green-400/30 text-green-200 hover:bg-green-500/30"
+                                >
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Bulk Approve
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Sub-Guidance Items Grid */}
+                        <div className="space-y-4 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-green-500/50">
+                          {subGuidanceItems.map((item, index) => {
+                            const lines = item.content.split('\n').filter(line => line.trim().length > 0);
+                            const isCompliant = lines.length >= 8 && lines.length <= 10;
+                            const isEditing = editingItemId === item.id;
+                            const isSelected = selectedItems.includes(item.id);
+                            
+                            const getStatusColor = (status?: string) => {
+                              switch (status) {
+                                case 'approved': return 'border-green-500/40 bg-green-500/5';
+                                case 'rejected': return 'border-red-500/40 bg-red-500/5';
+                                case 'pending_review': return 'border-blue-500/40 bg-blue-500/5';
+                                case 'needs_revision': return 'border-orange-500/40 bg-orange-500/5';
+                                default: return isCompliant 
+                                  ? 'border-green-500/20 hover:border-green-500/40' 
+                                  : 'border-yellow-500/20 hover:border-yellow-500/40';
+                              }
+                            };
+                            
+                            return (
+                              <div key={item.id} className="relative group">
+                                <div className={`relative border rounded-xl p-4 transition-all duration-300 ${
+                                  isSelected ? 'border-purple-500/60 bg-purple-500/10' : getStatusColor(item.status)
+                                }`}>
+                                  <div className="flex items-start gap-3">
+                                    {/* Selection Checkbox */}
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setSelectedItems([...selectedItems, item.id]);
+                                        } else {
+                                          setSelectedItems(selectedItems.filter(id => id !== item.id));
+                                        }
+                                      }}
+                                      className="mt-1 w-4 h-4 text-purple-600 bg-black border-purple-500/30 rounded focus:ring-purple-500"
+                                    />
+
+                                    {/* Label Badge */}
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg ${
+                                      item.status === 'approved' ? 'bg-gradient-to-r from-green-500 to-emerald-600' :
+                                      item.status === 'rejected' ? 'bg-gradient-to-r from-red-500 to-red-600' :
+                                      item.status === 'pending_review' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                                      item.status === 'needs_revision' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
+                                      isCompliant 
+                                        ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                                        : 'bg-gradient-to-r from-yellow-500 to-orange-600'
+                                    }`}>
+                                      <span className="text-white text-sm font-bold">{item.label}</span>
+                                    </div>
+                                    
+                                    <div className="flex-1">
+                                      {/* Status Badge */}
+                                      {item.status && (
+                                        <div className="mb-2">
+                                          <Badge className={`text-xs ${
+                                            item.status === 'approved' ? 'bg-green-500/20 text-green-200 border-green-400/30' :
+                                            item.status === 'rejected' ? 'bg-red-500/20 text-red-200 border-red-400/30' :
+                                            item.status === 'pending_review' ? 'bg-blue-500/20 text-blue-200 border-blue-400/30' :
+                                            item.status === 'needs_revision' ? 'bg-orange-500/20 text-orange-200 border-orange-400/30' :
+                                            'bg-gray-500/20 text-gray-200 border-gray-400/30'
+                                          }`}>
+                                            {item.status.replace('_', ' ').toUpperCase()}
+                                          </Badge>
+                                        </div>
+                                      )}
+
+                                      {/* Content Editor or Display */}
+                                      <div className="mb-3">
+                                        {isEditing ? (
+                                          <div className="space-y-3">
+                                            <textarea
+                                              value={editContent}
+                                              onChange={(e) => setEditContent(e.target.value)}
+                                              rows={10}
+                                              className="w-full px-3 py-2 bg-black/50 border border-gray-500/30 rounded text-gray-200 text-sm resize-none focus:outline-none focus:border-purple-400"
+                                              placeholder="Edit sub-guidance content (8-10 lines)..."
+                                            />
+                                            <input
+                                              type="text"
+                                              value={editReason}
+                                              onChange={(e) => setEditReason(e.target.value)}
+                                              placeholder="Reason for edit..."
+                                              className="w-full px-3 py-2 bg-black/50 border border-gray-500/30 rounded text-gray-200 text-xs focus:outline-none focus:border-purple-400"
+                                            />
+                                            <div className="flex gap-2">
+                                              <Button 
+                                                size="sm" 
+                                                onClick={handleSaveEdit}
+                                                className="bg-green-500/20 border border-green-400/30 text-green-200"
+                                              >
+                                                <CheckCircle className="w-3 h-3 mr-1" />
+                                                Save
+                                              </Button>
+                                              <Button 
+                                                size="sm" 
+                                                onClick={handleCancelEdit}
+                                                className="bg-red-500/20 border border-red-400/30 text-red-200"
+                                              >
+                                                <X className="w-3 h-3 mr-1" />
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <div className="text-sm leading-relaxed text-gray-200 whitespace-pre-line">
+                                            {item.content}
+                                          </div>
+                                        )}
+                                      </div>
+                                      
+                                      {/* Review Comments */}
+                                      {item.reviewComments && (
+                                        <div className="mb-3 p-2 bg-black/40 rounded border border-gray-500/20">
+                                          <div className="text-xs text-gray-400 mb-1">
+                                            Review by {item.reviewerName} on {item.reviewedAt ? new Date(item.reviewedAt).toLocaleDateString() : 'Unknown date'}
+                                          </div>
+                                          <div className="text-xs text-gray-300">{item.reviewComments}</div>
+                                        </div>
+                                      )}
+
+                                      <div className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-4">
+                                          <span className={`${isCompliant ? 'text-green-300' : 'text-yellow-300'}`}>
+                                            {lines.length} lines {isCompliant ? '✅' : '⚠️'}
+                                          </span>
+                                          <span className="text-gray-400">
+                                            Confidence: {Math.round(item.confidence * 100)}%
+                                          </span>
+                                          {item.revisionHistory && item.revisionHistory.length > 0 && (
+                                            <span className="text-blue-300">
+                                              {item.revisionHistory.length} revision{item.revisionHistory.length !== 1 ? 's' : ''}
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <Globe className="w-3 h-3 text-blue-400" />
+                                          <span className="text-blue-300">{item.sources.length} sources</span>
+                                        </div>
+                                      </div>
+
+                                      {/* Individual Action Buttons */}
+                                      {!isEditing && (
+                                        <div className="mt-3 flex gap-2">
+                                          <Button 
+                                            size="sm" 
+                                            onClick={() => handleStartEdit(item)}
+                                            className="bg-blue-500/20 border border-blue-400/30 text-blue-200 hover:bg-blue-500/30"
+                                          >
+                                            <Edit className="w-3 h-3 mr-1" />
+                                            Edit
+                                          </Button>
+                                          
+                                          {item.status !== 'approved' && (
+                                            <Button 
+                                              size="sm" 
+                                              onClick={() => handleApproveItem(item.id)}
+                                              disabled={isProcessingApproval}
+                                              className="bg-green-500/20 border border-green-400/30 text-green-200 hover:bg-green-500/30"
+                                            >
+                                              <CheckCircle className="w-3 h-3 mr-1" />
+                                              Approve
+                                            </Button>
+                                          )}
+                                          
+                                          {item.status !== 'rejected' && (
+                                            <Button 
+                                              size="sm" 
+                                              onClick={() => {
+                                                const comments = prompt('Enter rejection reason:');
+                                                if (comments) handleRejectItem(item.id, comments);
+                                              }}
+                                              disabled={isProcessingApproval}
+                                              className="bg-red-500/20 border border-red-400/30 text-red-200 hover:bg-red-500/30"
+                                            >
+                                              <X className="w-3 h-3 mr-1" />
+                                              Reject
+                                            </Button>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Summary Action Buttons */}
+                        <div className="mt-6 pt-4 border-t border-green-500/10">
+                          <div className="flex justify-between items-center">
+                            <div className="text-sm text-green-300">
+                              {subGuidanceItems.filter(item => item.status === 'approved').length} approved • {' '}
+                              {subGuidanceItems.filter(item => item.status === 'pending_review').length} pending • {' '}
+                              {subGuidanceItems.filter(item => item.status === 'draft').length} draft
+                            </div>
+                            <div className="flex gap-3">
+                              <Button 
+                                size="sm" 
+                                onClick={() => loadSubGuidanceForReview()}
+                                className="bg-gradient-to-r from-blue-500/20 to-blue-500/20 border border-blue-400/30 text-blue-200 hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-blue-500/30"
+                              >
+                                <RefreshCw className="w-3 h-3 mr-1" />
+                                Refresh
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/30 text-green-200 hover:bg-gradient-to-r hover:from-green-500/30 hover:to-emerald-500/30"
+                              >
+                                <Download className="w-3 h-3 mr-1" />
+                                Export Results
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="relative group">
@@ -990,6 +1673,89 @@ export default function RealAIMappingDashboard() {
           </div>
         </div>
       </div>
+
+      {/* PHASE 3: Bulk Approval Dialog */}
+      {showApprovalDialog && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="relative bg-black/90 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-20"></div>
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  {approvalAction === 'approve' ? (
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5 text-white" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">
+                    {approvalAction === 'approve' ? 'Bulk Approve Items' : 'Bulk Reject Items'}
+                  </h3>
+                  <p className="text-xs text-gray-300">
+                    {selectedItems.length} items selected
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm text-gray-300 mb-2">
+                  Review Comments {approvalAction === 'reject' ? '(Required)' : '(Optional)'}
+                </label>
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 bg-black/50 border border-purple-500/30 rounded text-gray-200 text-sm resize-none focus:outline-none focus:border-purple-400"
+                  placeholder={
+                    approvalAction === 'approve' 
+                      ? 'Add any approval comments...' 
+                      : 'Explain why these items are being rejected...'
+                  }
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setShowApprovalDialog(false);
+                    setReviewComment('');
+                    setApprovalAction(null);
+                  }}
+                  className="flex-1 bg-gray-500/20 border border-gray-400/30 text-gray-200 hover:bg-gray-500/30"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleBulkApprove}
+                  disabled={isProcessingApproval || (approvalAction === 'reject' && !reviewComment.trim())}
+                  className={`flex-1 ${
+                    approvalAction === 'approve' 
+                      ? 'bg-green-500/20 border border-green-400/30 text-green-200 hover:bg-green-500/30'
+                      : 'bg-red-500/20 border border-red-400/30 text-red-200 hover:bg-red-500/30'
+                  }`}
+                >
+                  {isProcessingApproval ? (
+                    <div className="flex items-center gap-2">
+                      <RefreshCw className="w-3 h-3 animate-spin" />
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      {approvalAction === 'approve' ? (
+                        <CheckCircle className="w-3 h-3" />
+                      ) : (
+                        <X className="w-3 h-3" />
+                      )}
+                      {approvalAction === 'approve' ? 'Approve All' : 'Reject All'}
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

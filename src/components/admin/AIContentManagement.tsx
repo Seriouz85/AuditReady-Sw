@@ -395,7 +395,7 @@ export function AIContentManagement() {
   }, [loadAdminData]);
 
   // Access control
-  const isPlatformAdmin = user?.email === 'platform@auditready.com' || process.env['NODE_ENV'] === 'development';
+  const isPlatformAdmin = user?.email === 'platform@auditready.com' || import.meta.env.MODE === 'development';
   
   if (!isPlatformAdmin) {
     return (

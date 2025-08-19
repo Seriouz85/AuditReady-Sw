@@ -35,7 +35,7 @@ export const AdminNavigation: React.FC = () => {
     { to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
     { to: '/admin/compliance', icon: <BookOpen size={20} />, label: 'Compliance' },
     { to: '/admin/ai-content', icon: <Zap size={20} />, label: 'AI Content', badge: 'NEW' },
-    { to: '/admin/semantic-mapping', icon: <Brain size={20} />, label: 'AI Mapping' },
+    { to: '/admin/realaimappingdashboard', icon: <Brain size={20} />, label: 'AI Mapping' },
     { to: '/admin/system', icon: <Settings size={20} />, label: 'System' },
     { to: '/admin/logs', icon: <Activity size={20} />, label: 'Audit Logs' },
   ];
@@ -87,12 +87,12 @@ export const AdminNavigation: React.FC = () => {
         })}
       </nav>
 
-      {/* Return to App */}
+      {/* Return to Admin Console */}
       <div className="absolute bottom-6 left-4 right-4">
-        <Link to="/app">
-          <Button variant="outline" className="w-full justify-start gap-3 border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800">
-            <ArrowLeft size={16} />
-            <span>Back to App</span>
+        <Link to="/admin">
+          <Button className="w-full justify-start gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg transition-all duration-300 group">
+            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
+            <span className="font-semibold">Back to Admin Console</span>
           </Button>
         </Link>
       </div>
