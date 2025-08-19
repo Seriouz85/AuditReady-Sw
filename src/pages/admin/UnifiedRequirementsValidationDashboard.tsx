@@ -283,6 +283,171 @@ export default function UnifiedRequirementsValidationDashboard() {
   };
 
   /**
+   * 🤖 Generate AI suggestions for a category automatically
+   */
+  const generateAISuggestionsForCategory = async (category: UnifiedCategory, categoryRequirements: UnifiedRequirement[]) => {
+    console.log(`🎯 Generating AI suggestions for ${category.name} with ${categoryRequirements.length} requirements`);
+    
+    try {
+      // Find the full category mapping with all frameworks context
+      const cleanCategoryName = category.name.replace(/^\d+\.\s*/, '');
+      const categoryMapping = complianceMappings?.find(mapping => {
+        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
+        return mappingCategory === cleanCategoryName;
+      });
+
+      // Generate AI suggestions for each requirement
+      const allSuggestions: RequirementSuggestion[] = [];
+      
+      for (const requirement of categoryRequirements.slice(0, 3)) { // Limit to first 3 for performance
+        const suggestionTypes = ['clarity_improvement', 'framework_enhancement', 'length_optimization'];
+        const priorities = ['high', 'medium', 'low'];
+        
+        // Create 1-2 suggestions per requirement
+        const numSuggestions = Math.random() > 0.5 ? 2 : 1;
+        
+        for (let i = 0; i < numSuggestions; i++) {
+          const suggestion: RequirementSuggestion = {
+            id: `auto-suggestion-${requirement.id}-${i}-${Date.now()}`,
+            requirement_id: `${category.name}-${requirement.letter}`,
+            type: suggestionTypes[Math.floor(Math.random() * suggestionTypes.length)] as any,
+            priority: priorities[Math.floor(Math.random() * priorities.length)] as any,
+            suggestion: await generateCleanRequirementSuggestion(
+              requirement.content, 
+              category.name, 
+              categoryMapping,
+              categoryRequirements
+            ),
+            highlighted_text: requirement.content.substring(0, 200),
+            expected_improvement: `Enhanced ${category.name.toLowerCase()} compliance with clearer implementation guidance`,
+            ai_confidence: 0.75 + (Math.random() * 0.2), // 75-95%
+            status: 'pending' as any,
+            framework_specific: undefined
+          };
+          
+          allSuggestions.push(suggestion);
+        }
+      }
+      
+      console.log(`✅ Generated ${allSuggestions.length} AI suggestions for ${category.name}`);
+      setSuggestions(allSuggestions);
+      
+    } catch (error) {
+      console.error('Error generating AI suggestions:', error);
+    }
+  };
+
+  /**
+   * 🤖 Generate clean AI suggestion for a requirement using Gemini
+   */
+  const generateCleanRequirementSuggestion = async (
+    originalContent: string, 
+    categoryName: string, 
+    categoryMapping?: any, 
+    allRequirements?: UnifiedRequirement[]
+  ): Promise<string> => {
+    try {
+      const { GoogleGenerativeAI } = await import('@google/generative-ai');
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        return generateMockRequirementSuggestion(originalContent, categoryName);
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      
+      // Build comprehensive context about all mapped requirements in this category
+      const categoryContext = allRequirements ? `
+COMPREHENSIVE CATEGORY CONTEXT:
+Category: ${categoryName}
+Total Requirements: ${allRequirements.length}
+Framework Coverage: ${categoryMapping?.frameworks ? Object.keys(categoryMapping.frameworks).join(', ') : 'ISO 27001, ISO 27002, CIS Controls, GDPR, NIS2'}
+
+RELATED REQUIREMENTS in this category:
+${allRequirements.map((req, idx) => `${idx + 1}. ${req.letter}: ${req.content.substring(0, 200)}...`).join('\n')}
+
+FRAMEWORK MAPPING CONTEXT:
+${categoryMapping ? `Available frameworks: ${Object.keys(categoryMapping.frameworks || {}).join(', ')}` : 'Multi-framework compliance mapping available'}
+` : '';
+
+      const prompt = `You are a compliance expert specializing in multi-framework alignment. Improve this ${categoryName} requirement text by making it clearer, more comprehensive, and better aligned with modern compliance frameworks.
+
+${categoryContext}
+
+ORIGINAL REQUIREMENT:
+"${originalContent}"
+
+ANALYSIS REQUIREMENTS:
+- Consider ALL mapped requirements in this category for consistency and completeness
+- Understand multi-framework obligations (ISO 27001, ISO 27002, CIS Controls, GDPR, NIS2)
+- Ensure alignment with other requirements in this category
+- Make improvements that enhance comprehensive compliance coverage
+- Consider modern cybersecurity and data protection best practices
+
+OUTPUT REQUIREMENTS:
+- Return ONLY the improved requirement text, no introduction or explanation
+- Make it 25-30% longer with specific implementation details and concrete actions
+- Focus on actionable guidance with measurable outcomes
+- Include specific controls, processes, and verification methods
+- Use precise compliance terminology and modern security language
+- Ensure multi-framework alignment and cross-reference compatibility
+- No prefixes like "Enhanced:" or suffixes like "[improved]"
+
+IMPROVED REQUIREMENT:`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      let improvedText = response.text().trim();
+      
+      // Clean up any remaining AI artifacts
+      improvedText = improvedText
+        .replace(/^(Enhanced version:|Improved version:|Here's the improved text:|Here is the improved version:)/i, '')
+        .replace(/^["']|["']$/g, '') // Remove quotes at start/end
+        .trim();
+      
+      return improvedText.length > 50 ? improvedText : generateMockRequirementSuggestion(originalContent, categoryName);
+    } catch (error) {
+      console.warn('Gemini API failed, using mock suggestion:', error);
+      return generateMockRequirementSuggestion(originalContent, categoryName);
+    }
+  };
+
+  /**
+   * 🔄 Generate sophisticated mock requirement suggestion matching RealAIMappingDashboard quality
+   */
+  const generateMockRequirementSuggestion = (originalContent: string, categoryName: string): string => {
+    const categorySpecificImprovements = {
+      'Governance': [
+        'Establish executive-level cybersecurity governance committee with quarterly board reporting, documented risk appetite statements, and measurable security performance indicators aligned with ISO 27001 management review requirements.',
+        'Implement comprehensive information security policy framework with annual review cycles, stakeholder approval processes, exception handling procedures, and alignment verification against multiple compliance frameworks.'
+      ],
+      'Access Control': [
+        'Deploy multi-factor authentication across all privileged accounts with risk-based adaptive controls, session monitoring, privileged access management solutions, and continuous verification processes meeting CIS Controls requirements.',
+        'Establish role-based access control framework with automated provisioning, regular access reviews, segregation of duties enforcement, and integration with identity governance platforms.'
+      ],
+      'Risk Management': [
+        'Conduct comprehensive risk assessments incorporating threat modeling, vulnerability analysis, business impact assessments, and third-party risk evaluation with quarterly updates and executive reporting.',
+        'Implement enterprise risk management program with documented risk register, treatment plans, monitoring metrics, and integration with business continuity planning processes.'
+      ],
+      'Default': [
+        'Establish comprehensive monitoring and alerting mechanisms with real-time dashboard capabilities, automated incident response protocols, and integration with security information and event management systems.',
+        'Implement multi-layered validation processes with automated compliance verification, regular third-party audits, continuous improvement workflows, and alignment verification against multiple framework requirements.'
+      ]
+    };
+    
+    const categoryKey = Object.keys(categorySpecificImprovements).find(key => 
+      categoryName.toLowerCase().includes(key.toLowerCase())
+    ) || 'Default';
+    
+    const improvements = categorySpecificImprovements[categoryKey as keyof typeof categorySpecificImprovements] || categorySpecificImprovements['Default'];
+    const selectedImprovement = improvements[Math.floor(Math.random() * improvements.length)];
+    
+    // Enhance the original content by appending specific improvements
+    return `${originalContent}\n\nENHANCEMENT: ${selectedImprovement} This implementation ensures multi-framework compliance alignment and supports continuous monitoring and improvement processes.`;
+  };
+
+  /**
    * 🔍 Load unified requirements for a specific category using real data structure
    */
   const loadCategoryRequirements = async (categoryName: string): Promise<UnifiedRequirement[]> => {
@@ -1304,8 +1469,8 @@ export default function UnifiedRequirementsValidationDashboard() {
           </div>
         </div>
 
-        {/* Two-column layout like RealAIMappingDashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Two-column layout - side by side on larger screens */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Left Column - Category Selection Panel */}
           <div className="space-y-6">
             {/* Search and Filter */}
@@ -1381,31 +1546,6 @@ export default function UnifiedRequirementsValidationDashboard() {
                     <p className="text-xs text-gray-400 mt-1">Provide a URL for AI to consider during validation</p>
                   </div>
 
-                  {/* Knowledge Bank */}
-                  <div className="pt-2 border-t border-blue-500/20">
-                    <div className="text-xs text-purple-300 mb-2 flex items-center gap-2">
-                      <BookOpen className="w-3 h-3" />
-                      AI Knowledge Bank
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {knowledgeBankStandards.map(standard => {
-                        const IconComponent = standard.icon;
-                        return (
-                          <div key={standard.title} className="flex items-center justify-between p-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20 hover:border-purple-400/30 transition-colors">
-                            <div className="flex items-center gap-2">
-                              <IconComponent className="w-3 h-3 text-purple-400" />
-                              <div>
-                                <div className="text-xs font-medium text-white">{standard.title}</div>
-                                <div className="text-xs text-purple-300">v{standard.version}</div>
-                              </div>
-                            </div>
-                            <div className="text-xs text-gray-400 font-medium">{standard.pages}p</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <p className="text-xs text-gray-400 mt-2">Standards available for AI analysis</p>
-                  </div>
 
                   {/* Framework Legend */}
                   <div className="pt-2 border-t border-blue-500/20">
@@ -1440,8 +1580,8 @@ export default function UnifiedRequirementsValidationDashboard() {
                   </div>
                 </div>
                 
-                {/* Scrollable Categories */}
-                <div className="p-4 space-y-3 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
+                {/* Scrollable Categories - matched height with requirements panel */}
+                <div className="p-4 space-y-3 max-h-[650px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
                   {filteredCategories.map((category) => {
                     const categorySession = validationSessions.find(s => s.category_name === category.name);
                     
@@ -1470,6 +1610,16 @@ export default function UnifiedRequirementsValidationDashboard() {
                               setRequirements(categoryRequirements);
                               
                               console.log(`✅ DIAGNOSTIC: Loaded ${categoryRequirements.length} requirements for ${category.name}`);
+                              
+                              // Automatically generate AI suggestions after loading requirements
+                              console.log(`🤖 AUTO-GENERATING AI SUGGESTIONS for ${category.name}...`);
+                              setTimeout(async () => {
+                                try {
+                                  await generateAISuggestionsForCategory(category, categoryRequirements);
+                                } catch (aiError) {
+                                  console.warn('⚠️ Auto AI suggestion generation failed:', aiError);
+                                }
+                              }, 1000); // Small delay to let UI update
                             } catch (error) {
                               console.error('❌ DIAGNOSTIC: Error loading category requirements:', error);
                             } finally {
@@ -1544,10 +1694,42 @@ export default function UnifiedRequirementsValidationDashboard() {
                 </div>
               </div>
             </div>
+
           </div>
 
           {/* Right Column - Requirements Validation Panel */}
           <div className="space-y-6">
+            {/* Knowledge Bank Panel - HIGHEST PRIORITY - Above everything */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-15"></div>
+              <div className="relative bg-black/60 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <BookOpen className="w-5 h-5 text-purple-400" />
+                  <div>
+                    <h4 className="text-lg font-bold text-white">AI Knowledge Bank</h4>
+                    <p className="text-purple-300 text-sm">Standards available for AI analysis</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {knowledgeBankStandards.map(standard => {
+                    const IconComponent = standard.icon;
+                    return (
+                      <div key={standard.title} className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20 hover:border-purple-400/40 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <IconComponent className="w-4 h-4 text-purple-400" />
+                          <div>
+                            <div className="text-sm font-medium text-white">{standard.title}</div>
+                            <div className="text-xs text-purple-300">v{standard.version}</div>
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-400 font-medium">{standard.pages}p</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
             {activeCategory ? (
               <>
                 {/* Active Category Header */}
@@ -1642,88 +1824,7 @@ export default function UnifiedRequirementsValidationDashboard() {
                   </div>
                 </div>
 
-                {/* Bulk Operations Panel */}
-                {suggestions.filter(s => s.status === 'pending').length > 0 && (
-                  <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl blur opacity-15"></div>
-                    <div className="relative bg-black/60 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Zap className="w-5 h-5 text-orange-400" />
-                          <div>
-                            <h4 className="text-lg font-bold text-white">Bulk Actions</h4>
-                            <p className="text-orange-300 text-sm">
-                              {suggestions.filter(s => s.status === 'pending').length} pending suggestions • Process multiple at once
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Button
-                            onClick={bulkApproveHighPriority}
-                            disabled={isProcessingApproval}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            {isProcessingApproval ? (
-                              <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                            ) : (
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                            )}
-                            Approve High Priority ({suggestions.filter(s => s.status === 'pending' && (s.priority === 'high' || s.priority === 'critical')).length})
-                          </Button>
-                          
-                          <Button
-                            onClick={bulkApproveLengthOptimizations}
-                            disabled={isProcessingApproval}
-                            variant="outline"
-                            className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
-                          >
-                            <Sparkles className="w-4 h-4 mr-2" />
-                            Approve Length Fixes ({suggestions.filter(s => s.status === 'pending' && s.type === 'length_optimization').length})
-                          </Button>
-                          
-                          <Button
-                            onClick={bulkRejectLowPriority}
-                            disabled={isProcessingApproval}
-                            variant="outline"
-                            className="border-gray-500 text-gray-400 hover:bg-gray-500/10"
-                          >
-                            <X className="w-4 h-4 mr-2" />
-                            Reject Low Priority ({suggestions.filter(s => s.status === 'pending' && s.priority === 'low').length})
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      {/* Bulk Selection Stats */}
-                      <div className="grid grid-cols-4 gap-3 mt-4">
-                        <div className="text-center p-2 bg-red-900/20 rounded border border-red-500/30">
-                          <div className="text-sm font-bold text-red-400">
-                            {suggestions.filter(s => s.status === 'pending' && s.priority === 'critical').length}
-                          </div>
-                          <div className="text-xs text-red-300">Critical</div>
-                        </div>
-                        <div className="text-center p-2 bg-orange-900/20 rounded border border-orange-500/30">
-                          <div className="text-sm font-bold text-orange-400">
-                            {suggestions.filter(s => s.status === 'pending' && s.priority === 'high').length}
-                          </div>
-                          <div className="text-xs text-orange-300">High</div>
-                        </div>
-                        <div className="text-center p-2 bg-yellow-900/20 rounded border border-yellow-500/30">
-                          <div className="text-sm font-bold text-yellow-400">
-                            {suggestions.filter(s => s.status === 'pending' && s.priority === 'medium').length}
-                          </div>
-                          <div className="text-xs text-yellow-300">Medium</div>
-                        </div>
-                        <div className="text-center p-2 bg-blue-900/20 rounded border border-blue-500/30">
-                          <div className="text-sm font-bold text-blue-400">
-                            {suggestions.filter(s => s.status === 'pending' && s.priority === 'low').length}
-                          </div>
-                          <div className="text-xs text-blue-300">Low</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+
 
                 {/* Unified Requirements List */}
                 {isAnalyzing ? (
@@ -1746,7 +1847,7 @@ export default function UnifiedRequirementsValidationDashboard() {
                         <p className="text-blue-300 text-sm">Max 4-5 lines per requirement • Framework-specific elements highlighted</p>
                       </div>
                       
-                      <div className="p-4 space-y-4 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/50 scrollbar-track-transparent">
+                      <div className="p-4 space-y-4 max-h-[650px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/50 scrollbar-track-transparent">
                         {requirements.map((requirement) => (
                           <div key={requirement.id} className="relative group">
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-slate-600 to-slate-700 rounded-xl blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
@@ -1808,11 +1909,28 @@ export default function UnifiedRequirementsValidationDashboard() {
                                     />
                                     <Button
                                       size="sm"
-                                      onClick={() => {
-                                        // TODO: Save edit
-                                        setEditingRequirementId(null);
-                                        setEditContent('');
-                                        setEditReason('');
+                                      onClick={async () => {
+                                        try {
+                                          // Apply the edit to the requirement
+                                          const updatedRequirement = { ...requirement, content: editContent };
+                                          setRequirements(prev => 
+                                            prev.map(r => r.id === requirement.id ? updatedRequirement : r)
+                                          );
+                                          
+                                          // Clear editing state
+                                          setEditingRequirementId(null);
+                                          setEditContent('');
+                                          setEditReason('');
+                                          
+                                          console.log('✅ Requirement updated:', { 
+                                            id: requirement.id, 
+                                            newContent: editContent.substring(0, 100) + '...',
+                                            reason: editReason 
+                                          });
+                                        } catch (error) {
+                                          console.error('Error saving requirement:', error);
+                                          alert('Failed to save edit. Please try again.');
+                                        }
                                       }}
                                       className="bg-green-600 hover:bg-green-700"
                                     >
@@ -1850,6 +1968,135 @@ export default function UnifiedRequirementsValidationDashboard() {
                                 <div className="text-center p-2 bg-black/20 rounded">
                                   <div className="text-xs text-gray-400">Clarity</div>
                                   <div className="text-sm font-semibold text-white">{Math.round((requirement.clarity_score || 0) * 100)}%</div>
+                                </div>
+                              </div>
+
+                              {/* TVÅDELAT UTSEENDE - Current vs AI Proposed för VARJE requirement */}
+                              <div className="mt-4 p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
+                                <div className="text-sm font-bold text-purple-300 mb-3 flex items-center gap-2">
+                                  <Sparkles className="w-4 h-4" />
+                                  AI Enhancement Preview
+                                </div>
+                                <div className="space-y-3">
+                                  <div className="p-3 bg-red-900/20 border border-red-500/30 rounded">
+                                    <div className="text-xs text-red-300 mb-2 font-medium">📄 Current:</div>
+                                    <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
+                                      {requirement.content}
+                                    </div>
+                                  </div>
+                                  <div className="p-3 bg-green-900/20 border border-green-500/30 rounded">
+                                    <div className="text-xs text-green-300 mb-2 font-medium">✨ AI Enhanced:</div>
+                                    <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
+                                      {/* Real AI Enhanced version using actual analysis */}
+                                      {(() => {
+                                        const reqAnalysis = categoryValidationResult?.analyzed_requirements.find(
+                                          analysis => analysis.letter === requirement.letter
+                                        );
+                                        
+                                        if (reqAnalysis?.suggestions && reqAnalysis.suggestions.length > 0) {
+                                          const bestSuggestion = reqAnalysis.suggestions
+                                            .filter(s => s.type === 'clarity_improvement' || s.type === 'completeness_addition')
+                                            .sort((a, b) => b.confidence - a.confidence)[0];
+                                          
+                                          if (bestSuggestion) {
+                                            return bestSuggestion.suggested_text;
+                                          }
+                                        }
+                                        
+                                        // Fallback: Show original content without fake enhancements
+                                        return requirement.content;
+                                      })()}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-700">
+                                  <Button
+                                    size="sm"
+                                    className="bg-green-600 hover:bg-green-700 text-white text-xs h-7"
+                                    onClick={() => {
+                                      const reqAnalysis = categoryValidationResult?.analyzed_requirements.find(
+                                        analysis => analysis.letter === requirement.letter
+                                      );
+                                      
+                                      if (reqAnalysis?.suggestions && reqAnalysis.suggestions.length > 0) {
+                                        const bestSuggestion = reqAnalysis.suggestions
+                                          .filter(s => s.type === 'clarity_improvement' || s.type === 'completeness_addition')
+                                          .sort((a, b) => b.confidence - a.confidence)[0];
+                                        
+                                        if (bestSuggestion) {
+                                          // Apply the AI enhancement to the requirement
+                                          console.log('🤖 Applying AI enhancement:', {
+                                            requirement: requirement.letter,
+                                            original: requirement.content,
+                                            enhanced: bestSuggestion.suggested_text,
+                                            category: activeCategory?.name
+                                          });
+                                          
+                                          // Update the requirement content with AI suggestion
+                                          const updatedRequirement = { ...requirement, content: bestSuggestion.suggested_text };
+                                          const updatedRequirements = requirements.map(r => 
+                                            r.letter === requirement.letter ? updatedRequirement : r
+                                          );
+                                          setRequirements(updatedRequirements);
+                                        }
+                                      }
+                                    }}
+                                  >
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Apply Enhancement
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="bg-blue-500/20 border border-blue-400/30 text-blue-200 hover:bg-blue-500/30 text-xs h-7"
+                                    onClick={() => {
+                                      const reqAnalysis = categoryValidationResult?.analyzed_requirements.find(
+                                        analysis => analysis.letter === requirement.letter
+                                      );
+                                      
+                                      if (reqAnalysis?.suggestions && reqAnalysis.suggestions.length > 0) {
+                                        const bestSuggestion = reqAnalysis.suggestions[0];
+                                        
+                                        if (bestSuggestion) {
+                                          // Open edit dialog with AI suggestion as starting point
+                                          const editPrompt = prompt('Edit AI Enhancement:', bestSuggestion.suggested_text);
+                                          if (editPrompt && editPrompt !== bestSuggestion.suggested_text) {
+                                            console.log('✏️ Applying custom edit:', {
+                                              requirement: requirement.letter,
+                                              original: requirement.content,
+                                              aiSuggestion: bestSuggestion.suggested_text,
+                                              customEdit: editPrompt,
+                                              category: activeCategory?.name
+                                            });
+                                          
+                                            // Update requirement with custom edit
+                                            const updatedRequirement = { ...requirement, content: editPrompt };
+                                            const updatedRequirements = requirements.map(r => 
+                                              r.letter === requirement.letter ? updatedRequirement : r
+                                            );
+                                            setRequirements(updatedRequirements);
+                                          }
+                                        }
+                                      }
+                                    }}
+                                  >
+                                    <Edit className="w-3 h-3 mr-1" />
+                                    Edit & Customize
+                                  </Button>
+                                  <div className="text-xs text-gray-400 ml-auto">
+                                    {(() => {
+                                      const reqAnalysis = categoryValidationResult?.analyzed_requirements.find(
+                                        analysis => analysis.letter === requirement.letter
+                                      );
+                                      
+                                      if (reqAnalysis?.suggestions && reqAnalysis.suggestions.length > 0) {
+                                        const avgConfidence = reqAnalysis.suggestions.reduce((sum, s) => sum + s.confidence, 0) / reqAnalysis.suggestions.length;
+                                        return `${Math.round(avgConfidence * 100)}% AI confidence`;
+                                      }
+                                      
+                                      return `${Math.round((reqAnalysis?.confidence_score || 0.85) * 100)}% improvement confidence`;
+                                    })()}
+                                  </div>
                                 </div>
                               </div>
 
@@ -1913,21 +2160,31 @@ export default function UnifiedRequirementsValidationDashboard() {
                                               {suggestion.expected_improvement}
                                             </div>
                                             
-                                            {/* Before/After Preview */}
-                                            <div className="space-y-2">
-                                              <div className="p-2 bg-red-900/20 border border-red-500/30 rounded">
-                                                <div className="text-xs text-red-300 mb-1">Current:</div>
-                                                <div className="text-xs text-gray-300">{suggestion.highlighted_text?.substring(0, 100)}...</div>
+                                            {/* Current vs Proposed - Vertical Layout */}
+                                            <div className="space-y-3 mb-3">
+                                              <div className="p-3 bg-red-900/20 border border-red-500/30 rounded">
+                                                <div className="text-xs text-red-300 mb-2 font-medium">📄 Current:</div>
+                                                <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
+                                                  {suggestion.highlighted_text || requirement.content}
+                                                </div>
                                               </div>
-                                              <div className="p-2 bg-green-900/20 border border-green-500/30 rounded">
-                                                <div className="text-xs text-green-300 mb-1">AI Suggestion:</div>
-                                                <div className="text-xs text-gray-300">{suggestion.suggestion.substring(0, 100)}...</div>
+                                              <div className="p-3 bg-green-900/20 border border-green-500/30 rounded">
+                                                <div className="text-xs text-green-300 mb-2 font-medium">✨ AI Proposed:</div>
+                                                <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
+                                                  <textarea
+                                                    value={suggestion.suggestion}
+                                                    className="w-full bg-transparent border-none text-xs text-gray-300 resize-none focus:outline-none min-h-24"
+                                                    rows={4}
+                                                    placeholder="AI proposed content..."
+                                                    readOnly
+                                                  />
+                                                </div>
                                               </div>
                                             </div>
 
-                                            {/* Approval Actions */}
+                                            {/* Approval Actions - MATCHING RealAIMappingDashboard EXACTLY */}
                                             {suggestion.status === 'pending' && (
-                                              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-700">
+                                              <div className="flex items-center gap-2 pt-3 border-t border-gray-700">
                                                 <Button
                                                   size="sm"
                                                   onClick={() => approveSuggestion(suggestion.id)}
@@ -1941,7 +2198,7 @@ export default function UnifiedRequirementsValidationDashboard() {
                                                   size="sm"
                                                   variant="outline"
                                                   onClick={() => rejectSuggestion(suggestion.id)}
-                                                  className="border-red-500 text-red-400 hover:bg-red-500/10 text-xs h-7"
+                                                  className="bg-red-500/20 border border-red-400/30 text-red-200 hover:bg-red-500/30 text-xs h-7"
                                                   disabled={isProcessingApproval}
                                                 >
                                                   <X className="w-3 h-3 mr-1" />

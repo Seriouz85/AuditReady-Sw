@@ -63,6 +63,11 @@ export interface ValidationResult {
 export class RAGGenerationService {
   private static genAI: GoogleGenerativeAI | null = null;
   
+  // Model selection with fallbacks
+  private static readonly PRIMARY_MODEL = 'gemini-2.0-flash-exp';
+  private static readonly FALLBACK_MODEL = 'gemini-1.5-flash';
+  private static readonly LITE_MODEL = 'gemini-1.5-flash-8b';
+  
   /**
    * Initialize the Gemini AI client
    */
@@ -75,6 +80,28 @@ export class RAGGenerationService {
       this.genAI = new GoogleGenerativeAI(apiKey);
     }
     return this.genAI;
+  }
+
+  /**
+   * Get optimal Gemini model with automatic fallback
+   */
+  private static async getOptimalModel() {
+    const genAI = this.initializeAI();
+    
+    try {
+      // Try Gemini 2.0 Flash first (latest and fastest)
+      return genAI.getGenerativeModel({ model: this.PRIMARY_MODEL });
+    } catch (error) {
+      console.warn('Gemini 2.0 Flash not available, falling back to 1.5 Flash:', error);
+      try {
+        // Fallback to Gemini 1.5 Flash
+        return genAI.getGenerativeModel({ model: this.FALLBACK_MODEL });
+      } catch (fallbackError) {
+        console.warn('Gemini 1.5 Flash not available, using lite model:', fallbackError);
+        // Final fallback to lite model
+        return genAI.getGenerativeModel({ model: this.LITE_MODEL });
+      }
+    }
   }
   
   /**
@@ -276,7 +303,7 @@ export class RAGGenerationService {
   ): Promise<{ success: boolean; content: string; confidence: number; tokenUsage: any; errors: string[] }> {
     try {
       const genAI = this.initializeAI();
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = await this.getOptimalModel();
       
       // Build expert knowledge context
       const knowledgeContext = context.relevantKnowledge

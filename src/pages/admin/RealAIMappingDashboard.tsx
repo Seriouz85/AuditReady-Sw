@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -34,8 +33,6 @@ import {
   Edit
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { KnowledgeIngestionService } from '@/services/rag/KnowledgeIngestionService';
-import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
 import { ComprehensiveGuidanceService } from '@/services/rag/ComprehensiveGuidanceService';
 import { SubGuidanceGenerationService, SubGuidanceItem, SubGuidanceResult } from '@/services/rag/SubGuidanceGenerationService';
 import { RequirementsIntegrationService, ExportFormat, IntegrationResult } from '@/services/rag/RequirementsIntegrationService';
@@ -109,12 +106,6 @@ export default function RealAIMappingDashboard() {
   const [categories, setCategories] = useState<UnifiedCategory[]>([]);
   const [requirements, setRequirements] = useState<UnifiedRequirement[]>([]);
   const [knowledgeSources, setKnowledgeSources] = useState<KnowledgeSource[]>([]);
-  const [selectedCategory] = useState<string>('all');
-  const [isGeneratingGuidance, setIsGeneratingGuidance] = useState(false);
-  const [isScrapingUrl, setIsScrapingUrl] = useState(false);
-  const [newUrl, setNewUrl] = useState('');
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [generationProgress, setGenerationProgress] = useState(0);
   const [loading, setLoading] = useState(true);
   
   // PHASE 1: Search and filter state
@@ -123,15 +114,14 @@ export default function RealAIMappingDashboard() {
   const [activeCategory, setActiveCategory] = useState<UnifiedCategory | null>(null);
   
   // Sub-requirements editing focus
-  const [editingSubRequirements] = useState(false);
   const [categoryGuidances, setCategoryGuidances] = useState<any[]>([]);
   const [selectedCategoryGuidance, setSelectedCategoryGuidance] = useState<any | null>(null);
-  const [validationReport] = useState<any>(null);
   
   // PHASE 2: URL Processing and Sub-guidance Generation
   const [url1, setUrl1] = useState('');
   const [url2, setUrl2] = useState('');
   const [url3, setUrl3] = useState('');
+  const [aiReferenceUrl, setAiReferenceUrl] = useState('');
   const [isProcessingUrls, setIsProcessingUrls] = useState(false);
   const [urlProcessingProgress, setUrlProcessingProgress] = useState(0);
   const [subGuidanceItems, setSubGuidanceItems] = useState<SubGuidanceItem[]>([]);
@@ -248,7 +238,7 @@ export default function RealAIMappingDashboard() {
       const cleanCategory = categoryName.replace(/^\d+\.\s*/, '');
       
       // Find the category mapping
-      const categoryMapping = complianceMappings.find(mapping => {
+      const categoryMapping = complianceMappings.find((mapping: any) => {
         const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
         return mappingCategory === cleanCategory;
       });
@@ -373,7 +363,7 @@ export default function RealAIMappingDashboard() {
       }
 
       // Find the category mapping (same logic as compliance simplification)
-      const categoryMapping = complianceMappings.find(mapping => {
+      const categoryMapping = complianceMappings.find((mapping: any) => {
         const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
         return mappingCategory === cleanCategory;
       });
@@ -435,7 +425,7 @@ export default function RealAIMappingDashboard() {
         .limit(21); // Limit to 21 unified categories only
 
       if (error) throw error;
-      setCategories(data || []);
+      setCategories((data as unknown as UnifiedCategory[]) || []);
       console.log('✅ Loaded 21 unified categories:', data?.length || 0);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -456,7 +446,7 @@ export default function RealAIMappingDashboard() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRequirements(data || []);
+      setRequirements((data as unknown as UnifiedRequirement[]) || []);
       console.log('✅ Loaded real requirements:', data?.length || 0);
     } catch (error) {
       console.error('Error loading requirements:', error);
@@ -471,7 +461,7 @@ export default function RealAIMappingDashboard() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setKnowledgeSources(data || []);
+      setKnowledgeSources((data as unknown as KnowledgeSource[]) || []);
       console.log('✅ Loaded knowledge sources:', data?.length || 0);
     } catch (error) {
       console.error('Error loading knowledge sources:', error);
@@ -490,101 +480,7 @@ export default function RealAIMappingDashboard() {
     }
   };
 
-  const handleAddKnowledgeSource = async () => { // eslint-disable-line @typescript-eslint/no-unused-vars
-    if (!newUrl.trim()) return;
 
-    setIsScrapingUrl(true);
-    setUploadProgress(0);
-    
-    try {
-      console.log('🚀 Starting real URL scraping for:', newUrl);
-      
-      const result = await KnowledgeIngestionService.ingestFromURL(
-        newUrl,
-        {
-          onProgress: (progress) => {
-            setUploadProgress(progress);
-            console.log(`📊 Scraping progress: ${progress}%`);
-          },
-          includeSubpages: true,
-          maxDepth: 2
-        }
-      );
-
-      if (result.success) {
-        console.log('✅ URL scraping completed successfully');
-        await loadKnowledgeSources();
-        setNewUrl('');
-        setUploadProgress(0);
-      } else {
-        console.error('❌ URL scraping failed:', result.error);
-      }
-    } catch (error) {
-      console.error('Error adding knowledge source:', error);
-    } finally {
-      setIsScrapingUrl(false);
-    }
-  };
-
-  const generateGuidanceForRequirement = async (requirement: UnifiedRequirement) => { // eslint-disable-line @typescript-eslint/no-unused-vars
-    if (!requirement.category) return;
-
-    setIsGeneratingGuidance(true);
-    setGenerationProgress(0);
-
-    try {
-      console.log('🧠 Generating real AI guidance for:', requirement.title);
-      
-      // Progress simulation
-      const progressInterval = setInterval(() => {
-        setGenerationProgress(prev => Math.min(prev + 10, 90));
-      }, 500);
-
-      const result = await RAGGenerationService.generateGuidance(
-        requirement,
-        requirement.category.name,
-        { [requirement.category.name]: true }
-      );
-
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
-
-      if (result.success && result.guidance) {
-        console.log('✅ AI guidance generated successfully');
-        
-        // Save the generated guidance back to database
-        const { error } = await supabase
-          .from('unified_requirements')
-          .update({ 
-            ai_guidance: result.guidance,
-            guidance_confidence: result.confidence || 0.8,
-            guidance_sources: result.sources || [],
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', requirement.id);
-
-        if (!error) {
-          await loadRequirements();
-          setSelectedRequirement(prev => prev ? { 
-            ...prev, 
-            ai_guidance: result.guidance,
-            guidance_confidence: result.confidence,
-            guidance_sources: result.sources
-          } : null);
-        }
-      } else {
-        console.error('❌ AI guidance generation failed:', result.error);
-      }
-
-      setTimeout(() => {
-        setGenerationProgress(0);
-      }, 2000);
-    } catch (error) {
-      console.error('Error generating guidance:', error);
-    } finally {
-      setIsGeneratingGuidance(false);
-    }
-  };
 
   /**
    * 🚀 PHASE 2: Process URLs and generate sub-guidance items
@@ -625,7 +521,7 @@ export default function RealAIMappingDashboard() {
           organizationId: organization.id
         },
         {
-          onProgress: (progress, message) => {
+          onProgress: (progress: number, message?: string) => {
             setUrlProcessingProgress(progress);
             console.log(`📊 Progress: ${progress}% - ${message}`);
           },
@@ -899,8 +795,8 @@ export default function RealAIMappingDashboard() {
       const result = await RequirementsIntegrationService.integrateApprovedSubGuidance(
         organization.id,
         {
-          categoryIds,
-          onProgress: (progress, message) => {
+          categoryIds: categoryIds || [],
+          onProgress: (progress: number, message?: string) => {
             setIntegrationProgress(progress);
             console.log(`📊 Integration progress: ${progress}% - ${message}`);
           },
@@ -942,18 +838,6 @@ export default function RealAIMappingDashboard() {
   };
 
 
-  const filteredRequirements = requirements.filter(req => 
-    selectedCategory === 'all' || req.category_id === selectedCategory
-  );
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'failed': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   // Platform Admin mode doesn't need organization context
   const needsOrganization = !isPlatformAdmin;
@@ -1081,14 +965,6 @@ export default function RealAIMappingDashboard() {
                   
                   {/* Neural Validation Controls */}
                   <div className="flex items-center gap-3">
-                    {validationReport && (
-                      <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 rounded-lg border border-green-500/20">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-green-300 font-medium">
-                          Quality: {validationReport.overall_quality}%
-                        </span>
-                      </div>
-                    )}
                     {categoryGuidances.length > 0 && (
                       <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 rounded-lg border border-purple-500/20">
                         <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
@@ -1523,7 +1399,7 @@ export default function RealAIMappingDashboard() {
                               {guidance.comprehensive_guidance.slice(0, 150)}...
                             </div>
                             <div className="flex items-center gap-2 flex-wrap">
-                              {guidance.key_topics.slice(0, 3).map((topic, index) => (
+                              {guidance.key_topics.slice(0, 3).map((topic: string, index: number) => (
                                 <Badge key={index} className="bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs">
                                   {topic}
                                 </Badge>
@@ -1614,6 +1490,22 @@ export default function RealAIMappingDashboard() {
                         className="flex-1 px-4 py-2 bg-black/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 text-sm"
                       />
                     </div>
+                  </div>
+                  
+                  {/* AI Reference URL */}
+                  <div className="pt-4 border-t border-purple-500/20">
+                    <label className="text-xs text-purple-300 mb-2 block flex items-center gap-2">
+                      <Globe className="w-3 h-3" />
+                      AI Reference URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={aiReferenceUrl}
+                      onChange={(e) => setAiReferenceUrl(e.target.value)}
+                      placeholder="https://example.com/compliance-doc"
+                      className="w-full px-3 py-2 bg-black/50 border border-purple-500/30 rounded-lg text-white text-xs placeholder-gray-500 focus:outline-none focus:border-purple-400"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Provide a URL for AI to consider during guidance generation</p>
                   </div>
                   
                   {/* Process URLs Button */}
@@ -1798,7 +1690,7 @@ export default function RealAIMappingDashboard() {
                         <div className="mb-4">
                           <h4 className="text-xs text-purple-300 mb-2">🌐 Frameworks Included:</h4>
                           <div className="flex flex-wrap gap-2">
-                            {selectedCategoryGuidance.frameworks_included.map((framework, index) => (
+                            {selectedCategoryGuidance.frameworks_included.map((framework: string, index: number) => (
                               <Badge key={index} className="bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs">
                                 {framework}
                               </Badge>
@@ -1817,7 +1709,7 @@ export default function RealAIMappingDashboard() {
                         <div>
                           <h4 className="text-xs text-purple-300 mb-2">🎯 Key Topics:</h4>
                           <div className="flex flex-wrap gap-2">
-                            {selectedCategoryGuidance.key_topics.map((topic, index) => (
+                            {selectedCategoryGuidance.key_topics.map((topic: string, index: number) => (
                               <Badge key={index} className="bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs">
                                 {topic}
                               </Badge>
@@ -1878,7 +1770,7 @@ export default function RealAIMappingDashboard() {
                             Implementation Steps
                           </h4>
                           <div className="space-y-2">
-                            {selectedCategoryGuidance.implementation_steps.map((step, index) => (
+                            {selectedCategoryGuidance.implementation_steps.map((step: string, index: number) => (
                               <div key={index} className="flex items-start gap-3">
                                 <div className="w-6 h-6 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-xs text-white font-bold mt-0.5">
                                   {index + 1}
@@ -1898,7 +1790,7 @@ export default function RealAIMappingDashboard() {
                             Framework Compliance Notes
                           </h4>
                           <div className="space-y-2">
-                            {selectedCategoryGuidance.compliance_notes.map((note, index) => (
+                            {selectedCategoryGuidance.compliance_notes.map((note: string, index: number) => (
                               <div key={index} className="text-xs text-gray-300 leading-relaxed">
                                 • {note}
                               </div>
@@ -2007,7 +1899,7 @@ export default function RealAIMappingDashboard() {
 
                         {/* Sub-Guidance Items Grid */}
                         <div className="space-y-4 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-green-500/50">
-                          {subGuidanceItems.map((item, index) => {
+                          {subGuidanceItems.map((item) => {
                             const lines = item.content.split('\n').filter(line => line.trim().length > 0);
                             const isCompliant = lines.length >= 8 && lines.length <= 10;
                             const isEditing = editingItemId === item.id;
