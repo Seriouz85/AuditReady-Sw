@@ -37,7 +37,11 @@ import {
   X,
   User,
   Search,
-  Filter
+  Filter,
+  Award,
+  ShieldCheck,
+  FileSpreadsheet,
+  Scale
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { KnowledgeIngestionService } from '@/services/rag/KnowledgeIngestionService';
@@ -1661,22 +1665,53 @@ export default function RealAIMappingDashboard() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { title: 'ISO 27001:2022', version: '2022', pages: 125 },
-                        { title: 'ISO 27002:2022', version: '2022', pages: 89 },
-                        { title: 'NIS2 Directive', version: '2022/2555', pages: 78 },
-                        { title: 'CIS Controls', version: '8.1.2', pages: 45 },
-                      ].map(standard => (
-                        <div key={standard.title} className="flex items-center justify-between p-2 bg-black/30 rounded-lg">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-3 h-3 text-purple-400" />
-                            <div>
-                              <div className="text-xs text-white">{standard.title}</div>
-                              <div className="text-xs text-purple-300">v{standard.version}</div>
+                        { 
+                          title: 'ISO 27001/27002', 
+                          version: '2022', 
+                          files: ['ISO 27001.pdf', 'ISO_27001_27002_Requirements_Extraction.md'], 
+                          pages: 214,
+                          icon: Award,
+                          type: 'iso'
+                        },
+                        { 
+                          title: 'NIS2 Directive', 
+                          version: '2022/2555', 
+                          files: ['CELEX_32022L2555_EN_TXT.pdf'], 
+                          pages: 78,
+                          icon: ShieldCheck,
+                          type: 'directive'
+                        },
+                        { 
+                          title: 'CIS Controls', 
+                          version: '8.1.2', 
+                          files: ['CIS_Controls_Version_8.1.2___March_2025.xlsx'], 
+                          pages: 45,
+                          icon: FileSpreadsheet,
+                          type: 'controls'
+                        },
+                        { 
+                          title: 'GDPR', 
+                          version: '2016/679', 
+                          files: ['gdpr.pdf'], 
+                          pages: 88,
+                          icon: Scale,
+                          type: 'regulation'
+                        }
+                      ].map(standard => {
+                        const IconComponent = standard.icon;
+                        return (
+                          <div key={standard.title} className="flex items-center justify-between p-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20 hover:border-purple-400/30 transition-colors">
+                            <div className="flex items-center gap-2">
+                              <IconComponent className="w-3 h-3 text-purple-400" />
+                              <div>
+                                <div className="text-xs font-medium text-white">{standard.title}</div>
+                                <div className="text-xs text-purple-300">v{standard.version}</div>
+                              </div>
                             </div>
+                            <div className="text-xs text-gray-400 font-medium">{standard.pages}p</div>
                           </div>
-                          <div className="text-xs text-gray-400">{standard.pages}p</div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                     <p className="text-xs text-gray-400 mt-2 text-center">Standards available for AI-powered analysis</p>
                   </div>
