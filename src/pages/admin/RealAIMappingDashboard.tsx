@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -142,13 +142,6 @@ export default function RealAIMappingDashboard() {
   useEffect(() => {
     loadRealData();
   }, [organization]);
-
-  // Load sub-guidance when category changes
-  useEffect(() => {
-    if (activeCategory && organization) {
-      loadSubGuidanceForReview();
-    }
-  }, [activeCategory?.id, organization?.id]);
 
   const loadRealData = async () => {
     setLoading(true);
@@ -409,7 +402,7 @@ export default function RealAIMappingDashboard() {
   /**
    * 🔄 PHASE 3: Load existing sub-guidance for review
    */
-  const loadSubGuidanceForReview = async () => {
+  const loadSubGuidanceForReview = useCallback(async () => {
     if (!activeCategory || !organization) return;
 
     try {
@@ -421,11 +414,22 @@ export default function RealAIMappingDashboard() {
       if (items.length > 0) {
         setSubGuidanceItems(items);
         console.log(`✅ Loaded ${items.length} sub-guidance items for review`);
+      } else {
+        setSubGuidanceItems([]); // Clear items if none found
+        console.log(`ℹ️ No sub-guidance items found for ${activeCategory.name}`);
       }
     } catch (error) {
       console.error('Error loading sub-guidance for review:', error);
+      setSubGuidanceItems([]); // Clear on error
     }
-  };
+  }, [activeCategory, organization]);
+
+  // Load sub-guidance when category changes
+  useEffect(() => {
+    if (activeCategory && organization) {
+      loadSubGuidanceForReview();
+    }
+  }, [activeCategory?.id, organization?.id, loadSubGuidanceForReview]);
 
   /**
    * ✏️ Start editing a sub-guidance item
