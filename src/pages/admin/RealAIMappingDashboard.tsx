@@ -44,6 +44,11 @@ import { KnowledgeIngestionService } from '@/services/rag/KnowledgeIngestionServ
 import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
 import { ComprehensiveGuidanceService } from '@/services/rag/ComprehensiveGuidanceService';
 import { SubGuidanceGenerationService, SubGuidanceItem, SubGuidanceResult } from '@/services/rag/SubGuidanceGenerationService';
+import { RequirementsIntegrationService, IntegratedRequirement, ExportFormat, IntegrationResult } from '@/services/rag/RequirementsIntegrationService';
+import { useComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
+import { UnifiedRequirementsService } from '@/services/compliance/UnifiedRequirementsService';
+import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
+import { UnifiedGuidanceGenerator } from '@/services/compliance/UnifiedGuidanceGenerator';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Real types based on your actual database schema
@@ -93,7 +98,27 @@ interface RequirementValidation {
 }
 
 export default function RealAIMappingDashboard() {
-  const { user, organization } = useAuth();
+  const { user, organization, isPlatformAdmin } = useAuth();
+  
+  // Debug logging for auth context
+  console.log('🔍 RealAIMappingDashboard Auth State:', {
+    user: user?.id || 'null',
+    organization: organization?.id || 'null',
+    orgName: organization?.name || 'null',
+    isPlatformAdmin: isPlatformAdmin || false
+  });
+  
+  // Framework selection for loading compliance data
+  const [selectedFrameworks] = useState({
+    iso27001: true,
+    iso27002: true,
+    cisControls: 'ig3',
+    gdpr: true,
+    nis2: true
+  });
+  
+  // Load compliance mapping data to get existing sub-requirements
+  const { data: complianceMappings, isLoading: isLoadingMappings } = useComplianceMappingData(selectedFrameworks);
   
   // State
   const [categories, setCategories] = useState<UnifiedCategory[]>([]);
@@ -138,6 +163,15 @@ export default function RealAIMappingDashboard() {
   const [approvalAction, setApprovalAction] = useState<'approve' | 'reject' | null>(null);
   const [isProcessingApproval, setIsProcessingApproval] = useState(false);
 
+  // PHASE 4: Integration and Export State
+  const [integrationStatus, setIntegrationStatus] = useState<any>(null);
+  const [isIntegrating, setIsIntegrating] = useState(false);
+  const [integrationProgress, setIntegrationProgress] = useState(0);
+  const [integrationResult, setIntegrationResult] = useState<IntegrationResult | null>(null);
+  const [availableExportFormats, setAvailableExportFormats] = useState<ExportFormat[]>([]);
+  const [selectedExportFormats, setSelectedExportFormats] = useState<string[]>([]);
+  const [showIntegrationDialog, setShowIntegrationDialog] = useState(false);
+
   // Load real data from your database
   useEffect(() => {
     loadRealData();
@@ -146,16 +180,264 @@ export default function RealAIMappingDashboard() {
   const loadRealData = async () => {
     setLoading(true);
     try {
+      // Load basic data (always needed)
       await Promise.all([
         loadCategories(),
         loadRequirements(),
-        loadKnowledgeSources(),
-        loadComprehensiveGuidance()
+        loadKnowledgeSources()
       ]);
+
+      // Load organization-specific data only if not platform admin
+      if (!isPlatformAdmin && organization) {
+        await Promise.all([
+          loadComprehensiveGuidance(),
+          loadIntegrationData()
+        ]);
+      } else if (isPlatformAdmin) {
+        // Platform Admin mode - load demo/example data instead
+        console.log('🔒 Platform Admin mode - loading demo data');
+        setIntegrationStatus({
+          total_categories: categories.length,
+          categories_with_approved_guidance: 0,
+          integrated_requirements: 0,
+          pending_integration: 0,
+          export_formats_available: 6,
+          last_integration: null
+        });
+        const formats = RequirementsIntegrationService.getAvailableExportFormats();
+        setAvailableExportFormats(formats);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * 🔗 PHASE 4: Load integration status and available export formats
+   */
+  const loadIntegrationData = async () => {
+    if (!organization && !isPlatformAdmin) return;
+
+    try {
+      if (isPlatformAdmin) {
+        // Platform admin gets demo data
+        setIntegrationStatus({
+          total_categories: 15,
+          categories_with_approved_guidance: 5,
+          integrated_requirements: 12,
+          pending_integration: 3,
+          export_formats_available: 6,
+          last_integration: new Date().toISOString()
+        });
+      } else if (organization) {
+        // Real organization data
+        const status = await RequirementsIntegrationService.getIntegrationStatus(organization.id);
+        setIntegrationStatus(status);
+      }
+      
+      // Load available export formats
+      const formats = RequirementsIntegrationService.getAvailableExportFormats();
+      setAvailableExportFormats(formats);
+      
+      console.log('✅ Loaded integration data:', {
+        isPlatformAdmin,
+        exportFormats: formats.length
+      });
+    } catch (error) {
+      console.error('Error loading integration data:', error);
+    }
+  };
+
+  /**
+   * 📋 Load existing sub-requirements from compliance simplification data
+   */
+  const loadExistingSubRequirements = async (categoryName: string) => {
+    try {
+      if (!complianceMappings || complianceMappings.length === 0) {
+        console.log(`⚠️ No compliance mappings available for ${categoryName}`);
+        return null;
+      }
+
+      // Clean category name (remove number prefixes)
+      const cleanCategory = categoryName.replace(/^\d+\.\s*/, '');
+      
+      // Find the category mapping
+      const categoryMapping = complianceMappings.find(mapping => {
+        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
+        return mappingCategory === cleanCategory;
+      });
+
+      if (!categoryMapping) {
+        console.log(`⚠️ No mapping found for category: ${cleanCategory}`);
+        return null;
+      }
+
+      // Extract unified requirements using the same logic as compliance simplification
+      const categoryRequirements = UnifiedRequirementsService.extractUnifiedRequirements(categoryMapping);
+      
+      // Apply special handling for Governance & Leadership
+      let subRequirements = categoryMapping.auditReadyUnified?.subRequirements || [];
+      if (CorrectedGovernanceService.isGovernanceCategory(categoryMapping.category)) {
+        const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
+        subRequirements = [
+          ...correctedStructure.sections['Leadership'] || [],
+          ...correctedStructure.sections['HR'] || [],
+          ...correctedStructure.sections['Monitoring & Compliance'] || []
+        ];
+      }
+
+      console.log(`✅ Found ${subRequirements.length} sub-requirements for ${cleanCategory}`);
+      return {
+        category: cleanCategory,
+        mapping: categoryMapping,
+        subRequirements: subRequirements,
+        requirements: categoryRequirements
+      };
+    } catch (error) {
+      console.error(`Error loading existing sub-requirements for ${categoryName}:`, error);
+      return null;
+    }
+  };
+
+  /**
+   * 🔄 Convert existing sub-requirements to SubGuidanceItem format for editing
+   */
+  const convertSubRequirementsToSubGuidance = (subRequirements: any[], categoryName: string): SubGuidanceItem[] => {
+    console.log(`🔍 Converting ${subRequirements.length} sub-requirements for ${categoryName}:`, 
+      subRequirements.map((req, i) => `${i}: ${JSON.stringify(req).substring(0, 100)}...`)
+    );
+    
+    return subRequirements.map((subReq, index) => {
+      // Generate label (a), b), c), etc.
+      const label = String.fromCharCode(97 + index) + ')';
+      
+      // Try multiple possible content fields to find the actual text
+      let content = '';
+      
+      // Debug: Log the structure of this sub-requirement
+      console.log(`🔍 Sub-requirement ${index} (${label}) structure:`, Object.keys(subReq), subReq);
+      
+      // Try different possible field names
+      if (typeof subReq === 'string') {
+        content = subReq;
+      } else if (subReq.content) {
+        content = subReq.content;
+      } else if (subReq.text) {
+        content = subReq.text;
+      } else if (subReq.requirement) {
+        content = subReq.requirement;
+      } else if (subReq.description) {
+        content = subReq.description;
+      } else if (subReq.guidance) {
+        content = subReq.guidance;
+      } else if (subReq.details) {
+        content = subReq.details;
+      } else {
+        // If no standard fields, try to stringify the whole object
+        content = JSON.stringify(subReq, null, 2);
+      }
+      
+      // Ensure it's a string
+      if (typeof content !== 'string') {
+        content = JSON.stringify(content);
+      }
+      
+      // Clean markdown formatting and ensure proper line breaks
+      content = content
+        .replace(/\*\*/g, '')  // Remove bold markdown
+        .replace(/\*/g, '')    // Remove italic markdown
+        .replace(/\n\s*\n/g, '\n')  // Remove multiple line breaks
+        .trim();
+
+      // If content is still empty, create a placeholder
+      if (!content || content.length < 10) {
+        content = `Placeholder content for ${categoryName} requirement ${label}.\nThis item needs to be enhanced with proper guidance text.\nCurrent data structure may not contain readable content.\nConsider using URL enhancement to improve this requirement.`;
+      }
+
+      console.log(`✅ Sub-requirement ${index} (${label}) final content length: ${content.length} chars, ${content.split('\n').length} lines`);
+
+      return {
+        id: `existing-${categoryName.toLowerCase().replace(/\s+/g, '-')}-${index}`,
+        label: label,
+        content: content,
+        sources: ['Existing Compliance Requirements'],
+        confidence: 1.0, // Existing requirements are 100% confident
+        status: 'approved', // Existing requirements are already approved
+        reviewerId: 'system',
+        reviewerName: 'System Import',
+        reviewedAt: new Date().toISOString(),
+        reviewComments: 'Imported from existing compliance simplification system'
+      } as SubGuidanceItem;
+    });
+  };
+
+  /**
+   * 🎯 Generate real unified guidance for Platform Admin mode (same as compliance simplification)
+   */
+  const generateRealUnifiedGuidance = async (categoryName: string): Promise<SubGuidanceItem[]> => {
+    try {
+      console.log(`🔄 Generating real unified guidance for ${categoryName}...`);
+      
+      // Clean category name (remove number prefixes)
+      const cleanCategory = categoryName.replace(/^\d+\.\s*/, '');
+      
+      if (!complianceMappings || complianceMappings.length === 0) {
+        console.warn('⚠️ No compliance mappings available for real guidance generation');
+        return [];
+      }
+
+      // Find the category mapping (same logic as compliance simplification)
+      const categoryMapping = complianceMappings.find(mapping => {
+        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
+        return mappingCategory === cleanCategory;
+      });
+
+      if (!categoryMapping) {
+        console.warn(`⚠️ No mapping found for category: ${cleanCategory}`);
+        return [];
+      }
+
+      console.log(`✅ Found category mapping for ${cleanCategory}:`, {
+        hasUnified: !!categoryMapping.auditReadyUnified,
+        subRequirementsCount: categoryMapping.auditReadyUnified?.subRequirements?.length || 0
+      });
+
+      // Extract unified requirements using the same logic as compliance simplification
+      const categoryRequirements = UnifiedRequirementsService.extractUnifiedRequirements(categoryMapping);
+      
+      // Apply special handling for Governance & Leadership (same as compliance simplification)
+      let subRequirements = categoryMapping.auditReadyUnified?.subRequirements || [];
+      if (CorrectedGovernanceService.isGovernanceCategory(categoryMapping.category)) {
+        const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
+        subRequirements = [
+          ...correctedStructure.sections['Leadership'] || [],
+          ...correctedStructure.sections['HR'] || [],
+          ...correctedStructure.sections['Monitoring & Compliance'] || []
+        ];
+        console.log(`🔧 Applied governance correction - ${subRequirements.length} items`);
+      }
+
+      // Generate dynamic guidance based on the requirements (same as compliance simplification)
+      const generatedGuidance = UnifiedGuidanceGenerator.generateGuidance(categoryRequirements);
+      
+      console.log(`✅ Generated guidance for ${cleanCategory}:`, {
+        subRequirementsFound: subRequirements.length,
+        guidanceGenerated: !!generatedGuidance,
+        guidanceLength: generatedGuidance?.foundationContent?.length || 0
+      });
+
+      // Convert sub-requirements to SubGuidanceItem format
+      if (subRequirements.length > 0) {
+        return convertSubRequirementsToSubGuidance(subRequirements, cleanCategory);
+      } else {
+        console.warn(`⚠️ No sub-requirements found for ${cleanCategory}`);
+        return [];
+      }
+    } catch (error) {
+      console.error(`❌ Error generating real unified guidance for ${categoryName}:`, error);
+      return [];
     }
   };
 
@@ -614,6 +896,67 @@ export default function RealAIMappingDashboard() {
     }
   };
 
+  /**
+   * 🚀 PHASE 4: Integrate approved sub-guidance with existing requirements
+   */
+  const handleIntegrateApprovedGuidance = async () => {
+    if (!organization) return;
+
+    setIsIntegrating(true);
+    setIntegrationProgress(0);
+    setIntegrationResult(null);
+
+    try {
+      console.log('🚀 Starting Phase 4 requirements integration...');
+      
+      // Get selected categories or use all if none selected
+      const categoryIds = activeCategory ? [activeCategory.id] : undefined;
+      
+      const result = await RequirementsIntegrationService.integrateApprovedSubGuidance(
+        organization.id,
+        {
+          categoryIds,
+          onProgress: (progress, message) => {
+            setIntegrationProgress(progress);
+            console.log(`📊 Integration progress: ${progress}% - ${message}`);
+          },
+          createAuditTrail: true,
+          autoExport: selectedExportFormats.length > 0,
+          exportFormats: availableExportFormats.filter(format => 
+            selectedExportFormats.includes(format.format)
+          )
+        }
+      );
+
+      setIntegrationResult(result);
+
+      if (result.success) {
+        console.log(`✅ Integration completed: ${result.integrated_requirements.length} requirements integrated`);
+        
+        // Refresh integration status
+        await loadIntegrationData();
+        
+        // Close dialog
+        setShowIntegrationDialog(false);
+        setSelectedExportFormats([]);
+      } else {
+        console.error('❌ Integration failed:', result.failed_integrations);
+      }
+
+    } catch (error) {
+      console.error('Error during integration:', error);
+      setIntegrationResult({
+        success: false,
+        integrated_requirements: [],
+        failed_integrations: [{ category_id: 'all', error: 'Integration process failed' }],
+        audit_entries: []
+      });
+    } finally {
+      setIsIntegrating(false);
+      setIntegrationProgress(0);
+    }
+  };
+
 
   const filteredRequirements = requirements.filter(req => 
     selectedCategory === 'all' || req.category_id === selectedCategory
@@ -628,14 +971,32 @@ export default function RealAIMappingDashboard() {
     }
   };
 
-  if (loading) {
+  // Platform Admin mode doesn't need organization context
+  const needsOrganization = !isPlatformAdmin;
+  
+  if (loading || isLoadingMappings || (needsOrganization && !organization)) {
     return (
       <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
         <AdminNavigation />
         <div className="flex-1 ml-64 flex items-center justify-center">
           <div className="text-center">
             <Clock className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Loading real compliance data...</p>
+            <p className="text-gray-600">
+              {isPlatformAdmin 
+                ? 'Loading platform admin data...' 
+                : (!organization ? 'Loading organization context...' : 'Loading compliance data and mappings...')
+              }
+            </p>
+            {!isPlatformAdmin && !organization && (
+              <p className="text-xs text-gray-500 mt-2">
+                Waiting for organization authentication...
+              </p>
+            )}
+            {isPlatformAdmin && (
+              <p className="text-xs text-emerald-500 mt-2">
+                Platform Admin Mode - No organization required
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -846,6 +1207,117 @@ export default function RealAIMappingDashboard() {
                 </div>
               </div>
             </div>
+
+            {/* PHASE 4: Integration Status Card */}
+            {integrationStatus && (
+              <div className="relative group mb-8">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="relative bg-black/60 backdrop-blur-xl border border-emerald-500/20 rounded-2xl p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <Rocket className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">Requirements Integration</h3>
+                        <p className="text-xs text-emerald-300">Phase 4: Connect approved guidance to unified requirements</p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => setShowIntegrationDialog(true)}
+                      disabled={isIntegrating}
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold"
+                    >
+                      {isIntegrating ? (
+                        <div className="flex items-center gap-2">
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          Integrating... ({integrationProgress}%)
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Rocket className="w-4 h-4" />
+                          Start Integration
+                        </div>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Integration Statistics */}
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div className="text-center p-3 bg-black/40 rounded-xl border border-emerald-500/10">
+                      <div className="text-2xl font-bold text-white">{integrationStatus.total_categories}</div>
+                      <div className="text-xs text-emerald-300">Categories</div>
+                    </div>
+                    <div className="text-center p-3 bg-black/40 rounded-xl border border-emerald-500/10">
+                      <div className="text-2xl font-bold text-white">{integrationStatus.categories_with_approved_guidance}</div>
+                      <div className="text-xs text-emerald-300">With Guidance</div>
+                    </div>
+                    <div className="text-center p-3 bg-black/40 rounded-xl border border-emerald-500/10">
+                      <div className="text-2xl font-bold text-white">{integrationStatus.integrated_requirements}</div>
+                      <div className="text-xs text-emerald-300">Integrated</div>
+                    </div>
+                    <div className="text-center p-3 bg-black/40 rounded-xl border border-emerald-500/10">
+                      <div className="text-2xl font-bold text-white">{integrationStatus.pending_integration}</div>
+                      <div className="text-xs text-emerald-300">Pending</div>
+                    </div>
+                    <div className="text-center p-3 bg-black/40 rounded-xl border border-emerald-500/10">
+                      <div className="text-2xl font-bold text-white">{integrationStatus.export_formats_available}</div>
+                      <div className="text-xs text-emerald-300">Export Formats</div>
+                    </div>
+                  </div>
+
+                  {/* Last Integration */}
+                  {integrationStatus.last_integration && (
+                    <div className="mt-4 text-center text-xs text-gray-400">
+                      Last integration: {new Date(integrationStatus.last_integration).toLocaleString()}
+                    </div>
+                  )}
+
+                  {/* Integration Progress */}
+                  {isIntegrating && (
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between text-xs text-emerald-300 mb-1">
+                        <span>Integration Progress</span>
+                        <span>{integrationProgress}%</span>
+                      </div>
+                      <div className="w-full bg-emerald-900/30 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${integrationProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Integration Result */}
+                  {integrationResult && (
+                    <div className="mt-4 p-3 rounded-xl border">
+                      {integrationResult.success ? (
+                        <div className="border-green-500/20 bg-green-500/10">
+                          <div className="text-sm text-green-300 font-semibold mb-2">✅ Integration Completed Successfully</div>
+                          <div className="text-xs text-green-200">
+                            • {integrationResult.integrated_requirements.length} requirements integrated
+                            • {integrationResult.audit_entries.length} audit entries created
+                            {integrationResult.export_summary && (
+                              <span> • Exported to {integrationResult.export_summary.formats.length} formats</span>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border-red-500/20 bg-red-500/10">
+                          <div className="text-sm text-red-300 font-semibold mb-2">❌ Integration Failed</div>
+                          <div className="text-xs text-red-200">
+                            {integrationResult.failed_integrations.map(failure => 
+                              `• ${failure.category_id}: ${failure.error}`
+                            ).join('\n')}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -954,32 +1426,90 @@ export default function RealAIMappingDashboard() {
                             : 'border-purple-500/20 hover:border-purple-500/40'
                         }`}
                         onClick={async () => {
-                          // Set selected category
+                          console.log(`🔄 Category clicked: ${category.name}`, {
+                            organization: organization?.id || 'null',
+                            user: user?.id || 'null',
+                            isPlatformAdmin: isPlatformAdmin || false,
+                            complianceMappings: complianceMappings?.length || 'null'
+                          });
+                          
+                          // Set selected category first
                           setActiveCategory(category);
                           
-                          // Set guidance if exists
-                          if (guidance) {
-                            setSelectedCategoryGuidance(guidance);
-                          } else {
-                            // Clear previous guidance and attempt to load new
-                            setSelectedCategoryGuidance(null);
-                            
-                            if (organization) {
-                              console.log(`🔄 Loading unified guidance for category: ${category.name}`);
-                              try {
-                                const freshGuidances = await ComprehensiveGuidanceService.loadComprehensiveGuidance(organization.id);
-                                const categoryGuidance = freshGuidances.find(cg => cg.category_id === category.id);
-                                if (categoryGuidance) {
-                                  setSelectedCategoryGuidance(categoryGuidance);
-                                  setCategoryGuidances(freshGuidances);
-                                  console.log(`✅ Loaded guidance for ${category.name}`);
-                                } else {
-                                  console.log(`⚠️ No guidance found for ${category.name}`);
-                                }
-                              } catch (error) {
-                                console.error('Error loading category guidance:', error);
-                              }
+                          // Clear previous guidance and sub-guidance initially
+                          setSelectedCategoryGuidance(null);
+                          setSubGuidanceItems([]);
+                          
+                          if (isPlatformAdmin) {
+                            // Platform Admin mode - generate real unified guidance (same as compliance simplification)
+                            console.log('🔒 Platform Admin mode - generating real unified guidance');
+                            try {
+                              const realSubGuidance = await generateRealUnifiedGuidance(category.name);
+                              setSubGuidanceItems(realSubGuidance);
+                              console.log(`✅ Generated ${realSubGuidance.length} real sub-guidance items for ${category.name}:`,
+                                realSubGuidance.map(item => `${item.label}(${item.content.split('\n').length} lines)`).join(', ')
+                              );
+                            } catch (error) {
+                              console.error('Error generating real unified guidance:', error);
+                              setSubGuidanceItems([]);
                             }
+                            return;
+                          }
+
+                          // Regular organization mode
+                          if (!organization) {
+                            console.error('❌ No organization context available - cannot load data');
+                            return;
+                          }
+
+                          // Check for compliance mappings
+                          if (!complianceMappings || complianceMappings.length === 0) {
+                            console.warn('⚠️ No compliance mappings available - loading without sub-requirements');
+                          }
+                          
+                          console.log(`🔄 Loading unified guidance for category: ${category.name}`);
+                          try {
+                            // Load comprehensive guidance first
+                            const freshGuidances = await ComprehensiveGuidanceService.loadComprehensiveGuidance(organization.id);
+                            setCategoryGuidances(freshGuidances);
+                            
+                            // Find and set the specific category guidance
+                            const categoryGuidance = freshGuidances.find(cg => cg.category_id === category.id);
+                            if (categoryGuidance) {
+                              setSelectedCategoryGuidance(categoryGuidance);
+                              console.log(`✅ Loaded comprehensive guidance for ${category.name}:`, {
+                                coverage: categoryGuidance.coverage_percentage,
+                                frameworks: categoryGuidance.frameworks_included.length,
+                                confidence: categoryGuidance.confidence_score
+                              });
+                            } else {
+                              console.log(`⚠️ No comprehensive guidance found for ${category.name}`);
+                              setSelectedCategoryGuidance(null);
+                            }
+                            
+                            // Try to load existing sub-requirements
+                            if (complianceMappings && complianceMappings.length > 0) {
+                              const complianceData = await loadExistingSubRequirements(category.name);
+                              
+                              if (complianceData && complianceData.subRequirements?.length > 0) {
+                                const convertedSubGuidance = convertSubRequirementsToSubGuidance(complianceData.subRequirements, category.name);
+                                setSubGuidanceItems(convertedSubGuidance);
+                                console.log(`✅ Loaded ${convertedSubGuidance.length} existing sub-requirements for ${category.name}:`, 
+                                  convertedSubGuidance.map(item => `${item.label}(${item.content.split('\n').length} lines)`).join(', ')
+                                );
+                              } else {
+                                setSubGuidanceItems([]);
+                                console.log(`ℹ️ No existing sub-requirements found for ${category.name}`);
+                              }
+                            } else {
+                              console.log(`⚠️ No compliance mappings - cannot load sub-requirements for ${category.name}`);
+                              setSubGuidanceItems([]);
+                            }
+                            
+                          } catch (error) {
+                            console.error('Error loading category data:', error);
+                            setSelectedCategoryGuidance(null);
+                            setSubGuidanceItems([]);
                           }
                         }}
                       >
@@ -1752,6 +2282,151 @@ export default function RealAIMappingDashboard() {
                         <X className="w-3 h-3" />
                       )}
                       {approvalAction === 'approve' ? 'Approve All' : 'Reject All'}
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PHASE 4: Integration Dialog */}
+      {showIntegrationDialog && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="relative bg-black/90 backdrop-blur-xl border border-emerald-500/20 rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl blur opacity-20"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Rocket className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Requirements Integration</h3>
+                    <p className="text-sm text-emerald-300">Connect approved sub-guidance to unified requirements</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => {
+                    setShowIntegrationDialog(false);
+                    setSelectedExportFormats([]);
+                  }}
+                  className="bg-gray-500/20 border border-gray-400/30 text-gray-200 hover:bg-gray-500/30"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Integration Scope */}
+              <div className="mb-6 p-4 bg-black/40 rounded-xl border border-emerald-500/10">
+                <h4 className="text-sm font-bold text-emerald-300 mb-3">Integration Scope</h4>
+                <div className="text-sm text-gray-300">
+                  {activeCategory ? (
+                    <div>
+                      <div className="mb-2">🎯 <strong>Selected Category:</strong> {activeCategory.name}</div>
+                      <div className="text-xs text-gray-400">
+                        Only approved sub-guidance from this category will be integrated
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="mb-2">🌐 <strong>All Categories:</strong> Organization-wide integration</div>
+                      <div className="text-xs text-gray-400">
+                        All approved sub-guidance items from all categories will be integrated
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Export Format Selection */}
+              <div className="mb-6 p-4 bg-black/40 rounded-xl border border-emerald-500/10">
+                <h4 className="text-sm font-bold text-emerald-300 mb-3">Export Formats (Optional)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {availableExportFormats.map(format => (
+                    <div key={format.format} className="flex items-start gap-3 p-3 bg-black/30 rounded-lg border border-emerald-500/10">
+                      <input
+                        type="checkbox"
+                        checked={selectedExportFormats.includes(format.format)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedExportFormats([...selectedExportFormats, format.format]);
+                          } else {
+                            setSelectedExportFormats(selectedExportFormats.filter(f => f !== format.format));
+                          }
+                        }}
+                        className="mt-1 w-4 h-4 text-emerald-600 bg-black border-emerald-500/30 rounded focus:ring-emerald-500"
+                      />
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-white">{format.title}</div>
+                        <div className="text-xs text-gray-400 mt-1">{format.description}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedExportFormats.length > 0 && (
+                  <div className="mt-3 text-xs text-emerald-300">
+                    {selectedExportFormats.length} format{selectedExportFormats.length !== 1 ? 's' : ''} selected for automatic export
+                  </div>
+                )}
+              </div>
+
+              {/* Integration Workflow */}
+              <div className="mb-6 p-4 bg-black/40 rounded-xl border border-emerald-500/10">
+                <h4 className="text-sm font-bold text-emerald-300 mb-3">Integration Workflow</h4>
+                <div className="space-y-2 text-xs text-gray-300">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span>1. Load all approved sub-guidance items</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span>2. Create unified requirements structure</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span>3. Store integrated requirements in database</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span>4. Create comprehensive audit trail</span>
+                  </div>
+                  {selectedExportFormats.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                      <span>5. Export to selected compliance frameworks</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setShowIntegrationDialog(false);
+                    setSelectedExportFormats([]);
+                  }}
+                  className="flex-1 bg-gray-500/20 border border-gray-400/30 text-gray-200 hover:bg-gray-500/30"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleIntegrateApprovedGuidance}
+                  disabled={isIntegrating}
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold"
+                >
+                  {isIntegrating ? (
+                    <div className="flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      Integrating... ({integrationProgress}%)
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Rocket className="w-4 h-4" />
+                      Start Integration
+                      {selectedExportFormats.length > 0 && <span className="text-xs">& Export</span>}
                     </div>
                   )}
                 </Button>
