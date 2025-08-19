@@ -1653,6 +1653,34 @@ export default function RealAIMappingDashboard() {
                     </Button>
                   </div>
 
+                  {/* Knowledge Bank Display */}
+                  <div className="mt-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                    <div className="flex items-center gap-2 mb-3">
+                      <BookOpen className="w-4 h-4 text-purple-400" />
+                      <h4 className="text-sm font-semibold text-purple-300">AI Knowledge Bank</h4>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { title: 'ISO 27001:2022', version: '2022', pages: 125 },
+                        { title: 'ISO 27002:2022', version: '2022', pages: 89 },
+                        { title: 'NIS2 Directive', version: '2022/2555', pages: 78 },
+                        { title: 'CIS Controls', version: '8.1.2', pages: 45 },
+                      ].map(standard => (
+                        <div key={standard.title} className="flex items-center justify-between p-2 bg-black/30 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-3 h-3 text-purple-400" />
+                            <div>
+                              <div className="text-xs text-white">{standard.title}</div>
+                              <div className="text-xs text-purple-300">v{standard.version}</div>
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-400">{standard.pages}p</div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2 text-center">Standards available for AI-powered analysis</p>
+                  </div>
+
                   {/* URL Processing Progress */}
                   {isProcessingUrls && (
                     <div className="mt-3">

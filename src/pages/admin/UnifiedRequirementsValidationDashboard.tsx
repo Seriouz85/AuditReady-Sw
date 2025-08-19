@@ -1,54 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
 import { 
   CheckSquare,
   Brain, 
   Zap, 
-  Upload,
-  Link,
   RefreshCw,
   CheckCircle,
-  AlertTriangle,
   Clock,
   Globe,
   FileText,
-  Plus,
-  Eye,
-  Edit,
-  Download,
-  Database,
-  Target,
   BookOpen,
   Sparkles,
-  Layers,
-  Activity,
-  TrendingUp,
   Shield,
-  Cpu,
-  Network,
-  Rocket,
-  X,
-  User,
   Search,
   Filter,
-  Info,
   Tag,
-  Palette
+  Palette,
+  X,
+  Edit,
+  Database,
+  Target
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
-import { UnifiedRequirementsAnalysisService } from '@/services/analysis/UnifiedRequirementsAnalysisService';
+// Removed UnifiedRequirementsAnalysisService import
 import { UnifiedRequirementsService, UnifiedRequirement as UnifiedReq } from '@/services/compliance/UnifiedRequirementsService';
-import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
-import { AIRequirementsValidationService, UnifiedRequirementAnalysis, CategoryValidationResult, StandardRequirement } from '@/services/validation/AIRequirementsValidationService';
+import { AIRequirementsValidationService, CategoryValidationResult, StandardRequirement } from '@/services/validation/AIRequirementsValidationService';
 import { UnifiedRequirementsValidationPersistenceService, ValidationSession as DBValidationSession, PersistedRequirementAnalysis, PersistedSuggestion } from '@/services/validation/UnifiedRequirementsValidationPersistenceService';
 
 // Types for unified requirements validation
@@ -59,6 +42,7 @@ interface UnifiedCategory {
   sort_order: number;
   icon?: string;
   is_active: boolean;
+  mapping_data?: any; // Add mapping_data property
 }
 
 interface UnifiedRequirement {
@@ -80,10 +64,10 @@ interface UnifiedRequirement {
 interface RequirementSuggestion {
   id: string;
   requirement_id: string;
-  type: 'content_enhancement' | 'framework_specific' | 'length_optimization' | 'clarity_improvement';
+  type: 'content_enhancement' | 'framework_specific' | 'length_optimization' | 'clarity_improvement' | 'framework_enhancement';
   priority: 'low' | 'medium' | 'high' | 'critical';
   suggestion: string;
-  framework_specific?: string; // Which framework this suggestion is for
+  framework_specific?: string | undefined; // Which framework this suggestion is for
   expected_improvement: string;
   ai_confidence: number;
   status: 'pending' | 'approved' | 'rejected';
@@ -130,13 +114,12 @@ export default function UnifiedRequirementsValidationDashboard() {
   
   // UI state
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterFramework, setFilterFramework] = useState('all');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [aiReferenceUrl, setAiReferenceUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
   const [validationProgress, setValidationProgress] = useState(0);
   
-  // Selection and editing
-  const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
+  // Selection and editing (removed unused selectedRequirements)
   const [editingRequirementId, setEditingRequirementId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [editReason, setEditReason] = useState('');
@@ -144,10 +127,10 @@ export default function UnifiedRequirementsValidationDashboard() {
   // Review and approval
   const [reviewComment, setReviewComment] = useState('');
   const [isProcessingApproval, setIsProcessingApproval] = useState(false);
-  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+  // Removed unused showApprovalDialog
   
   // Current analysis
-  const [currentAnalysis, setCurrentAnalysis] = useState<any | null>(null);
+  // Removed unused currentAnalysis state
   const [categoryValidationResult, setCategoryValidationResult] = useState<CategoryValidationResult | null>(null);
   const [aiAnalysisInProgress, setAiAnalysisInProgress] = useState(false);
   
@@ -382,11 +365,11 @@ export default function UnifiedRequirementsValidationDashboard() {
   // Helper functions for analysis
   const extractFrameworkMappings = (mapping: any) => {
     const frameworks = {
-      iso27001: mapping.iso27001Controls?.length || 0,
-      nistCsf: mapping.nistCsfCategories?.length || 0,
-      cisControls: mapping.cisControls?.length || 0,
-      nis2: mapping.nis2Articles?.length || 0,
-      gdpr: mapping.gdprArticles?.length || 0
+      iso27001: mapping.frameworks?.['iso27001']?.length || 0,
+      nistCsf: 0, // Removed from database
+      cisControls: mapping.frameworks?.['cisControls']?.length || 0,
+      nis2: mapping.frameworks?.['nis2']?.length || 0,
+      gdpr: mapping.frameworks?.['gdpr']?.length || 0
     };
     return frameworks;
   };
@@ -400,22 +383,7 @@ export default function UnifiedRequirementsValidationDashboard() {
     return Math.min(unifiedRequirementsCount / Math.max(totalPossibleMappings * 0.7, 1), 1);
   };
 
-  const calculateQualityScore = (mapping: any) => {
-    const unifiedRequirements = mapping.auditReadyUnified?.subRequirements || [];
-    if (unifiedRequirements.length === 0) return 0;
-    
-    // Simple quality heuristics
-    let totalQuality = 0;
-    unifiedRequirements.forEach((req: any) => {
-      const content = req.content || req.text || req.requirement || '';
-      const wordCount = content.split(' ').length;
-      const hasProperStructure = content.includes('\n') || wordCount > 20;
-      const quality = hasProperStructure ? (wordCount > 50 ? 1 : 0.7) : 0.3;
-      totalQuality += quality;
-    });
-    
-    return totalQuality / unifiedRequirements.length;
-  };
+  // Removed unused calculateQualityScore function
 
   const identifyGaps = (mapping: any) => {
     const frameworks = extractFrameworkMappings(mapping);
@@ -677,13 +645,13 @@ export default function UnifiedRequirementsValidationDashboard() {
       const standardRequirements: StandardRequirement[] = [];
       
       // ISO 27001 controls
-      if (categoryMapping.iso27001Controls) {
-        categoryMapping.iso27001Controls.forEach((control: any) => {
+      if (categoryMapping.frameworks?.['iso27001']) {
+        categoryMapping.frameworks['iso27001'].forEach((control: any) => {
           standardRequirements.push({
             id: `iso27001-${control.id || Math.random()}`,
             framework: 'ISO 27001',
             category: activeCategory.name,
-            control_id: control.control || control.id || '',
+            control_id: control.code || control.id || '',
             title: control.title || control.name || '',
             description: control.description || '',
             implementation_guidance: control.guidance
@@ -692,8 +660,8 @@ export default function UnifiedRequirementsValidationDashboard() {
       }
 
       // NIS2 articles
-      if (categoryMapping.nis2Articles) {
-        categoryMapping.nis2Articles.forEach((article: any) => {
+      if (categoryMapping.frameworks?.['nis2']) {
+        categoryMapping.frameworks['nis2'].forEach((article: any) => {
           standardRequirements.push({
             id: `nis2-${article.id || Math.random()}`,
             framework: 'NIS2',
@@ -808,64 +776,9 @@ export default function UnifiedRequirementsValidationDashboard() {
   };
 
   // Advanced analysis functions
-  const performDetailedAnalysis = async (categoryId: string) => {
-    setIsAnalyzing(true);
-    try {
-      const category = categories.find(c => c.id === categoryId);
-      if (!category || !category.mapping_data) {
-        console.error('Category not found or missing mapping data');
-        return;
-      }
+  // Removed unused performDetailedAnalysis function
 
-      console.log('🔬 Starting detailed analysis for category:', category.name);
-      
-      const detailedAnalysis = await UnifiedRequirementsAnalysisService.analyzeCategory(
-        category.mapping_data,
-        {
-          includeAIRecommendations: true,
-          deepAnalysis: true
-        }
-      );
-
-      setCurrentAnalysis(detailedAnalysis);
-      console.log('✅ Detailed analysis complete:', detailedAnalysis);
-      
-    } catch (error) {
-      console.error('❌ Detailed analysis failed:', error);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  const performAIAnalysis = async (categoryId: string) => {
-    setIsAnalyzing(true);
-    try {
-      const category = categories.find(c => c.id === categoryId);
-      if (!category || !category.mapping_data) {
-        console.error('Category not found or missing mapping data');
-        return;
-      }
-
-      console.log('🤖 Starting AI-powered analysis for category:', category.name);
-      
-      const aiAnalysis = await UnifiedRequirementsAnalysisService.analyzeCategory(
-        category.mapping_data,
-        {
-          includeAIRecommendations: true,
-          deepAnalysis: true,
-          frameworkFocus: ['iso27001', 'nis2', 'nist'] // Focus on critical frameworks
-        }
-      );
-
-      setCurrentAnalysis(aiAnalysis);
-      console.log('🧠 AI analysis complete with recommendations:', aiAnalysis);
-      
-    } catch (error) {
-      console.error('❌ AI analysis failed:', error);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+  // Removed unused performAIAnalysis function
 
   /**
    * ✅ Approve AI suggestion with persistence
@@ -1216,32 +1129,34 @@ export default function UnifiedRequirementsValidationDashboard() {
     );
   }
 
-  // Filter categories based on search and framework
+  // Removed duplicate filteredCategories definition
+
+  // Knowledge bank data
+  const knowledgeBankStandards = [
+    { title: 'ISO 27001:2022', version: '2022', file: 'ISO 27001.pdf', pages: 125 },
+    { title: 'ISO 27002:2022', version: '2022', file: 'ISO_27001_27002_Requirements_Extraction.md', pages: 89 },
+    { title: 'NIS2 Directive', version: '2022/2555', file: 'CELEX_32022L2555_EN_TXT.pdf', pages: 78 },
+    { title: 'CIS Controls', version: '8.1.2', file: 'CIS_Controls_Version_8.1.2___March_2025.xlsx', pages: 45 },
+  ];
+
+  // Filter categories based on search and filter criteria
   const filteredCategories = categories.filter(category => {
     const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // If filtering by specific framework, check if category has requirements with that framework
-    if (filterFramework !== 'all') {
-      console.log('🔍 DIAGNOSTIC: Framework filter applied', {
-        category: category.name,
-        filterFramework,
-        matchesSearch,
-        timestamp: new Date().toISOString()
-      });
-      // For now, we'll use the category session data or allow all until we have detailed framework analysis
-      return matchesSearch; // TODO: Add framework-specific filtering when we have requirements loaded
+    if (filterCategory !== 'all') {
+      return matchesSearch && category.name === filterCategory;
     }
     
     return matchesSearch;
   });
 
   // Log filtering results
-  if (searchTerm || filterFramework !== 'all') {
+  if (searchTerm || filterCategory !== 'all') {
     console.log('📊 DIAGNOSTIC: Category filtering results', {
       totalCategories: categories.length,
       filteredCount: filteredCategories.length,
       searchTerm,
-      filterFramework,
+      filterCategory,
       filteredCategories: filteredCategories.map(c => c.name),
       timestamp: new Date().toISOString()
     });
@@ -1394,28 +1309,67 @@ export default function UnifiedRequirementsValidationDashboard() {
                   <div>
                     <label className="text-xs text-blue-300 mb-2 block flex items-center gap-2">
                       <Filter className="w-3 h-3" />
-                      Filter by Framework Focus
+                      Filter by Category
                     </label>
-                    <Select value={filterFramework} onValueChange={(value) => {
-                      console.log('🎯 DIAGNOSTIC: Framework filter changed', {
-                        oldValue: filterFramework,
+                    <Select value={filterCategory} onValueChange={(value) => {
+                      console.log('🎯 DIAGNOSTIC: Category filter changed', {
+                        oldValue: filterCategory,
                         newValue: value,
                         timestamp: new Date().toISOString()
                       });
-                      setFilterFramework(value);
+                      setFilterCategory(value);
                     }}>
                       <SelectTrigger className="w-full bg-black/50 border-blue-500/30 text-white">
-                        <SelectValue placeholder="All frameworks" />
+                        <SelectValue placeholder="All categories" />
                       </SelectTrigger>
-                      <SelectContent className="bg-black/90 border-blue-500/30">
-                        <SelectItem value="all" className="text-white">All Frameworks</SelectItem>
-                        <SelectItem value="ISO 27001" className="text-blue-300">ISO 27001</SelectItem>
-                        <SelectItem value="ISO 27002" className="text-cyan-300">ISO 27002</SelectItem>
-                        <SelectItem value="CIS Controls" className="text-purple-300">CIS Controls</SelectItem>
-                        <SelectItem value="NIS2" className="text-orange-300">NIS2</SelectItem>
-                        <SelectItem value="GDPR" className="text-pink-300">GDPR</SelectItem>
+                      <SelectContent className="bg-black/90 border-blue-500/30 max-h-64 overflow-y-auto">
+                        <SelectItem value="all" className="text-white">All Categories</SelectItem>
+                        {categories.map(category => (
+                          <SelectItem key={category.id} value={category.name} className="text-blue-300">
+                            {category.icon} {category.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* AI Reference URL */}
+                  <div className="pt-2 border-t border-blue-500/20">
+                    <label className="text-xs text-blue-300 mb-2 block flex items-center gap-2">
+                      <Globe className="w-3 h-3" />
+                      AI Reference URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={aiReferenceUrl}
+                      onChange={(e) => setAiReferenceUrl(e.target.value)}
+                      placeholder="https://example.com/compliance-doc"
+                      className="w-full px-3 py-2 bg-black/50 border border-blue-500/30 rounded-lg text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-400"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Provide a URL for AI to consider during validation</p>
+                  </div>
+
+                  {/* Knowledge Bank */}
+                  <div className="pt-2 border-t border-blue-500/20">
+                    <div className="text-xs text-purple-300 mb-2 flex items-center gap-2">
+                      <BookOpen className="w-3 h-3" />
+                      AI Knowledge Bank
+                    </div>
+                    <div className="space-y-1">
+                      {knowledgeBankStandards.map(standard => (
+                        <div key={standard.file} className="flex items-center justify-between p-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-3 h-3 text-purple-400" />
+                            <div>
+                              <div className="text-xs text-white">{standard.title}</div>
+                              <div className="text-xs text-purple-300">v{standard.version}</div>
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-400">{standard.pages}p</div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">Standards available for AI analysis</p>
                   </div>
 
                   {/* Framework Legend */}
@@ -1758,7 +1712,7 @@ export default function UnifiedRequirementsValidationDashboard() {
                       </div>
                       
                       <div className="p-4 space-y-4 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/50 scrollbar-track-transparent">
-                        {requirements.map((requirement, index) => (
+                        {requirements.map((requirement) => (
                           <div key={requirement.id} className="relative group">
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-slate-600 to-slate-700 rounded-xl blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
                             <div className={`relative p-4 rounded-xl border transition-all duration-300 ${
@@ -1883,7 +1837,7 @@ export default function UnifiedRequirementsValidationDashboard() {
                                       </div>
                                     </div>
                                     <div className="space-y-2">
-                                      {reqSuggestions.map((suggestion, idx) => (
+                                      {reqSuggestions.map((suggestion) => (
                                         <div key={suggestion.id} className="relative group">
                                           <div className={`p-3 rounded-lg border transition-all duration-300 ${
                                             suggestion.status === 'approved' ? 'bg-green-900/30 border-green-500/40' :
