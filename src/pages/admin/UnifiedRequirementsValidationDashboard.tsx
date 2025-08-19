@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+// Removed unused Alert imports
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   CheckSquare,
@@ -117,7 +117,7 @@ export default function UnifiedRequirementsValidationDashboard() {
   const [filterCategory, setFilterCategory] = useState('all');
   const [aiReferenceUrl, setAiReferenceUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [validationProgress, setValidationProgress] = useState(0);
+  const [, setValidationProgress] = useState(0);
   
   // Selection and editing (removed unused selectedRequirements)
   const [editingRequirementId, setEditingRequirementId] = useState<string | null>(null);
@@ -864,7 +864,7 @@ export default function UnifiedRequirementsValidationDashboard() {
 
       // Persist rejection to database if enabled
       if (persistenceEnabled) {
-        const result = await UnifiedRequirementsValidationPersistenceService.rejectSuggestion(
+        await UnifiedRequirementsValidationPersistenceService.rejectSuggestion(
           suggestionId,
           user.id,
           reviewComment || undefined
