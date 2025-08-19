@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   Home,
   Brain,
-  Zap
+  CheckSquare
 } from 'lucide-react';
 
 export const AdminNavigation: React.FC = () => {
@@ -34,8 +34,8 @@ export const AdminNavigation: React.FC = () => {
     { to: '/admin/organizations', icon: <Building size={20} />, label: 'Organizations' },
     { to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
     { to: '/admin/compliance', icon: <BookOpen size={20} />, label: 'Compliance' },
-    { to: '/admin/ai-content', icon: <Zap size={20} />, label: 'AI Content', badge: 'NEW' },
-    { to: '/admin/realaimappingdashboard', icon: <Brain size={20} />, label: 'AI Mapping' },
+    { to: '/admin/unified-requirements-validation', icon: <CheckSquare size={20} />, label: 'Unified Requirements Validation' },
+    { to: '/admin/realaimappingdashboard', icon: <Brain size={20} />, label: 'Unified Guidance Validation' },
     { to: '/admin/system', icon: <Settings size={20} />, label: 'System' },
     { to: '/admin/logs', icon: <Activity size={20} />, label: 'Audit Logs' },
   ];
