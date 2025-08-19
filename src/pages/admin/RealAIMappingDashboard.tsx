@@ -1,27 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
 import { 
   Brain, 
   Zap, 
   Upload,
-  Link,
   RefreshCw,
   CheckCircle,
   AlertTriangle,
   Clock,
   Globe,
-  FileText,
-  Plus,
-  Eye,
-  Edit,
   Download,
   Database,
   Target,
@@ -35,20 +25,20 @@ import {
   Network,
   Rocket,
   X,
-  User,
   Search,
   Filter,
   Award,
   ShieldCheck,
   FileSpreadsheet,
-  Scale
+  Scale,
+  Edit
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { KnowledgeIngestionService } from '@/services/rag/KnowledgeIngestionService';
 import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
 import { ComprehensiveGuidanceService } from '@/services/rag/ComprehensiveGuidanceService';
 import { SubGuidanceGenerationService, SubGuidanceItem, SubGuidanceResult } from '@/services/rag/SubGuidanceGenerationService';
-import { RequirementsIntegrationService, IntegratedRequirement, ExportFormat, IntegrationResult } from '@/services/rag/RequirementsIntegrationService';
+import { RequirementsIntegrationService, ExportFormat, IntegrationResult } from '@/services/rag/RequirementsIntegrationService';
 import { useComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
 import { UnifiedRequirementsService } from '@/services/compliance/UnifiedRequirementsService';
 import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
@@ -90,16 +80,7 @@ interface KnowledgeSource {
   created_at: string;
 }
 
-interface RequirementValidation {
-  requirement_id: string;
-  quality_score: number;
-  completeness_score: number;
-  framework_alignment: number;
-  missing_elements: string[];
-  improvement_suggestions: string[];
-  confidence: number;
-  validated_at: string;
-}
+// Removed unused RequirementValidation interface
 
 export default function RealAIMappingDashboard() {
   const { user, organization, isPlatformAdmin } = useAuth();
@@ -128,8 +109,7 @@ export default function RealAIMappingDashboard() {
   const [categories, setCategories] = useState<UnifiedCategory[]>([]);
   const [requirements, setRequirements] = useState<UnifiedRequirement[]>([]);
   const [knowledgeSources, setKnowledgeSources] = useState<KnowledgeSource[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedRequirement, setSelectedRequirement] = useState<UnifiedRequirement | null>(null);
+  const [selectedCategory] = useState<string>('all');
   const [isGeneratingGuidance, setIsGeneratingGuidance] = useState(false);
   const [isScrapingUrl, setIsScrapingUrl] = useState(false);
   const [newUrl, setNewUrl] = useState('');
@@ -143,10 +123,10 @@ export default function RealAIMappingDashboard() {
   const [activeCategory, setActiveCategory] = useState<UnifiedCategory | null>(null);
   
   // Sub-requirements editing focus
-  const [editingSubRequirements, setEditingSubRequirements] = useState(false);
+  const [editingSubRequirements] = useState(false);
   const [categoryGuidances, setCategoryGuidances] = useState<any[]>([]);
   const [selectedCategoryGuidance, setSelectedCategoryGuidance] = useState<any | null>(null);
-  const [validationReport, setValidationReport] = useState<any>(null);
+  const [validationReport] = useState<any>(null);
   
   // PHASE 2: URL Processing and Sub-guidance Generation
   const [url1, setUrl1] = useState('');
@@ -510,7 +490,7 @@ export default function RealAIMappingDashboard() {
     }
   };
 
-  const handleAddKnowledgeSource = async () => {
+  const handleAddKnowledgeSource = async () => { // eslint-disable-line @typescript-eslint/no-unused-vars
     if (!newUrl.trim()) return;
 
     setIsScrapingUrl(true);
@@ -546,7 +526,7 @@ export default function RealAIMappingDashboard() {
     }
   };
 
-  const generateGuidanceForRequirement = async (requirement: UnifiedRequirement) => {
+  const generateGuidanceForRequirement = async (requirement: UnifiedRequirement) => { // eslint-disable-line @typescript-eslint/no-unused-vars
     if (!requirement.category) return;
 
     setIsGeneratingGuidance(true);
@@ -739,7 +719,7 @@ export default function RealAIMappingDashboard() {
         editingItemId,
         editContent,
         user.id,
-        user.user_metadata?.full_name || user.email || 'Unknown User',
+        user.user_metadata?.['full_name'] || user.email || 'Unknown User',
         editReason
       );
 
@@ -785,7 +765,7 @@ export default function RealAIMappingDashboard() {
         activeCategory.id,
         itemId,
         user.id,
-        user.user_metadata?.full_name || user.email || 'Unknown Reviewer',
+        user.user_metadata?.['full_name'] || user.email || 'Unknown Reviewer',
         reviewComment
       );
 
@@ -818,7 +798,7 @@ export default function RealAIMappingDashboard() {
         activeCategory.id,
         itemId,
         user.id,
-        user.user_metadata?.full_name || user.email || 'Unknown Reviewer',
+        user.user_metadata?.['full_name'] || user.email || 'Unknown Reviewer',
         comments
       );
 
@@ -851,7 +831,7 @@ export default function RealAIMappingDashboard() {
         activeCategory.id,
         selectedItems,
         user.id,
-        user.user_metadata?.full_name || user.email || 'Unknown Reviewer',
+        user.user_metadata?.['full_name'] || user.email || 'Unknown Reviewer',
         reviewComment
       );
 

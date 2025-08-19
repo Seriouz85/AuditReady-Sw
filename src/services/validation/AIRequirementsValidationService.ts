@@ -2,8 +2,10 @@
  * AI Requirements Validation Service
  * 
  * Provides AI-driven analysis and validation of unified requirements
- * against standard-krav with framework-specific recommendations
+ * against standard-krav with framework-specific recommendations using Gemini AI
  */
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export interface StandardRequirement {
   id: string;
@@ -80,6 +82,21 @@ export interface CategoryValidationResult {
 export class AIRequirementsValidationService {
   private static readonly OPTIMAL_WORD_RANGE = [15, 25]; // 4-5 lines ≈ 15-25 words per line
   private static readonly MAX_WORD_LIMIT = 100; // Hard limit for any requirement
+  private static genAI: GoogleGenerativeAI | null = null;
+
+  /**
+   * Initialize the Gemini AI client
+   */
+  private static initializeAI(): GoogleGenerativeAI {
+    if (!this.genAI) {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error('Gemini API key not configured');
+      }
+      this.genAI = new GoogleGenerativeAI(apiKey);
+    }
+    return this.genAI;
+  }
 
   /**
    * 🤖 Analyze a single unified requirement against standards
@@ -115,10 +132,11 @@ export class AIRequirementsValidationService {
       // Detect frameworks in text
       const detectedFrameworks = this.detectFrameworksInText(combinedText);
       
-      // Calculate quality scores
-      const clarityScore = this.calculateClarityScore(combinedText);
-      const completenessScore = this.calculateCompletenessScore(combinedText, mappedStandards);
-      const frameworkCoverageScore = this.calculateFrameworkCoverageScore(detectedFrameworks, mappedStandards);
+      // Calculate AI-enhanced quality scores
+      const aiScores = await this.calculateAIQualityScores(combinedText, mappedStandards, detectedFrameworks, categoryName);
+      const clarityScore = aiScores.clarityScore;
+      const completenessScore = aiScores.completenessScore;
+      const frameworkCoverageScore = aiScores.frameworkCoverageScore;
       
       // Find missing framework coverage
       const missingFrameworkCoverage = this.identifyMissingFrameworkCoverage(detectedFrameworks, mappedStandards);
@@ -289,11 +307,273 @@ export class AIRequirementsValidationService {
   /**
    * 🧠 Generate AI suggestions for improvement
    */
+  /**
+   * 🤖 Generate AI-powered suggestions using Gemini AI
+   */
   private static async generateAISuggestions(
     requirement: any,
     mappedStandards: StandardRequirement[],
     analysis: any
   ): Promise<RequirementSuggestion[]> {
+    try {
+      const genAI = this.initializeAI();
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      
+      const combinedText = requirement.description ? 
+        `${requirement.title} - ${requirement.description}` : 
+        requirement.title;
+      
+      // Build context from mapped standards
+      const standardsContext = mappedStandards.slice(0, 5).map(standard => 
+        `**${standard.framework} - ${standard.control_id}**: ${standard.title}\n${standard.description || ''}`
+      ).join('\n\n');
+      
+      // Create comprehensive AI prompt for requirement analysis
+      const prompt = `You are an expert compliance consultant analyzing a unified requirement for quality, clarity, and framework coverage. 
+
+**REQUIREMENT TO ANALYZE:**
+Letter: ${requirement.letter}
+Title: ${requirement.title}
+Description: ${requirement.description || 'No description provided'}
+Current Word Count: ${combinedText.split(/\s+/).length}
+
+**CURRENT ANALYSIS SCORES:**
+- Length Compliance: ${analysis.lengthCompliance} (Target: 15-25 words for 4-5 lines)
+- Clarity Score: ${(analysis.clarityScore * 100).toFixed(1)}%
+- Completeness Score: ${(analysis.completenessScore * 100).toFixed(1)}%
+- Framework Coverage: ${(analysis.frameworkCoverageScore * 100).toFixed(1)}%
+- Detected Frameworks: ${analysis.detectedFrameworks.join(', ') || 'None detected'}
+
+**RELEVANT COMPLIANCE STANDARDS:**
+${standardsContext || 'No mapped standards available'}
+
+**TASK:**
+Generate 2-4 specific, actionable suggestions to improve this requirement. Focus on:
+1. Achieving 4-5 line length (15-25 words)
+2. Improving clarity and actionability
+3. Ensuring proper framework coverage
+4. Maintaining compliance precision
+
+**OUTPUT FORMAT:**
+For each suggestion, provide:
+1. **Type**: [length_optimization|clarity_improvement|completeness_addition|framework_coverage]
+2. **Priority**: [high|medium|low]
+3. **Current Issue**: Brief description of the problem
+4. **Suggested Text**: Improved version of the requirement text
+5. **Rationale**: Why this improvement is needed (1 sentence)
+6. **Word Impact**: Estimated word count change (+/- number)
+
+Generate suggestions now:`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const aiResponse = response.text();
+
+      console.log('🤖 DIAGNOSTIC: Gemini AI generated suggestions', {
+        responseLength: aiResponse.length,
+        requirementLetter: requirement.letter
+      });
+
+      // Parse AI response into structured suggestions
+      return this.parseAIResponseToSuggestions(aiResponse, requirement, combinedText);
+      
+    } catch (error) {
+      console.error('❌ DIAGNOSTIC: AI suggestion generation failed, falling back to rule-based', error);
+      
+      // Fallback to rule-based suggestions if AI fails
+      return this.generateRuleBasedSuggestions(requirement, mappedStandards, analysis);
+    }
+  }
+
+  /**
+   * 📝 Parse AI response into structured RequirementSuggestion objects
+   */
+  private static parseAIResponseToSuggestions(
+    aiResponse: string, 
+    requirement: any, 
+    currentText: string
+  ): RequirementSuggestion[] {
+    const suggestions: RequirementSuggestion[] = [];
+    
+    // Split response into sections and parse each suggestion
+    const sections = aiResponse.split(/(?=\*\*Type:|\d+\.\s*\*\*Type:)/);
+    
+    sections.forEach((section, index) => {
+      if (section.trim().length < 50) return; // Skip short sections
+      
+      // Extract key information using regex patterns
+      const typeMatch = section.match(/\*\*Type\*\*:\s*\[?([^\]]+)\]?/i);
+      const priorityMatch = section.match(/\*\*Priority\*\*:\s*\[?([^\]]+)\]?/i);
+      const issueMatch = section.match(/\*\*Current Issue\*\*:\s*([^\n]+)/i);
+      const suggestedTextMatch = section.match(/\*\*Suggested Text\*\*:\s*([^\n]+(?:\n(?!\*\*)[^\n]+)*)/i);
+      const rationaleMatch = section.match(/\*\*Rationale\*\*:\s*([^\n]+)/i);
+      const wordImpactMatch = section.match(/\*\*Word Impact\*\*:\s*([+-]?\d+)/i);
+      
+      if (typeMatch && suggestedTextMatch) {
+        suggestions.push({
+          id: `ai-${requirement.letter}-${index}`,
+          type: this.mapAITypeToSuggestionType(typeMatch[1].trim()),
+          priority: this.mapAIPriorityToSuggestionPriority(priorityMatch?.[1]?.trim() || 'medium'),
+          current_text: currentText,
+          suggested_text: suggestedTextMatch[1].trim(),
+          rationale: rationaleMatch?.[1]?.trim() || 'AI-generated improvement suggestion',
+          estimated_word_change: parseInt(wordImpactMatch?.[1] || '0'),
+          confidence: 0.85 // High confidence for AI-generated suggestions
+        });
+      }
+    });
+    
+    // Ensure we have at least one suggestion
+    if (suggestions.length === 0) {
+      console.warn('⚠️ Failed to parse AI suggestions, generating fallback');
+      suggestions.push({
+        id: `ai-fallback-${requirement.letter}`,
+        type: 'clarity_improvement',
+        priority: 'medium',
+        current_text: currentText,
+        suggested_text: `${currentText} [AI-enhanced with specific implementation guidance]`,
+        rationale: 'AI processing encountered parsing issues - manual review recommended',
+        estimated_word_change: 5,
+        confidence: 0.6
+      });
+    }
+    
+    return suggestions.slice(0, 4); // Limit to 4 suggestions max
+  }
+
+  /**
+   * 🗂️ Map AI suggestion type to system type
+   */
+  private static mapAITypeToSuggestionType(aiType: string): 'length_optimization' | 'clarity_improvement' | 'completeness_addition' | 'framework_coverage' {
+    const type = aiType.toLowerCase().replace(/[^a-z_]/g, '_');
+    
+    if (type.includes('length') || type.includes('optimization')) return 'length_optimization';
+    if (type.includes('clarity') || type.includes('improvement')) return 'clarity_improvement';
+    if (type.includes('completeness') || type.includes('addition')) return 'completeness_addition';
+    if (type.includes('framework') || type.includes('coverage')) return 'framework_coverage';
+    
+    return 'clarity_improvement'; // Default
+  }
+
+  /**
+   * 📊 Map AI priority to system priority
+   */
+  private static mapAIPriorityToSuggestionPriority(aiPriority: string): 'high' | 'medium' | 'low' {
+    const priority = aiPriority.toLowerCase();
+    
+    if (priority.includes('high') || priority.includes('critical') || priority.includes('urgent')) return 'high';
+    if (priority.includes('low') || priority.includes('minor')) return 'low';
+    
+    return 'medium'; // Default
+  }
+
+  /**
+   * 🧮 Calculate AI-enhanced quality scores using Gemini AI
+   */
+  private static async calculateAIQualityScores(
+    text: string, 
+    mappedStandards: StandardRequirement[], 
+    detectedFrameworks: string[],
+    categoryName: string
+  ): Promise<{ clarityScore: number; completenessScore: number; frameworkCoverageScore: number }> {
+    try {
+      const genAI = this.initializeAI();
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      
+      // Build standards context
+      const standardsContext = mappedStandards.slice(0, 3).map(standard => 
+        `${standard.framework}: ${standard.title}`
+      ).join('\n');
+      
+      const prompt = `You are an expert compliance analyst. Evaluate this requirement text across three dimensions and provide numerical scores.
+
+**REQUIREMENT TEXT TO EVALUATE:**
+"${text}"
+
+**CONTEXT:**
+Category: ${categoryName}
+Detected Frameworks: ${detectedFrameworks.join(', ') || 'None'}
+Expected Framework Coverage: ${mappedStandards.map(s => s.framework).join(', ')}
+
+**SCORING CRITERIA:**
+
+**CLARITY SCORE (0.0-1.0):**
+- 1.0: Crystal clear, specific actions, no ambiguity
+- 0.8: Clear with minor vagueness 
+- 0.6: Somewhat clear but needs refinement
+- 0.4: Unclear in several areas
+- 0.2: Very unclear or confusing
+- 0.0: Incomprehensible
+
+**COMPLETENESS SCORE (0.0-1.0):**
+- 1.0: Covers all essential compliance aspects thoroughly
+- 0.8: Covers most important aspects
+- 0.6: Covers basic requirements adequately  
+- 0.4: Missing some key elements
+- 0.2: Missing many important elements
+- 0.0: Severely incomplete
+
+**FRAMEWORK COVERAGE SCORE (0.0-1.0):**
+- 1.0: Perfect alignment with all relevant frameworks
+- 0.8: Good alignment with most frameworks
+- 0.6: Adequate framework alignment
+- 0.4: Limited framework alignment  
+- 0.2: Poor framework alignment
+- 0.0: No framework alignment
+
+**OUTPUT FORMAT:**
+Return ONLY three numbers separated by commas (no text):
+clarity_score,completeness_score,framework_coverage_score
+
+Example: 0.75,0.82,0.68`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const aiResponse = response.text().trim();
+      
+      // Parse AI scores
+      const scores = aiResponse.split(',').map(score => {
+        const parsed = parseFloat(score.trim());
+        return isNaN(parsed) ? 0.5 : Math.max(0, Math.min(1, parsed)); // Clamp to 0-1
+      });
+      
+      if (scores.length >= 3) {
+        console.log('🤖 DIAGNOSTIC: AI quality scores generated', {
+          text: text.substring(0, 50) + '...',
+          clarityScore: scores[0],
+          completenessScore: scores[1], 
+          frameworkCoverageScore: scores[2]
+        });
+        
+        return {
+          clarityScore: scores[0],
+          completenessScore: scores[1],
+          frameworkCoverageScore: scores[2]
+        };
+      } else {
+        throw new Error('Invalid AI response format');
+      }
+      
+    } catch (error) {
+      console.warn('⚠️ AI scoring failed, falling back to rule-based scoring', error);
+      
+      // Fallback to rule-based scoring
+      return {
+        clarityScore: this.calculateClarityScore(text),
+        completenessScore: this.calculateCompletenessScore(text, mappedStandards),
+        frameworkCoverageScore: this.calculateFrameworkCoverageScore(detectedFrameworks, mappedStandards)
+      };
+    }
+  }
+
+  /**
+   * 🔄 Fallback rule-based suggestions when AI fails  
+   */
+  private static generateRuleBasedSuggestions(
+    requirement: any,
+    mappedStandards: StandardRequirement[],
+    analysis: any
+  ): RequirementSuggestion[] {
     const suggestions: RequirementSuggestion[] = [];
     const combinedText = requirement.description ? 
       `${requirement.title} - ${requirement.description}` : 
