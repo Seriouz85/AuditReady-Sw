@@ -289,11 +289,6 @@ export default function UnifiedRequirementsValidationDashboard() {
     
     try {
       // Find the full category mapping with all frameworks context
-      const cleanCategoryName = category.name.replace(/^\d+\.\s*/, '');
-      const categoryMapping = complianceMappings?.find(mapping => {
-        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
-        return mappingCategory === cleanCategoryName;
-      });
 
       // Generate AI suggestions for each requirement
       const allSuggestions: RequirementSuggestion[] = [];
@@ -445,10 +440,13 @@ OUTPUT (6-7 lines explaining what the compliance standards require):`;
     ) || 'Default';
     
     const explanations = categorySpecificExplanations[categoryKey as keyof typeof categorySpecificExplanations] || categorySpecificExplanations['Default'];
-    const selectedExplanation = explanations[Math.floor(Math.random() * explanations.length)];
+    if (explanations.length === 0) {
+      return categorySpecificExplanations['Default'][0]!;
+    }
+    const randomIndex = Math.floor(Math.random() * explanations.length);
     
     // Replace original content with clear requirement explanation
-    return selectedExplanation;
+    return explanations[randomIndex]!;
   };
 
   /**
@@ -1182,7 +1180,8 @@ OUTPUT (6-7 lines explaining what the compliance standards require):`;
       return acc;
     }, {} as Record<string, StandardRequirement[]>);
     
-    const frameworkSummary = Object.entries(frameworkGroups).map(([framework, controls]) => 
+    // Framework summary for prompt context
+    Object.entries(frameworkGroups).map(([framework, controls]) => 
       `**${framework}** (${controls.length} controls): Focus on ${controls.map(c => c.title).join(', ')}`
     ).join('\n');
     
@@ -1328,7 +1327,7 @@ Generate the explanations now:`;
   const generateEnhancedRequirement = (
     originalContent: string, 
     _letter: string, 
-    categoryName?: string,
+    _categoryName?: string,
     _mappedStandards?: StandardRequirement[]
   ): string => {
     // Return original content - let AI handle improvements without generic fallbacks

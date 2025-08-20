@@ -70,7 +70,7 @@ interface UnifiedRequirement {
 // Removed unused RequirementValidation interface
 
 // Helper function to generate clear requirement explanations - NO GENERIC LANGUAGE
-const generateEnhancedContent = (originalContent: string, categoryName: string): string => {
+const generateEnhancedContent = (originalContent: string, _categoryName: string): string => {
   // Simply return the original content - the AI should handle improvements
   return originalContent;
 };
@@ -970,8 +970,11 @@ OUTPUT (8-11 lines explaining what the compliance standards require):`;
       'Data protection measures must secure personal data according to GDPR requirements when applicable. This includes data classification, encryption for sensitive data, data retention policies, and procedures for data subject rights. Organizations must conduct data protection impact assessments for high-risk processing activities.'
     ];
     
-    const randomExplanation = complianceExplanations[Math.floor(Math.random() * complianceExplanations.length)];
-    return randomExplanation;
+    if (complianceExplanations.length === 0) {
+      return 'Compliance requirements analysis';
+    }
+    const randomIndex = Math.floor(Math.random() * complianceExplanations.length);
+    return complianceExplanations[randomIndex]!;
   };
 
   // Load basic AI suggestions for category-level guidance (fallback when no sub-guidance items)

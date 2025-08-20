@@ -188,9 +188,8 @@ export default function ComplianceSimplification() {
       selectedIndustrySector,
       selectedFrameworks['nis2']
     );
-    const frameworkMappings = categoryMapping.frameworks || {};
     
-    // Build framework references section
+    // Build framework references section using the FILTERED framework mappings
     let frameworkRefs = '';
     const activeFrameworks = Object.keys(selectedFrameworks).filter(fw => selectedFrameworks[fw]);
     
@@ -198,18 +197,38 @@ export default function ComplianceSimplification() {
       frameworkRefs += 'FRAMEWORK REFERENCES:\n\n';
       frameworkRefs += 'Framework References for Selected Standards:\n\n';
       
+      const processedCodes = new Set<string>(); // Track processed codes to prevent duplicates
+      
       activeFrameworks.forEach(framework => {
-        const frameworkData = frameworkMappings[framework];
+        let frameworkData = categoryMapping.frameworks?.[framework];
+        
+        // IMPORTANT: Do NOT apply filtering here - the data should already be filtered by main filteredMappings logic
+        // Additional filtering here causes double-filtering and duplication issues
+        
         if (frameworkData && frameworkData.length > 0) {
-          const frameworkName = {
-            iso27001: 'ISO 27001',
-            iso27002: 'ISO 27002', 
-            cisControls: 'CIS Controls v8',
-            gdpr: 'GDPR',
-            nis2: 'NIS2 Directive'
-          }[framework] || framework;
+          // Deduplicate requirements within this framework
+          const uniqueRequirements = frameworkData.filter((req: any) => {
+            const code = req.code || req.id || req.requirement || req.number;
+            const uniqueKey = `${framework}-${code}`;
+            
+            if (!processedCodes.has(uniqueKey)) {
+              processedCodes.add(uniqueKey);
+              return true;
+            }
+            return false;
+          });
           
-          frameworkRefs += `${frameworkName}: ${frameworkData.map((req: any) => `${req.code} (${req.title})`).join(', ')}\n\n`;
+          if (uniqueRequirements.length > 0) {
+            const frameworkName = {
+              iso27001: 'ISO 27001',
+              iso27002: 'ISO 27002', 
+              cisControls: 'CIS Controls v8',
+              gdpr: 'GDPR',
+              nis2: 'NIS2 Directive'
+            }[framework] || framework;
+            
+            frameworkRefs += `${frameworkName}: ${uniqueRequirements.map((req: any) => `${req.code} (${req.title})`).join(', ')}\n\n`;
+          }
         }
       });
     }
@@ -270,6 +289,7 @@ export default function ComplianceSimplification() {
     }
     
     const realMappings: any[] = [];
+    const seenCodes = new Set<string>(); // Track seen codes to prevent duplicates
     
     // Try different possible structures in categoryMapping
     const possibleFrameworkSources = [
@@ -290,38 +310,57 @@ export default function ComplianceSimplification() {
           const frameworkData = frameworkSource[framework];
           console.log(`[Framework Mappings Debug] Found data for ${framework}:`, frameworkData);
           
+          // Use database mappings as-is - the database already has correct IG level separation
           if (Array.isArray(frameworkData)) {
-            // If it's an array, add all requirements
+            // For other frameworks (non-CIS), add all requirements (check for duplicates)
             frameworkData.forEach((req: any) => {
               if (req && (req.code || req.id || req.requirement)) {
-                realMappings.push({
-                  framework: framework,
-                  code: req.code || req.id || req.requirement || req.number,
-                  title: req.title || req.description || req.name || req.text,
-                  relevance: req.relevance || req.type || 'primary'
-                });
+                const code = req.code || req.id || req.requirement || req.number;
+                const uniqueKey = `${framework}-${code}`;
+                
+                if (!seenCodes.has(uniqueKey)) {
+                  seenCodes.add(uniqueKey);
+                  realMappings.push({
+                    framework: framework,
+                    code: code,
+                    title: req.title || req.description || req.name || req.text,
+                    relevance: req.relevance || req.type || 'primary'
+                  });
+                }
               }
             });
           } else if (frameworkData.requirements && Array.isArray(frameworkData.requirements)) {
-            // If requirements are nested
+            // If requirements are nested (check for duplicates)
             frameworkData.requirements.forEach((req: any) => {
               if (req && (req.code || req.id || req.requirement)) {
-                realMappings.push({
-                  framework: framework,
-                  code: req.code || req.id || req.requirement || req.number,
-                  title: req.title || req.description || req.name || req.text,
-                  relevance: req.relevance || req.type || 'primary'
-                });
+                const code = req.code || req.id || req.requirement || req.number;
+                const uniqueKey = `${framework}-${code}`;
+                
+                if (!seenCodes.has(uniqueKey)) {
+                  seenCodes.add(uniqueKey);
+                  realMappings.push({
+                    framework: framework,
+                    code: code,
+                    title: req.title || req.description || req.name || req.text,
+                    relevance: req.relevance || req.type || 'primary'
+                  });
+                }
               }
             });
           } else if (typeof frameworkData === 'object' && frameworkData.code) {
-            // If it's a single object
-            realMappings.push({
-              framework: framework,
-              code: frameworkData.code || frameworkData.id || frameworkData.requirement,
-              title: frameworkData.title || frameworkData.description || frameworkData.name,
-              relevance: frameworkData.relevance || frameworkData.type || 'primary'
-            });
+            // If it's a single object (check for duplicates)
+            const code = frameworkData.code || frameworkData.id || frameworkData.requirement;
+            const uniqueKey = `${framework}-${code}`;
+            
+            if (!seenCodes.has(uniqueKey)) {
+              seenCodes.add(uniqueKey);
+              realMappings.push({
+                framework: framework,
+                code: code,
+                title: frameworkData.title || frameworkData.description || frameworkData.name,
+                relevance: frameworkData.relevance || frameworkData.type || 'primary'
+              });
+            }
           }
         }
       });
@@ -332,7 +371,7 @@ export default function ComplianceSimplification() {
       }
     }
     
-    console.log('[Framework Mappings] Extracted real mappings:', realMappings);
+    console.log('[Framework Mappings] Extracted real mappings with CIS filtering and deduplication:', realMappings);
     
     // If no real mappings found, try to use the legacy approach as last resort
     if (realMappings.length === 0) {
@@ -490,7 +529,7 @@ For detailed implementation guidance, please refer to the specific framework doc
   const frameworksForHook = {
     iso27001: Boolean(selectedFrameworks['iso27001']),
     iso27002: Boolean(selectedFrameworks['iso27002']),
-    cisControls: Boolean(selectedFrameworks['cisControls']), // Pass boolean for the query
+    cisControls: selectedFrameworks['cisControls'] || false, // Pass actual IG level string (ig1, ig2, ig3) or false
     gdpr: Boolean(selectedFrameworks['gdpr']),
     nis2: Boolean(selectedFrameworks['nis2'])
   };
@@ -2091,28 +2130,7 @@ For detailed implementation guidance, please refer to the specific framework doc
           iso27002: selectedFrameworks['iso27002'] && mapping.frameworks?.['iso27002'] ? mapping.frameworks['iso27002'] : [],
           nis2: selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2'] || []) : [],
           gdpr: [],
-          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? 
-            mapping.frameworks['cisControls'].filter(control => {
-              const ig3OnlyControls = [
-                '1.5', '2.7', '3.13', '3.14', '4.12', '6.8', '8.12', '9.7', 
-                '12.8', '13.1', '13.7', '13.8', '13.9', '13.11', 
-                '15.5', '15.6', '15.7', '16.12', '16.13', '16.14', 
-                '17.9', '18.4', '18.5'
-              ];
-              
-              if (selectedFrameworks['cisControls'] === 'ig1') {
-                return !ig3OnlyControls.includes(control.code) && 
-                       !control.code.startsWith('13.') && 
-                       !control.code.startsWith('16.') && 
-                       !control.code.startsWith('17.') && 
-                       !control.code.startsWith('18.');
-              } else if (selectedFrameworks['cisControls'] === 'ig2') {
-                return !ig3OnlyControls.includes(control.code);
-              } else if (selectedFrameworks['cisControls'] === 'ig3') {
-                return true;
-              }
-              return false;
-            }) : []
+          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? mapping.frameworks['cisControls'] : []
         }
       };
       
