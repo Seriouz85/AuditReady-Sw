@@ -2,10 +2,8 @@
  * AI Requirements Validation Service
  * 
  * Provides AI-driven analysis and validation of unified requirements
- * against standard-krav with framework-specific recommendations using Gemini AI
+ * against standard-krav with framework-specific recommendations using OpenRouter AI
  */
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export interface StandardRequirement {
   id: string;
@@ -82,48 +80,6 @@ export interface CategoryValidationResult {
 export class AIRequirementsValidationService {
   private static readonly OPTIMAL_WORD_RANGE = [15, 25]; // 4-5 lines ≈ 15-25 words per line
   private static readonly MAX_WORD_LIMIT = 100; // Hard limit for any requirement
-  private static genAI: GoogleGenerativeAI | null = null;
-  
-  // Model selection with fallbacks
-  private static readonly PRIMARY_MODEL = 'gemini-2.0-flash-exp';
-  private static readonly FALLBACK_MODEL = 'gemini-1.5-flash';
-  private static readonly LITE_MODEL = 'gemini-1.5-flash-8b'; // Lighter model for high-volume requests
-
-  /**
-   * Initialize the Gemini AI client
-   */
-  private static initializeAI(): GoogleGenerativeAI {
-    if (!this.genAI) {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error('Gemini API key not configured');
-      }
-      this.genAI = new GoogleGenerativeAI(apiKey);
-    }
-    return this.genAI;
-  }
-
-  /**
-   * Get optimal Gemini model with automatic fallback
-   */
-  private static async getOptimalModel() {
-    const genAI = this.initializeAI();
-    
-    try {
-      // Try Gemini 2.0 Flash first (latest and fastest)
-      return genAI.getGenerativeModel({ model: this.PRIMARY_MODEL });
-    } catch (error) {
-      console.warn('Gemini 2.0 Flash not available, falling back to 1.5 Flash:', error);
-      try {
-        // Fallback to Gemini 1.5 Flash
-        return genAI.getGenerativeModel({ model: this.FALLBACK_MODEL });
-      } catch (fallbackError) {
-        console.warn('Gemini 1.5 Flash not available, using lite model:', fallbackError);
-        // Final fallback to lite model
-        return genAI.getGenerativeModel({ model: this.LITE_MODEL });
-      }
-    }
-  }
 
   /**
    * 🤖 Analyze a single unified requirement against standards
@@ -343,9 +299,6 @@ export class AIRequirementsValidationService {
     analysis: any
   ): Promise<RequirementSuggestion[]> {
     try {
-      const genAI = this.initializeAI();
-      const model = await this.getOptimalModel();
-      
       const combinedText = requirement.description ? 
         `${requirement.title} - ${requirement.description}` : 
         requirement.title;
@@ -392,11 +345,37 @@ For each suggestion, provide:
 
 Generate suggestions now:`;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const aiResponse = response.text();
+      // Use OpenRouter API instead of Gemini
+      const apiKey = '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';
+      const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://auditready.com',
+          'X-Title': 'Audit Readiness Hub'
+        },
+        body: JSON.stringify({
+          model: 'mistralai/mistral-small-2409:free',
+          messages: [{
+            role: 'user',
+            content: prompt
+          }],
+          temperature: 0.3,
+          max_tokens: 4000
+        })
+      });
 
-      console.log('🤖 DIAGNOSTIC: Gemini AI generated suggestions', {
+      if (!response.ok) {
+        throw new Error(`OpenRouter API failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const aiResponse = result.choices[0]?.message?.content || '';
+
+      console.log('🤖 DIAGNOSTIC: OpenRouter AI generated suggestions', {
         responseLength: aiResponse.length,
         requirementLetter: requirement.letter
       });
@@ -504,9 +483,6 @@ Generate suggestions now:`;
     categoryName: string
   ): Promise<{ clarityScore: number; completenessScore: number; frameworkCoverageScore: number }> {
     try {
-      const genAI = this.initializeAI();
-      const model = await this.getOptimalModel();
-      
       // Build standards context
       const standardsContext = mappedStandards.slice(0, 3).map(standard => 
         `${standard.framework}: ${standard.title}`
@@ -554,9 +530,35 @@ clarity_score,completeness_score,framework_coverage_score
 
 Example: 0.75,0.82,0.68`;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const aiResponse = response.text().trim();
+      // Use OpenRouter API instead of Gemini
+      const apiKey = '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';
+      const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://auditready.com',
+          'X-Title': 'Audit Readiness Hub'
+        },
+        body: JSON.stringify({
+          model: 'mistralai/mistral-small-2409:free',
+          messages: [{
+            role: 'user',
+            content: prompt
+          }],
+          temperature: 0.3,
+          max_tokens: 4000
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenRouter API failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const aiResponse = (result.choices[0]?.message?.content || '').trim();
       
       // Parse AI scores
       const scores = aiResponse.split(',').map(score => {

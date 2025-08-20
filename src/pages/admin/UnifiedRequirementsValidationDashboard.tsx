@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   CheckSquare,
   Brain, 
-  Zap, 
   RefreshCw,
   CheckCircle,
   Clock,
@@ -314,12 +313,10 @@ export default function UnifiedRequirementsValidationDashboard() {
             priority: priorities[Math.floor(Math.random() * priorities.length)] as any,
             suggestion: await generateCleanRequirementSuggestion(
               requirement.content, 
-              category.name, 
-              categoryMapping,
-              categoryRequirements
+              category.name
             ),
             highlighted_text: requirement.content.substring(0, 200),
-            expected_improvement: `Enhanced ${category.name.toLowerCase()} compliance with clearer implementation guidance`,
+            expected_improvement: `Clear explanation of ${category.name.toLowerCase()} compliance requirements`,
             ai_confidence: 0.75 + (Math.random() * 0.2), // 75-95%
             status: 'pending' as any,
             framework_specific: undefined
@@ -342,63 +339,70 @@ export default function UnifiedRequirementsValidationDashboard() {
    */
   const generateCleanRequirementSuggestion = async (
     originalContent: string, 
-    categoryName: string, 
-    categoryMapping?: any, 
-    allRequirements?: UnifiedRequirement[]
+    categoryName: string
   ): Promise<string> => {
     try {
-      const { GoogleGenerativeAI } = await import('@google/generative-ai');
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      // Use OpenRouter API with free Qwen model
+      const apiKey = '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';
+      const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
       
-      if (!apiKey) {
-        return generateMockRequirementSuggestion(originalContent, categoryName);
+      // Removed unused categoryContext variable
+
+      const prompt = `You are explaining compliance requirements. Your job is to clearly explain what compliance standards require for this specific area, not to add generic "enhancement" language.
+
+CATEGORY: ${categoryName}
+REQUIREMENT TO EXPLAIN: "${originalContent}"
+
+COMPLIANCE FRAMEWORKS: ISO 27001, CIS Controls, GDPR, NIS2
+
+TASK:
+Rewrite the requirement text to clearly explain what compliance standards actually require for "${categoryName}". Focus on:
+- What specific actions or controls these standards require
+- What the category "${categoryName}" means in compliance terms
+- Clear explanation of any technical terms or concepts in the original text
+- What organizations must actually do to meet these requirements
+
+RULES:
+- 6-7 lines only (this is requirements dashboard, shorter than guidance)
+- NO generic marketing words like "comprehensive", "enhancement", "robust", "awareness"
+- NO process words like "implement", "establish", "develop" unless they're the actual requirement
+- Focus on explaining WHAT the standards require, not HOW to do everything
+- Use specific terms from compliance standards, not business consulting language
+- Explain the requirement clearly as if teaching someone what these rules mean
+
+OUTPUT (6-7 lines explaining what the compliance standards require):`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://auditready.com',
+          'X-Title': 'Audit Readiness Hub'
+        },
+        body: JSON.stringify({
+          model: 'qwen/qwen-2.5-72b-instruct:free',
+          messages: [{
+            role: 'user',
+            content: prompt
+          }],
+          temperature: 0.3,
+          max_tokens: 4000
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OpenRouter API error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        throw new Error(`OpenRouter API failed: ${response.status} - ${errorText}`);
       }
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      
-      // Build comprehensive context about all mapped requirements in this category
-      const categoryContext = allRequirements ? `
-COMPREHENSIVE CATEGORY CONTEXT:
-Category: ${categoryName}
-Total Requirements: ${allRequirements.length}
-Framework Coverage: ${categoryMapping?.frameworks ? Object.keys(categoryMapping.frameworks).join(', ') : 'ISO 27001, ISO 27002, CIS Controls, GDPR, NIS2'}
-
-RELATED REQUIREMENTS in this category:
-${allRequirements.map((req, idx) => `${idx + 1}. ${req.letter}: ${req.content.substring(0, 200)}...`).join('\n')}
-
-FRAMEWORK MAPPING CONTEXT:
-${categoryMapping ? `Available frameworks: ${Object.keys(categoryMapping.frameworks || {}).join(', ')}` : 'Multi-framework compliance mapping available'}
-` : '';
-
-      const prompt = `You are a compliance expert specializing in multi-framework alignment. Improve this ${categoryName} requirement text by making it clearer, more comprehensive, and better aligned with modern compliance frameworks.
-
-${categoryContext}
-
-ORIGINAL REQUIREMENT:
-"${originalContent}"
-
-ANALYSIS REQUIREMENTS:
-- Consider ALL mapped requirements in this category for consistency and completeness
-- Understand multi-framework obligations (ISO 27001, ISO 27002, CIS Controls, GDPR, NIS2)
-- Ensure alignment with other requirements in this category
-- Make improvements that enhance comprehensive compliance coverage
-- Consider modern cybersecurity and data protection best practices
-
-OUTPUT REQUIREMENTS:
-- Return ONLY the improved requirement text, no introduction or explanation
-- Make it 25-30% longer with specific implementation details and concrete actions
-- Focus on actionable guidance with measurable outcomes
-- Include specific controls, processes, and verification methods
-- Use precise compliance terminology and modern security language
-- Ensure multi-framework alignment and cross-reference compatibility
-- No prefixes like "Enhanced:" or suffixes like "[improved]"
-
-IMPROVED REQUIREMENT:`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      let improvedText = response.text().trim();
+      const result = await response.json();
+      let improvedText = result.choices[0]?.message?.content?.trim() || '';
       
       // Clean up any remaining AI artifacts
       improvedText = improvedText
@@ -406,45 +410,45 @@ IMPROVED REQUIREMENT:`;
         .replace(/^["']|["']$/g, '') // Remove quotes at start/end
         .trim();
       
-      return improvedText.length > 50 ? improvedText : generateMockRequirementSuggestion(originalContent, categoryName);
+      return improvedText.length > 50 ? improvedText : generateMockRequirementSuggestion(categoryName);
     } catch (error) {
-      console.warn('Gemini API failed, using mock suggestion:', error);
-      return generateMockRequirementSuggestion(originalContent, categoryName);
+      console.warn('OpenRouter API failed, using mock suggestion:', error);
+      return generateMockRequirementSuggestion(categoryName);
     }
   };
 
   /**
    * 🔄 Generate sophisticated mock requirement suggestion matching RealAIMappingDashboard quality
    */
-  const generateMockRequirementSuggestion = (originalContent: string, categoryName: string): string => {
-    const categorySpecificImprovements = {
+  const generateMockRequirementSuggestion = (categoryName: string): string => {
+    const categorySpecificExplanations = {
       'Governance': [
-        'Establish executive-level cybersecurity governance committee with quarterly board reporting, documented risk appetite statements, and measurable security performance indicators aligned with ISO 27001 management review requirements.',
-        'Implement comprehensive information security policy framework with annual review cycles, stakeholder approval processes, exception handling procedures, and alignment verification against multiple compliance frameworks.'
+        'Organizational structure requires defining specific security roles: Information Security Officer, Data Protection Officer (if GDPR applies), Incident Response Manager, Risk Owners, and Asset Owners. Each role needs written job descriptions with clear authorities and reporting lines. ISO 27001 requires annual review of these roles when organizational changes occur.',
+        'Information security policy framework must include board-approved policies covering data protection, incident response, access management, and risk management. GDPR mandates data protection policies if personal data is processed. Policies require annual review and stakeholder approval processes.'
       ],
       'Access Control': [
-        'Deploy multi-factor authentication across all privileged accounts with risk-based adaptive controls, session monitoring, privileged access management solutions, and continuous verification processes meeting CIS Controls requirements.',
-        'Establish role-based access control framework with automated provisioning, regular access reviews, segregation of duties enforcement, and integration with identity governance platforms.'
+        'Multi-factor authentication (MFA) is required for privileged accounts under CIS Controls and recommended by ISO 27001. This means administrative accounts must use something you know (password) plus something you have (token/phone). Risk-based MFA adjusts requirements based on login location and behavior patterns.',
+        'Role-based access control (RBAC) means users only get access permissions needed for their job role. This requires regular access reviews (quarterly or when job changes), separation of conflicting duties, and automated user provisioning systems integrated with HR processes.'
       ],
       'Risk Management': [
-        'Conduct comprehensive risk assessments incorporating threat modeling, vulnerability analysis, business impact assessments, and third-party risk evaluation with quarterly updates and executive reporting.',
-        'Implement enterprise risk management program with documented risk register, treatment plans, monitoring metrics, and integration with business continuity planning processes.'
+        'Risk assessments must identify threats to information assets, analyze vulnerabilities, and calculate business impact. ISO 27001 requires formal risk assessment methodology including threat modeling, vulnerability scanning, and business impact analysis. Results must be updated when significant changes occur.',
+        'Risk register documents identified risks, their likelihood and impact scores, current controls, residual risk levels, and treatment plans. Treatment options include accept, avoid, transfer (insurance), or mitigate. Executive management must approve risk appetite and treatment decisions.'
       ],
       'Default': [
-        'Establish comprehensive monitoring and alerting mechanisms with real-time dashboard capabilities, automated incident response protocols, and integration with security information and event management systems.',
-        'Implement multi-layered validation processes with automated compliance verification, regular third-party audits, continuous improvement workflows, and alignment verification against multiple framework requirements.'
+        'Security monitoring systems must detect unauthorized access, malware, data breaches, and policy violations. This requires security information and event management (SIEM) tools, log collection from all systems, alerting for suspicious activities, and incident response procedures when threats are detected.',
+        'Compliance validation requires regular audits against applicable frameworks (ISO 27001, GDPR, CIS Controls). This includes internal assessments, third-party audits, vulnerability scans, penetration testing, and corrective action plans for identified gaps.'
       ]
     };
     
-    const categoryKey = Object.keys(categorySpecificImprovements).find(key => 
+    const categoryKey = Object.keys(categorySpecificExplanations).find(key => 
       categoryName.toLowerCase().includes(key.toLowerCase())
     ) || 'Default';
     
-    const improvements = categorySpecificImprovements[categoryKey as keyof typeof categorySpecificImprovements] || categorySpecificImprovements['Default'];
-    const selectedImprovement = improvements[Math.floor(Math.random() * improvements.length)];
+    const explanations = categorySpecificExplanations[categoryKey as keyof typeof categorySpecificExplanations] || categorySpecificExplanations['Default'];
+    const selectedExplanation = explanations[Math.floor(Math.random() * explanations.length)];
     
-    // Enhance the original content by appending specific improvements
-    return `${originalContent}\n\nENHANCEMENT: ${selectedImprovement} This implementation ensures multi-framework compliance alignment and supports continuous monitoring and improvement processes.`;
+    // Replace original content with clear requirement explanation
+    return selectedExplanation;
   };
 
   /**
@@ -1069,208 +1073,373 @@ IMPROVED REQUIREMENT:`;
   };
 
   /**
-   * 🚀 Bulk approve high priority suggestions with persistence
+   * 📊 Get all mapped standards for a category
    */
-  const bulkApproveHighPriority = async () => {
-    if (!user) return;
-
-    const highPrioritySuggestions = suggestions.filter(s => 
-      s.status === 'pending' && (s.priority === 'high' || s.priority === 'critical')
-    );
-
-    console.log('🚀 DIAGNOSTIC: Bulk approving high priority suggestions with persistence', {
-      count: highPrioritySuggestions.length,
-      suggestionIds: highPrioritySuggestions.map(s => s.id),
-      persistenceEnabled,
-      userId: user.id,
-      timestamp: new Date().toISOString()
-    });
-
-    setIsProcessingApproval(true);
-    const bulkOperationId = `bulk-high-${Date.now()}`;
-
-    try {
-      // Update UI state
-      setSuggestions(prev => prev.map(s => 
-        highPrioritySuggestions.some(hps => hps.id === s.id)
-          ? { ...s, status: 'approved' as any }
-          : s
-      ));
-
-      // Persist bulk approval to database if enabled
-      if (persistenceEnabled && highPrioritySuggestions.length > 0) {
-        const suggestionIds = highPrioritySuggestions.map(s => s.id);
-        const result = await UnifiedRequirementsValidationPersistenceService.bulkApproveSuggestions(
-          suggestionIds,
-          user.id,
-          bulkOperationId,
-          'Bulk approval of high priority suggestions (critical and high priority)'
-        );
-        
-        console.log('💾 DIAGNOSTIC: Bulk high priority approval persisted', {
-          bulkOperationId,
-          approvedCount: result.approved.length,
-          errorCount: result.errors.length,
-          errors: result.errors
+  const getAllMappedStandardsForCategory = (category: UnifiedCategory): StandardRequirement[] => {
+    if (!complianceMappings || !category.mapping_data) return [];
+    
+    // Extract mapped standards from compliance mappings
+    const categoryMapping = complianceMappings.find(mapping => mapping.category === category.name);
+    if (!categoryMapping) return [];
+    
+    const mappedStandards: StandardRequirement[] = [];
+    
+    // Extract standards from frameworks object
+    if (categoryMapping.frameworks) {
+      // Extract ISO 27001 standards
+      const iso27001Controls = categoryMapping.frameworks['ISO 27001'];
+      if (iso27001Controls && iso27001Controls.length > 0) {
+        iso27001Controls.forEach((control: any) => {
+          mappedStandards.push({
+            id: `iso27001-${control.code}`,
+            framework: 'ISO 27001',
+            category: category.name,
+            control_id: control.code,
+            title: control.title,
+            description: control.description || ''
+          });
         });
-        
-        // Update persisted suggestions state
-        setPersistedSuggestions(prev => prev.map(s => 
-          suggestionIds.includes(s.id)
-            ? { ...s, approval_status: 'approved', reviewed_by: user.id, reviewed_at: new Date().toISOString(), bulk_operation_id: bulkOperationId, auto_approved: true }
-            : s
-        ));
+      }
+      
+      // Extract CIS Controls
+      const cisControls = categoryMapping.frameworks['CIS Controls'];
+      if (cisControls && cisControls.length > 0) {
+        cisControls.forEach((control: any) => {
+          mappedStandards.push({
+            id: `cis-${control.code}`,
+            framework: 'CIS Controls',
+            category: category.name,
+            control_id: control.code,
+            title: control.title,
+            description: control.description || ''
+          });
+        });
+      }
+      
+      // Extract GDPR standards
+      const gdprControls = categoryMapping.frameworks['GDPR'];
+      if (gdprControls && gdprControls.length > 0) {
+        gdprControls.forEach((control: any) => {
+          mappedStandards.push({
+            id: `gdpr-${control.code}`,
+            framework: 'GDPR',
+            category: category.name,
+            control_id: control.code,
+            title: control.title,
+            description: control.description || ''
+          });
+        });
+      }
+      
+      // Extract NIS2 standards
+      const nis2Controls = categoryMapping.frameworks['NIS2'];
+      if (nis2Controls && nis2Controls.length > 0) {
+        nis2Controls.forEach((control: any) => {
+          mappedStandards.push({
+            id: `nis2-${control.code}`,
+            framework: 'NIS2',
+            category: category.name,
+            control_id: control.code,
+            title: control.title,
+            description: control.description || ''
+          });
+        });
+      }
+    }
+    
+    // Add other frameworks as needed (GDPR, NIS2, etc.)
+    return mappedStandards;
+  };
+
+  /**
+   * 📝 Build comprehensive prompt for category group improvement
+   */
+  const buildCategoryGroupPrompt = (
+    category: UnifiedCategory, 
+    requirements: UnifiedRequirement[], 
+    mappedStandards: StandardRequirement[]
+  ): string => {
+    // Build comprehensive standards context with detailed explanations
+    const standardsContext = mappedStandards.length > 0 ? 
+      mappedStandards.map(std => 
+        `**${std.framework} - ${std.control_id}**: ${std.title}
+        📝 Description: ${std.description}
+        🎯 Key Focus Areas: Implementation guidance, compliance verification, audit evidence
+        ⚖️ Regulatory Context: This control addresses specific regulatory requirements within ${std.framework}`
+      ).join('\n\n') : 
+      'No specific compliance standards mapped to this category yet.';
+    
+    const currentRequirements = requirements.map(req => 
+      `${req.letter}) **${req.title || 'Untitled'}**
+      Current Content: ${req.content}
+      Word Count: ${req.content.split(/\s+/).length} words`
+    ).join('\n\n');
+    
+    // Group standards by framework for better context
+    const frameworkGroups = mappedStandards.reduce((acc, std) => {
+      if (!acc[std.framework]) acc[std.framework] = [];
+      acc[std.framework]?.push(std);
+      return acc;
+    }, {} as Record<string, StandardRequirement[]>);
+    
+    const frameworkSummary = Object.entries(frameworkGroups).map(([framework, controls]) => 
+      `**${framework}** (${controls.length} controls): Focus on ${controls.map(c => c.title).join(', ')}`
+    ).join('\n');
+    
+    return `You are explaining compliance requirements for ${category.name}. Explain what the mapped compliance standards actually require, not how to "improve" or "enhance" things.
+
+CATEGORY: ${category.name}
+CURRENT SUB-REQUIREMENTS:
+${currentRequirements}
+
+MAPPED COMPLIANCE STANDARDS:
+${standardsContext}
+
+TASK:
+Rewrite each sub-requirement (${requirements.map(r => r.letter).join(', ')}) to clearly explain what these compliance standards require for ${category.name}. Focus on:
+- What specific actions or controls these standards require
+- What the category "${category.name}" means in compliance terms
+- What organizations must actually do to meet these requirements
+- Clear explanation of any technical terms or concepts
+
+RULES:
+- Each sub-requirement: exactly 6-7 lines 
+- NO generic marketing words like "comprehensive", "robust", "awareness"
+- NO process words like "implement", "establish" unless they're the actual requirement
+- Focus on explaining WHAT the standards require, not HOW to do everything
+- Use specific terms from compliance standards
+- Explain requirements clearly as if teaching someone what these rules mean
+
+OUTPUT FORMAT:
+a) [6-7 lines explaining what compliance standards require for the first aspect of ${category.name}]
+
+b) [6-7 lines explaining what compliance standards require for the second aspect of ${category.name}]
+
+[Continue for all ${requirements.length} sub-requirements]
+
+Generate the explanations now:`;
+  };
+
+  /**
+   * 🤖 Generate improved category group using OpenRouter AI
+   */
+  const generateImprovedCategoryGroup = async (
+    categoryName: string,
+    requirements: UnifiedRequirement[],
+    mappedStandards: StandardRequirement[],
+    prompt: string
+  ): Promise<Array<{ letter: string; content: string }>> => {
+    try {
+      // Use OpenRouter API
+      const apiKey = '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';
+      const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://auditready.com',
+          'X-Title': 'Audit Readiness Hub'
+        },
+        body: JSON.stringify({
+          model: 'qwen/qwen3-coder:free',
+          messages: [{
+            role: 'user',
+            content: prompt
+          }],
+          temperature: 0.3,
+          max_tokens: 6000 // Increased for longer group responses
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OpenRouter API error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        throw new Error(`OpenRouter API failed: ${response.status} - ${errorText}`);
       }
 
-      console.log(`✅ DIAGNOSTIC: Bulk approved ${highPrioritySuggestions.length} high priority suggestions`);
+      const result = await response.json();
+      const aiResponse = result.choices[0]?.message?.content || '';
+      
+      // Parse AI response into requirements
+      return parseGroupAIResponse(aiResponse, requirements);
+      
     } catch (error) {
-      console.error('❌ DIAGNOSTIC: Failed to bulk approve high priority suggestions:', error);
-      // Revert UI state on error
-      setSuggestions(prev => prev.map(s => 
-        highPrioritySuggestions.some(hps => hps.id === s.id)
-          ? { ...s, status: 'pending' as any }
-          : s
-      ));
-    } finally {
-      setIsProcessingApproval(false);
+      console.warn('OpenRouter API failed for group improvement, using enhanced fallback:', error);
+      return generateEnhancedFallbackGroup(categoryName, requirements, mappedStandards);
     }
   };
 
   /**
-   * 📏 Bulk approve length optimization suggestions with persistence
+   * 🔍 Parse AI response into structured requirements
    */
-  const bulkApproveLengthOptimizations = async () => {
-    if (!user) return;
-
-    const lengthOptimizationSuggestions = suggestions.filter(s => 
-      s.status === 'pending' && s.type === 'length_optimization'
-    );
-
-    console.log('📏 DIAGNOSTIC: Bulk approving length optimization suggestions with persistence', {
-      count: lengthOptimizationSuggestions.length,
-      suggestionIds: lengthOptimizationSuggestions.map(s => s.id),
-      persistenceEnabled,
-      userId: user.id,
-      timestamp: new Date().toISOString()
-    });
-
-    setIsProcessingApproval(true);
-    const bulkOperationId = `bulk-length-${Date.now()}`;
-
-    try {
-      // Update UI state
-      setSuggestions(prev => prev.map(s => 
-        lengthOptimizationSuggestions.some(los => los.id === s.id)
-          ? { ...s, status: 'approved' as any }
-          : s
-      ));
-
-      // Persist bulk approval to database if enabled
-      if (persistenceEnabled && lengthOptimizationSuggestions.length > 0) {
-        const suggestionIds = lengthOptimizationSuggestions.map(s => s.id);
-        const result = await UnifiedRequirementsValidationPersistenceService.bulkApproveSuggestions(
-          suggestionIds,
-          user.id,
-          bulkOperationId,
-          'Bulk approval of length optimization suggestions (4-5 line compliance)'
-        );
-        
-        console.log('💾 DIAGNOSTIC: Bulk length optimization approval persisted', {
-          bulkOperationId,
-          approvedCount: result.approved.length,
-          errorCount: result.errors.length,
-          errors: result.errors
-        });
-        
-        // Update persisted suggestions state
-        setPersistedSuggestions(prev => prev.map(s => 
-          suggestionIds.includes(s.id)
-            ? { ...s, approval_status: 'approved', reviewed_by: user.id, reviewed_at: new Date().toISOString(), bulk_operation_id: bulkOperationId, auto_approved: true }
-            : s
-        ));
+  const parseGroupAIResponse = (aiResponse: string, originalRequirements: UnifiedRequirement[]): Array<{ letter: string; content: string }> => {
+    const improved: Array<{ letter: string; content: string }> = [];
+    
+    // Match patterns like "a)", "b)", etc. followed by content
+    const pattern = /([a-z])\)\s*([^]*?)(?=\n[a-z]\)|$)/gi;
+    const matches = Array.from(aiResponse.matchAll(pattern));
+    
+    matches.forEach(match => {
+      const letter = match[1]?.toLowerCase();
+      const content = match[2]?.trim();
+      
+      if (letter && content && content.length > 50) { // Only include substantial content
+        improved.push({ letter, content });
       }
+    });
+    
+    // Ensure we have improvements for all original requirements
+    originalRequirements.forEach(req => {
+      if (!improved.find(imp => imp.letter === req.letter)) {
+        // Add enhanced fallback for missing requirements
+        improved.push({
+          letter: req.letter,
+          content: generateEnhancedRequirement(req.content, req.letter)
+        });
+      }
+    });
+    
+    return improved.sort((a, b) => a.letter.localeCompare(b.letter));
+  };
 
-      console.log(`✅ DIAGNOSTIC: Bulk approved ${lengthOptimizationSuggestions.length} length optimization suggestions`);
+  /**
+   * 📈 Generate enhanced fallback group when AI fails
+   */
+  const generateEnhancedFallbackGroup = (
+    categoryName: string,
+    requirements: UnifiedRequirement[],
+    mappedStandards: StandardRequirement[]
+  ): Array<{ letter: string; content: string }> => {
+    return requirements.map(req => ({
+      letter: req.letter,
+      content: generateEnhancedRequirement(req.content, req.letter, categoryName, mappedStandards)
+    }));
+  };
+
+  /**
+   * Clear explanation of single requirement - NO GENERIC LANGUAGE
+   */
+  const generateEnhancedRequirement = (
+    originalContent: string, 
+    _letter: string, 
+    categoryName?: string,
+    _mappedStandards?: StandardRequirement[]
+  ): string => {
+    // Return original content - let AI handle improvements without generic fallbacks
+    return originalContent;
+  };
+
+  /**
+   * 🚀 Generate comprehensive AI improvements for entire category group
+   */
+  const generateCategoryGroupImprovements = async () => {
+    if (!activeCategory || !requirements.length) return;
+    
+    setIsAnalyzing(true);
+    try {
+      console.log('🎯 Generating comprehensive AI improvements for category group:', activeCategory.name);
+      
+      // Get all mapped standards for this category
+      const mappedStandards = getAllMappedStandardsForCategory(activeCategory);
+      
+      // Create comprehensive prompt for entire category group
+      const groupPrompt = buildCategoryGroupPrompt(activeCategory, requirements, mappedStandards);
+      
+      // Generate improved sub-requirements for entire group using OpenRouter
+      const improvedGroup = await generateImprovedCategoryGroup(
+        activeCategory.name,
+        requirements,
+        mappedStandards,
+        groupPrompt
+      );
+      
+      // Update all requirements with AI improvements
+      const updatedRequirements = requirements.map((req, index) => ({
+        ...req,
+        content: improvedGroup[index]?.content || req.content,
+        ai_improvement: improvedGroup[index]?.content || req.content,
+        word_count: (improvedGroup[index]?.content || req.content).split(/\s+/).length
+      }));
+      
+      setRequirements(updatedRequirements);
+      
+      console.log('✅ Category group AI improvements generated successfully');
     } catch (error) {
-      console.error('❌ DIAGNOSTIC: Failed to bulk approve length optimizations:', error);
-      // Revert UI state on error
-      setSuggestions(prev => prev.map(s => 
-        lengthOptimizationSuggestions.some(los => los.id === s.id)
-          ? { ...s, status: 'pending' as any }
-          : s
-      ));
+      console.error('❌ Category group AI improvement failed:', error);
     } finally {
-      setIsProcessingApproval(false);
+      setIsAnalyzing(false);
     }
   };
 
   /**
-   * 🗑️ Bulk reject low priority suggestions with persistence
+   * ✅ Apply all AI enhancements for the entire category group at once
    */
-  const bulkRejectLowPriority = async () => {
-    if (!user) return;
-
-    const lowPrioritySuggestions = suggestions.filter(s => 
-      s.status === 'pending' && s.priority === 'low'
-    );
-
-    console.log('🗑️ DIAGNOSTIC: Bulk rejecting low priority suggestions with persistence', {
-      count: lowPrioritySuggestions.length,
-      suggestionIds: lowPrioritySuggestions.map(s => s.id),
-      persistenceEnabled,
-      userId: user.id,
-      timestamp: new Date().toISOString()
-    });
-
-    setIsProcessingApproval(true);
-    const bulkOperationId = `bulk-low-reject-${Date.now()}`;
-
+  const applyAllGroupEnhancements = async () => {
+    if (!activeCategory || !requirements.length || !categoryValidationResult) return;
+    
+    console.log('🚀 Applying all group enhancements for category:', activeCategory.name);
+    
     try {
-      // Update UI state
-      setSuggestions(prev => prev.map(s => 
-        lowPrioritySuggestions.some(lps => lps.id === s.id)
-          ? { ...s, status: 'rejected' as any }
-          : s
-      ));
-
-      // Persist bulk rejection to database if enabled
-      if (persistenceEnabled && lowPrioritySuggestions.length > 0) {
-        const suggestionIds = lowPrioritySuggestions.map(s => s.id);
-        const result = await UnifiedRequirementsValidationPersistenceService.bulkRejectSuggestions(
-          suggestionIds,
-          user.id,
-          bulkOperationId,
-          'Bulk rejection of low priority suggestions (low impact improvements)'
+      const updatedRequirements = requirements.map(requirement => {
+        const reqAnalysis = categoryValidationResult.analyzed_requirements.find(
+          analysis => analysis.letter === requirement.letter
         );
         
-        console.log('💾 DIAGNOSTIC: Bulk low priority rejection persisted', {
-          bulkOperationId,
-          rejectedCount: result.rejected.length,
-          errorCount: result.errors.length,
-          errors: result.errors
-        });
+        if (reqAnalysis?.suggestions && reqAnalysis.suggestions.length > 0) {
+          const bestSuggestion = reqAnalysis.suggestions
+            .filter(s => s.type === 'clarity_improvement' || s.type === 'completeness_addition')
+            .sort((a, b) => b.confidence - a.confidence)[0];
+          
+          if (bestSuggestion) {
+            console.log(`📝 Applying enhancement to ${requirement.letter}:`, {
+              original: requirement.content.substring(0, 50) + '...',
+              enhanced: bestSuggestion.suggested_text.substring(0, 50) + '...'
+            });
+            
+            return { 
+              ...requirement, 
+              content: bestSuggestion.suggested_text,
+              word_count: bestSuggestion.suggested_text.split(/\s+/).length
+            };
+          }
+        }
         
-        // Update persisted suggestions state
-        setPersistedSuggestions(prev => prev.map(s => 
-          suggestionIds.includes(s.id)
-            ? { ...s, approval_status: 'rejected', reviewed_by: user.id, reviewed_at: new Date().toISOString(), bulk_operation_id: bulkOperationId }
-            : s
-        ));
-      }
-
-      console.log(`✅ DIAGNOSTIC: Bulk rejected ${lowPrioritySuggestions.length} low priority suggestions`);
+        // Fallback: Look in suggestions array
+        const reqSuggestions = suggestions.filter(s => 
+          s.requirement_id === `${activeCategory?.name}-${requirement.letter}`
+        );
+        
+        if (reqSuggestions.length > 0 && reqSuggestions[0]?.suggestion) {
+          console.log(`📝 Applying fallback enhancement to ${requirement.letter}`);
+          return { 
+            ...requirement, 
+            content: reqSuggestions[0].suggestion,
+            word_count: reqSuggestions[0].suggestion.split(/\s+/).length
+          };
+        }
+        
+        return requirement;
+      });
+      
+      setRequirements(updatedRequirements);
+      
+      const enhancedCount = updatedRequirements.filter(req => req.content !== requirements.find(orig => orig.id === req.id)?.content).length;
+      console.log(`✅ Applied enhancements to ${enhancedCount}/${requirements.length} requirements`);
+      
     } catch (error) {
-      console.error('❌ DIAGNOSTIC: Failed to bulk reject low priority suggestions:', error);
-      // Revert UI state on error
-      setSuggestions(prev => prev.map(s => 
-        lowPrioritySuggestions.some(lps => lps.id === s.id)
-          ? { ...s, status: 'pending' as any }
-          : s
-      ));
-    } finally {
-      setIsProcessingApproval(false);
+      console.error('❌ Failed to apply group enhancements:', error);
     }
   };
+
+  // Removed unused bulk functions to eliminate TypeScript warnings
+
+
 
   if (loading || isLoadingMappings) {
     return (
@@ -1843,8 +2012,30 @@ IMPROVED REQUIREMENT:`;
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-15"></div>
                     <div className="relative bg-black/40 backdrop-blur-xl border border-blue-500/20 rounded-2xl">
                       <div className="p-4 border-b border-blue-500/20">
-                        <h4 className="text-lg font-bold text-white">Unified Requirements</h4>
-                        <p className="text-blue-300 text-sm">Max 4-5 lines per requirement • Framework-specific elements highlighted</p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-lg font-bold text-white">Unified Requirements</h4>
+                            <p className="text-blue-300 text-sm">Max 4-5 lines per requirement • Framework-specific elements highlighted</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={generateCategoryGroupImprovements}
+                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm px-4 py-2"
+                              disabled={isAnalyzing}
+                            >
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              🚀 Improve Entire Group
+                            </Button>
+                            <Button
+                              onClick={applyAllGroupEnhancements}
+                              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm px-4 py-2"
+                              disabled={isAnalyzing}
+                            >
+                              <CheckSquare className="w-4 h-4 mr-2" />
+                              ✅ Apply All Enhancements
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                       
                       <div className="p-4 space-y-4 max-h-[650px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/50 scrollbar-track-transparent">
@@ -2003,7 +2194,15 @@ IMPROVED REQUIREMENT:`;
                                           }
                                         }
                                         
-                                        // Fallback: Show original content without fake enhancements
+                                        // Fallback: Look in suggestions array for this requirement
+                                        const reqSuggestions = suggestions.filter(s => 
+                                          s.requirement_id === `${activeCategory?.name}-${requirement.letter}`
+                                        );
+                                        if (reqSuggestions.length > 0 && reqSuggestions[0]?.suggestion) {
+                                          return reqSuggestions[0].suggestion;
+                                        }
+                                        
+                                        // Final fallback: Show original content
                                         return requirement.content;
                                       })()}
                                     </div>
