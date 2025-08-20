@@ -28,14 +28,20 @@ export const AdminNavigation: React.FC = () => {
     return location.pathname.startsWith(path);
   };
 
-  const navItems = [
+  const navItems: Array<{
+    to: string;
+    icon: React.ReactElement;
+    label: string;
+    exact?: boolean;
+    badge?: string;
+  }> = [
     { to: '/admin', icon: <Home size={20} />, label: 'Dashboard', exact: true },
     { to: '/admin/standards', icon: <Shield size={20} />, label: 'Standards' },
     { to: '/admin/organizations', icon: <Building size={20} />, label: 'Organizations' },
     { to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
     { to: '/admin/compliance', icon: <BookOpen size={20} />, label: 'Compliance' },
     { to: '/admin/unified-requirements-validation', icon: <CheckSquare size={20} />, label: 'Unified Requirements Validation' },
-    { to: '/admin/realaimappingdashboard', icon: <Brain size={20} />, label: 'Unified Guidance Validation' },
+    { to: '/admin/unified-guidance-validation', icon: <Brain size={20} />, label: 'Unified Guidance Validation' },
     { to: '/admin/system', icon: <Settings size={20} />, label: 'System' },
     { to: '/admin/logs', icon: <Activity size={20} />, label: 'Audit Logs' },
   ];

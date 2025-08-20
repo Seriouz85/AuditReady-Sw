@@ -70,7 +70,7 @@ const OrganizationDetail = lazy(() => import("./pages/admin/organizations/Organi
 const UserManagement = lazy(() => import("./pages/admin/users/UserManagement").then(m => ({ default: m.UserManagement })));
 const SystemSettings = lazy(() => import("./pages/admin/system/SystemSettings").then(m => ({ default: m.SystemSettings })));
 const ComplianceManagement = lazy(() => import("./pages/admin/compliance/ComplianceManagement"));
-const RealAIMappingDashboard = lazy(() => import("./pages/admin/RealAIMappingDashboard"));
+const UnifiedGuidanceValidationDashboard = lazy(() => import("./pages/admin/UnifiedGuidanceValidationDashboard"));
 const UnifiedRequirementsValidationDashboard = lazy(() => import("./pages/admin/UnifiedRequirementsValidationDashboard"));
 import EntraCallbackPage from "./pages/auth/EntraCallbackPage";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -675,17 +675,17 @@ const App = () => {
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
                         <Suspense fallback={<AdminLoadingSpinner />}>
-                          <RealAIMappingDashboard />
+                          <UnifiedGuidanceValidationDashboard />
                         </Suspense>
                       </ProtectedRoute>
                     } 
                   />
                   <Route 
-                    path="/admin/realaimappingdashboard" 
+                    path="/admin/unified-guidance-validation" 
                     element={
                       <ProtectedRoute requiredPermission="platform_admin">
                         <Suspense fallback={<AdminLoadingSpinner />}>
-                          <RealAIMappingDashboard />
+                          <UnifiedGuidanceValidationDashboard />
                         </Suspense>
                       </ProtectedRoute>
                     } 

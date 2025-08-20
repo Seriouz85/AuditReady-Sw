@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,43 +10,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { 
   Brain,
   Search,
-  Filter,
   Download,
   Upload,
   RefreshCw,
   Edit,
   Trash2,
   Eye,
-  Plus,
   BarChart3,
   TrendingUp,
   DollarSign,
-  Clock,
-  CheckCircle,
-  AlertTriangle,
   Target,
-  Zap,
   Database,
-  Settings,
   FileText,
-  BookOpen,
-  Activity,
-  Users,
-  Award,
   AlertCircle,
-  ChevronRight,
-  Calendar,
-  MessageSquare,
-  Lightbulb,
-  Shield,
-  Server
+  Lightbulb
 } from 'lucide-react';
 
 // ============================================================================

@@ -809,7 +809,7 @@ export class OptimizedWordGenerator {
           new Paragraph({
             children: [new TextRun({
               text: `Note: Showing first 10 of ${requirements.length} requirements in this section`,
-              italic: true,
+              italics: true,
               size: 16,
               color: '6B7280',
               font: 'Calibri'

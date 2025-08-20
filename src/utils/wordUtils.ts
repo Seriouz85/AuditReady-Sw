@@ -524,7 +524,7 @@ function createRequirementsAnalysisContent(data: AssessmentWordData): Array<Para
           children: [
             new TextRun({
               text: `Note: Showing first 15 of ${data.requirements.length} total requirements`,
-              italic: true,
+              italics: true,
               size: 16,
               color: '6B7280',
               font: 'Arial'

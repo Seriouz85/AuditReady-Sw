@@ -10,7 +10,7 @@ export const getSubdomain = (): string | null => {
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     // Check for subdomain simulation via URL parameter
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('subdomain');
+    return urlParams.get('subdomain') || null;
   }
   
   // Handle production domains

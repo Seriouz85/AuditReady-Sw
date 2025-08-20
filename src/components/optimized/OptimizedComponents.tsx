@@ -22,7 +22,7 @@ interface OptimizedListItemProps {
   title: string;
   description?: string;
   status?: string;
-  onClick?: () => void;
+  onClick?: (id: string) => void;
   className?: string;
   children?: React.ReactNode;
 }
@@ -40,7 +40,7 @@ export const OptimizedListItem = memo<OptimizedListItemProps>(({
     <MemoizedCard 
       key={id}
       className={`cursor-pointer hover:shadow-md transition-shadow ${className}`}
-      onClick={onClick}
+      onClick={() => onClick?.(id)}
     >
       <MemoizedCardHeader>
         <div className="flex items-center justify-between">
@@ -112,3 +112,52 @@ export const OptimizedTable = memo<OptimizedTableProps>(({
 });
 
 OptimizedTable.displayName = 'OptimizedTable';
+
+// Export aliases for test compatibility
+export const OptimizedButton = MemoizedButton;
+export const OptimizedCard = MemoizedCard;
+
+// Additional optimized components
+interface OptimizedStatusCardProps {
+  title: string;
+  value: string | number;
+  description?: string;
+  trend?: 'up' | 'down' | 'stable';
+  className?: string;
+}
+
+export const OptimizedStatusCard = memo<OptimizedStatusCardProps>(({
+  title,
+  value,
+  description,
+  trend,
+  className = ""
+}) => {
+  const getTrendIcon = () => {
+    switch (trend) {
+      case 'up': return '↗ Trend';
+      case 'down': return '↘ Trend';
+      case 'stable': return '→ Trend';
+      default: return '';
+    }
+  };
+
+  return (
+    <MemoizedCard className={className}>
+      <MemoizedCardHeader>
+        <MemoizedCardTitle className="text-sm font-medium">{title}</MemoizedCardTitle>
+      </MemoizedCardHeader>
+      <MemoizedCardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        {description && (
+          <p className="text-xs text-gray-500 mt-1">{description}</p>
+        )}
+        {trend && (
+          <div className="text-xs text-gray-400 mt-2">{getTrendIcon()}</div>
+        )}
+      </MemoizedCardContent>
+    </MemoizedCard>
+  );
+});
+
+OptimizedStatusCard.displayName = 'OptimizedStatusCard';

@@ -3,8 +3,8 @@ import { toast } from '@/utils/toast';
 export interface ErrorDetails {
   code?: string;
   message: string;
-  context?: Record<string, any>;
-  stack?: string;
+  context?: Record<string, any> | undefined;
+  stack?: string | undefined;
   timestamp: string;
 }
 

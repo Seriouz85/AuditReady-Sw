@@ -16,6 +16,7 @@ export interface SubGuidanceItem {
   reviewComments?: string;
   revisionHistory?: SubGuidanceRevision[];
   originalContent?: string; // Store original before edits
+  ai_enhanced?: string; // AI-enhanced version for comparison
 }
 
 export interface SubGuidanceRevision {
