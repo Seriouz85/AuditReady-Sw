@@ -78,9 +78,9 @@ export const AdminNavigation: React.FC = () => {
                     : "text-slate-300 hover:text-white hover:bg-slate-800"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   {item.icon}
-                  <span>{item.label}</span>
+                  <span className="truncate text-left">{item.label}</span>
                 </div>
                 {item.badge && (
                   <Badge variant="secondary" className="bg-purple-600 text-white text-xs">

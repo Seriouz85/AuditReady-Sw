@@ -286,4 +286,58 @@ The user must explicitly say one of these phrases for ANY deletion:
 
 ---
 
+## 🏗️ FUTURE CODING RULES & STANDARDS
+
+### 27. File Size Management & Component Extraction
+**Rule**: Implement systematic file size control to prevent AI context failures and maintain code maintainability.
+
+**File Size Thresholds**:
+- **Warning Level**: Files exceeding 800 lines should be evaluated for component extraction
+- **Critical Level**: Files exceeding 1,200 lines must be refactored before feature additions
+- **Emergency Level**: Files exceeding 1,800 lines cause AI context failures and block development
+
+**Component Extraction Strategy**:
+1. **Identify Extraction Candidates**: Look for reusable UI patterns, business logic blocks, or self-contained functionality
+2. **Create Unified Components**: Extract to shared components that work across multiple dashboards/pages
+3. **Maintain Design Consistency**: Ensure extracted components follow unified design patterns and prop interfaces
+4. **Interface Standardization**: Use consistent TypeScript interfaces across extracted components
+5. **File Size Reduction Target**: Aim for 60-70% reduction in original file size post-extraction
+
+**Extraction Priority Order**:
+1. **UI Components**: Headers, stat grids, panels, editors (highest priority)
+2. **Business Logic**: Service calls, data transformations, validation logic
+3. **Type Definitions**: Move shared interfaces to dedicated type files
+4. **Utility Functions**: Extract helper functions to shared utility modules
+
+**Implementation Guidelines**:
+- **Extract Early**: Don't wait for files to become unmanageable
+- **Test Extracted Components**: Ensure functionality remains intact post-extraction
+- **Document Dependencies**: Clearly document component relationships and data flow
+- **Unified Naming**: Use consistent naming conventions for extracted components (e.g., `Unified*`, `Shared*`)
+
+**Benefits Achieved**:
+- ✅ Eliminates AI context window failures
+- ✅ Improves code maintainability and reusability
+- ✅ Enables faster development through shared components
+- ✅ Reduces technical debt and improves code quality
+- ✅ Facilitates easier testing and debugging
+
+### 28. Dashboard Architecture Patterns
+**Rule**: Maintain consistent layout patterns across validation dashboards and admin interfaces.
+
+**Standard Layout Structure**:
+1. **Neural Header**: Unified header component with stats and badges
+2. **Stats Grid**: Consistent metrics display (elaborate/basic modes)
+3. **Left Column**: AI Knowledge Bank + Category Panel (2/5 width)
+4. **Right Column**: Category Header + KPIs + Content Display (3/5 width)
+5. **Content Flow**: Top-to-bottom logical information hierarchy
+
+**Component Reusability Requirements**:
+- All dashboard components must support both 'requirements' and 'guidance' types
+- Consistent prop interfaces across similar components
+- Unified design system with gradients, colors, and animations
+- Responsive design patterns for different screen sizes
+
+---
+
 **Remember: The user's data is sacred. Protect it at all costs.**

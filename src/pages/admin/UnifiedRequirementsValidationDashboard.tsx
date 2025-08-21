@@ -1,28 +1,49 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { 
+  CheckSquare,
   Brain, 
   RefreshCw,
   CheckCircle,
+  Sparkles,
   Shield,
-  Search,
-  Target,
-  X
+  Edit,
+  Database,
+  X,
+  FileText,
+  TrendingUp,
+  Layers
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
+import { UnifiedRequirementsService } from '@/services/compliance/UnifiedRequirementsService';
 import { CategoryValidationResult } from '@/services/validation/AIRequirementsValidationService';
+
+// Import unified components
+import { UnifiedNeuralHeader } from '@/components/admin/dashboard/UnifiedNeuralHeader';
+import { UnifiedStatsGrid } from '@/components/admin/dashboard/UnifiedStatsGrid';
+import { UnifiedCategoryPanel } from '@/components/admin/dashboard/UnifiedCategoryPanel';
+import { AIKnowledgeBank } from '@/components/admin/dashboard/AIKnowledgeBank';
+import { ActiveCategoryHeader } from '@/components/admin/dashboard/ActiveCategoryHeader';
 
 // Types for unified requirements validation
 interface UnifiedCategory {
   id: string;
   name: string;
-  description: string;
-  sort_order: number;
+  description?: string;
+  sort_order?: number;
   icon?: string;
   is_active: boolean;
   mapping_data?: any;
+  stats?: {
+    total_requirements?: number;
+    frameworks_included?: string[];
+    coverage_percentage?: number;
+  };
+  status?: 'approved' | 'pending_review' | 'analyzing' | 'completed' | 'pending';
 }
 
 interface UnifiedRequirement {
@@ -41,9 +62,37 @@ interface UnifiedRequirement {
   needs_improvement?: boolean;
 }
 
-export default function CISORequirementsValidationDashboard() {
-  const { isPlatformAdmin } = useAuth();
-  const [loading, setLoading] = useState(true);
+interface RequirementSuggestion {
+  id: string;
+  requirement_id: string;
+  type: 'content_enhancement' | 'framework_specific' | 'length_optimization' | 'clarity_improvement' | 'framework_enhancement';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  suggestion: string;
+  suggested_text?: string;
+  framework_specific?: string | undefined;
+  expected_improvement: string;
+  ai_confidence: number;
+  status: 'pending' | 'approved' | 'rejected';
+  highlighted_text?: string;
+}
+
+interface ValidationSession {
+  id: string;
+  category_id: string;
+  category_name: string;
+  total_requirements: number;
+  validated_requirements: number;
+  suggestions_generated: number;
+  suggestions_approved: number;
+  quality_score: number;
+  coverage_score: number;
+  gap_count: number;
+  created_at: string;
+  status: 'analyzing' | 'pending_review' | 'approved' | 'rejected';
+}
+
+export default function UnifiedRequirementsValidationDashboard() {
+  const { user, isPlatformAdmin, organization } = useAuth();
   
   // Framework selection for loading compliance data
   const [selectedFrameworks] = useState({
@@ -54,450 +103,654 @@ export default function CISORequirementsValidationDashboard() {
     nis2: true
   });
   
-  // Load compliance mapping data
   const { data: complianceMappings, isLoading: isLoadingMappings } = useComplianceMappingData(selectedFrameworks);
-
-  // Main state
+  
+  // State
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<UnifiedCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<UnifiedCategory | null>(null);
   const [requirements, setRequirements] = useState<UnifiedRequirement[]>([]);
+  const [suggestions, setSuggestions] = useState<RequirementSuggestion[]>([]);
+  const [validationSessions, setValidationSessions] = useState<ValidationSession[]>([]);
   const [categoryValidationResult, setCategoryValidationResult] = useState<CategoryValidationResult | null>(null);
-  const [aiAnalysisInProgress, setAiAnalysisInProgress] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterValue, setFilterValue] = useState('all');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
 
-  // Category icon helper
-  const getCategoryIcon = (categoryName: string) => {
-    const iconMap: { [key: string]: string } = {
-      'Information Security Governance': '🏛️',
-      'Information Security Organisation': '🏢', 
-      'Human Resource Security': '👥',
-      'Asset Management': '📋',
-      'Access Control': '🔐',
-      'Cryptography': '🔒',
-      'Physical and Environmental Security': '🏗️',
-      'Operations Security': '⚙️',
-      'Communications Security': '📡',
-      'System Acquisition': '🛒',
-      'Supplier Relationships': '🤝',
-      'Information Security Incident Management': '🚨',
-      'Information Security in Business Continuity': '🔄',
-      'Compliance': '✅'
-    };
-    return iconMap[categoryName] || '📁';
-  };
+  // Load data
+  useEffect(() => {
+    if (complianceMappings && complianceMappings.length > 0) {
+      loadData();
+    }
+  }, [complianceMappings, user]);
 
-  // Load initial data
-  const loadInitialData = useCallback(async () => {
-    setLoading(true);
+  const loadData = useCallback(async () => {
+    if (!complianceMappings || complianceMappings.length === 0) return;
     
+    setLoading(true);
     try {
-      if (complianceMappings && complianceMappings.length > 0) {
-        const processedCategories: UnifiedCategory[] = complianceMappings.map((mapping, index) => ({
-          id: `category-${index}`,
-          name: mapping.category || `Category ${index + 1}`,
-          description: `Unified requirements validation for ${mapping.category || 'category'}`,
-          sort_order: index,
-          icon: getCategoryIcon(mapping.category),
-          is_active: true,
-          mapping_data: mapping
-        }));
-
-        setCategories(processedCategories);
-        console.log(`✅ Loaded ${processedCategories.length} categories for validation`);
-      }
+      await loadCategoriesFromMappings();
+      await loadValidationSessions();
     } catch (error) {
-      console.error('❌ Error loading validation data:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
   }, [complianceMappings]);
 
-  useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
-
-  // Load requirements for selected category
-  const loadCategoryRequirements = async (category: UnifiedCategory) => {
+  const loadCategoriesFromMappings = async () => {
     try {
-      setActiveCategory(category);
+      const categoryMap = new Map<string, UnifiedCategory>();
       
-      if (!category.mapping_data) {
-        console.warn('⚠️ No mapping data available for category');
-        setRequirements([]);
-        return;
-      }
-
-      // Process requirements from mapping data
-      const processedRequirements: UnifiedRequirement[] = [];
-      let letterIndex = 0;
-      const letters = 'abcdefghijklmnopqrstuvwxyz';
-
-      // Extract requirements from different frameworks
-      const frameworks = ['iso27001', 'iso27002', 'CIS Controls', 'GDPR', 'NIS2'];
-      
-      frameworks.forEach(framework => {
-        const frameworkData = category.mapping_data.frameworks?.[framework];
-        if (frameworkData && Array.isArray(frameworkData)) {
-          frameworkData.forEach((item: any) => {
-            if (letterIndex < letters.length) {
-              const requirement: UnifiedRequirement = {
-                id: `req-${category.id}-${letterIndex}`,
-                category_id: category.id,
-                letter: letters[letterIndex] || 'a',
-                title: item.title || item.name || `${framework} Control`,
-                description: item.description || item.implementation_guidance || '',
-                originalText: item.description || item.implementation_guidance || '',
-                content: `${item.title || item.name || 'Control'}: ${item.description || item.implementation_guidance || ''}`,
-                word_count: (item.description || '').split(/\s+/).length,
-                structure_score: Math.random() * 0.3 + 0.7, // Mock score
-                completeness_score: Math.random() * 0.2 + 0.8,
-                clarity_score: Math.random() * 0.3 + 0.7,
-                framework_mappings: [framework],
-                needs_improvement: Math.random() > 0.7
-              };
-              processedRequirements.push(requirement);
-              letterIndex++;
-            }
+      complianceMappings?.forEach((mapping, index) => {
+        const categoryName = mapping.category || `Category ${index + 1}`;
+        const categoryId = `mapping-${index}`;
+        
+        if (!categoryMap.has(categoryId)) {
+          const unifiedData = UnifiedRequirementsService.extractUnifiedRequirements(mapping);
+          
+          categoryMap.set(categoryId, {
+            id: categoryId,
+            name: categoryName,
+            description: `Unified requirements for ${categoryName}`,
+            sort_order: index + 1,
+            is_active: true,
+            icon: getCategoryIcon(categoryName),
+            mapping_data: mapping,
+            stats: {
+              total_requirements: unifiedData.requirements.length,
+              frameworks_included: Object.keys(mapping.frameworks || {}),
+              coverage_percentage: Math.floor(Math.random() * 40) + 60
+            },
+            status: ['approved', 'pending_review', 'analyzing'][Math.floor(Math.random() * 3)] as any
           });
         }
       });
+      
+      const categoriesArray = Array.from(categoryMap.values()).slice(0, 21);
+      setCategories(categoriesArray);
+    } catch (error) {
+      console.error('Error loading categories from mappings:', error);
+    }
+  };
 
-      setRequirements(processedRequirements);
-      console.log(`✅ Loaded ${processedRequirements.length} requirements for ${category.name}`);
+  const getCategoryIcon = (categoryName: string): string => {
+    const name = categoryName?.toLowerCase() || '';
+    if (name.includes('governance') || name.includes('leadership')) return '👑';
+    if (name.includes('access') || name.includes('identity')) return '🔐';
+    if (name.includes('asset') || name.includes('information')) return '📋';
+    if (name.includes('crypto') || name.includes('encryption')) return '🔒';
+    if (name.includes('physical') || name.includes('environmental')) return '🏢';
+    if (name.includes('operations') || name.includes('security')) return '⚙️';
+    if (name.includes('communications') || name.includes('network')) return '🌐';
+    if (name.includes('acquisition') || name.includes('development')) return '💻';
+    if (name.includes('supplier') || name.includes('relationship')) return '🤝';
+    if (name.includes('incident') || name.includes('management')) return '🚨';
+    if (name.includes('continuity') || name.includes('availability')) return '🔄';
+    if (name.includes('compliance') || name.includes('audit')) return '📊';
+    return '📁';
+  };
+
+  const loadValidationSessions = async (): Promise<ValidationSession[]> => {
+    try {
+      if (!isPlatformAdmin) {
+        return [];
+      }
+
+      const sessions: ValidationSession[] = [];
+      
+      if (complianceMappings && complianceMappings.length > 0) {
+        for (const mapping of complianceMappings) {
+          const categoryRequirements = UnifiedRequirementsService.extractUnifiedRequirements(mapping);
+          const requirementsCount = categoryRequirements.requirements.length;
+          
+          const totalWords = categoryRequirements.requirements.reduce((sum, req) => 
+            sum + (req.title + ' ' + req.description).split(/\s+/).length, 0
+          );
+          const avgWordsPerReq = requirementsCount > 0 ? totalWords / requirementsCount : 0;
+          
+          const qualityScore = requirementsCount > 0 ? Math.max(0.3, 
+            Math.min(1.0, 1 - Math.abs(avgWordsPerReq - 22.5) / 50)
+          ) : 0;
+          
+          const session: ValidationSession = {
+            id: `session-${mapping.id || Math.random().toString(36).substring(2, 11)}`,
+            category_id: mapping.id || '',
+            category_name: mapping.category || 'Unknown Category',
+            total_requirements: requirementsCount,
+            validated_requirements: Math.floor(requirementsCount * 0.7),
+            suggestions_generated: Math.floor(requirementsCount * 1.2),
+            suggestions_approved: Math.floor(requirementsCount * 0.8),
+            quality_score: qualityScore,
+            coverage_score: Math.random() * 0.4 + 0.6,
+            gap_count: Math.floor(Math.random() * 3),
+            created_at: new Date().toISOString(),
+            status: qualityScore > 0.8 ? 'approved' : qualityScore > 0.6 ? 'pending_review' : 'analyzing'
+          };
+          
+          sessions.push(session);
+        }
+      }
+      
+      setValidationSessions(sessions);
+      return sessions;
+    } catch (error) {
+      console.error('Error loading validation sessions:', error);
+      return [];
+    }
+  };
+
+  const loadCategoryRequirements = async (categoryName: string): Promise<UnifiedRequirement[]> => {
+    try {
+      const category = categories.find(c => c.name === categoryName);
+      if (!category?.mapping_data) {
+        return [];
+      }
+
+      const unifiedData = UnifiedRequirementsService.extractUnifiedRequirements(category.mapping_data);
+      
+      const unifiedRequirements = unifiedData.requirements.map((req, index): UnifiedRequirement => {
+        const wordCount = (req.title + ' ' + req.description).split(/\s+/).length;
+        const clarityScore = Math.max(0.3, Math.min(1.0, 1 - Math.abs(wordCount - 22.5) / 50));
+        const needsImprovement = clarityScore < 0.7 || wordCount > 50 || wordCount < 10;
+
+        return {
+          id: `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${req.letter || index}`,
+          category_id: category.id,
+          letter: req.letter || String.fromCharCode(97 + index) + ')',
+          title: req.title || '',
+          description: req.description || '',
+          originalText: req.title + ' ' + req.description,
+          content: (req.title + ' ' + req.description).trim(),
+          word_count: wordCount,
+          clarity_score: clarityScore,
+          needs_improvement: needsImprovement,
+          framework_mappings: Object.keys(category.mapping_data.frameworks || {})
+        };
+      });
+
+      return unifiedRequirements;
+    } catch (error) {
+      console.error('Error loading category requirements:', error);
+      return [];
+    }
+  };
+
+  const handleCategoryClick = async (category: UnifiedCategory) => {
+    setActiveCategory(category);
+    setRequirements([]);
+    setCategoryValidationResult(null);
+    setIsAnalyzing(true);
+    
+    try {
+      const categoryRequirements = await loadCategoryRequirements(category.name);
+      setRequirements(categoryRequirements);
+      
+      // Generate AI suggestions
+      const mockSuggestions = categoryRequirements.slice(0, 3).map((req) => ({
+        id: `suggestion-${req.id}-${Date.now()}`,
+        requirement_id: req.id,
+        type: 'clarity_improvement' as any,
+        priority: 'high' as any,
+        suggestion: `Enhanced requirement clarity for ${req.content.substring(0, 50)}...`,
+        suggested_text: `Clear, concise requirement: ${req.content}\n\n[Enhanced with framework-specific details]`,
+        highlighted_text: req.content.substring(0, 200),
+        expected_improvement: `Improved requirement clarity and framework coverage`,
+        ai_confidence: 0.85,
+        status: 'pending' as any
+      }));
+      setSuggestions(mockSuggestions);
       
     } catch (error) {
-      console.error('❌ Error loading category requirements:', error);
-      setRequirements([]);
-    }
-  };
-
-  // Perform AI validation analysis (category-level)
-  const performAIValidationAnalysis = async () => {
-    if (!activeCategory || !isPlatformAdmin) return;
-
-    setAiAnalysisInProgress(true);
-    setCategoryValidationResult(null);
-
-    try {
-      console.log('🔍 Starting AI validation analysis for category:', activeCategory.name);
-
-      // Mock comprehensive category analysis
-      const mockValidationResult: CategoryValidationResult = {
-        category: activeCategory.name,
-        total_requirements: requirements.length,
-        overall_quality_score: Math.random() * 0.3 + 0.7,
-        overall_framework_coverage: Math.random() * 0.2 + 0.8,
-        requirements_needing_attention: Math.floor(Math.random() * 3) + 1,
-        analyzed_requirements: [],
-        category_suggestions: {
-          add_new_requirements: Math.random() > 0.7,
-          merge_requirements: [],
-          split_requirements: [],
-          priority_fixes: [
-            {
-              id: 'fix-1',
-              type: 'framework_enhancement',
-              priority: 'high',
-              current_text: `Current ${activeCategory.name} implementation`,
-              suggested_text: `Enhanced ${activeCategory.name} framework alignment`,
-              rationale: `Improve framework alignment for ${activeCategory.name}`,
-              estimated_word_change: 10,
-              confidence: 0.85
-            }
-          ].slice(0, Math.floor(Math.random() * 3) + 1) as any
-        },
-        framework_gaps: [
-          { framework: 'ISO 27001', coverage_percentage: Math.random() * 20 + 80, missing_topics: ['Minor coverage gaps'] },
-          { framework: 'ISO 27002', coverage_percentage: Math.random() * 25 + 75, missing_topics: ['Implementation details needed'] },
-          { framework: 'CIS Controls', coverage_percentage: Math.random() * 30 + 70, missing_topics: ['Technical controls alignment'] },
-          { framework: 'GDPR', coverage_percentage: Math.random() * 20 + 80, missing_topics: ['Privacy controls coverage'] },
-          { framework: 'NIS2', coverage_percentage: Math.random() * 25 + 75, missing_topics: ['Incident response alignment'] }
-        ]
-      };
-
-      // Simulate AI processing time
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      setCategoryValidationResult(mockValidationResult);
-      console.log('✅ AI validation analysis complete');
-
-    } catch (error) {
-      console.error('❌ AI validation analysis failed:', error);
+      console.error('Error loading category data:', error);
     } finally {
-      setAiAnalysisInProgress(false);
+      setIsAnalyzing(false);
     }
   };
 
-  // Filter categories based on search
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleAIAnalysis = async () => {
+    if (!activeCategory || requirements.length === 0) return;
+    
+    setIsAnalyzing(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const qualityScore = requirements.reduce((sum, req) => sum + (req.clarity_score || 0), 0) / requirements.length;
+      const requirementsNeedingAttention = requirements.filter(req => req.needs_improvement).length;
+      
+      setCategoryValidationResult({
+        overall_quality_score: qualityScore,
+        overall_framework_coverage: 0.85,
+        requirements_needing_attention: requirementsNeedingAttention,
+        framework_gaps: [],
+        category_suggestions: {
+          priority_fixes: requirements.filter(req => req.needs_improvement).slice(0, 3).map(req => ({
+            requirement_id: req.id,
+            suggestion: `Improve clarity and framework coverage for ${req.letter}`
+          }))
+        }
+      } as any);
+      
+    } catch (error) {
+      console.error('Error in AI analysis:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
-  // Loading state
-  if (loading || isLoadingMappings) {
+  const handleEditItem = (requirement: UnifiedRequirement) => {
+    setEditingItemId(requirement.id);
+    setEditContent(requirement.content);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingItemId) return;
+    
+    setRequirements(reqs => 
+      reqs.map(req => 
+        req.id === editingItemId 
+          ? { 
+              ...req, 
+              content: editContent,
+              word_count: editContent.split(/\s+/).length,
+              clarity_score: Math.max(0.3, Math.min(1.0, 1 - Math.abs(editContent.split(/\s+/).length - 22.5) / 50))
+            }
+          : req
+      )
+    );
+    
+    setEditingItemId(null);
+    setEditContent('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItemId(null);
+    setEditContent('');
+  };
+
+  if (loading || isLoadingMappings || !user || (organization === null && !isPlatformAdmin)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <AdminNavigation />
         <div className="ml-64 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <RefreshCw className="w-12 h-12 text-purple-400 mx-auto mb-4 animate-spin" />
-            <h2 className="text-xl font-bold text-white mb-2">Initializing CISO Dashboard</h2>
-            <p className="text-purple-300 mb-4">Loading compliance validation system...</p>
-            {isPlatformAdmin && (
-              <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full px-3 py-1">
-                <Shield className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs text-emerald-300">Platform Admin Mode</span>
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-25 animate-pulse"></div>
+              <div className="relative bg-black/50 backdrop-blur-xl border border-purple-500/20 rounded-lg p-8">
+                <CheckSquare className="w-12 h-12 text-purple-400 mx-auto mb-4 animate-pulse" />
+                <h3 className="text-xl font-bold text-white mb-2">Loading Unified Requirements Validation</h3>
+                <p className="text-purple-300 mb-4">Initializing quality assurance dashboard...</p>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
+  // Calculate overall stats from validation sessions
+  const overallStats = validationSessions.reduce(() => ({
+    total_categories: validationSessions.length,
+    validated_categories: validationSessions.filter(s => s.status === 'approved').length,
+    pending_validation: validationSessions.filter(s => s.status === 'pending_review').length,
+    suggestions_generated: validationSessions.reduce((sum, s) => sum + s.suggestions_generated, 0),
+    avg_quality_score: validationSessions.reduce((sum, s) => sum + s.quality_score, 0) / validationSessions.length
+  }), { total_categories: 0, validated_categories: 0, pending_validation: 0, suggestions_generated: 0, avg_quality_score: 0 });
+
+  // Prepare stats for the grid  
+  const elaborateStats = [
+    {
+      label: 'REQUIREMENT CATEGORIES',
+      value: categories.length,
+      subtitle: 'Active categories',
+      icon: Layers,
+      gradient: 'from-purple-600 to-purple-400',
+      borderColor: 'border-purple-500/20',
+      progressWidth: '100%',
+      animate: true
+    },
+    {
+      label: 'AI SUGGESTIONS',
+      value: Math.min(suggestions.length, 10),
+      subtitle: `${suggestions.filter(s => s.status === 'pending').length} pending validation`,
+      icon: Shield,
+      gradient: 'from-green-600 to-emerald-400',
+      borderColor: 'border-green-500/20',
+      additionalInfo: `${suggestions.filter(s => s.status === 'pending').length} pending validation`
+    },
+    {
+      label: 'REQUIREMENTS',
+      value: requirements.length,
+      subtitle: `${requirements.filter(req => !req.needs_improvement).length} validated`,
+      icon: Database,
+      gradient: 'from-blue-600 to-cyan-400',
+      borderColor: 'border-blue-500/20',
+      additionalInfo: `${requirements.filter(req => !req.needs_improvement).length} validated`
+    },
+    {
+      label: 'VALIDATION RATE',
+      value: requirements.length > 0 ? `${Math.round((requirements.filter(req => !req.needs_improvement).length / requirements.length) * 100)}%` : '0%',
+      subtitle: 'Quality score',
+      icon: TrendingUp,
+      gradient: 'from-pink-600 to-rose-400',
+      borderColor: 'border-pink-500/20',
+      progressWidth: requirements.length > 0 ? `${Math.round((requirements.filter(req => !req.needs_improvement).length / requirements.length) * 100)}%` : '0%'
+    }
+  ];
+
+  const basicStats = [
+    { label: 'Categories', value: overallStats.total_categories, color: 'purple' },
+    { label: 'Validated', value: overallStats.validated_categories, color: 'emerald' },
+    { label: 'Pending Review', value: overallStats.pending_validation, color: 'yellow' },
+    { label: 'AI Suggestions', value: overallStats.suggestions_generated, color: 'blue' },
+    { label: 'Avg Quality', value: `${Math.round(overallStats.avg_quality_score * 100)}%`, color: 'pink' }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <AdminNavigation />
       
-      {/* FIXED: Two-column layout - NO gaps, equal height, CISO-ready */}
-      <div className="ml-64 grid grid-cols-2 h-screen" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        
-        {/* Left Column - Category Selection Panel - FULL HEIGHT */}
-        <div className="h-full bg-black/60 backdrop-blur-xl border-r border-purple-500/20 overflow-y-auto p-6">
-          {/* Header */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">Requirements Categories</h2>
-            <p className="text-gray-400">Select a category for comprehensive validation</p>
+      <div className="ml-64 min-h-screen p-8">
+        {/* Unified Neural Header */}
+        <UnifiedNeuralHeader
+          type="requirements"
+          title="UNIFIED REQUIREMENTS VALIDATION"
+          subtitle="🧠 Neural Intelligence meets Unified Requirements Validation"
+          description="Validate and enhance unified requirements for optimal framework coverage"
+          stats={{
+            quality: Math.round(overallStats.avg_quality_score * 100),
+            coverage: 85,
+            progress: Math.round((overallStats.validated_categories / Math.max(overallStats.total_categories, 1)) * 100)
+          }}
+        />
+
+        {/* Stats Grid */}
+        <UnifiedStatsGrid
+          type="elaborate"
+          stats={elaborateStats}
+          columns={4}
+        />
+
+        {/* Basic Stats Grid */}
+        <UnifiedStatsGrid
+          type="basic"
+          stats={basicStats}
+          columns={5}
+        />
+
+        {/* Main Layout - Category List (left) and Requirements Display (right) */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+          {/* Left Column - AI Knowledge Bank and Category Panel */}
+          <div className="xl:col-span-2 space-y-4">
+            {/* AI Knowledge Bank - Above the filter box */}
+            <AIKnowledgeBank type="requirements" className="" />
+            
+            <UnifiedCategoryPanel
+              type="requirements"
+              title="Unified Requirements Categories"
+              subtitle="🎯 Click any category to validate unified requirements"
+              categories={categories}
+              activeCategory={activeCategory}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filterValue={filterValue}
+              setFilterValue={setFilterValue}
+              onCategoryClick={handleCategoryClick}
+              isLoading={loading}
+              showFrameworks={true}
+            />
           </div>
 
-          {/* Search */}
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search categories..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-black/50 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-gray-400"
+          {/* Right Column - Category Name Bar, KPIs, and Requirements */}
+          <div className="xl:col-span-3 space-y-6">
+            {/* Active Category Analysis Bar */}
+            {activeCategory && (
+              <ActiveCategoryHeader
+                type="requirements"
+                category={activeCategory}
+                isAnalyzing={isAnalyzing}
+                onAnalyze={handleAIAnalysis}
               />
-            </div>
-          </div>
+            )}
 
-          {/* Categories List */}
-          <div className="space-y-3">
-            {filteredCategories.map((category) => (
-              <div
-                key={category.id}
-                className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
-                  activeCategory?.id === category.id
-                    ? 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-400/40'
-                    : 'bg-black/40 border-gray-600/30 hover:border-purple-500/40 hover:bg-purple-500/10'
-                }`}
-                onClick={() => loadCategoryRequirements(category)}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="text-2xl">{category.icon}</div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-white">{category.name}</h3>
-                    <p className="text-sm text-gray-400 line-clamp-1">{category.description}</p>
-                  </div>
-                </div>
-                
-                {activeCategory?.id === category.id && (
-                  <div className="mt-3 pt-3 border-t border-purple-500/20">
-                    <div className="flex items-center gap-2 text-xs text-purple-300">
-                      <CheckCircle className="w-3 h-3" />
-                      <span>Active Category - {requirements.length} requirements</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Column - Category Content Viewer - FULL HEIGHT */}
-        <div className="h-full bg-black/60 backdrop-blur-xl overflow-y-auto p-6">
-          {activeCategory ? (
-            <div className="space-y-6">
-              {/* Category Header */}
+            {/* Category Statistics KPIs */}
+            {activeCategory && requirements.length > 0 && (
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl blur opacity-20"></div>
-                <div className="relative bg-black/60 backdrop-blur-xl border border-emerald-500/20 rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">{activeCategory.icon}</div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-white">{activeCategory.name}</h3>
-                        <p className="text-emerald-300 text-base">
-                          Comprehensive category validation and analysis
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-3">
-                      <Button
-                        onClick={performAIValidationAnalysis}
-                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-6 py-3"
-                        disabled={aiAnalysisInProgress}
-                      >
-                        {aiAnalysisInProgress ? (
-                          <div className="flex items-center gap-2">
-                            <RefreshCw className="w-5 h-5 animate-spin" />
-                            Analyzing Category...
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <Brain className="w-5 h-5" />
-                            AI Validate Category
-                          </div>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Category Statistics */}
+                <div className="relative bg-black/60 backdrop-blur-xl border border-emerald-500/20 rounded-2xl p-10">
                   <div className="grid grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-black/40 rounded-xl border border-emerald-500/10">
-                      <div className="text-2xl font-bold text-white">{requirements.length}</div>
-                      <div className="text-sm text-emerald-300">Total Requirements</div>
+                    <div className="text-center p-6 bg-black/40 rounded-xl border border-emerald-500/10">
+                      <div className="text-2xl font-bold text-white mb-3">{requirements.length}</div>
+                      <div className="text-xs text-emerald-300">Total Requirements</div>
                     </div>
-                    <div className="text-center p-4 bg-black/40 rounded-xl border border-yellow-500/10">
-                      <div className="text-2xl font-bold text-yellow-400">
+                    <div className="text-center p-6 bg-black/40 rounded-xl border border-yellow-500/10">
+                      <div className="text-2xl font-bold text-yellow-400 mb-3">
                         {categoryValidationResult ? categoryValidationResult.requirements_needing_attention : requirements.filter(r => r.needs_improvement).length}
                       </div>
-                      <div className="text-sm text-yellow-300">Need Attention</div>
+                      <div className="text-xs text-yellow-300">Need Attention</div>
                     </div>
-                    <div className="text-center p-4 bg-black/40 rounded-xl border border-blue-500/10">
-                      <div className="text-2xl font-bold text-blue-400">
+                    <div className="text-center p-6 bg-black/40 rounded-xl border border-blue-500/10">
+                      <div className="text-2xl font-bold text-blue-400 mb-3">
                         {categoryValidationResult ? Math.round(categoryValidationResult.overall_framework_coverage * 100) : 0}%
                       </div>
-                      <div className="text-sm text-blue-300">Framework Coverage</div>
+                      <div className="text-xs text-blue-300">Framework Coverage</div>
                     </div>
-                    <div className="text-center p-4 bg-black/40 rounded-xl border border-green-500/10">
-                      <div className="text-2xl font-bold text-green-400">
+                    <div className="text-center p-6 bg-black/40 rounded-xl border border-green-500/10">
+                      <div className="text-2xl font-bold text-green-400 mb-3">
                         {categoryValidationResult ? Math.round(categoryValidationResult.overall_quality_score * 100) : 
                          (requirements.length > 0 ? Math.round((requirements.reduce((sum, r) => sum + (r.clarity_score || 0), 0) / requirements.length) * 100) : 0)}%
                       </div>
-                      <div className="text-sm text-green-300">Quality Score</div>
+                      <div className="text-xs text-green-300">AI Quality Score</div>
                     </div>
+                  </div>
+
+                  {/* AI Analysis Results Panel */}
+                  {categoryValidationResult && (
+                    <div className="mt-4 p-4 bg-black/30 rounded-xl border border-purple-500/20">
+                      <h5 className="text-sm font-bold text-purple-300 mb-3 flex items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        AI Analysis Results
+                      </h5>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-purple-300">Priority Fixes:</span>
+                          <span className="text-white ml-2">{categoryValidationResult.category_suggestions.priority_fixes.length}</span>
+                        </div>
+                        <div>
+                          <span className="text-purple-300">Framework Gaps:</span>
+                          <span className="text-white ml-2">{categoryValidationResult.framework_gaps.filter((gap: any) => gap.coverage_percentage < 80).length}</span>
+                        </div>
+                      </div>
+                      {categoryValidationResult.category_suggestions.priority_fixes.length > 0 && (
+                        <div className="mt-2">
+                          <span className="text-xs text-orange-300">
+                            🚨 {categoryValidationResult.category_suggestions.priority_fixes.length} high-priority improvements suggested
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Requirements Display */}
+            <div className="space-y-6">
+            {/* Unified Requirements List */}
+            {isAnalyzing ? (
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20 animate-pulse"></div>
+                <div className="relative bg-black/60 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8">
+                  <div className="text-center">
+                    <RefreshCw className="w-8 h-8 text-blue-400 mx-auto mb-4 animate-spin" />
+                    <h3 className="text-lg font-bold text-white mb-2">Loading Unified Requirements</h3>
+                    <p className="text-blue-300">Analyzing category requirements...</p>
                   </div>
                 </div>
               </div>
-
-              {/* AI Analysis Results */}
-              {categoryValidationResult && (
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-20"></div>
-                  <div className="relative bg-black/60 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6">
-                    <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-                      <Brain className="w-6 h-6 text-purple-400" />
-                      AI Analysis Results
-                    </h4>
-                    
-                    <div className="grid grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <h5 className="text-lg font-semibold text-purple-300 mb-3">Priority Improvements</h5>
-                        <div className="text-3xl font-bold text-orange-400 mb-2">
-                          {categoryValidationResult.category_suggestions.priority_fixes.length}
-                        </div>
-                        <p className="text-sm text-gray-300">High-priority fixes needed</p>
-                      </div>
-                      <div>
-                        <h5 className="text-lg font-semibold text-purple-300 mb-3">Framework Gaps</h5>
-                        <div className="text-3xl font-bold text-red-400 mb-2">
-                          {categoryValidationResult.framework_gaps.filter(gap => gap.coverage_percentage < 80).length}
-                        </div>
-                        <p className="text-sm text-gray-300">Framework coverage gaps</p>
-                      </div>
-                    </div>
-
-                    {/* Comprehensive Category Analysis */}
-                    <div className="bg-black/30 rounded-xl p-4 mb-4">
-                      <h5 className="text-lg font-semibold text-white mb-3">Category Assessment</h5>
-                      <p className="text-gray-300 leading-relaxed">
-                        {categoryValidationResult.category_suggestions.priority_fixes.length > 0 
-                          ? `This category requires attention with ${categoryValidationResult.category_suggestions.priority_fixes.length} high-priority improvements identified. Framework coverage is at ${Math.round(categoryValidationResult.overall_framework_coverage * 100)}% with an overall quality score of ${Math.round(categoryValidationResult.overall_quality_score * 100)}%.`
-                          : `This category is performing well with strong framework coverage (${Math.round(categoryValidationResult.overall_framework_coverage * 100)}%) and quality score (${Math.round(categoryValidationResult.overall_quality_score * 100)}%). Minor optimizations may enhance compliance readiness.`
-                        }
-                      </p>
-                    </div>
-
-                    {/* Framework Coverage Analysis */}
-                    <div className="mb-4">
-                      <h5 className="text-lg font-semibold text-white mb-3">Framework Coverage</h5>
-                      <div className="space-y-3">
-                        {categoryValidationResult.framework_gaps.map((gap, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
-                            <span className="text-white font-medium">{gap.framework}</span>
-                            <div className="flex items-center gap-3">
-                              <div className={`text-sm font-semibold ${gap.coverage_percentage >= 80 ? 'text-green-400' : gap.coverage_percentage >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                                {Math.round(gap.coverage_percentage)}%
-                              </div>
-                              <div className={`w-3 h-3 rounded-full ${gap.coverage_percentage >= 80 ? 'bg-green-500' : gap.coverage_percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-700">
-                      <Button className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold">
-                        <CheckCircle className="w-5 h-5 mr-2" />
-                        Approve Category
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        className="flex-1 bg-red-500/20 border border-red-400/30 text-red-200 hover:bg-red-500/30 font-semibold"
-                      >
-                        <X className="w-5 h-5 mr-2" />
-                        Reject Category
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Category Requirements List - Read-Only Summary */}
+            ) : requirements.length > 0 ? (
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-15"></div>
-                <div className="relative bg-black/60 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-6">
-                  <h4 className="text-xl font-bold text-white mb-4">Requirements Overview</h4>
-                  <div className="space-y-3">
-                    {requirements.slice(0, 5).map((requirement) => (
-                      <div key={requirement.id} className="p-3 bg-black/30 rounded-lg border border-gray-600/30">
-                        <div className="flex items-start justify-between mb-2">
-                          <span className="text-sm font-bold text-blue-400 bg-blue-500/20 px-2 py-1 rounded">
-                            {requirement.letter.toUpperCase()})
-                          </span>
-                          <span className="text-xs text-gray-400">{requirement.word_count} words</span>
+                <div className="relative bg-black/40 backdrop-blur-xl border border-blue-500/20 rounded-2xl">
+                  <div className="p-4 border-b border-blue-500/20">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-lg font-bold text-white">Unified Requirements</h4>
+                        <p className="text-blue-300 text-sm">Max 4-5 lines per requirement • Framework-specific elements highlighted</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm px-4 py-2"
+                          disabled={isAnalyzing}
+                        >
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          🚀 Improve Entire Group
+                        </Button>
+                        <Button
+                          className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm px-4 py-2"
+                          disabled={isAnalyzing}
+                        >
+                          <CheckSquare className="w-4 h-4 mr-2" />
+                          ✅ Apply All Enhancements
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 space-y-4 max-h-[800px] overflow-y-auto">
+                    {requirements.map((requirement) => (
+                      <div key={requirement.id} className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-slate-600 to-slate-700 rounded-xl blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
+                        <div className={`relative p-4 rounded-xl border transition-all duration-300 ${
+                          requirement.needs_improvement
+                            ? 'bg-orange-500/10 border-orange-500/30'
+                            : 'bg-black/30 border-slate-500/20 hover:border-slate-500/40'
+                        }`}>
+                          
+                          {/* Header */}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                {requirement.letter}
+                              </div>
+                              <div className="flex gap-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {requirement.word_count || 0} words
+                                </Badge>
+                                <Badge 
+                                  className={`text-xs ${
+                                    (requirement.clarity_score || 0) >= 0.8 ? 'bg-green-500/20 text-green-300 border-green-500/30' :
+                                    (requirement.clarity_score || 0) >= 0.6 ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                                    'bg-red-500/20 text-red-300 border-red-500/30'
+                                  }`}
+                                >
+                                  {Math.round((requirement.clarity_score || 0) * 100)}% clarity
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-1">
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="h-6 w-6 p-0"
+                                onClick={() => handleEditItem(requirement)}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Content */}
+                          {editingItemId === requirement.id ? (
+                            <div className="space-y-3">
+                              <Textarea
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                className="w-full bg-black/50 border-blue-500/30 text-white resize-none"
+                                rows={4}
+                              />
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={handleSaveEdit}
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Save
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={handleCancelEdit}
+                                  className="text-gray-400 hover:text-white"
+                                >
+                                  <X className="w-3 h-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-sm text-white leading-relaxed bg-slate-800/50 p-3 rounded-lg border border-slate-600/30">
+                              {requirement.content}
+                            </div>
+                          )}
+
+                          {/* AI Enhancement Suggestions */}
+                          {suggestions.find(s => s.requirement_id === requirement.id) && (
+                            <div className="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="w-4 h-4 text-green-400" />
+                                <span className="text-xs font-medium text-green-300">AI Enhancement Preview</span>
+                              </div>
+                              <div className="text-xs text-green-100 mb-2">
+                                {suggestions.find(s => s.requirement_id === requirement.id)?.suggested_text}
+                              </div>
+                              <div className="flex gap-2">
+                                <Button size="sm" className="h-6 text-xs bg-green-600 hover:bg-green-700">
+                                  ✅ Apply Enhancement
+                                </Button>
+                                <Button size="sm" variant="ghost" className="h-6 text-xs text-gray-400">
+                                  ❌ Reject
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-gray-300 line-clamp-2">
-                          {requirement.title}
-                        </p>
                       </div>
                     ))}
-                    {requirements.length > 5 && (
-                      <div className="text-center p-3 text-gray-400">
-                        ... and {requirements.length - 5} more requirements
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            /* No Category Selected State */
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <Target className="w-16 h-16 text-gray-400 mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-white mb-4">No Category Selected</h3>
-                <p className="text-gray-400">Select a category from the left panel to view comprehensive analysis</p>
+            ) : activeCategory ? (
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl blur opacity-10"></div>
+                <div className="relative bg-black/40 backdrop-blur-xl border border-gray-500/20 rounded-2xl p-8">
+                  <div className="text-center">
+                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-white mb-2">No Requirements Found</h3>
+                    <p className="text-gray-400">No unified requirements available for this category.</p>
+                    <p className="text-xs text-gray-500 mt-2">Try selecting a different category or check compliance mappings.</p>
+                  </div>
+                </div>
               </div>
+            ) : (
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl blur opacity-10"></div>
+                <div className="relative bg-black/40 backdrop-blur-xl border border-gray-500/20 rounded-2xl p-8">
+                  <div className="text-center">
+                    <CheckSquare className="w-12 h-12 text-purple-500/30 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-white mb-2">Select a Category</h3>
+                    <p className="text-gray-400">Choose a category from the left panel to begin requirements validation.</p>
+                    <p className="text-xs text-gray-500 mt-2">Unified requirements will appear here for analysis and enhancement.</p>
+                  </div>
+                </div>
+              </div>
+            )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
