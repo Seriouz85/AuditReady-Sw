@@ -598,6 +598,9 @@ class ComplianceUnificationService {
       }
 
 
+      // Ensure selectedFrameworks is a valid array
+      const safeSelectedFrameworks = Array.isArray(selectedFrameworks) ? selectedFrameworks : [];
+
       // Process mappings and organize by category and framework
       for (const mapping of mappings || []) {
         if (!mapping.requirement || !mapping.unified_requirement?.category) continue;
@@ -611,13 +614,13 @@ class ComplianceUnificationService {
         };
 
         // Map to appropriate framework based on standard name
-        if (selectedFrameworks.includes('iso27001') && standardName.includes('ISO/IEC 27001')) {
+        if (safeSelectedFrameworks.includes('iso27001') && standardName.includes('ISO/IEC 27001')) {
           result[categoryName]?.iso27001.push(reqData);
         }
-        if (selectedFrameworks.includes('iso27002') && standardName.includes('ISO/IEC 27002')) {
+        if (safeSelectedFrameworks.includes('iso27002') && standardName.includes('ISO/IEC 27002')) {
           result[categoryName]?.iso27002.push(reqData);
         }
-        if (selectedFrameworks.includes('cisControls') && standardName.includes('CIS Controls')) {
+        if (safeSelectedFrameworks.includes('cisControls') && standardName.includes('CIS Controls')) {
           // Filter CIS Controls by specific IG level if provided
           if (cisIGLevel) {
             // Fix: Use includes() instead of exact match to handle various naming formats
@@ -631,10 +634,10 @@ class ComplianceUnificationService {
             result[categoryName]?.cisControls.push(reqData);
           }
         }
-        if (selectedFrameworks.includes('gdpr') && standardName.includes('GDPR')) {
+        if (safeSelectedFrameworks.includes('gdpr') && standardName.includes('GDPR')) {
           result[categoryName]?.gdpr.push(reqData);
         }
-        if (selectedFrameworks.includes('nis2') && standardName.includes('NIS2')) {
+        if (safeSelectedFrameworks.includes('nis2') && standardName.includes('NIS2')) {
           result[categoryName]?.nis2.push(reqData);
         }
       }

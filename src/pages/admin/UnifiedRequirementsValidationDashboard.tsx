@@ -252,7 +252,8 @@ export default function UnifiedRequirementsValidationDashboard() {
       const unifiedData = UnifiedRequirementsService.extractUnifiedRequirements(category.mapping_data);
       
       const unifiedRequirements = unifiedData.requirements.map((req, index): UnifiedRequirement => {
-        const wordCount = (req.title + ' ' + req.description).split(/\s+/).length;
+        const content = (req.title + ' ' + req.description).trim();
+        const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
         const clarityScore = Math.max(0.3, Math.min(1.0, 1 - Math.abs(wordCount - 22.5) / 50));
         const needsImprovement = clarityScore < 0.7 || wordCount > 50 || wordCount < 10;
 
@@ -263,7 +264,7 @@ export default function UnifiedRequirementsValidationDashboard() {
           title: req.title || '',
           description: req.description || '',
           originalText: req.title + ' ' + req.description,
-          content: (req.title + ' ' + req.description).trim(),
+          content: content,
           word_count: wordCount,
           clarity_score: clarityScore,
           needs_improvement: needsImprovement,
@@ -288,19 +289,25 @@ export default function UnifiedRequirementsValidationDashboard() {
       const categoryRequirements = await loadCategoryRequirements(category.name);
       setRequirements(categoryRequirements);
       
-      // Generate AI suggestions
-      const mockSuggestions = categoryRequirements.slice(0, 3).map((req) => ({
-        id: `suggestion-${req.id}-${Date.now()}`,
-        requirement_id: req.id,
-        type: 'clarity_improvement' as any,
-        priority: 'high' as any,
-        suggestion: `Enhanced requirement clarity for ${req.content.substring(0, 50)}...`,
-        suggested_text: `Clear, concise requirement: ${req.content}\n\n[Enhanced with framework-specific details]`,
-        highlighted_text: req.content.substring(0, 200),
-        expected_improvement: `Improved requirement clarity and framework coverage`,
-        ai_confidence: 0.85,
-        status: 'pending' as any
-      }));
+      // Generate AI suggestions with real improvements
+      const mockSuggestions = categoryRequirements.filter(req => req.needs_improvement).slice(0, 3).map((req) => {
+        const improvedContent = req.content.length > 50 
+          ? req.content.substring(0, req.content.lastIndexOf(' ', 45)) + '...'
+          : req.content + '. Implement specific controls including regular monitoring, documentation requirements, and compliance validation procedures.';
+          
+        return {
+          id: `suggestion-${req.id}-${Date.now()}`,
+          requirement_id: req.id,
+          type: req.word_count! > 50 ? 'length_optimization' : 'clarity_improvement' as any,
+          priority: req.clarity_score! < 0.5 ? 'critical' : 'high' as any,
+          suggestion: `${req.word_count! > 50 ? 'Optimize length' : 'Enhance clarity'} for requirement ${req.letter}`,
+          suggested_text: improvedContent,
+          highlighted_text: req.content.substring(0, 200),
+          expected_improvement: `Improved ${req.word_count! > 50 ? 'conciseness' : 'clarity'} and framework alignment`,
+          ai_confidence: 0.85,
+          status: 'pending' as any
+        };
+      });
       setSuggestions(mockSuggestions);
       
     } catch (error) {
@@ -348,14 +355,16 @@ export default function UnifiedRequirementsValidationDashboard() {
   const handleSaveEdit = () => {
     if (!editingItemId) return;
     
+    const wordCount = editContent.split(/\s+/).filter(word => word.length > 0).length;
+    
     setRequirements(reqs => 
       reqs.map(req => 
         req.id === editingItemId 
           ? { 
               ...req, 
               content: editContent,
-              word_count: editContent.split(/\s+/).length,
-              clarity_score: Math.max(0.3, Math.min(1.0, 1 - Math.abs(editContent.split(/\s+/).length - 22.5) / 50))
+              word_count: wordCount,
+              clarity_score: Math.max(0.3, Math.min(1.0, 1 - Math.abs(wordCount - 22.5) / 50))
             }
           : req
       )
@@ -391,13 +400,15 @@ export default function UnifiedRequirementsValidationDashboard() {
   }
 
   // Calculate overall stats from validation sessions
-  const overallStats = validationSessions.reduce(() => ({
+  const overallStats = {
     total_categories: validationSessions.length,
     validated_categories: validationSessions.filter(s => s.status === 'approved').length,
     pending_validation: validationSessions.filter(s => s.status === 'pending_review').length,
     suggestions_generated: validationSessions.reduce((sum, s) => sum + s.suggestions_generated, 0),
-    avg_quality_score: validationSessions.reduce((sum, s) => sum + s.quality_score, 0) / validationSessions.length
-  }), { total_categories: 0, validated_categories: 0, pending_validation: 0, suggestions_generated: 0, avg_quality_score: 0 });
+    avg_quality_score: validationSessions.length > 0 
+      ? validationSessions.reduce((sum, s) => sum + s.quality_score, 0) / validationSessions.length 
+      : 0
+  };
 
   // Prepare stats for the grid  
   const elaborateStats = [
