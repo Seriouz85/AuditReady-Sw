@@ -23,6 +23,7 @@ import { useComplianceMappingData } from '@/services/compliance/ComplianceUnific
 import { ComprehensiveGuidanceService } from '@/services/rag/ComprehensiveGuidanceService';
 import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
 import { supabase } from '@/lib/supabase';
+import { requirementValidationAI, RequirementValidationRequest } from '@/services/ai/RequirementValidationAIService';
 
 // Import unified components
 import { UnifiedNeuralHeader } from '@/components/admin/dashboard/UnifiedNeuralHeader';
@@ -71,7 +72,7 @@ interface GuidanceValidationResult {
 interface GuidanceSuggestion {
   id: string;
   item_id: string;
-  type: 'content_enhancement' | 'clarity_improvement' | 'framework_alignment';
+  type: 'content_enhancement' | 'clarity_improvement' | 'framework_enhancement' | 'length_optimization';
   priority: 'low' | 'medium' | 'high' | 'critical';
   suggestion: string;
   suggested_text: string;
@@ -79,10 +80,11 @@ interface GuidanceSuggestion {
   ai_confidence: number;
   status: 'pending' | 'approved' | 'rejected';
   highlighted_text?: string;
+  framework_specific?: string;
 }
 
 export default function UnifiedGuidanceValidationDashboard() {
-  const { organization, isPlatformAdmin } = useAuth();
+  const { user, organization, isPlatformAdmin } = useAuth();
   
   // Framework selection for loading compliance data
   const [selectedFrameworks] = useState({
@@ -276,26 +278,39 @@ export default function UnifiedGuidanceValidationDashboard() {
         const realGuidanceItems = await generateRealUnifiedGuidance(category.name);
         setGuidanceItems(realGuidanceItems);
         
-        // Generate AI suggestions with real improvements  
-        const mockSuggestions = realGuidanceItems.filter(item => item.needs_improvement).slice(0, 3).map((item) => {
-          const improvedContent = item.content.length > 100
-            ? item.content.substring(0, item.content.lastIndexOf(' ', 85)) + '. Follow established procedures and maintain compliance documentation.'
-            : item.content + ' Establish clear procedures, assign responsibilities, and implement regular reviews to ensure ongoing compliance.';
+        // Generate REAL AI suggestions for ALL guidance items that need improvement (8-11 rows each)
+        const guidanceItemsNeedingImprovement = realGuidanceItems.filter(item => 
+          item.needs_improvement || item.word_count! < 20 || item.clarity_score! < 0.8
+        );
+
+        if (guidanceItemsNeedingImprovement.length > 0) {
+          // Prepare AI analysis requests
+          const aiRequests: RequirementValidationRequest[] = guidanceItemsNeedingImprovement.map(item => ({
+            content: item.content,
+            type: 'guidance',
+            letter: item.label,
+            categoryName: category.name,
+            frameworks: ['ISO 27001', 'CIS Controls', 'NIS2', 'GDPR'],
+            ...(user?.id && { userId: user.id }),
+            ...(organization?.id && { organizationId: organization.id })
+          }));
+
+          try {
+            console.log(`🤖 Analyzing ${aiRequests.length} guidance items with REAL AI...`);
             
-          return {
-            id: `suggestion-${item.id}-${Date.now()}`,
-            item_id: item.id,
-            type: item.word_count! > 100 ? 'length_optimization' : 'content_enhancement' as any,
-            priority: item.clarity_score! < 0.5 ? 'critical' : 'high' as any,
-            suggestion: `${item.word_count! > 100 ? 'Optimize length' : 'Enhance content'} for guidance ${item.label}`,
-            suggested_text: improvedContent,
-            highlighted_text: item.content.substring(0, 200),
-            expected_improvement: `Improved ${item.word_count! > 100 ? 'conciseness' : 'implementation details'} and actionability`,
-            ai_confidence: 0.85,
-            status: 'pending' as any
-          };
-        });
-        setSuggestions(mockSuggestions);
+            // Call REAL AI service to analyze guidance
+            const aiSuggestions = await requirementValidationAI.generateGuidanceSuggestions(aiRequests);
+            
+            console.log(`✅ Generated ${aiSuggestions.length} real AI guidance suggestions`);
+            setSuggestions(aiSuggestions);
+            
+          } catch (error) {
+            console.error('❌ AI guidance analysis failed:', error);
+            setSuggestions([]); // Set empty suggestions on failure
+          }
+        } else {
+          setSuggestions([]); // No guidance items need improvement
+        }
       } else if (organization) {
         const freshGuidances = await ComprehensiveGuidanceService.loadComprehensiveGuidance(organization.id);
         setCategoryGuidances(freshGuidances);
@@ -579,7 +594,7 @@ export default function UnifiedGuidanceValidationDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-lg font-bold text-white">Unified Guidance</h4>
-                        <p className="text-blue-300 text-sm">Clear implementation guidance • 3-5 lines optimal • Action-oriented content</p>
+                        <p className="text-blue-300 text-sm">Detailed implementation guidance • AI enhancement proposals 8-11 rows • Comprehensive compliance procedures</p>
                       </div>
                       <div className="flex gap-2">
                         <Button

@@ -21,6 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
 import { UnifiedRequirementsService } from '@/services/compliance/UnifiedRequirementsService';
 import { CategoryValidationResult } from '@/services/validation/AIRequirementsValidationService';
+import { requirementValidationAI, RequirementValidationRequest } from '@/services/ai/RequirementValidationAIService';
 
 // Import unified components
 import { UnifiedNeuralHeader } from '@/components/admin/dashboard/UnifiedNeuralHeader';
@@ -289,29 +290,43 @@ export default function UnifiedRequirementsValidationDashboard() {
       const categoryRequirements = await loadCategoryRequirements(category.name);
       setRequirements(categoryRequirements);
       
-      // Generate AI suggestions with real improvements
-      const mockSuggestions = categoryRequirements.filter(req => req.needs_improvement).slice(0, 3).map((req) => {
-        const improvedContent = req.content.length > 50 
-          ? req.content.substring(0, req.content.lastIndexOf(' ', 45)) + '...'
-          : req.content + '. Implement specific controls including regular monitoring, documentation requirements, and compliance validation procedures.';
+      // Generate REAL AI suggestions for ALL requirements that need improvement
+      const requirementsNeedingImprovement = categoryRequirements.filter(req => 
+        req.needs_improvement || req.word_count! < 15 || req.clarity_score! < 0.8
+      );
+
+      if (requirementsNeedingImprovement.length > 0) {
+        // Prepare AI analysis requests
+        const aiRequests: RequirementValidationRequest[] = requirementsNeedingImprovement.map(req => ({
+          content: req.content,
+          type: 'requirement',
+          letter: req.letter,
+          categoryName: category.name,
+          frameworks: req.framework_mappings || ['ISO 27001', 'CIS Controls'],
+          ...(user?.id && { userId: user.id }),
+          ...(organization?.id && { organizationId: organization.id })
+        }));
+
+        try {
+          console.log(`🤖 Analyzing ${aiRequests.length} requirements with REAL AI...`);
           
-        return {
-          id: `suggestion-${req.id}-${Date.now()}`,
-          requirement_id: req.id,
-          type: req.word_count! > 50 ? 'length_optimization' : 'clarity_improvement' as any,
-          priority: req.clarity_score! < 0.5 ? 'critical' : 'high' as any,
-          suggestion: `${req.word_count! > 50 ? 'Optimize length' : 'Enhance clarity'} for requirement ${req.letter}`,
-          suggested_text: improvedContent,
-          highlighted_text: req.content.substring(0, 200),
-          expected_improvement: `Improved ${req.word_count! > 50 ? 'conciseness' : 'clarity'} and framework alignment`,
-          ai_confidence: 0.85,
-          status: 'pending' as any
-        };
-      });
-      setSuggestions(mockSuggestions);
+          // Call REAL AI service to analyze requirements
+          const aiSuggestions = await requirementValidationAI.generateRequirementSuggestions(aiRequests);
+          
+          console.log(`✅ Generated ${aiSuggestions.length} real AI suggestions`);
+          setSuggestions(aiSuggestions);
+          
+        } catch (error) {
+          console.error('❌ AI requirement analysis failed:', error);
+          setSuggestions([]); // Set empty suggestions on failure
+        }
+      } else {
+        setSuggestions([]); // No requirements need improvement
+      }
       
     } catch (error) {
       console.error('Error loading category data:', error);
+      setSuggestions([]);
     } finally {
       setIsAnalyzing(false);
     }
@@ -609,7 +624,7 @@ export default function UnifiedRequirementsValidationDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-lg font-bold text-white">Unified Requirements</h4>
-                        <p className="text-blue-300 text-sm">Max 4-5 lines per requirement • Framework-specific elements highlighted</p>
+                        <p className="text-blue-300 text-sm">Comprehensive requirement analysis • AI enhancement proposals 5-7 rows • Detailed compliance coverage</p>
                       </div>
                       <div className="flex gap-2">
                         <Button

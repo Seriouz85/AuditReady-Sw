@@ -376,12 +376,12 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
             <stop offset="100%" stopColor="#3730a3" stopOpacity="0.85" />
           </radialGradient>
 
-          {/* Enhanced framework gradients with better visibility */}
+          {/* Enhanced framework gradients with reduced opacity for better transparency */}
           {frameworkConfigs.map(config => (
             <linearGradient key={config.key} id={`${config.key}Gradient`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={config.secondaryColor} stopOpacity="0.8" />
-              <stop offset="50%" stopColor={config.color} stopOpacity="0.7" />
-              <stop offset="100%" stopColor={config.color} stopOpacity="0.6" />
+              <stop offset="0%" stopColor={config.secondaryColor} stopOpacity="0.6" />
+              <stop offset="50%" stopColor={config.color} stopOpacity="0.5" />
+              <stop offset="100%" stopColor={config.color} stopOpacity="0.4" />
             </linearGradient>
           ))}
 
@@ -456,7 +456,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
           transition={{ duration: 0.8, ease: "easeOut" }}
         />
 
-        {/* Framework area coverage shapes */}
+        {/* Framework area coverage shapes with dynamic z-index for hover */}
         {frameworkConfigs.filter(config => {
           // Only show if framework is actually selected
           const selected = isFrameworkSelected(config.key);
@@ -466,27 +466,36 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
           const hasPath = config.zone.path && config.zone.path.length > 0;
           console.log(`🔍 PATH DEBUG - ${config.key}: hasPath=${hasPath}, path="${config.zone.path}"`);
           return hasPath;
-        }).map((config, index) => {
+        })
+        // Sort so hovered framework is rendered last (on top)
+        .sort((a, b) => {
+          if (hoveredFramework === a.key) return 1; // Move hovered to end (top layer)
+          if (hoveredFramework === b.key) return -1; // Move non-hovered down
+          return 0;
+        })
+        .map((config, index) => {
           
           return (
             <motion.g 
               key={config.key}
               onMouseEnter={() => setHoveredFramework(config.key)}
               onMouseLeave={() => setHoveredFramework(null)}
-              style={{ cursor: 'pointer' }}
+              style={{ 
+                cursor: 'pointer',
+                // CSS z-index won't work in SVG, but rendering order determines stacking
+                position: 'relative'
+              }}
             >
-              {/* Base area with gradient */}
+              {/* Base area with gradient - reduced opacity for better border visibility */}
               <motion.path
                 d={config.zone.path}
                 fill={`url(#${config.key}Gradient)`}
-                stroke={config.color}
-                strokeWidth={hoveredFramework === config.key ? "5" : "3"}
-                fillOpacity={hoveredFramework === config.key ? "0.9" : "0.7"}
-                strokeOpacity={hoveredFramework === config.key ? "1" : "0.85"}
+                stroke="none"
+                fillOpacity={hoveredFramework === config.key ? "0.8" : "0.5"} // Reduced opacity so borders show through
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ 
                   opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.3,
-                  scale: hoveredFramework === config.key ? 1.05 : 1,
+                  scale: hoveredFramework === config.key ? 1.08 : 1,
                 }}
                 transition={{ 
                   duration: hoveredFramework ? 0.2 : 0.8, 
@@ -495,10 +504,8 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
                 }}
                 style={{
                   transformOrigin: 'center',
-                  mixBlendMode: 'normal',
-                  filter: hoveredFramework === config.key 
-                    ? `drop-shadow(0 6px 16px ${config.color}40)` 
-                    : `drop-shadow(0 3px 10px ${config.color}30)`
+                  mixBlendMode: 'multiply' // Changed to multiply for better transparency
+                  // Removed shadow effects as requested
                 }}
               />
               
@@ -522,67 +529,47 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
                 }}
               />
               
-              {/* Primary strong border with distinct patterns */}
+              {/* Enhanced visible border - always prominent */}
               <motion.path
                 d={config.zone.path}
                 fill="none"
                 stroke={config.color}
-                strokeWidth={hoveredFramework === config.key ? "5" : "3.5"}
-                strokeOpacity={hoveredFramework === config.key ? "1" : "0.95"}
-                strokeDasharray={(() => {
-                  // Enhanced distinct border patterns for each framework
-                  const patterns = {
-                    'iso27001': hoveredFramework === config.key ? "none" : "none", // Solid line
-                    'iso27002': hoveredFramework === config.key ? "none" : "12,6", // Bold dashed line
-                    'cisControls': hoveredFramework === config.key ? "none" : "4,4", // Bold dotted line
-                    'gdpr': hoveredFramework === config.key ? "none" : "16,4,4,4", // Bold dash-dot line
-                    'nis2': hoveredFramework === config.key ? "none" : "8,3,3,3,3,3" // Bold dash-dot-dot line
-                  };
-                  return patterns[config.key as keyof typeof patterns] || "none";
-                })()}
+                strokeWidth={hoveredFramework === config.key ? "6" : "4"} // Thicker borders for better visibility
+                strokeOpacity={hoveredFramework === config.key ? "1" : "0.95"} // Even higher opacity for better visibility
+                strokeDasharray={hoveredFramework === config.key ? "none" : "12,6"} // Even longer dashes for better visibility
                 initial={{ pathLength: 0 }}
                 animate={{ 
                   pathLength: 1,
-                  strokeWidth: hoveredFramework === config.key ? 5 : 3.5,
+                  strokeWidth: hoveredFramework === config.key ? 6 : 4,
                 }}
                 transition={{ 
-                  duration: hoveredFramework ? 0.2 : 1.2, 
-                  delay: hoveredFramework ? 0 : index * 0.2 + 0.3,
+                  duration: hoveredFramework ? 0.2 : 1.0, 
+                  delay: hoveredFramework ? 0 : index * 0.1 + 0.5,
                   ease: "easeOut"
                 }}
                 style={{
                   transformOrigin: 'center',
-                  filter: `drop-shadow(0 2px 6px ${config.color}70)`,
+                  // Removed shadow effects as requested
                   pointerEvents: 'none'
                 }}
               />
               
-              {/* Secondary inner border for extra distinction */}
+              {/* White inner border for extra contrast */}
               <motion.path
                 d={config.zone.path}
                 fill="none"
                 stroke="white"
-                strokeWidth={hoveredFramework === config.key ? "2" : "1.5"}
-                strokeOpacity={hoveredFramework === config.key ? "0.8" : "0.6"}
-                strokeDasharray={(() => {
-                  // Inverse patterns for inner border
-                  const patterns = {
-                    'iso27001': hoveredFramework === config.key ? "none" : "6,3", // Dashed on solid
-                    'iso27002': hoveredFramework === config.key ? "none" : "none", // Solid on dashed
-                    'cisControls': hoveredFramework === config.key ? "none" : "8,2", // Different dash on dotted
-                    'gdpr': hoveredFramework === config.key ? "none" : "3,3", // Dots on dash-dot
-                    'nis2': hoveredFramework === config.key ? "none" : "12,3" // Long dash on complex
-                  };
-                  return patterns[config.key as keyof typeof patterns] || "none";
-                })()}
+                strokeWidth={hoveredFramework === config.key ? "3" : "2"}
+                strokeOpacity={hoveredFramework === config.key ? "0.9" : "0.7"} // Higher opacity for better visibility
+                strokeDasharray={hoveredFramework === config.key ? "none" : "6,3"} // Adjusted for thicker border
                 initial={{ pathLength: 0 }}
                 animate={{ 
                   pathLength: 1,
-                  strokeWidth: hoveredFramework === config.key ? 2 : 1.5,
+                  strokeWidth: hoveredFramework === config.key ? 3 : 2,
                 }}
                 transition={{ 
-                  duration: hoveredFramework ? 0.2 : 1.4, 
-                  delay: hoveredFramework ? 0 : index * 0.2 + 0.5,
+                  duration: hoveredFramework ? 0.2 : 1.1, 
+                  delay: hoveredFramework ? 0 : index * 0.1 + 0.6,
                   ease: "easeOut"
                 }}
                 style={{
@@ -591,106 +578,124 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
                 }}
               />
               
-              {/* Enhanced framework label with better visibility */}
-              <motion.g>
-                {/* Label background for better readability */}
-                <motion.rect
-                  x={(() => {
-                    const points = config.zone.points;
-                    const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-                    // Improved offsets to avoid overlap with domain labels and stay within bounds
-                    const offsets = {
-                      'iso27001': { x: -20, y: -60 },    // Much higher and more right
-                      'iso27002': { x: 90, y: -35 },     // Top-right, moved up and more right
-                      'cisControls': { x: 0, y: 50 },    // Bottom center, moved down
-                      'gdpr': { x: -40, y: -5 },         // Further right in GDPR area
-                      'nis2': { x: 60, y: 35 }           // Bottom-right, adjusted
-                    };
-                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
-                    return avgX + offset.x - (config.name.length * 5); // Increased width padding
-                  })()}
-                  y={(() => {
-                    const points = config.zone.points;
-                    const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
-                    const offsets = {
-                      'iso27001': { x: -20, y: -80 },
-                      'iso27002': { x: 90, y: -35 },
-                      'cisControls': { x: 0, y: 50 },
-                      'gdpr': { x: -40, y: -5 },
-                      'nis2': { x: 60, y: 35 }
-                    };
-                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
-                    return avgY + offset.y - 14; // Increased height padding
-                  })()}
-                  width={config.name.length * 10} // Increased width for better readability
-                  height="28" // Increased height
-                  rx="14"
-                  fill={config.color}
-                  fillOpacity={hoveredFramework === config.key ? "0.95" : "0.90"} // Increased opacity
-                  stroke="white"
-                  strokeWidth="2.5" // Thicker border
-                  style={{
-                    filter: `drop-shadow(0 3px 12px ${config.color}60)` // Enhanced shadow
-                  }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ 
-                    opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.4,
-                    scale: hoveredFramework === config.key ? 1.1 : 1
-                  }}
-                  transition={{ duration: hoveredFramework ? 0.2 : 0.5, delay: hoveredFramework ? 0 : index * 0.2 + 0.5 }}
-                />
-                
-                {/* Framework name text */}
-                <motion.text
-                  x={(() => {
-                    const points = config.zone.points;
-                    const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-                    // Use same improved offsets as the background
-                    const offsets = {
-                      'iso27001': { x: -20, y: -80 },
-                      'iso27002': { x: 90, y: -35 },
-                      'cisControls': { x: 0, y: 50 },
-                      'gdpr': { x: -40, y: -5 },
-                      'nis2': { x: 60, y: 35 }
-                    };
-                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
-                    return avgX + offset.x;
-                  })()}
-                  y={(() => {
-                    const points = config.zone.points;
-                    const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
-                    const offsets = {
-                      'iso27001': { x: -20, y: -80 },
-                      'iso27002': { x: 90, y: -35 },
-                      'cisControls': { x: 0, y: 50 },
-                      'gdpr': { x: -40, y: -5 },
-                      'nis2': { x: 60, y: 35 }
-                    };
-                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
-                    return avgY + offset.y + 6; // Adjusted for larger background
-                  })()}
-                  textAnchor="middle"
-                  className="text-sm font-bold fill-white"
-                  style={{
-                    pointerEvents: 'none',
-                    fontSize: '14px', // Slightly larger text
-                    fontWeight: '800', // Bolder text
-                    letterSpacing: '0.5px',
-                    filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))' // Strong text shadow for contrast
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.4,
-                    scale: hoveredFramework === config.key ? 1.1 : 1
-                  }}
-                  transition={{ duration: hoveredFramework ? 0.2 : 0.5, delay: hoveredFramework ? 0 : index * 0.2 + 0.6 }}
-                >
-                  {config.name}
-                </motion.text>
-              </motion.g>
             </motion.g>
           );
         })}
+
+
+        {/* Separate label layer with dynamic z-index - ensures all framework labels are always visible on top */}
+        {frameworkConfigs.filter(config => {
+          const selected = isFrameworkSelected(config.key);
+          return selected;
+        }).filter(config => {
+          const hasPath = config.zone.path && config.zone.path.length > 0;
+          return hasPath;
+        })
+        // Sort so hovered framework label is rendered last (on top)
+        .sort((a, b) => {
+          if (hoveredFramework === a.key) return 1; // Move hovered to end (top layer)
+          if (hoveredFramework === b.key) return -1; // Move non-hovered down
+          return 0;
+        })
+        .map((config, index) => (
+          <motion.g key={`label-${config.key}`}>
+            {/* Label background for better readability */}
+            <motion.rect
+              x={(() => {
+                const points = config.zone.points;
+                const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+                // Enhanced offsets for better visibility - moved NIS2 up to avoid CIS Controls overlap
+                const offsets = {
+                  'iso27001': { x: -30, y: -90 },    // Much higher to avoid NIS2 overlap
+                  'iso27002': { x: 90, y: -35 },     // Top-right, safe position
+                  'cisControls': { x: 0, y: 50 },    // Bottom center, clear space
+                  'gdpr': { x: 85, y: 15 },          // Right side away from Privacy corner
+                  'nis2': { x: 60, y: 5 }            // Moved up to avoid CIS Controls overlap
+                };
+                const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                return avgX + offset.x - (config.name.length * 6); // Better centering with new width
+              })()}
+              y={(() => {
+                const points = config.zone.points;
+                const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+                const offsets = {
+                  'iso27001': { x: -30, y: -90 },
+                  'iso27002': { x: 90, y: -35 },
+                  'cisControls': { x: 0, y: 50 },
+                  'gdpr': { x: 85, y: 15 },
+                  'nis2': { x: 60, y: 5 }
+                };
+                const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                return avgY + offset.y - 16; // Adjusted for taller label background
+              })()}
+              width={config.name.length * 12} // More width for better spacing
+              height="32" // Taller for better text spacing
+              rx="16" // Adjusted radius for new size
+              fill={config.color}
+              fillOpacity={hoveredFramework === config.key ? "0.98" : "0.92"} // Higher opacity for visibility
+              stroke="white"
+              strokeWidth="4" // Even thicker border for better text contrast
+              style={{
+                // Removed shadow effects as requested
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ 
+                opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.6,
+                scale: hoveredFramework === config.key ? 1.15 : 1, // Bigger hover effect
+                y: hoveredFramework === config.key ? -5 : 0 // Float effect on hover
+              }}
+              transition={{ duration: hoveredFramework ? 0.2 : 0.6, delay: hoveredFramework ? 0 : index * 0.15 + 1.2 }}
+            />
+            
+            {/* Framework name text - always on top */}
+            <motion.text
+              x={(() => {
+                const points = config.zone.points;
+                const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+                const offsets = {
+                  'iso27001': { x: -30, y: -90 },
+                  'iso27002': { x: 90, y: -35 },
+                  'cisControls': { x: 0, y: 50 },
+                  'gdpr': { x: 85, y: 15 },
+                  'nis2': { x: 60, y: 5 }
+                };
+                const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                return avgX + offset.x;
+              })()}
+              y={(() => {
+                const points = config.zone.points;
+                const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+                const offsets = {
+                  'iso27001': { x: -30, y: -90 },
+                  'iso27002': { x: 90, y: -35 },
+                  'cisControls': { x: 0, y: 50 },
+                  'gdpr': { x: 85, y: 15 },
+                  'nis2': { x: 60, y: 5 }
+                };
+                const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                return avgY + offset.y + 6; // Text centered in taller label
+              })()}
+              textAnchor="middle"
+              className="text-sm font-bold fill-white"
+              style={{
+                pointerEvents: 'none',
+                fontSize: '14px',
+                fontWeight: '800',
+                letterSpacing: '0.5px'
+                // Removed shadow effects as requested
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ 
+                opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.6,
+                scale: hoveredFramework === config.key ? 1.15 : 1,
+                y: hoveredFramework === config.key ? -5 : 0 // Float with background
+              }}
+              transition={{ duration: hoveredFramework ? 0.2 : 0.6, delay: hoveredFramework ? 0 : index * 0.15 + 1.3 }}
+            >
+              {config.name}
+            </motion.text>
+          </motion.g>
+        ))}
 
         {/* AR Unified overlay - premium security coverage */}
         <motion.polygon
