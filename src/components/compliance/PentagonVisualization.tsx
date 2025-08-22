@@ -3,7 +3,12 @@ import { motion } from 'framer-motion';
 
 interface PentagonVisualizationProps {
   selectedFrameworks: Record<string, boolean>;
-  mappingData: any[];
+  mappingData: Array<{
+    id: string;
+    category: string;
+    frameworks: Record<string, Array<{ code: string; title: string; description: string }>>;
+    pentagon_domain?: number;
+  }>;
 }
 
 interface FrameworkStats {
@@ -16,6 +21,12 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   selectedFrameworks,
   mappingData
 }) => {
+  // Debug: Log the entire selectedFrameworks object
+  React.useEffect(() => {
+    console.log('🔍 FULL DEBUG - selectedFrameworks:', selectedFrameworks);
+    console.log('🔍 FULL DEBUG - Object.keys(selectedFrameworks):', Object.keys(selectedFrameworks));
+    console.log('🔍 FULL DEBUG - selectedFrameworks.cisControls:', selectedFrameworks.cisControls);
+  }, [selectedFrameworks]);
   // Pentagon coordinates (centered in 1200x800 viewBox)
   const centerX = 600;
   const centerY = 400;
@@ -25,6 +36,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   const [hoveredFramework, setHoveredFramework] = React.useState<string | null>(null);
   const [hoveredDomain, setHoveredDomain] = React.useState<number | null>(null);
   const [hoveredUnified, setHoveredUnified] = React.useState<boolean>(false);
+  const [hideLogo, setHideLogo] = React.useState<boolean>(false);
   
   // Calculate dynamic framework statistics from mapping data
   const frameworkStats: Record<string, FrameworkStats> = {
@@ -47,6 +59,30 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       }
     });
   });
+
+  // Calculate actual overlaps between frameworks
+  const frameworkOverlaps: Record<string, Set<string>> = {};
+  Object.keys(frameworkStats).forEach(fw => {
+    frameworkOverlaps[fw] = new Set();
+  });
+
+  mappingData.forEach(mapping => {
+    const frameworksInThisCategory = Object.keys(mapping.frameworks).filter(
+      fw => mapping.frameworks[fw] && mapping.frameworks[fw].length > 0
+    );
+    
+    // Record overlaps between frameworks that share this category
+    for (let i = 0; i < frameworksInThisCategory.length; i++) {
+      for (let j = i + 1; j < frameworksInThisCategory.length; j++) {
+        const fw1 = frameworksInThisCategory[i];
+        const fw2 = frameworksInThisCategory[j];
+        if (fw1 && fw2 && frameworkOverlaps[fw1] && frameworkOverlaps[fw2]) {
+          frameworkOverlaps[fw1].add(fw2);
+          frameworkOverlaps[fw2].add(fw1);
+        }
+      }
+    }
+  });
   
   // Calculate coverage percentages
   const totalAllRequirements = Object.values(frameworkStats).reduce((sum, stat) => sum + stat.totalRequirements, 0);
@@ -68,48 +104,62 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
     };
   });
 
-  // Generate proper area coverage based on actual framework characteristics
-  const generateAreaCoverage = (frameworkKey: string, _stats: FrameworkStats) => {
-    // Define which areas each framework actually covers
-    const getFrameworkAreas = (key: string) => {
-      switch (key) {
-        case 'iso27001': // Governance + Operational
-          return [0, 3]; // Governance, Operational
-        case 'iso27002': // Governance + Physical + Technical + Operational (broad coverage)
-          return [0, 1, 2, 3]; // Governance, Physical, Technical, Operational
-        case 'cisControls': // Technical + Operational
-          return [2, 3]; // Technical, Operational
-        case 'gdpr': // Privacy + Governance
-          return [0, 4]; // Governance, Privacy
-        case 'nis2': // Semi-Operational + Semi-Governance + Semi-Technical + Quarter-GDPR
-          return [0, 2, 3, 4]; // Governance (partial), Technical (partial), Operational (partial), Privacy (quarter)
-        default:
-          return [0];
-      }
+  // Generate truthful area coverage based on database pentagon_domain mapping with intensity
+  const generateAreaCoverage = (frameworkKey: string) => {
+    // Calculate domain coverage intensity (not just presence) based on database mapping
+    const getFrameworkAreaIntensity = (key: string) => {
+      const domainIntensity: Record<number, number> = {};
+      
+      // Calculate intensity (number of requirements) per domain
+      mappingData.forEach(mapping => {
+        if (mapping.frameworks[key] && mapping.frameworks[key].length > 0) {
+          const domainIndex = mapping.pentagon_domain;
+          const requirementCount = mapping.frameworks[key].length;
+          
+          if (domainIndex !== undefined && domainIndex !== null && 
+              domainIndex >= 0 && domainIndex <= 4) {
+            domainIntensity[domainIndex] = (domainIntensity[domainIndex] || 0) + requirementCount;
+          }
+        }
+      });
+      
+      return domainIntensity;
     };
     
-    const areaIndices = getFrameworkAreas(frameworkKey);
+    const domainIntensity = getFrameworkAreaIntensity(frameworkKey);
+    const coveredDomains = Object.keys(domainIntensity).map(Number).sort();
+    
+    
     const points = [];
     
     // Start from center
     points.push({ x: centerX, y: centerY });
     
-    // Create area that covers multiple domains
-    if (areaIndices.length === 1) {
-      // Single domain - create a sector
-      const domainIndex = areaIndices[0];
-      if (domainIndex === undefined) return points;
+    if (coveredDomains.length === 0) return points;
+    
+    // Calculate max intensity for normalization
+    const maxIntensity = Math.max(...Object.values(domainIntensity));
+    
+    // Create area that reflects actual coverage intensity
+    if (coveredDomains.length === 1) {
+      // Single domain - create a sector with intensity-based distance
+      const domainIndex = coveredDomains[0];
       const domainPoint = pentagonPoints[domainIndex];
       if (!domainPoint) return points;
+      
+      const intensity = domainIntensity[domainIndex] || 0;
+      const normalizedIntensity = intensity / maxIntensity;
+      const coverageDistance = 0.45 + (normalizedIntensity * 0.25); // Range: 0.45-0.70 (keep within pentagon)
+      
       const angle = Math.atan2(domainPoint.y - centerY, domainPoint.x - centerX);
-      const sectorWidth = Math.PI / 3; // 60 degrees
+      const sectorWidth = Math.PI / 4; // 45 degrees
       
       // Create sector points
       const steps = 12;
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
         const currentAngle = angle - sectorWidth/2 + t * sectorWidth;
-        const distance = radius * 0.8;
+        const distance = radius * coverageDistance;
         
         points.push({
           x: centerX + Math.cos(currentAngle) * distance,
@@ -117,42 +167,41 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
         });
       }
     } else {
-      // Multiple domains - create shape that covers the areas
-      areaIndices.forEach((domainIndex, i) => {
-        if (domainIndex === undefined) return;
+      // Multiple domains - create shape with different distances per domain based on intensity
+      coveredDomains.forEach((domainIndex, i) => {
         const domainPoint = pentagonPoints[domainIndex];
         if (!domainPoint) return;
-        const nextDomainIndex = areaIndices[(i + 1) % areaIndices.length];
-        if (nextDomainIndex === undefined) return;
-        const nextDomainPoint = pentagonPoints[nextDomainIndex];
-        if (!nextDomainPoint) return;
         
-        // Special handling for framework partial coverage
-        let coverageDistance = 0.9;
-        if (frameworkKey === 'nis2') {
-          if (domainIndex === 0 || domainIndex === 2 || domainIndex === 3) { // Governance, Technical, or Operational
-            coverageDistance = 0.5; // Halfway coverage
-          } else if (domainIndex === 4) { // Privacy (GDPR)
-            coverageDistance = 0.15; // Reduced privacy coverage to avoid overlap
-          }
-        }
+        // Calculate coverage distance based on intensity for this specific domain
+        const intensity = domainIntensity[domainIndex] || 0;
+        const normalizedIntensity = intensity / maxIntensity;
+        const coverageDistance = 0.45 + (normalizedIntensity * 0.25); // Range: 0.45-0.70 (keep within pentagon)
         
         points.push({
           x: centerX + (domainPoint.x - centerX) * coverageDistance,
           y: centerY + (domainPoint.y - centerY) * coverageDistance
         });
         
-        // If there's a next domain, curve along the pentagon edge
-        if (i < areaIndices.length - 1) {
-          // Add intermediate points along pentagon edge
-          const steps = 6;
+        // Add intermediate points between domains for smooth curves
+        if (i < coveredDomains.length - 1) {
+          const nextDomainIndex = coveredDomains[i + 1];
+          const nextDomainPoint = pentagonPoints[nextDomainIndex];
+          if (!nextDomainPoint) return;
+          
+          const nextIntensity = domainIntensity[nextDomainIndex] || 0;
+          const nextNormalizedIntensity = nextIntensity / maxIntensity;
+          const nextCoverageDistance = 0.5 + (nextNormalizedIntensity * 0.35);
+          
+          // Create curve between domains with intensity-based positioning
+          const steps = 4;
           for (let step = 1; step < steps; step++) {
             const t = step / steps;
+            const avgDistance = coverageDistance + (nextCoverageDistance - coverageDistance) * t;
             const midX = domainPoint.x + (nextDomainPoint.x - domainPoint.x) * t;
             const midY = domainPoint.y + (nextDomainPoint.y - domainPoint.y) * t;
             
-            // Curve slightly inward, adjust for partial coverage
-            const inwardFactor = (frameworkKey === 'nis2' && (domainIndex === 0 || domainIndex === 2 || domainIndex === 3 || domainIndex === 4)) ? 0.3 : 0.1;
+            // Curve slightly inward for visual appeal
+            const inwardFactor = 0.15;
             points.push({
               x: midX + (centerX - midX) * inwardFactor,
               y: midY + (centerY - midY) * inwardFactor
@@ -162,17 +211,8 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       });
     }
     
-    // Special extension for GDPR towards Operational
-    if (frameworkKey === 'gdpr') {
-      const operationalPoint = pentagonPoints[3]; // Operational domain
-      if (operationalPoint) {
-        const extensionDistance = 0.25; // Small extension towards operational
-        points.push({
-          x: centerX + (operationalPoint.x - centerX) * extensionDistance,
-          y: centerY + (operationalPoint.y - centerY) * extensionDistance
-        });
-      }
-    }
+    // NO SPECIAL EXTENSIONS - All frameworks stay within pentagon boundaries
+    // Areas are determined purely by database category mappings
     
     return points;
   };
@@ -207,7 +247,20 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
     return path;
   };
   
-  // Framework configurations with organic blob shapes
+  // Helper function to check if framework is selected
+  const isFrameworkSelected = (key: string) => {
+    const selection = selectedFrameworks[key];
+    if (key === 'cisControls') {
+      // Accept both boolean true and string values (ig1, ig2, ig3) for CIS Controls
+      const result = selection === true || (selection && typeof selection === 'string' && selection !== '');
+      console.log(`🔍 CIS DEBUG - key: ${key}, selection: ${selection}, type: ${typeof selection}, result: ${result}`);
+      return result;
+    } else {
+      return selection === true;
+    }
+  };
+
+  // Framework configurations with organic blob shapes - only generate areas for selected frameworks
   const frameworkConfigs = [
     {
       key: 'iso27001',
@@ -216,7 +269,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       secondaryColor: '#60a5fa',
       stats: frameworkStats['iso27001'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('iso27001', frameworkStats['iso27001'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
+        points: isFrameworkSelected('iso27001') ? generateAreaCoverage('iso27001') : [],
         path: ''
       }
     },
@@ -227,7 +280,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       secondaryColor: '#34d399',
       stats: frameworkStats['iso27002'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('iso27002', frameworkStats['iso27002'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
+        points: isFrameworkSelected('iso27002') ? generateAreaCoverage('iso27002') : [],
         path: ''
       }
     },
@@ -238,7 +291,16 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       secondaryColor: '#a78bfa',
       stats: frameworkStats['cisControls'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('cisControls', frameworkStats['cisControls'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
+        points: (() => {
+          const selected = isFrameworkSelected('cisControls');
+          console.log(`🔍 CIS AREA DEBUG - isSelected: ${selected}`);
+          if (selected) {
+            const points = generateAreaCoverage('cisControls');
+            console.log(`🔍 CIS AREA DEBUG - generated points:`, points);
+            return points;
+          }
+          return [];
+        })(),
         path: ''
       }
     },
@@ -249,7 +311,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       secondaryColor: '#fb923c',
       stats: frameworkStats['gdpr'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('gdpr', frameworkStats['gdpr'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
+        points: isFrameworkSelected('gdpr') ? generateAreaCoverage('gdpr') : [],
         path: ''
       }
     },
@@ -260,7 +322,7 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       secondaryColor: '#f87171',
       stats: frameworkStats['nis2'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
-        points: generateAreaCoverage('nis2', frameworkStats['nis2'] || { totalRequirements: 0, coverage: 0, mappings: 0 }),
+        points: isFrameworkSelected('nis2') ? generateAreaCoverage('nis2') : [],
         path: ''
       }
     }
@@ -275,9 +337,9 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
   const unifiedZonePoints = pentagonPoints.map(p => `${p.x},${p.y}`).join(' ');
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 overflow-hidden">
-      <div className="mb-8 text-center">
-        <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+    <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 overflow-hidden">
+      <div className="mb-4 text-center">
+        <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
           Premium Framework Coverage Visualization
         </h3>
         <p className="text-gray-700 dark:text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -314,13 +376,41 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
             <stop offset="100%" stopColor="#3730a3" stopOpacity="0.85" />
           </radialGradient>
 
-          {/* Clear framework gradients - reduced opacity for better visibility */}
+          {/* Enhanced framework gradients with better visibility */}
           {frameworkConfigs.map(config => (
             <linearGradient key={config.key} id={`${config.key}Gradient`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={config.secondaryColor} stopOpacity="0.5" />
-              <stop offset="100%" stopColor={config.color} stopOpacity="0.4" />
+              <stop offset="0%" stopColor={config.secondaryColor} stopOpacity="0.8" />
+              <stop offset="50%" stopColor={config.color} stopOpacity="0.7" />
+              <stop offset="100%" stopColor={config.color} stopOpacity="0.6" />
             </linearGradient>
           ))}
+
+          {/* Distinct patterns for print/screenshot clarity */}
+          <pattern id="iso27001Pattern" patternUnits="userSpaceOnUse" width="8" height="8">
+            <rect width="8" height="8" fill="#3b82f6" opacity="0.1"/>
+            <path d="M0,4 l8,0" stroke="#3b82f6" strokeWidth="1" opacity="0.3"/>
+          </pattern>
+          
+          <pattern id="iso27002Pattern" patternUnits="userSpaceOnUse" width="6" height="6">
+            <rect width="6" height="6" fill="#10b981" opacity="0.1"/>
+            <circle cx="3" cy="3" r="1" fill="#10b981" opacity="0.4"/>
+          </pattern>
+          
+          <pattern id="cisControlsPattern" patternUnits="userSpaceOnUse" width="10" height="10">
+            <rect width="10" height="10" fill="#8b5cf6" opacity="0.1"/>
+            <path d="M0,0 l10,10 M0,10 l10,-10" stroke="#8b5cf6" strokeWidth="1" opacity="0.3"/>
+          </pattern>
+          
+          <pattern id="gdprPattern" patternUnits="userSpaceOnUse" width="12" height="12">
+            <rect width="12" height="12" fill="#f97316" opacity="0.1"/>
+            <rect x="2" y="2" width="3" height="3" fill="#f97316" opacity="0.3"/>
+            <rect x="7" y="7" width="3" height="3" fill="#f97316" opacity="0.3"/>
+          </pattern>
+          
+          <pattern id="nis2Pattern" patternUnits="userSpaceOnUse" width="8" height="8">
+            <rect width="8" height="8" fill="#ef4444" opacity="0.1"/>
+            <path d="M0,0 l4,4 l4,-4" stroke="#ef4444" strokeWidth="1" opacity="0.3" fill="none"/>
+          </pattern>
           
           
           {/* Professional shadow for depth */}
@@ -369,11 +459,14 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
         {/* Framework area coverage shapes */}
         {frameworkConfigs.filter(config => {
           // Only show if framework is actually selected
-          if (config.key === 'cisControls') {
-            return selectedFrameworks['cisControls'] !== null; // CIS Controls uses IG levels
-          }
-          return selectedFrameworks[config.key] === true; // Others use boolean
-        }).filter(config => config.zone.path).map((config, index) => {
+          const selected = isFrameworkSelected(config.key);
+          console.log(`🔍 FILTER DEBUG - ${config.key}: selected=${selected}, path length=${config.zone.path.length}`);
+          return selected;
+        }).filter(config => {
+          const hasPath = config.zone.path && config.zone.path.length > 0;
+          console.log(`🔍 PATH DEBUG - ${config.key}: hasPath=${hasPath}, path="${config.zone.path}"`);
+          return hasPath;
+        }).map((config, index) => {
           
           return (
             <motion.g 
@@ -382,18 +475,18 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
               onMouseLeave={() => setHoveredFramework(null)}
               style={{ cursor: 'pointer' }}
             >
-              {/* Area coverage shape - improved visibility */}
+              {/* Base area with gradient */}
               <motion.path
                 d={config.zone.path}
                 fill={`url(#${config.key}Gradient)`}
                 stroke={config.color}
                 strokeWidth={hoveredFramework === config.key ? "5" : "3"}
-                fillOpacity={hoveredFramework === config.key ? "0.8" : "1"}
-                initial={{ opacity: 0, scale: 0.5, strokeOpacity: 0.9 }}
+                fillOpacity={hoveredFramework === config.key ? "0.9" : "0.7"}
+                strokeOpacity={hoveredFramework === config.key ? "1" : "0.85"}
+                initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ 
-                  opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.4,
-                  scale: hoveredFramework === config.key ? 1.02 : 1,
-                  strokeOpacity: hoveredFramework === config.key ? 1 : 0.9
+                  opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.3,
+                  scale: hoveredFramework === config.key ? 1.05 : 1,
                 }}
                 transition={{ 
                   duration: hoveredFramework ? 0.2 : 0.8, 
@@ -403,38 +496,198 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
                 style={{
                   transformOrigin: 'center',
                   mixBlendMode: 'normal',
-                  filter: hoveredFramework === config.key ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))' : 'none'
+                  filter: hoveredFramework === config.key 
+                    ? `drop-shadow(0 6px 16px ${config.color}40)` 
+                    : `drop-shadow(0 3px 10px ${config.color}30)`
                 }}
               />
               
-              {/* Framework label overlay for clarity */}
-              <motion.text
-                x={(() => {
-                  // Calculate center of the framework area
-                  const points = config.zone.points;
-                  const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-                  return avgX;
-                })()}
-                y={(() => {
-                  const points = config.zone.points;
-                  const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
-                  return avgY;
-                })()}
-                textAnchor="middle"
-                className="text-sm font-bold fill-white"
-                style={{
-                  filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))',
-                  pointerEvents: 'none'
-                }}
+              {/* Pattern overlay for print/screenshot distinguishability */}
+              <motion.path
+                d={config.zone.path}
+                fill={`url(#${config.key}Pattern)`}
+                stroke="none"
                 initial={{ opacity: 0 }}
                 animate={{ 
-                  opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.3,
-                  scale: hoveredFramework === config.key ? 1.1 : 1
+                  opacity: hoveredFramework === null || hoveredFramework === config.key ? 0.6 : 0.3,
                 }}
-                transition={{ duration: hoveredFramework ? 0.2 : 0.5, delay: hoveredFramework ? 0 : index * 0.2 + 0.5 }}
-              >
-                {config.name}
-              </motion.text>
+                transition={{ 
+                  duration: hoveredFramework ? 0.2 : 0.8, 
+                  delay: hoveredFramework ? 0 : index * 0.2 + 0.1, 
+                }}
+                style={{
+                  transformOrigin: 'center',
+                  mixBlendMode: 'multiply',
+                  pointerEvents: 'none'
+                }}
+              />
+              
+              {/* Primary strong border with distinct patterns */}
+              <motion.path
+                d={config.zone.path}
+                fill="none"
+                stroke={config.color}
+                strokeWidth={hoveredFramework === config.key ? "5" : "3.5"}
+                strokeOpacity={hoveredFramework === config.key ? "1" : "0.95"}
+                strokeDasharray={(() => {
+                  // Enhanced distinct border patterns for each framework
+                  const patterns = {
+                    'iso27001': hoveredFramework === config.key ? "none" : "none", // Solid line
+                    'iso27002': hoveredFramework === config.key ? "none" : "12,6", // Bold dashed line
+                    'cisControls': hoveredFramework === config.key ? "none" : "4,4", // Bold dotted line
+                    'gdpr': hoveredFramework === config.key ? "none" : "16,4,4,4", // Bold dash-dot line
+                    'nis2': hoveredFramework === config.key ? "none" : "8,3,3,3,3,3" // Bold dash-dot-dot line
+                  };
+                  return patterns[config.key as keyof typeof patterns] || "none";
+                })()}
+                initial={{ pathLength: 0 }}
+                animate={{ 
+                  pathLength: 1,
+                  strokeWidth: hoveredFramework === config.key ? 5 : 3.5,
+                }}
+                transition={{ 
+                  duration: hoveredFramework ? 0.2 : 1.2, 
+                  delay: hoveredFramework ? 0 : index * 0.2 + 0.3,
+                  ease: "easeOut"
+                }}
+                style={{
+                  transformOrigin: 'center',
+                  filter: `drop-shadow(0 2px 6px ${config.color}70)`,
+                  pointerEvents: 'none'
+                }}
+              />
+              
+              {/* Secondary inner border for extra distinction */}
+              <motion.path
+                d={config.zone.path}
+                fill="none"
+                stroke="white"
+                strokeWidth={hoveredFramework === config.key ? "2" : "1.5"}
+                strokeOpacity={hoveredFramework === config.key ? "0.8" : "0.6"}
+                strokeDasharray={(() => {
+                  // Inverse patterns for inner border
+                  const patterns = {
+                    'iso27001': hoveredFramework === config.key ? "none" : "6,3", // Dashed on solid
+                    'iso27002': hoveredFramework === config.key ? "none" : "none", // Solid on dashed
+                    'cisControls': hoveredFramework === config.key ? "none" : "8,2", // Different dash on dotted
+                    'gdpr': hoveredFramework === config.key ? "none" : "3,3", // Dots on dash-dot
+                    'nis2': hoveredFramework === config.key ? "none" : "12,3" // Long dash on complex
+                  };
+                  return patterns[config.key as keyof typeof patterns] || "none";
+                })()}
+                initial={{ pathLength: 0 }}
+                animate={{ 
+                  pathLength: 1,
+                  strokeWidth: hoveredFramework === config.key ? 2 : 1.5,
+                }}
+                transition={{ 
+                  duration: hoveredFramework ? 0.2 : 1.4, 
+                  delay: hoveredFramework ? 0 : index * 0.2 + 0.5,
+                  ease: "easeOut"
+                }}
+                style={{
+                  transformOrigin: 'center',
+                  pointerEvents: 'none'
+                }}
+              />
+              
+              {/* Enhanced framework label with better visibility */}
+              <motion.g>
+                {/* Label background for better readability */}
+                <motion.rect
+                  x={(() => {
+                    const points = config.zone.points;
+                    const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+                    // Improved offsets to avoid overlap with domain labels and stay within bounds
+                    const offsets = {
+                      'iso27001': { x: -20, y: -60 },    // Much higher and more right
+                      'iso27002': { x: 90, y: -35 },     // Top-right, moved up and more right
+                      'cisControls': { x: 0, y: 50 },    // Bottom center, moved down
+                      'gdpr': { x: -40, y: -5 },         // Further right in GDPR area
+                      'nis2': { x: 60, y: 35 }           // Bottom-right, adjusted
+                    };
+                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                    return avgX + offset.x - (config.name.length * 5); // Increased width padding
+                  })()}
+                  y={(() => {
+                    const points = config.zone.points;
+                    const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+                    const offsets = {
+                      'iso27001': { x: -20, y: -80 },
+                      'iso27002': { x: 90, y: -35 },
+                      'cisControls': { x: 0, y: 50 },
+                      'gdpr': { x: -40, y: -5 },
+                      'nis2': { x: 60, y: 35 }
+                    };
+                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                    return avgY + offset.y - 14; // Increased height padding
+                  })()}
+                  width={config.name.length * 10} // Increased width for better readability
+                  height="28" // Increased height
+                  rx="14"
+                  fill={config.color}
+                  fillOpacity={hoveredFramework === config.key ? "0.95" : "0.90"} // Increased opacity
+                  stroke="white"
+                  strokeWidth="2.5" // Thicker border
+                  style={{
+                    filter: `drop-shadow(0 3px 12px ${config.color}60)` // Enhanced shadow
+                  }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ 
+                    opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.4,
+                    scale: hoveredFramework === config.key ? 1.1 : 1
+                  }}
+                  transition={{ duration: hoveredFramework ? 0.2 : 0.5, delay: hoveredFramework ? 0 : index * 0.2 + 0.5 }}
+                />
+                
+                {/* Framework name text */}
+                <motion.text
+                  x={(() => {
+                    const points = config.zone.points;
+                    const avgX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+                    // Use same improved offsets as the background
+                    const offsets = {
+                      'iso27001': { x: -20, y: -80 },
+                      'iso27002': { x: 90, y: -35 },
+                      'cisControls': { x: 0, y: 50 },
+                      'gdpr': { x: -40, y: -5 },
+                      'nis2': { x: 60, y: 35 }
+                    };
+                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                    return avgX + offset.x;
+                  })()}
+                  y={(() => {
+                    const points = config.zone.points;
+                    const avgY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+                    const offsets = {
+                      'iso27001': { x: -20, y: -80 },
+                      'iso27002': { x: 90, y: -35 },
+                      'cisControls': { x: 0, y: 50 },
+                      'gdpr': { x: -40, y: -5 },
+                      'nis2': { x: 60, y: 35 }
+                    };
+                    const offset = offsets[config.key as keyof typeof offsets] || { x: 0, y: 0 };
+                    return avgY + offset.y + 6; // Adjusted for larger background
+                  })()}
+                  textAnchor="middle"
+                  className="text-sm font-bold fill-white"
+                  style={{
+                    pointerEvents: 'none',
+                    fontSize: '14px', // Slightly larger text
+                    fontWeight: '800', // Bolder text
+                    letterSpacing: '0.5px',
+                    filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))' // Strong text shadow for contrast
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: hoveredFramework === null || hoveredFramework === config.key ? 1 : 0.4,
+                    scale: hoveredFramework === config.key ? 1.1 : 1
+                  }}
+                  transition={{ duration: hoveredFramework ? 0.2 : 0.5, delay: hoveredFramework ? 0 : index * 0.2 + 0.6 }}
+                >
+                  {config.name}
+                </motion.text>
+              </motion.g>
             </motion.g>
           );
         })}
@@ -538,25 +791,26 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
           );
         })}
 
-        {/* Ultra-premium AuditReady Unified center badge */}
-        <motion.g
-          initial={{ opacity: 0, scale: 0.2, rotate: -360 }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1, 
-            rotate: 0,
-            // Gentle floating animation
-            y: [0, -4, 0]
-          }}
-          transition={{ 
-            duration: 1.2, 
-            delay: 2,
-            type: "spring",
-            stiffness: 120,
-            y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-          }}
-          style={{ transformOrigin: 'center' }}
-        >
+        {/* Ultra-premium AuditReady Unified center badge - respects hideLogo state */}
+        {!hideLogo && (
+          <motion.g
+            initial={{ opacity: 0, scale: 0.2, rotate: -360 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              rotate: 0,
+              // Gentle floating animation
+              y: [0, -4, 0]
+            }}
+            transition={{ 
+              duration: 1.2, 
+              delay: 2,
+              type: "spring",
+              stiffness: 120,
+              y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+            }}
+            style={{ transformOrigin: 'center' }}
+          >
           {/* Outer glow ring */}
           <circle
             cx={centerX}
@@ -624,17 +878,19 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
             UNIFIED
           </text>
         </motion.g>
+        )}
       </svg>
 
-      {/* Interactive Legend */}
-      <div className="mt-6 flex flex-wrap justify-center gap-4">
+      {/* Enhanced Interactive Legend */}
+      <div className="mt-0">
+        <div className="text-center mb-1">
+          <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-0">Selected Frameworks</h4>
+        </div>
+        <div className="flex flex-wrap justify-center gap-4">
         {frameworkConfigs
           .filter(config => {
             // Only show legend for actually selected frameworks
-            if (config.key === 'cisControls') {
-              return selectedFrameworks['cisControls'] !== null; // CIS Controls uses IG levels
-            }
-            return selectedFrameworks[config.key] === true; // Others use boolean
+            return isFrameworkSelected(config.key);
           })
           .map(config => (
             <motion.div 
@@ -722,6 +978,18 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
             AuditReady Unified
           </motion.span>
         </motion.div>
+        </div>
+      </div>
+      
+      {/* Hide Logo Button - Positioned below legend */}
+      <div className="mt-6 text-center">
+        <button
+          onClick={() => setHideLogo(!hideLogo)}
+          className="px-6 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 border border-gray-300 dark:border-gray-600 shadow-sm"
+          title="Hide/show AuditReady logo for documentation screenshots"
+        >
+          {hideLogo ? 'Show' : 'Hide'} AuditReady Logo
+        </button>
       </div>
     </div>
   );

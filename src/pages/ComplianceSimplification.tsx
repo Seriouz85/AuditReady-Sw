@@ -3702,42 +3702,6 @@ For detailed implementation guidance, please refer to the specific framework doc
                 />
                 
                 
-                {/* Framework Legend */}
-                <div className="border-t pt-6">
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Selected Frameworks</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {selectedFrameworks['iso27001'] && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                        <span className="text-sm">ISO 27001</span>
-                      </div>
-                    )}
-                    {selectedFrameworks['iso27002'] && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-green-500 rounded"></div>
-                        <span className="text-sm">ISO 27002</span>
-                      </div>
-                    )}
-                    {selectedFrameworks['cisControls'] && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                        <span className="text-sm">CIS Controls ({selectedFrameworks['cisControls'].toUpperCase()})</span>
-                      </div>
-                    )}
-                    {selectedFrameworks['gdpr'] && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                        <span className="text-sm">GDPR</span>
-                      </div>
-                    )}
-                    {selectedFrameworks['nis2'] && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-indigo-500 rounded"></div>
-                        <span className="text-sm">NIS2</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
                 </>
                 ) : (
                   /* No frameworks selected state */
