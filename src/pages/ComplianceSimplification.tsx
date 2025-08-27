@@ -32,8 +32,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
-import { CorrectedGovernanceService } from '@/services/compliance/CorrectedGovernanceService';
+import { useComplianceMappingData, useIndustrySectors, complianceUnificationService } from '@/services/compliance/ComplianceUnificationService';
+import { complianceCacheService } from '@/services/compliance/ComplianceCacheService';
+// REMOVED: CorrectedGovernanceService - was overriding database content
 import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
 import { ProfessionalGuidanceService } from '../services/compliance/ProfessionalGuidanceService';
 import { UnifiedRequirementsService } from '../services/compliance/UnifiedRequirementsService';
@@ -71,6 +72,29 @@ export default function ComplianceSimplification() {
   
   // Industry sector selection state
   const [selectedIndustrySector, setSelectedIndustrySector] = useState<string | null>(null);
+  
+  // Helper function to get framework badges for a mapping
+  const getFrameworkBadges = (mapping: any) => {
+    const badges: { name: string; color: string; variant: 'default' | 'secondary' | 'outline' }[] = [];
+    
+    if (selectedFrameworks.iso27001 && mapping.frameworks?.iso27001?.length > 0) {
+      badges.push({ name: 'ISO 27001', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.iso27002 && mapping.frameworks?.iso27002?.length > 0) {
+      badges.push({ name: 'ISO 27002', color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.cisControls && mapping.frameworks?.cisControls?.length > 0) {
+      badges.push({ name: `CIS ${selectedFrameworks.cisControls.toUpperCase()}`, color: 'bg-green-500/20 text-green-300 border-green-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.gdpr && mapping.frameworks?.gdpr?.length > 0) {
+      badges.push({ name: 'GDPR', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.nis2 && mapping.frameworks?.nis2?.length > 0) {
+      badges.push({ name: 'NIS2', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', variant: 'default' });
+    }
+    
+    return badges;
+  };
   
   // Framework selection state
   const [selectedFrameworks, setSelectedFrameworks] = useState<{
@@ -171,15 +195,7 @@ export default function ComplianceSimplification() {
     // Apply the same special handling that's used throughout the application
     let baseRequirements = categoryMapping.auditReadyUnified.subRequirements || [];
     
-    // Special handling for Governance & Leadership category
-    if (CorrectedGovernanceService.isGovernanceCategory(categoryMapping.category)) {
-      const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
-      baseRequirements = [
-        ...correctedStructure.sections['Leadership'] || [],
-        ...correctedStructure.sections['HR'] || [],
-        ...correctedStructure.sections['Monitoring & Compliance'] || []
-      ];
-    }
+    // Use database content directly - no more hardcoded fallbacks for Governance & Leadership
     
     // Apply sector-specific enhancements
     const requirements = SectorSpecificEnhancer.enhanceSubRequirements(
@@ -418,68 +434,124 @@ export default function ComplianceSimplification() {
   };
 
   // Function to get enhanced guidance content with AI-powered generation
+  // State for guidance content loading
+  const [guidanceContent, setGuidanceContent] = useState<string>('Loading guidance content...');
+  const [isLoadingGuidance, setIsLoadingGuidance] = useState<boolean>(false);
+
+  // Effect to load guidance content when modal opens
+  useEffect(() => {
+    if (showUnifiedGuidance && selectedGuidanceCategory) {
+      loadGuidanceContentAsync(selectedGuidanceCategory);
+    }
+  }, [showUnifiedGuidance, selectedGuidanceCategory, selectedFrameworks]);
+
+  const loadGuidanceContentAsync = async (category: string, useActiveFrameworks: boolean = true) => {
+    setIsLoadingGuidance(true);
+    
+    try {
+      // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
+      const cleanCategory = category.replace(/^\d+\.\s*/, '');
+      
+      // Debug: Log what category we're trying to get guidance for
+      if (!cleanCategory || cleanCategory.trim() === '') {
+        console.warn(`[Guidance Debug] Empty category after cleaning. Original: "${category}"`);
+        setGuidanceContent('Error: No category specified');
+        return;
+      }
+      
+      // Use the currently active frameworks (not the initial selection state)
+      const frameworksForGuidance = {
+        iso27001: Boolean(useActiveFrameworks ? selectedFrameworks.iso27001 : frameworksSelected.iso27001),
+        iso27002: Boolean(useActiveFrameworks ? selectedFrameworks.iso27002 : frameworksSelected.iso27002),
+        cisControls: useActiveFrameworks ? (selectedFrameworks.cisControls ? true : false) : (frameworksSelected.cisControls ? true : false),
+        gdpr: Boolean(useActiveFrameworks ? selectedFrameworks.gdpr : frameworksSelected.gdpr),
+        nis2: Boolean(useActiveFrameworks ? selectedFrameworks.nis2 : frameworksSelected.nis2)
+      };
+      
+      // Find the actual mapping data for this category to get dynamic requirements
+      const currentMappings = useActiveFrameworks ? filteredUnifiedMappings : filteredMappings;
+      
+      // Debug: Log available categories
+      if (currentMappings && currentMappings.length > 0) {
+        const availableCategories = currentMappings.map(m => m.category?.replace(/^\d+\.\s*/, '') || 'EMPTY').filter(Boolean);
+        console.log(`[Guidance Debug] Looking for "${cleanCategory}" in available categories:`, availableCategories);
+      } else {
+        console.warn(`[Guidance Debug] No mappings available. CurrentMappings:`, currentMappings);
+      }
+      
+      const categoryMapping = currentMappings?.find(mapping => {
+        const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
+        return mappingCategory === cleanCategory;
+      });
+      
+      // FIRST: Check if we have new versioned guidance in guidance_versions table
+      let finalContent = '';
+      
+      try {
+        if (categoryMapping?.id) {
+          // Import the new guidance workflow service dynamically to avoid circular deps
+          const { GuidanceWorkflowService } = await import('@/services/guidance/GuidanceWorkflowService');
+          
+          const guidanceResult = await GuidanceWorkflowService.getGuidanceContent(
+            categoryMapping.id,
+            'published',
+            frameworksForGuidance
+          );
+          
+          if (guidanceResult.isVersioned && guidanceResult.content) {
+            console.log(`[Modal] Using new versioned guidance for ${cleanCategory}`);
+            finalContent = guidanceResult.content;
+          }
+        }
+      } catch (error) {
+        console.warn(`[Modal] No versioned guidance found for ${cleanCategory}:`, error);
+      }
+      
+      // SECOND: Use the new dynamic guidance generator as fallback source
+      if (!finalContent || finalContent.trim().length <= 100) {
+        const dynamicGuidance = buildGuidanceFromUnifiedRequirements(
+          cleanCategory,
+          categoryMapping,
+          frameworksForGuidance,
+          selectedIndustrySector
+        );
+        
+        if (dynamicGuidance && dynamicGuidance.trim().length > 100) {
+          console.log(`[Guidance Debug] Successfully generated dynamic guidance for: ${cleanCategory}`);
+          finalContent = dynamicGuidance;
+        }
+      }
+      
+      // THIRD: Fallback to legacy EnhancedUnifiedGuidanceService only if previous methods failed
+      if (!finalContent || finalContent.trim().length <= 100) {
+        console.warn(`[Guidance Debug] Dynamic guidance failed for ${cleanCategory}, trying legacy service`);
+        const legacyGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+          cleanCategory,
+          frameworksForGuidance,
+          categoryMapping
+        );
+        
+        if (legacyGuidance && legacyGuidance.trim().length > 100) {
+          finalContent = legacyGuidance;
+        }
+      }
+      
+      // Set the final content or fallback
+      setGuidanceContent(finalContent || getGuidanceContentFallback(cleanCategory));
+      
+    } catch (error) {
+      console.error('[Guidance Debug] Error loading guidance content:', error);
+      setGuidanceContent(getGuidanceContentFallback(category));
+    } finally {
+      setIsLoadingGuidance(false);
+    }
+  };
+
   const getGuidanceContent = (category: string, useActiveFrameworks: boolean = true) => {
-    // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
-    const cleanCategory = category.replace(/^\d+\.\s*/, '');
-    
-    // Debug: Log what category we're trying to get guidance for
-    if (!cleanCategory || cleanCategory.trim() === '') {
-      console.warn(`[Guidance Debug] Empty category after cleaning. Original: "${category}"`);
-      return 'Error: No category specified';
-    }
-    
-    
-    // Use the currently active frameworks (not the initial selection state)
-    const frameworksForGuidance = {
-      iso27001: Boolean(useActiveFrameworks ? selectedFrameworks.iso27001 : frameworksSelected.iso27001),
-      iso27002: Boolean(useActiveFrameworks ? selectedFrameworks.iso27002 : frameworksSelected.iso27002),
-      cisControls: useActiveFrameworks ? (selectedFrameworks.cisControls ? true : false) : (frameworksSelected.cisControls ? true : false),
-      gdpr: Boolean(useActiveFrameworks ? selectedFrameworks.gdpr : frameworksSelected.gdpr),
-      nis2: Boolean(useActiveFrameworks ? selectedFrameworks.nis2 : frameworksSelected.nis2)
-    };
-    
-    // Find the actual mapping data for this category to get dynamic requirements
-    const currentMappings = useActiveFrameworks ? filteredUnifiedMappings : filteredMappings;
-    
-    // Debug: Log available categories
-    if (currentMappings && currentMappings.length > 0) {
-      const availableCategories = currentMappings.map(m => m.category?.replace(/^\d+\.\s*/, '') || 'EMPTY').filter(Boolean);
-      console.log(`[Guidance Debug] Looking for "${cleanCategory}" in available categories:`, availableCategories);
-    } else {
-      console.warn(`[Guidance Debug] No mappings available. CurrentMappings:`, currentMappings);
-    }
-    
-    const categoryMapping = currentMappings?.find(mapping => {
-      const mappingCategory = mapping.category?.replace(/^\d+\.\s*/, '');
-      return mappingCategory === cleanCategory;
-    });
-    
-    // Use the new dynamic guidance generator as primary source
-    const dynamicGuidance = buildGuidanceFromUnifiedRequirements(
-      cleanCategory,
-      categoryMapping,
-      frameworksForGuidance,
-      selectedIndustrySector
-    );
-    
-    // Return dynamic guidance if it worked
-    if (dynamicGuidance && dynamicGuidance.trim().length > 100) {
-      console.log(`[Guidance Debug] Successfully generated dynamic guidance for: ${cleanCategory}`);
-      return dynamicGuidance;
-    }
-    
-    // Fallback to legacy EnhancedUnifiedGuidanceService only if dynamic generation fails
-    console.warn(`[Guidance Debug] Dynamic guidance failed for ${cleanCategory}, trying legacy service`);
-    const legacyGuidance = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
-      cleanCategory,
-      frameworksForGuidance,
-      categoryMapping
-    );
-    
-    if (legacyGuidance && legacyGuidance.trim().length > 100) {
-      return legacyGuidance;
-    }
-    
+    return guidanceContent;
+  };
+
+  const getGuidanceContentFallback = (cleanCategory: string) => {
     // Final fallback with debug information
     console.warn(`[Unified Guidance Debug] Using fallback content for category: ${cleanCategory}. This may indicate missing data.`);
     return `# ${cleanCategory}
@@ -521,6 +593,25 @@ For detailed implementation guidance, please refer to the specific framework doc
   
   // All legacy functions removed - content now handled by EnhancedUnifiedGuidanceService
 
+  // Force cache clearing on component mount to ensure fresh data
+  useEffect(() => {
+    console.log('[DEBUG] Clearing all caches on component mount...');
+    queryClient.invalidateQueries({ predicate: () => true }); // Clear all React Query cache
+    queryClient.removeQueries({ predicate: () => true }); // Also remove all queries from cache
+    complianceCacheService.clear('all'); // Clear all internal cache
+    
+    // Force clear browser storage too
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('compliance_cache_unified_categories');
+        sessionStorage.clear();
+        console.log('[DEBUG] Browser storage cleared');
+      } catch (e) {
+        console.warn('[DEBUG] Could not clear browser storage:', e);
+      }
+    }
+  }, []);
+
   // Fetch industry sectors
   const { data: industrySectors, isLoading: isLoadingSectors } = useIndustrySectors();
   
@@ -534,7 +625,32 @@ For detailed implementation guidance, please refer to the specific framework doc
     nis2: Boolean(selectedFrameworks['nis2'])
   };
   
-  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings } = useComplianceMappingData(frameworksForHook, selectedIndustrySector || undefined);
+  const { data: fetchedComplianceMapping, isLoading: isLoadingMappings, refetch: refetchComplianceData } = useComplianceMappingData(frameworksForHook, selectedIndustrySector || undefined);
+  
+  // Force data refetch on component mount to ensure fresh data
+  useEffect(() => {
+    console.log('🚨 [COMPONENT MOUNT] Forcing compliance data refetch to bypass any caching...');
+    refetchComplianceData();
+  }, []);
+  
+  // Debug: Log what we get from the React Query hook
+  useEffect(() => {
+    if (fetchedComplianceMapping) {
+      console.log('[DEBUG] ComplianceSimplification received data from React Query:', {
+        dataLength: fetchedComplianceMapping.length,
+        governanceCategory: fetchedComplianceMapping.find(item => item.category === 'Governance & Leadership'),
+        allCategories: fetchedComplianceMapping.map(item => item.category)
+      });
+      
+      const governance = fetchedComplianceMapping.find(item => item.category === 'Governance & Leadership');
+      if (governance) {
+        console.log('[DEBUG] Governance & Leadership data loaded successfully with', governance.auditReadyUnified?.subRequirements?.length || 0, 'unified requirements');
+      } else {
+        console.log('🚨 [UI DEBUG] NO Governance & Leadership found in fetchedComplianceMapping!');
+        console.log('🚨 [UI DEBUG] Available categories:', fetchedComplianceMapping.map(item => item.category));
+      }
+    }
+  }, [fetchedComplianceMapping]);
   
   // Use database data
   const complianceMappingData = fetchedComplianceMapping || [];
@@ -572,8 +688,18 @@ For detailed implementation guidance, please refer to the specific framework doc
       nis2: Boolean(frameworksSelected['nis2'])
     });
     
-    // Force invalidate React Query cache to ensure fresh data
+    // Force invalidate React Query cache to ensure fresh data including unified categories
     queryClient.invalidateQueries({ queryKey: ['compliance-mapping-data'] });
+    queryClient.invalidateQueries({ queryKey: ['unified-categories'] });
+    queryClient.invalidateQueries({ queryKey: ['unified-categories'] });
+    queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'compliance-mapping-data' });
+    queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'unified-categories' });
+    
+    // Also clear internal compliance cache
+    complianceCacheService.clear('all');
+    
+    // Force clear any guidance content cache
+    complianceCacheService.clear('memory');
     
     // Simulate AI processing time
     setTimeout(() => {
@@ -854,10 +980,17 @@ For detailed implementation guidance, please refer to the specific framework doc
     // Create data rows with enhanced formatting
     const xlsxRows = [headers];
     
-    (filteredUnifiedMappings || []).forEach((mapping, index) => {
-      // Get unified requirements (sub-requirements)
+    for (let index = 0; index < (filteredUnifiedMappings || []).length; index++) {
+      const mapping = filteredUnifiedMappings[index];
+      // Get unified requirements (sub-requirements) - preserve formatting
       const unifiedRequirements = (mapping.auditReadyUnified?.subRequirements || [])
-        .map((req) => `✓ ${cleanComplianceSubRequirement(req)}`)
+        .map((req) => {
+          // Don't clean Governance & Leadership requirements - they have proper formatting
+          if (mapping.category === 'Governance & Leadership') {
+            return req;
+          }
+          return `✓ ${cleanComplianceSubRequirement(req)}`;
+        })
         .join('\n\n');
       
       // Get unified guidance content using the enhanced service
@@ -869,6 +1002,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         nis2: Boolean(selectedFrameworks.nis2)
       };
       
+      // Use legacy system for PDF generation (synchronous)
       const guidanceContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
         mapping.category,
         selectedFrameworksForGuidance
@@ -908,7 +1042,7 @@ For detailed implementation guidance, please refer to the specific framework doc
       ];
 
       xlsxRows.push(row);
-    });
+    }
 
     const mainWS = XLSX.utils.aoa_to_sheet(xlsxRows);
     
@@ -1450,20 +1584,15 @@ For detailed implementation guidance, please refer to the specific framework doc
       // Loading real unified guidance content from getGuidanceContent function
       const tableData = data.map((mapping) => {
         // Get unified requirements with clean formatting and better numbering
-        // Special handling for Governance & Leadership category to use corrected structure
+        // Use database content directly - no more hardcoded overrides
         let requirements = mapping.auditReadyUnified?.subRequirements || [];
-        if (CorrectedGovernanceService.isGovernanceCategory(mapping.category)) {
-          const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
-          // Flatten all requirements from all sections with proper lettering
-          requirements = [
-            ...correctedStructure.sections['Leadership'] || [],
-            ...correctedStructure.sections['HR'] || [],
-            ...correctedStructure.sections['Monitoring & Compliance'] || []
-          ];
-        }
         
         const cleanedRequirements = requirements.map((req: any) => {
           const text = typeof req === 'string' ? req : req.description || req.text || '';
+          // Don't clean Governance & Leadership requirements - preserve formatting
+          if (mapping.category === 'Governance & Leadership') {
+            return text;
+          }
           return ProfessionalGuidanceService.cleanText(text);
         }).filter((req: string) => req && req.trim().length > 0); // Preserve all non-empty requirements
         
@@ -1478,8 +1607,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         // Format ALL requirements with proper lettering - ensure complete content
         let unifiedRequirements = '';
         if (cleanedRequirements.length > 0) {
-          // Check if this is governance category (already has lettering) or needs lettering added
-          const isGovernance = CorrectedGovernanceService.isGovernanceCategory(mapping.category);
+          // Add lettering to all requirements consistently
           
           unifiedRequirements = cleanedRequirements.map((req: string, idx: number) => {
             const letter = String.fromCharCode(97 + idx); // a, b, c, d, ... p, etc.
@@ -1487,11 +1615,11 @@ For detailed implementation guidance, please refer to the specific framework doc
             // Clean the requirement text
             let cleanReq = req.trim();
             
-            if (isGovernance) {
-              // For governance, requirements already have proper lettering, just clean up
+            // Add lettering if not already present
+            if (cleanReq.match(/^[a-z]\)/)) {
               return cleanReq;
             } else {
-              // For other categories, remove existing numbering/lettering and add proper lettering
+              // Remove existing numbering/lettering and add proper lettering
               cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '').replace(/^\d+\.\s*/, '');
               return `${letter}) ${cleanReq}`;
             }
@@ -3293,14 +3421,30 @@ For detailed implementation guidance, please refer to the specific framework doc
                               className="bg-gray-50 dark:bg-gray-800/50"
                             >
                               <div className="p-4 sm:p-6">
-                                <h5 className="font-semibold mb-4 text-gray-900 dark:text-white">Unified Sub-Requirements</h5>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {mapping.auditReadyUnified.subRequirements.map((subReq, i) => (
-                                  <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                                    <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                    <span className="text-sm text-gray-700 dark:text-gray-300">{cleanComplianceSubRequirement(subReq)}</span>
+                                <div className="flex items-center justify-between mb-4">
+                                  <h5 className="font-semibold text-gray-900 dark:text-white">Unified Sub-Requirements</h5>
+                                  <div className="flex gap-1 flex-wrap">
+                                    {getFrameworkBadges(mapping).map((badge, idx) => (
+                                      <Badge key={idx} className={`text-xs ${badge.color}`}>
+                                        {badge.name}
+                                      </Badge>
+                                    ))}
                                   </div>
-                                ))}
+                                </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {mapping.auditReadyUnified.subRequirements.map((subReq, i) => {
+                                  // Don't clean Governance & Leadership requirements - preserve formatting
+                                  const displayText = mapping.category === 'Governance & Leadership' 
+                                    ? subReq 
+                                    : cleanComplianceSubRequirement(subReq);
+                                  
+                                  return (
+                                    <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                      <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{displayText}</div>
+                                    </div>
+                                  );
+                                })}
                               </div>
                               </div>
                             </motion.div>
@@ -3514,40 +3658,49 @@ For detailed implementation guidance, please refer to the specific framework doc
                             // Group enhanced sub-requirements for better organization
                             let groupedSubReqs: Record<string, string[]> = {};
                             
-                            // Special grouping for Governance & Leadership category - use CorrectedGovernanceService
-                            if (mapping.category.includes('Governance') || mapping.category.includes('Leadership')) {
-                              // Check if this category should use corrected governance structure
-                              if (CorrectedGovernanceService.isGovernanceCategory(mapping.category)) {
-                                const correctedStructure = CorrectedGovernanceService.getCorrectedStructure();
-                                groupedSubReqs = correctedStructure.sections;
-                              } else {
-                                // Fallback to original logic if needed
-                                const leadership: string[] = [];
-                                const hr: string[] = [];
-                                const monitoring: string[] = [];
-                                
-                                enhancedSubReqs.forEach(req => {
-                                  const lowerReq = req.toLowerCase();
-                                  
-                                  if (lowerReq.includes('competence management') || lowerReq.includes('personnel security framework')) {
-                                    hr.push(req);
-                                  }
-                                  else if (lowerReq.includes('relationships') || lowerReq.includes('third party governance') || 
-                                          lowerReq.includes('incident response governance') || lowerReq.includes('continuous improvement') ||
-                                          lowerReq.includes('monitoring & reporting') || lowerReq.includes('change management & control')) {
-                                    monitoring.push(req);
-                                  }
-                                  else {
-                                    leadership.push(req);
-                                  }
-                                });
-                                
-                                groupedSubReqs = {
-                                  'Leadership': leadership,
-                                  'HR': hr,
-                                  'Monitoring & Compliance': monitoring
-                                };
+                            // DEBUG: Log what category we're processing
+                            console.log('[SECTION GROUPING] Processing category:', mapping.category);
+                            console.log('[SECTION GROUPING] Is Governance?', mapping.category === 'Governance & Leadership');
+                            
+                            // Special handling for Governance & Leadership - THREE sections with PROPER organization
+                            // Check multiple ways the category might appear
+                            const isGovernance = mapping.category === 'Governance & Leadership' || 
+                                               mapping.category?.includes('Governance') ||
+                                               mapping.category?.toLowerCase().includes('governance');
+                            
+                            console.log('[SECTION CHECK] Category:', mapping.category, 'Is Governance:', isGovernance);
+                            
+                            if (isGovernance) {
+                              // PROPER organization for Governance & Leadership:
+                              // Core Requirements: a-g (including g) DOCUMENTED PROCEDURES)
+                              // HR: h-i only
+                              // Monitoring & Compliance: j-p (starting with j) COMPLIANCE MONITORING)
+                              // Find PERSONNEL SECURITY and COMPETENCE MANAGEMENT for HR section
+                              const personnelSecurityReq = enhancedSubReqs.find(req => req.includes('PERSONNEL SECURITY'));
+                              const competenceManagementReq = enhancedSubReqs.find(req => req.includes('COMPETENCE MANAGEMENT'));
+                              
+                              // All other requirements go to Core or Monitoring
+                              const otherReqs = enhancedSubReqs.filter(req => 
+                                !req.includes('PERSONNEL SECURITY') && !req.includes('COMPETENCE MANAGEMENT')
+                              );
+                              
+                              // Make sure g) DOCUMENTED PROCEDURES MANAGEMENT stays in Core
+                              const documentedProceduresReq = enhancedSubReqs.find(req => req.includes('DOCUMENTED PROCEDURES MANAGEMENT'));
+                              const coreReqs = otherReqs.filter(req => !req.includes('DOCUMENTED PROCEDURES MANAGEMENT')).slice(0, 6);
+                              if (documentedProceduresReq) {
+                                coreReqs.push(documentedProceduresReq);
                               }
+                              
+                              groupedSubReqs = {
+                                'Core Requirements': coreReqs, // Include g) DOCUMENTED PROCEDURES
+                                'HR': [personnelSecurityReq, competenceManagementReq].filter(Boolean),
+                                'Monitoring & Compliance': otherReqs.filter(req => !req.includes('DOCUMENTED PROCEDURES MANAGEMENT')).slice(6)
+                              };
+                              
+                              console.log('[✅ GOVERNANCE SECTIONS] Created proper sections:');
+                              console.log('Core Requirements (a-g):', groupedSubReqs['Core Requirements'].length);
+                              console.log('HR (h-i):', groupedSubReqs['HR'].length);
+                              console.log('Monitoring & Compliance (j-p):', groupedSubReqs['Monitoring & Compliance'].length);
                             } else {
                               // Default grouping for other categories
                               groupedSubReqs = {
@@ -3565,12 +3718,170 @@ For detailed implementation guidance, please refer to the specific framework doc
                                     {groupName}
                                   </h5>
                                   <div className="space-y-2">
-                                    {(requirements as string[]).map((subReq: string, i: number) => (
-                                      <div key={i} className="flex items-start space-x-2 text-sm">
-                                        <ArrowRight className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
-                                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{subReq}</span>
-                                      </div>
-                                    ))}
+                                    {(requirements as string[]).map((subReq: string, i: number) => {
+                                      // Debug logging
+                                      if (i === 0) {
+                                        console.log('[CATEGORY DEBUG] Mapping category:', JSON.stringify(mapping.category));
+                                        console.log('[CATEGORY DEBUG] Exact category match?', mapping.category === 'Governance & Leadership');
+                                        console.log('[CATEGORY DEBUG] Category includes Governance?', mapping.category?.includes('Governance'));
+                                        if (mapping.category?.includes('Governance')) {
+                                          console.log('[GOVERNANCE DEBUG] First requirement received:', subReq.substring(0, 200));
+                                          console.log('[GOVERNANCE DEBUG] Contains Core Requirements?', subReq.includes('Core Requirements:'));
+                                          console.log('[GOVERNANCE DEBUG] Total length:', subReq.length);
+                                        }
+                                      }
+                                      
+                                      // Special formatting for Governance & Leadership  
+                                      const isGovernanceItem = mapping.category === 'Governance & Leadership' || 
+                                                              mapping.category?.includes('Governance');
+                                      
+                                      if (isGovernanceItem) {
+                                        // Split the content by requirement letters and keep both title and description
+                                        const parts = subReq.split(/(?=^[a-p]\)\s)/gm).filter(part => part.trim());
+                                        
+                                        return (
+                                          <div key={i} className="space-y-3">
+                                            {parts.map((part, partIdx) => {
+                                              const trimmed = part.trim();
+                                              if (!trimmed) return null;
+                                              
+                                              // Simple approach: Split on first line break or after reasonable title length
+                                              const lines = trimmed.split('\n');
+                                              const firstLine = lines[0];
+                                              const restOfLines = lines.slice(1).join('\n').trim();
+                                              
+                                              // Check if starts with letter pattern
+                                              if (firstLine.match(/^[a-p]\)\s+/)) {
+                                                // Find where title likely ends - look for common patterns
+                                                let titleEnd = firstLine.length;
+                                                const indicators = [
+                                                  ' (ISMS Requirement:',
+                                                  ' (ISO 27001 Foundation:',
+                                                  ' (ISO 27001 Requirement:',
+                                                  ' (ISO 27002 Control',
+                                                  ') DEVELOPMENT -',
+                                                  ') INTEGRATION -', 
+                                                  ' DEVELOPMENT -',
+                                                  ' INTEGRATION -',
+                                                  ' ISO ',
+                                                  ' ISMS ',
+                                                  ' Define ',
+                                                  ' Develop ',
+                                                  ' Establish ',
+                                                  ' Implement ',
+                                                  ' Maintain ',
+                                                  ' Determine ',
+                                                  ' Core Requirements',
+                                                  ' FRAMEWORK',
+                                                  ' AND DEVELOPMENT',
+                                                  ' - '
+                                                ];
+                                                
+                                                for (const indicator of indicators) {
+                                                  const index = firstLine.indexOf(indicator);
+                                                  if (index > 20 && index < titleEnd) { // Must be reasonable distance from start
+                                                    titleEnd = index;
+                                                  }
+                                                }
+                                                
+                                                // Special handling for POLICY FRAMEWORK - title should only be "d) POLICY FRAMEWORK"
+                                                if (firstLine.includes('POLICY FRAMEWORK')) {
+                                                  const frameworkEnd = firstLine.indexOf('FRAMEWORK') + 'FRAMEWORK'.length;
+                                                  titleEnd = frameworkEnd;
+                                                }
+                                                
+                                                let title = firstLine.substring(0, titleEnd).trim();
+                                                let description = (firstLine.substring(titleEnd) + '\n' + restOfLines).trim();
+                                                
+                                                // Clean up title - remove trailing parentheses
+                                                title = title.replace(/\s*\)\s*$/, '');
+                                                
+                                                // Clean up description and format with proper line breaks
+                                                description = description
+                                                  .replace(/^(DEVELOPMENT|INTEGRATION)\s*-?\s*/, '') // Remove leading DEVELOPMENT/INTEGRATION
+                                                  .replace(/^\s*-\s*/, '') // Remove leading dash
+                                                  .replace(/\s*\)\s*$/, '') // Remove trailing parentheses
+                                                  .replace(/\s+/g, ' ') // Normalize whitespace
+                                                  .trim();
+                                                
+                                                // Handle Implementation Steps specially
+                                                const implementationMatch = description.match(/(.*?)\s*Implementation\s+Steps:\s*(.*)/s);
+                                                let mainDescription = description;
+                                                let implementationSteps = '';
+                                                
+                                                if (implementationMatch) {
+                                                  mainDescription = implementationMatch[1].trim();
+                                                  implementationSteps = implementationMatch[2].trim();
+                                                }
+                                                
+                                                // Check for "Core Requirements:" pattern and separate it
+                                                const coreRequirementsMatch = mainDescription.match(/(.*?)\s*Core\s+Requirements:\s*(.*)/s);
+                                                let preCore = '';
+                                                let coreRequirements = '';
+                                                let remainingDescription = mainDescription;
+                                                
+                                                if (coreRequirementsMatch) {
+                                                  preCore = coreRequirementsMatch[1].trim();
+                                                  coreRequirements = coreRequirementsMatch[2].trim();
+                                                  remainingDescription = preCore;
+                                                }
+                                                
+                                                // Split remaining description into parts for better formatting
+                                                const descriptionParts = remainingDescription.split(' - ').filter(part => part.trim());
+                                                
+                                                return (
+                                                  <div key={partIdx} className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                                                    <div className="font-bold mb-2">{title}</div>
+                                                    {descriptionParts.length > 0 && (
+                                                      <div className="ml-4 space-y-2">
+                                                        {descriptionParts.map((part, partIndex) => (
+                                                          <div key={partIndex} className="leading-relaxed">
+                                                            {partIndex === 0 ? part.trim() : `- ${part.trim()}`}
+                                                          </div>
+                                                        ))}
+                                                      </div>
+                                                    )}
+                                                    {coreRequirements && (
+                                                      <div className="ml-4 mt-3">
+                                                        <div className="font-bold mb-2">Core Requirements:</div>
+                                                        <div className="space-y-2">
+                                                          {coreRequirements.split(' -').filter(part => part.trim()).map((req, reqIndex) => (
+                                                            <div key={reqIndex} className="leading-relaxed">
+                                                              {reqIndex === 0 ? req.trim() : `- ${req.trim()}`}
+                                                            </div>
+                                                          ))}
+                                                        </div>
+                                                      </div>
+                                                    )}
+                                                    {implementationSteps && (
+                                                      <div className="ml-4 mt-3">
+                                                        <div className="font-semibold mb-2">Implementation Steps:</div>
+                                                        <div className="leading-relaxed">{implementationSteps}</div>
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                );
+                                              }
+                                              
+                                              // Fallback
+                                              return (
+                                                <div key={partIdx} className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                                                  <div>{trimmed}</div>
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        );
+                                      }
+                                      
+                                      // Default display for other categories
+                                      return (
+                                        <div key={i} className="flex items-start space-x-2 text-sm">
+                                          <ArrowRight className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
+                                          <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{subReq}</span>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 </div>
                               )
