@@ -507,60 +507,55 @@ class ComplianceUnificationService {
         };
       }
 
-      // Get all mappings for these categories
-      const { data: mappings, error: mappingError } = await supabase
-        .from('unified_requirement_mappings')
+      // Get ALL requirements from database for ALL categories - don't filter by existing categories
+      const { data: allRequirements, error: reqError } = await supabase
+        .from('requirements_library')
         .select(`
           id,
-          mapping_strength,
-          requirement:requirements_library(
+          control_id,
+          title,
+          description,
+          category,
+          standard:standards_library(
             id,
-            control_id,
-            title,
-            description,
-            standard:standards_library(
-              id,
-              name
-            )
-          ),
-          unified_requirement:unified_requirements(
-            id,
-            title,
-            category:unified_compliance_categories(
-              id,
-              name
-            )
+            name
           )
         `)
-        .in('unified_requirement.category.name', categories.map(c => c.name));
+        .eq('is_active', true);
 
-      if (mappingError) {
-        console.error('Error fetching mappings:', mappingError);
-        throw mappingError;
+      if (reqError) {
+        console.error('Error fetching requirements:', reqError);
+        throw reqError;
       }
 
 
       // Ensure selectedFrameworks is a valid array
       const safeSelectedFrameworks = Array.isArray(selectedFrameworks) ? selectedFrameworks : [];
 
-      // Process mappings and organize by category and framework
-      for (const mapping of mappings || []) {
-        if (!mapping.requirement || !mapping.unified_requirement?.category) continue;
+      // SIMPLIFIED: Process direct requirements and organize by category and framework
+      for (const req of allRequirements || []) {
+        if (!req.category || !req.standard) continue;
         
-        const categoryName = mapping.unified_requirement.category.name;
-        const standardName = mapping.requirement.standard?.name || '';
+        const categoryName = req.category;
+        const standardName = req.standard.name || '';
         const reqData = {
-          code: mapping.requirement.control_id || 'N/A',
-          title: mapping.requirement.title || '',
-          description: cleanMarkdownFormatting(mapping.requirement.description || '')
+          code: req.control_id || 'N/A',
+          title: req.title || '',
+          description: cleanMarkdownFormatting(req.description || '')
         };
+
+        // Only process if this category exists in our unified categories
+        if (!result[categoryName]) {
+          console.warn(`Requirement category "${categoryName}" not found in unified categories - skipping requirement ${req.control_id}`);
+          continue;
+        }
 
         // Map to appropriate framework based on standard name
         if (safeSelectedFrameworks.includes('iso27001') && standardName.includes('ISO/IEC 27001')) {
-          result[categoryName]?.iso27001.push(reqData);
+          result[categoryName].iso27001.push(reqData);
         }
         if (safeSelectedFrameworks.includes('iso27002') && standardName.includes('ISO/IEC 27002')) {
-          result[categoryName]?.iso27002.push(reqData);
+          result[categoryName].iso27002.push(reqData);
         }
         if (safeSelectedFrameworks.includes('cisControls') && standardName.includes('CIS Controls')) {
           // Filter CIS Controls by specific IG level if provided
@@ -569,18 +564,18 @@ class ComplianceUnificationService {
             const igLevel = cisIGLevel.toUpperCase().replace('IG', '');
             if (standardName.includes(`Implementation Group ${igLevel}`) || 
                 standardName.includes(`(IG${igLevel})`)) {
-              result[categoryName]?.cisControls.push(reqData);
+              result[categoryName].cisControls.push(reqData);
             }
           } else {
             // If no IG level specified, include all CIS controls
-            result[categoryName]?.cisControls.push(reqData);
+            result[categoryName].cisControls.push(reqData);
           }
         }
         if (safeSelectedFrameworks.includes('gdpr') && standardName.includes('GDPR')) {
-          result[categoryName]?.gdpr.push(reqData);
+          result[categoryName].gdpr.push(reqData);
         }
         if (safeSelectedFrameworks.includes('nis2') && standardName.includes('NIS2')) {
-          result[categoryName]?.nis2.push(reqData);
+          result[categoryName].nis2.push(reqData);
         }
       }
 

@@ -45,6 +45,7 @@ import { PentagonVisualization } from '@/components/compliance/PentagonVisualiza
 import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
 import { useQueryClient } from '@tanstack/react-query';
 import { FrameworkFilterService } from '@/services/compliance/FrameworkFilterService';
+import { FrameworkMappingResolver } from '@/services/compliance/FrameworkMappingResolver';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -610,6 +611,9 @@ For detailed implementation guidance, please refer to the specific framework doc
         console.warn('[DEBUG] Could not clear browser storage:', e);
       }
     }
+    
+    // Database-driven content - no fixes, only read existing mappings
+    console.log('[DB] Using pure database mappings - CIS 4.6, 4.7 should show in "Secure Configuration of Hardware and Software" if mapped correctly');
   }, []);
 
   // Fetch industry sectors

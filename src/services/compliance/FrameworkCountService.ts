@@ -85,11 +85,12 @@ class FrameworkCountService {
           continue;
         }
 
-        // Then count requirements for this standard
+        // Then count requirements for this standard (only active ones)
         const { count, error: countError } = await supabase
           .from('requirements_library')
           .select('*', { count: 'exact', head: true })
-          .eq('standard_id', standard.id);
+          .eq('standard_id', standard.id)
+          .eq('is_active', true);
 
         if (countError) {
           console.error(`Error counting requirements for ${framework.namePattern}:`, countError);
