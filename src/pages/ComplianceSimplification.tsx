@@ -33,12 +33,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useComplianceMappingData, useIndustrySectors, complianceUnificationService } from '@/services/compliance/ComplianceUnificationService';
+import { supabase } from '@/lib/supabase';
 import { complianceCacheService } from '@/services/compliance/ComplianceCacheService';
 // REMOVED: CorrectedGovernanceService - was overriding database content
 import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
 import { ProfessionalGuidanceService } from '../services/compliance/ProfessionalGuidanceService';
 import { UnifiedRequirementsService } from '../services/compliance/UnifiedRequirementsService';
 import { UnifiedGuidanceGenerator } from '../services/compliance/UnifiedGuidanceGenerator';
+import { enhancedUnifiedContentGenerator } from '../services/compliance/EnhancedUnifiedContentGenerator';
+import { intelligentUnifiedRequirementsGenerator } from '../services/compliance/IntelligentUnifiedRequirementsGenerator';
+import { simpleUnifiedRequirementsGenerator } from '../services/compliance/SimpleUnifiedRequirementsGenerator';
 import { validateAIEnvironment, getAIProviderInfo, shouldEnableAIByDefault } from '../utils/aiEnvironmentValidator';
 import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
 import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
@@ -121,6 +125,141 @@ export default function ComplianceSimplification() {
   const [selectedGuidanceCategory, setSelectedGuidanceCategory] = useState<string>('');
   const [showFrameworkReferences, setShowFrameworkReferences] = useState(false);
   const [showOperationalExcellence, setShowOperationalExcellence] = useState(false);
+  
+  // Enhanced content generator test state
+  const [testResults, setTestResults] = useState<string>('');
+  const [isTesting, setIsTesting] = useState(false);
+  
+  // Dynamic content generation state
+  const [useDynamicContent, setUseDynamicContent] = useState<boolean>(false);
+  const [generatedContent, setGeneratedContent] = useState<Map<string, any[]>>(new Map());
+  
+  // Function to generate dynamic content for a category
+  const generateDynamicContentForCategory = async (categoryName: string): Promise<any[]> => {
+    try {
+      console.log('[DYNAMIC CONTENT] Generating content for:', categoryName);
+      
+      // Convert selected frameworks to array format for the generator
+      const selectedFrameworkArray: string[] = [];
+      if (selectedFrameworks.iso27001) selectedFrameworkArray.push('iso27001');
+      if (selectedFrameworks.iso27002) selectedFrameworkArray.push('iso27002');
+      if (selectedFrameworks.cisControls) selectedFrameworkArray.push('cisControls');
+      if (selectedFrameworks.gdpr) selectedFrameworkArray.push('gdpr');
+      if (selectedFrameworks.nis2) selectedFrameworkArray.push('nis2');
+      
+      // Generate simple, direct unified requirements from actual database content
+      const formattedRequirements = await simpleUnifiedRequirementsGenerator.generateSimpleUnifiedRequirements(
+        categoryName,
+        selectedFrameworkArray,
+        selectedFrameworks.cisControls || undefined
+      );
+      
+      console.log('[DYNAMIC CONTENT] Generated', formattedRequirements.length, 'sections for', categoryName);
+      return formattedRequirements;
+      
+    } catch (error) {
+      console.error('[DYNAMIC CONTENT] Generation failed:', error);
+      return [];
+    }
+  };
+
+  // Function to test enhanced content generator
+  const testEnhancedContentGenerator = async (categoryName: string) => {
+    console.log('[DEBUG] Test button clicked! Category:', categoryName);
+    alert('Test button clicked! Check console and test results panel.');
+    
+    setIsTesting(true);
+    setTestResults('🔄 Testing enhanced content generator...\n\nStarting test...');
+    
+    try {
+      // First, test basic Supabase connection
+      setTestResults(prev => prev + '\n📡 Testing Supabase connection...');
+      
+      const { data: testData, error: testError } = await supabase
+        .from('standards_library')
+        .select('name')
+        .limit(1);
+      
+      if (testError) {
+        setTestResults(prev => prev + `\n❌ Supabase connection failed: ${testError.message}`);
+        return;
+      }
+      
+      setTestResults(prev => prev + `\n✅ Supabase connected! Found ${testData?.length || 0} standards`);
+      
+      // Test requirements_library table
+      setTestResults(prev => prev + '\n📊 Testing requirements_library table...');
+      
+      const { data: reqData, error: reqError } = await supabase
+        .from('requirements_library')
+        .select('control_id, category')
+        .eq('category', categoryName)
+        .limit(5);
+      
+      if (reqError) {
+        setTestResults(prev => prev + `\n❌ Requirements query failed: ${reqError.message}`);
+        return;
+      }
+      
+      setTestResults(prev => prev + `\n✅ Found ${reqData?.length || 0} requirements for category "${categoryName}"`);
+      if (reqData && reqData.length > 0) {
+        setTestResults(prev => prev + `\n📋 Sample: ${reqData.map(r => r.control_id).join(', ')}`);
+      }
+      
+      // Convert selected frameworks to array format
+      const selectedFrameworkArray: string[] = [];
+      if (selectedFrameworks.iso27001) selectedFrameworkArray.push('iso27001');
+      if (selectedFrameworks.iso27002) selectedFrameworkArray.push('iso27002');
+      if (selectedFrameworks.cisControls) selectedFrameworkArray.push('cisControls');
+      if (selectedFrameworks.gdpr) selectedFrameworkArray.push('gdpr');
+      if (selectedFrameworks.nis2) selectedFrameworkArray.push('nis2');
+      
+      setTestResults(prev => prev + `\n🎯 Testing with frameworks: ${selectedFrameworkArray.join(', ')}`);
+      setTestResults(prev => prev + `\n⚙️ CIS IG Level: ${selectedFrameworks.cisControls || 'none'}`);
+      
+      setTestResults(prev => prev + '\n🚀 Calling enhanced content generator...');
+      
+      console.log('[TEST] Calling enhanced content generator with:', {
+        categoryName,
+        frameworks: selectedFrameworkArray,
+        cisIG: selectedFrameworks.cisControls
+      });
+      
+      const enhancedSections = await enhancedUnifiedContentGenerator.generateEnhancedUnifiedContent(
+        categoryName,
+        selectedFrameworkArray,
+        selectedFrameworks.cisControls || undefined
+      );
+      
+      console.log('[TEST] Enhanced content generator result:', enhancedSections);
+      
+      if (enhancedSections.length > 0) {
+        const resultText = `\n\n✅ SUCCESS! Generated ${enhancedSections.length} sections:\n\n` +
+          enhancedSections.map((section, i) => 
+            `${i+1}. ${section.id}) ${section.title}\n` +
+            `   Description: ${section.description.substring(0, 100)}...\n` +
+            `   Requirements: ${section.coreRequirements.length} items\n` +
+            (section.coreRequirements.length > 0 ? 
+              `   First: ${section.coreRequirements[0].substring(0, 80)}...\n` : '') +
+            '\n'
+          ).join('');
+        
+        setTestResults(prev => prev + resultText);
+      } else {
+        setTestResults(prev => prev + '\n\n⚠️ No enhanced content generated. This could mean:\n' +
+          '- No requirements found for this category\n' +
+          '- No frameworks selected\n' +
+          '- Database mapping issue\n' +
+          '- Category name mismatch');
+      }
+      
+    } catch (error) {
+      console.error('[TEST] Enhanced content generator error:', error);
+      setTestResults(prev => prev + `\n\n❌ ERROR: ${error.message}\n\nStack: ${error.stack}`);
+    } finally {
+      setIsTesting(false);
+    }
+  };
   
   // AI Environment validation
   const aiEnvironment = useMemo(() => validateAIEnvironment(), []);
@@ -3628,6 +3767,40 @@ For detailed implementation guidance, please refer to the specific framework doc
                             <Lightbulb className="w-3 h-3 mr-1" />
                             Unified Guidance
                           </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mb-2 text-xs px-3 py-1 text-blue-700 border-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-500 dark:hover:bg-blue-900/20"
+                            onClick={() => testEnhancedContentGenerator(mapping.category.replace(/^\d+\. /, ''))}
+                            disabled={isTesting}
+                          >
+                            <Zap className="w-3 h-3 mr-1" />
+                            {isTesting ? 'Testing...' : 'Test Enhanced'}
+                          </Button>
+                          <Button
+                            variant={useDynamicContent ? "default" : "outline"}
+                            size="sm"
+                            className={`mb-2 text-xs px-3 py-1 ${useDynamicContent 
+                              ? 'text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700' 
+                              : 'text-purple-700 border-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:border-purple-500 dark:hover:bg-purple-900/20'
+                            }`}
+                            onClick={async () => {
+                              if (!useDynamicContent) {
+                                // Generate dynamic content for all categories
+                                const newGeneratedContent = new Map();
+                                for (const m of filteredUnifiedMappings) {
+                                  const categoryName = m.category.replace(/^\d+\. /, '');
+                                  const content = await generateDynamicContentForCategory(categoryName);
+                                  newGeneratedContent.set(categoryName, content);
+                                }
+                                setGeneratedContent(newGeneratedContent);
+                              }
+                              setUseDynamicContent(!useDynamicContent);
+                            }}
+                          >
+                            <Target className="w-3 h-3 mr-1" />
+                            {useDynamicContent ? 'Using Simple' : 'Use Simple'}
+                          </Button>
                           <div className="text-xs text-gray-500 dark:text-gray-400">Replaces</div>
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
                             {(mapping.frameworks?.['iso27001']?.length || 0) + (mapping.frameworks?.['iso27002']?.length || 0) + (mapping.frameworks?.['cisControls']?.length || 0) + (mapping.frameworks?.['gdpr']?.length || 0)}
@@ -3651,13 +3824,25 @@ For detailed implementation guidance, please refer to the specific framework doc
                         <h4 className="font-medium text-gray-900 dark:text-white">Implementation Guidelines:</h4>
                         <div className="space-y-4">
                           {(() => {
-                            // Apply sector-specific enhancements if NIS2 and sector are selected
-                            const enhancedSubReqs = SectorSpecificEnhancer.enhanceSubRequirements(
-                              mapping.auditReadyUnified.subRequirements || [],
-                              mapping.category,
-                              selectedIndustrySector,
-                              selectedFrameworks['nis2']
-                            );
+                            // Use dynamic content if enabled, otherwise use database content
+                            let enhancedSubReqs: string[] = [];
+                            
+                            if (useDynamicContent) {
+                              // Use dynamically generated content
+                              const categoryName = mapping.category.replace(/^\d+\. /, '');
+                              const dynamicContent = generatedContent.get(categoryName) || [];
+                              enhancedSubReqs = dynamicContent;
+                              console.log('[DYNAMIC RENDER] Using dynamic content for:', categoryName, 'sections:', dynamicContent.length);
+                            } else {
+                              // Apply sector-specific enhancements if NIS2 and sector are selected (original logic)
+                              enhancedSubReqs = SectorSpecificEnhancer.enhanceSubRequirements(
+                                mapping.auditReadyUnified.subRequirements || [],
+                                mapping.category,
+                                selectedIndustrySector,
+                                selectedFrameworks['nis2']
+                              );
+                              console.log('[DATABASE RENDER] Using database content for:', mapping.category, 'sections:', enhancedSubReqs.length);
+                            }
                             
                             // Group enhanced sub-requirements for better organization
                             let groupedSubReqs: Record<string, string[]> = {};
@@ -4413,6 +4598,38 @@ For detailed implementation guidance, please refer to the specific framework doc
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Enhanced Content Generator Test Results */}
+      {testResults && (
+        <Card className="mt-6 border-2 border-blue-200 dark:border-blue-700">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-t-2xl">
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold">Enhanced Content Generator Test</h2>
+                  <p className="text-sm text-white/80 font-normal">Database-driven unified requirements generation</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTestResults('')}
+                className="text-white hover:bg-white/20"
+              >
+                ✕
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <pre className="whitespace-pre-wrap text-sm bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border overflow-auto max-h-96">
+              {testResults}
+            </pre>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
