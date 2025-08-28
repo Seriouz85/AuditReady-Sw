@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 interface MappedRequirement {
   control_id: string;
@@ -46,7 +46,7 @@ export class UnifiedRequirementsContentGenerator {
         control_id,
         title,
         description,
-        standard:standards_library(name)
+        standards_library!inner(name)
       `)
       .eq('category', categoryName)
       .eq('is_active', true)
@@ -54,11 +54,11 @@ export class UnifiedRequirementsContentGenerator {
 
     if (error) throw error;
     
-    return (data || []).map(req => ({
-      control_id: req.control_id,
-      title: req.title,
-      description: req.description,
-      framework: req.standard?.name || ''
+    return (data || []).map((req: any) => ({
+      control_id: String(req.control_id || ''),
+      title: String(req.title || ''),
+      description: String(req.description || ''),
+      framework: String(req.standards_library?.name || '')
     }));
   }
 
@@ -353,7 +353,7 @@ export class UnifiedRequirementsContentGenerator {
 
   private generateCoreRequirements(
     requirements: MappedRequirement[],
-    focusAreas: string[]
+    focusAreas: string[] = []
   ): string[] {
     const coreRequirements: string[] = [];
     const processedTopics = new Set<string>();
@@ -412,7 +412,7 @@ export class UnifiedRequirementsContentGenerator {
 
   private createUnifiedText(
     requirements: MappedRequirement[],
-    focusAreas: string[]
+    _focusAreas: string[] = []
   ): string {
     if (requirements.length === 0) return '';
     
@@ -444,8 +444,10 @@ export class UnifiedRequirementsContentGenerator {
     if (requirements.length === 1) {
       // Single requirement - use its description with framework reference
       const req = requirements[0];
-      unifiedText = `${this.enhanceDescription(req.description)} [${this.getFrameworkRef(req)}]`;
-    } else {
+      if (req) {
+        unifiedText = `${this.enhanceDescription(req.description)} [${this.getFrameworkRef(req)}]`;
+      }
+    } else if (requirements.length > 1) {
       // Multiple requirements - create unified text
       const unifiedConcepts = this.combineConceptsIntoText(Array.from(concepts), mainAction);
       const frameworkRefs = this.formatFrameworkReferences(requirements);
@@ -488,11 +490,11 @@ export class UnifiedRequirementsContentGenerator {
       }
     });
     
-    return [...new Set(phrases)]; // Remove duplicates
+    return Array.from(new Set(phrases)); // Remove duplicates
   }
 
   private extractActionVerbs(text: string): string[] {
-    const verbs = [];
+    const verbs: string[] = [];
     
     // Common action verbs in security requirements
     const actionVerbs = [
@@ -597,8 +599,11 @@ export class UnifiedRequirementsContentGenerator {
     
     const formattedRefs: string[] = [];
     Object.keys(refs).forEach(framework => {
-      const controls = refs[framework].join(', ');
-      formattedRefs.push(`${framework}: ${controls}`);
+      const frameworkControls = refs[framework];
+      if (frameworkControls && frameworkControls.length > 0) {
+        const controls = frameworkControls.join(', ');
+        formattedRefs.push(`${framework}: ${controls}`);
+      }
     });
     
     return formattedRefs.join(' | ');
