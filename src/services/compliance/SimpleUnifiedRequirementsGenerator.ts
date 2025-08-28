@@ -60,7 +60,11 @@ export class SimpleUnifiedRequirementsGenerator {
           sectionRequirements = sectionRequirements.slice(0, 3);
         }
         
-        // Format with concise text
+        // Format with concise text - handle empty sections gracefully
+        if (sectionRequirements.length === 0) {
+          return `${section.id}) ${section.title}\n${section.description}\n\nImplementation guidance will be provided based on your selected compliance frameworks.`;
+        }
+        
         const requirementTexts = sectionRequirements.map(req => 
           `• ${this.cleanRequirementText(req)}`
         );
@@ -163,24 +167,10 @@ export class SimpleUnifiedRequirementsGenerator {
       });
     });
     
-    // CRITICAL: Ensure ALL letters (a-p) are always present
-    const allLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
-    const existingSectionIds = new Set(sections.map(s => s.id));
+    // FIXED: Only show sections that actually exist in the database
+    // No more generating junk sections - only use what's actually defined
     
-    // Add missing sections with generic titles
-    allLetters.forEach(letter => {
-      if (!existingSectionIds.has(letter)) {
-        console.warn(`[MISSING SECTION] Adding fallback for section ${letter}) in category ${categoryName}`);
-        sections.push({
-          id: letter,
-          title: `SECURITY REQUIREMENT ${letter.toUpperCase()}`,
-          description: `Security requirements and controls for this compliance domain.`,
-          topic: 'security'
-        });
-      }
-    });
-    
-    // Sort sections by letter to ensure proper order (a, b, c, ..., p)
+    // Sort sections by letter to ensure proper order
     sections.sort((a, b) => a.id.localeCompare(b.id));
     
     console.log(`[SECTION EXTRACTION] Found ${sections.length} sections for ${categoryName}:`, sections.map(s => `${s.id}) ${s.title}`));
@@ -526,7 +516,11 @@ export class SimpleUnifiedRequirementsGenerator {
   private cleanDescription(desc: string): string {
     return desc
       .replace(/\s*\([^)]*\)/g, '') // Remove parentheses
-      .replace(/\s+/g, ' ')
+      // Remove framework-specific terms from default descriptions
+      .replace(/\b(GDPR|NIS2|NIST|SOC 2|CIS Controls?)\b/gi, '')
+      .replace(/\s*,\s*,/g, ',') // Clean up double commas
+      .replace(/\s*,\s*and\s*,/g, ' and') // Clean up comma-and patterns
+      .replace(/\s+/g, ' ') // Normalize whitespace
       .trim();
   }
   
