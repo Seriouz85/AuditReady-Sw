@@ -95,45 +95,95 @@ export class SimpleUnifiedRequirementsGenerator {
     if (!data || data.length === 0) return [];
     
     const sections: any[] = [];
-    const subRequirements = data[0].sub_requirements || [];
+    const subRequirements = (data[0].sub_requirements || []) as string[];
     
     subRequirements.forEach((subReq: string) => {
-      // Extract section with improved title parsing that preserves dashes in titles
-      const match = subReq.match(/^([a-p])\)\s+(.+?)\s*-\s*(.+)$/s);
-      if (match) {
-        let [, letter, rawTitle, rawDescription] = match;
-        
-        // Handle cases where title contains dashes (like "THIRD-PARTY GOVERNANCE FRAMEWORK")
-        // Look for common patterns that indicate where description really starts
-        const descriptionPatterns = [
-          /^(.+?)\s*-\s*(Requirements:|Establish|Implement|Define|Ensure|The organization)/i,
-          /^(.+?)\s*-\s*([a-z].*)/,  // Description starts with lowercase
-          /^(.+?)\s*-\s*(.*)/        // Fallback: just split at first dash
-        ];
-        
-        let finalTitle = rawTitle;
-        let finalDescription = rawDescription;
-        
-        for (const pattern of descriptionPatterns) {
-          const titleMatch = subReq.match(pattern);
-          if (titleMatch && titleMatch[1] && titleMatch[2]) {
-            finalTitle = titleMatch[1].replace(/^[a-p]\)\s*/, '').trim();
-            finalDescription = titleMatch[2];
-            break;
+      // MUCH SIMPLER: Split ONLY on " - " when followed by common description starters
+      const letterMatch = subReq.match(/^([a-p])\)\s+/);
+      if (!letterMatch) return;
+      
+      const letter = letterMatch[1];
+      const content = subReq.replace(/^[a-p]\)\s+/, ''); // Remove "a) " prefix
+      
+      // Look for the LAST dash followed by description indicators
+      let title = content;
+      let description = '';
+      
+      // Common patterns that indicate description start (not part of title)
+      const descriptionStarters = [
+        /^(.+?)\s+-\s+(Requirements?:.*)/i,
+        /^(.+?)\s+-\s+(Establish .*)/i,
+        /^(.+?)\s+-\s+(Implement .*)/i,
+        /^(.+?)\s+-\s+(Define .*)/i,
+        /^(.+?)\s+-\s+(Ensure .*)/i,
+        /^(.+?)\s+-\s+(The organization .*)/i,
+        /^(.+?)\s+-\s+(Top management .*)/i,
+        /^(.+?)\s+-\s+(Information .*)/i,
+        /^(.+?)\s+-\s+(Evaluate .*)/i,
+        /^(.+?)\s+-\s+(Clear .*)/i,
+        /^(.+?)\s+-\s+([A-Z][a-z].*)/  // Capital letter followed by lowercase (like "Evaluate...")
+      ];
+      
+      // Try to find the split point where description starts
+      for (const pattern of descriptionStarters) {
+        const match = content.match(pattern);
+        if (match && match[1] && match[2]) {
+          title = match[1].trim();
+          description = match[2].trim();
+          break;
+        }
+      }
+      
+      // If no clear pattern found, look for the most likely split (avoid breaking compound words)
+      if (!description && content.includes(' - ')) {
+        const parts = content.split(' - ');
+        if (parts.length >= 2) {
+          // If the second part starts with lowercase, it's likely description
+          if (parts[1].charAt(0) === parts[1].charAt(0).toLowerCase()) {
+            title = parts[0].trim();
+            description = parts.slice(1).join(' - ').trim();
           }
         }
+      }
+      
+      // Final fallback - keep original if no good split found
+      if (!description) {
+        const dashIndex = content.indexOf(' - ');
+        if (dashIndex !== -1) {
+          title = content.substring(0, dashIndex).trim();
+          description = content.substring(dashIndex + 3).trim();
+        }
+      }
         
-        const title = finalTitle;
-        const description = finalDescription;
-        
+      sections.push({
+        id: letter.toLowerCase(),
+        title: title.trim(),
+        description: this.cleanDescription(description),
+        topic: this.extractMainTopic(title.trim())
+      });
+    });
+    
+    // CRITICAL: Ensure ALL letters (a-p) are always present
+    const allLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
+    const existingSectionIds = new Set(sections.map(s => s.id));
+    
+    // Add missing sections with generic titles
+    allLetters.forEach(letter => {
+      if (!existingSectionIds.has(letter)) {
+        console.warn(`[MISSING SECTION] Adding fallback for section ${letter}) in category ${categoryName}`);
         sections.push({
-          id: letter.toLowerCase(),
-          title: title.trim(),
-          description: this.cleanDescription(description),
-          topic: this.extractMainTopic(title.trim())
+          id: letter,
+          title: `SECURITY REQUIREMENT ${letter.toUpperCase()}`,
+          description: `Security requirements and controls for this compliance domain.`,
+          topic: 'security'
         });
       }
     });
+    
+    // Sort sections by letter to ensure proper order (a, b, c, ..., p)
+    sections.sort((a, b) => a.id.localeCompare(b.id));
+    
+    console.log(`[SECTION EXTRACTION] Found ${sections.length} sections for ${categoryName}:`, sections.map(s => `${s.id}) ${s.title}`));
     
     return sections;
   }
@@ -251,24 +301,126 @@ export class SimpleUnifiedRequirementsGenerator {
    * Calculate how well a requirement matches a specific section
    */
   private calculateSectionMatchScore(section: any, req: RequirementDetail): number {
-    const sectionText = `${section.title} ${section.topic || ''}`.toLowerCase();
+    const sectionTitle = section.title.toLowerCase();
     const reqText = `${req.title} ${req.description}`.toLowerCase();
     
     let score = 0;
     
-    // Check if requirement text contains section topic keywords
-    const sectionKeywords = this.getSectionKeywords(section.title.toLowerCase());
+    console.log(`[SCORING] Matching "${req.control_id}" against section "${section.id}) ${section.title}"`);
+    
+    // Get highly specific keywords for this exact section title
+    const sectionKeywords = this.getExactSectionKeywords(sectionTitle);
+    
+    // Score based on keyword matches
     sectionKeywords.forEach(keyword => {
       if (reqText.includes(keyword)) {
-        score += reqText.includes(req.title.toLowerCase()) ? 10 : 5; // Higher score for title matches
+        const points = reqText.includes(req.title.toLowerCase()) ? 15 : 8; // Higher score for title matches
+        score += points;
+        console.log(`  [+${points}] Found keyword "${keyword}" in requirement`);
       }
     });
     
-    return score;
+    // PENALTY for obvious mismatches to prevent topic mixing
+    const penalties = this.getTopicMismatchPenalties(sectionTitle, reqText);
+    score -= penalties;
+    if (penalties > 0) {
+      console.log(`  [-${penalties}] Topic mismatch penalty applied`);
+    }
+    
+    console.log(`  [FINAL SCORE] ${score} for ${req.control_id} → ${section.id}) ${section.title}`);
+    return Math.max(0, score);
   }
   
   /**
-   * Get keywords for section matching
+   * Get exact, highly specific keywords for precise section matching
+   */
+  private getExactSectionKeywords(sectionTitle: string): string[] {
+    // Use EXACT section title matching for precise assignment
+    const exactKeywordMap: { [key: string]: string[] } = {
+      'leadership commitment': ['leadership', 'commitment', 'management', 'top management'],
+      'scope definition': ['scope', 'boundary', 'isms', 'definition', 'coverage'],
+      'organizational roles': ['role', 'responsibility', 'organizational', 'structure'],
+      'policy framework': ['policy', 'procedure', 'framework', 'document'],
+      'project management': ['project', 'development', 'implementation', 'lifecycle'],
+      'asset management': ['asset', 'disposal', 'equipment', 'inventory'],
+      'personnel security': ['personnel', 'employee', 'staff', 'human resource', 'screening'],
+      'competence': ['competence', 'training', 'skill', 'awareness', 'education'],
+      'compliance monitoring': ['compliance', 'monitoring', 'audit', 'review', 'assessment'],
+      'change management': ['change', 'modification', 'update', 'configuration'],
+      'regulatory': ['regulatory', 'legal', 'requirement', 'authority'],
+      'incident response': ['incident', 'response', 'emergency', 'escalation'],
+      'third-party': ['third party', 'supplier', 'vendor', 'contractor', 'outsourcing'],
+      'third-party risk': ['third party', 'risk', 'assessment', 'supplier'],
+      'third-party governance': ['third party', 'governance', 'framework', 'supplier'],
+      'continuous improvement': ['improvement', 'continual', 'enhancement'],
+      'awareness training': ['awareness', 'training', 'education', 'culture'],
+      'risk assessment': ['risk', 'assessment', 'evaluation', 'analysis'],
+      'risk management': ['risk', 'management', 'treatment', 'monitoring'],
+      'governance': ['governance', 'framework', 'oversight', 'structure'],
+      'security requirement': ['security', 'information', 'control', 'requirement']
+    };
+    
+    // Find the best matching keywords for this section title
+    for (const [key, keywords] of Object.entries(exactKeywordMap)) {
+      if (sectionTitle.includes(key)) {
+        return keywords;
+      }
+    }
+    
+    // Fallback to generic keywords
+    return ['security', 'information', 'control'];
+  }
+  
+  /**
+   * Get penalties for obvious topic mismatches
+   */
+  private getTopicMismatchPenalties(sectionTitle: string, reqText: string): number {
+    let penalty = 0;
+    
+    // Define strict mismatch rules to prevent wrong topic assignments
+    const mismatchRules = [
+      {
+        section: 'third-party',
+        penalizeFor: ['backup', 'recovery', 'continuity', 'authentication', 'cryptography', 'network'],
+        penalty: 20
+      },
+      {
+        section: 'incident',
+        penalizeFor: ['policy framework', 'asset disposal', 'training', 'governance structure'],
+        penalty: 20
+      },
+      {
+        section: 'governance',
+        penalizeFor: ['risk assessment', 'backup', 'asset disposal', 'incident response'],
+        penalty: 15
+      },
+      {
+        section: 'awareness',
+        penalizeFor: ['risk assessment', 'incident response', 'asset disposal'],
+        penalty: 15
+      },
+      {
+        section: 'improvement',
+        penalizeFor: ['third party', 'incident response', 'asset disposal'],
+        penalty: 15
+      }
+    ];
+    
+    mismatchRules.forEach(rule => {
+      if (sectionTitle.includes(rule.section)) {
+        rule.penalizeFor.forEach(penaltyTerm => {
+          if (reqText.includes(penaltyTerm)) {
+            penalty += rule.penalty;
+          }
+        });
+      }
+    });
+    
+    return penalty;
+  }
+  
+  /**
+   * Get keywords for section matching (legacy method)
    */
   private getSectionKeywords(sectionTitle: string): string[] {
     const keywordMap: { [key: string]: string[] } = {
