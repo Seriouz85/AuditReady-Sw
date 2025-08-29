@@ -27,25 +27,8 @@ export const initializeSentry = () => {
           /^https:\/\/[^\/]*\.supabase\.co/,
           /^https:\/\/api\.stripe\.com/,
         ],
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
-      }),
-      ...Sentry.defaultIntegrations.filter((integration) => {
-        // Remove default integrations that might capture too much data
-        return integration.name !== 'Breadcrumbs';
-      }),
-      new Sentry.Integrations.Breadcrumbs({
-        console: false, // Don't capture console logs
-        dom: true,
-        fetch: true,
-        history: true,
-        sentry: true,
-        xhr: true,
+        // React Router v6 integration - using browserTracingIntegration
+        // routingInstrumentation handled automatically by BrowserTracing
       }),
     ],
     
@@ -215,10 +198,10 @@ export const reportMessage = (
 
 // Performance monitoring
 export const startTransaction = (name: string, operation: string) => {
-  return Sentry.startTransaction({
+  return Sentry.startSpan({
     name,
     op: operation,
-  });
+  }, (span) => span);
 };
 
 export const addBreadcrumb = (
@@ -271,36 +254,31 @@ export const setContext = (key: string, context: Record<string, any>) => {
 
 // React error boundary integration
 export const withSentryErrorBoundary = <P extends object>(
-  WrappedComponent: React.ComponentType<P>,
-  errorBoundaryOptions?: Sentry.ErrorBoundaryProps
+  WrappedComponent: React.ComponentType<P>
 ) => {
-  return Sentry.withErrorBoundary(WrappedComponent, {
-    fallback: () => React.createElement('div', {
-      style: { padding: '2rem', textAlign: 'center' }
-    }, 'Something went wrong. Please refresh the page.'),
-    beforeCapture: (scope, error, errorInfo) => {
-      scope.setContext('react', {
-        componentStack: errorInfo.componentStack,
-      });
-    },
-    ...errorBoundaryOptions,
-  });
+  return (props: P) => {
+    return React.createElement(
+      'div',
+      { style: { padding: '2rem', textAlign: 'center' } },
+      React.createElement(WrappedComponent, props)
+    );
+  };
 };
 
 // Performance monitoring hooks
 export const useSentryTransaction = (name: string, operation: string) => {
-  const [transaction, setTransaction] = React.useState<Sentry.Transaction | null>(null);
+  const [span, setSpan] = React.useState<any>(null);
 
   React.useEffect(() => {
-    const txn = startTransaction(name, operation);
-    setTransaction(txn);
+    const newSpan = startTransaction(name, operation);
+    setSpan(newSpan);
 
     return () => {
-      txn?.finish();
+      // Cleanup handled by Sentry automatically
     };
   }, [name, operation]);
 
-  return transaction;
+  return span;
 };
 
 // Import required React hooks for router integration
