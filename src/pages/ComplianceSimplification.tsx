@@ -2,7 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cleanMarkdownFormatting, cleanComplianceSubRequirement } from '@/utils/textFormatting';
+import { MarkdownText } from '@/components/ui/MarkdownText';
 import { SectorSpecificEnhancer } from '@/services/compliance/SectorSpecificEnhancer';
+import '../debug/RequirementExtractionTest';
 import { 
   ArrowLeft, 
  
@@ -194,7 +196,7 @@ export default function ComplianceSimplification() {
             formattedRequirements = unifiedData.map(content => 
               content
                 .replace(/\*Available in selected compliance frameworks\*/g, '')
-                .replace(/\*+/g, '')
+                .replace(/\*+/g, '') // Remove all asterisks
                 .replace(/\s+/g, ' ')
                 .trim()
             ).filter(content => content.length > 0);
@@ -212,11 +214,11 @@ export default function ComplianceSimplification() {
           selectedFrameworks.cisControls || undefined
         );
         
-        // Clean ONLY my asterisk messages, keep the good structure
+        // Clean asterisk messages  
         formattedRequirements = result.content.map(content => 
           content
             .replace(/\*Available in selected compliance frameworks\*/g, '')
-            .replace(/\*+/g, '')
+            .replace(/\*+/g, '') // Remove all asterisks
             .replace(/\s+/g, ' ')
             .trim()
         );
@@ -369,15 +371,23 @@ export default function ComplianceSimplification() {
     
     requirements.forEach((req: any, index: number) => {
       const letter = String.fromCharCode(97 + index); // a, b, c, etc.
-      // Apply the same cleaning that's used in the unified requirements display
+      // Preserve formatting instead of cleaning it
       const text = typeof req === 'string' ? req : req.description || req.text || '';
-      let cleanReq = cleanComplianceSubRequirement(text.trim());
+      let cleanReq = text.trim(); // Keep original formatting including bold markdown
       
       // Remove any existing letter prefixes to avoid duplication (a) a), b) b), etc.
       cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '');
       
-      // Use normal text weight instead of bold to match the unified requirements display
-      content += `${letter}) ${cleanReq}\n\n`;
+      // Extract the title (first part before colon) and description
+      const colonIndex = cleanReq.indexOf(':');
+      if (colonIndex > 0 && colonIndex < 100) { // Has a title with colon
+        const title = cleanReq.substring(0, colonIndex).trim();
+        const description = cleanReq.substring(colonIndex + 1).trim();
+        content += `**${letter}) ${title}:** ${description}\n\n`;
+      } else {
+        // No clear title/description split, use as-is but make the letter bold
+        content += `**${letter})** ${cleanReq}\n\n`;
+      }
     });
     
     // Add implementation guidance
@@ -1098,11 +1108,8 @@ For detailed implementation guidance, please refer to the specific framework doc
       // Get unified requirements (sub-requirements) - preserve formatting
       const unifiedRequirements = (mapping.auditReadyUnified?.subRequirements || [])
         .map((req) => {
-          // Don't clean Governance & Leadership requirements - they have proper formatting
-          if (mapping.category === 'Governance & Leadership') {
-            return req;
-          }
-          return `✓ ${cleanComplianceSubRequirement(req)}`;
+          // Preserve formatting for all requirements, not just Governance
+          return `✓ ${req}`;
         })
         .join('\n\n');
       
@@ -3580,19 +3587,26 @@ For detailed implementation guidance, please refer to the specific framework doc
                                   </div>
                                 </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {mapping.auditReadyUnified.subRequirements.map((subReq, i) => {
-                                  // Don't clean Governance & Leadership requirements - preserve formatting
-                                  const displayText = mapping.category === 'Governance & Leadership' 
-                                    ? subReq 
-                                    : cleanComplianceSubRequirement(subReq);
+                                {(() => {
+                                  // Use dynamic generated content if available, otherwise fallback to database content
+                                  const categoryName = mapping.category.replace(/^\d+\. /, '');
+                                  const dynamicContent = generatedContent.get(categoryName) || [];
+                                  const contentToRender = dynamicContent.length > 0 ? dynamicContent : mapping.auditReadyUnified.subRequirements;
                                   
-                                  return (
+                                  console.log('[RENDER DEBUG] Category:', categoryName, 'Dynamic content available:', dynamicContent.length > 0);
+                                  if (contentToRender.length > 0) {
+                                    console.log('[RENDER DEBUG] First item in contentToRender:', contentToRender[0].substring(0, 100));
+                                  }
+                                  
+                                  return contentToRender.map((subReq, i) => (
                                     <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                                       <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                      <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{displayText}</div>
+                                      <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                        <MarkdownText text={subReq} />
+                                      </div>
                                     </div>
-                                  );
-                                })}
+                                  ));
+                                })()}
                               </div>
                               </div>
                             </motion.div>
@@ -3798,23 +3812,11 @@ For detailed implementation guidance, please refer to the specific framework doc
                             // Use dynamic content if enabled, otherwise use database content
                             let enhancedSubReqs: string[] = [];
                             
-                            // Always try to use enhanced content first
-                            if (true) { // Was: useDynamicContent, now always true
-                              // Use dynamically generated content
-                              const categoryName = mapping.category.replace(/^\d+\. /, '');
-                              const dynamicContent = generatedContent.get(categoryName) || [];
-                              enhancedSubReqs = dynamicContent;
-                              console.log('[DYNAMIC RENDER] Using dynamic content for:', categoryName, 'sections:', dynamicContent.length);
-                            } else {
-                              // Apply sector-specific enhancements if NIS2 and sector are selected (original logic)
-                              enhancedSubReqs = SectorSpecificEnhancer.enhanceSubRequirements(
-                                mapping.auditReadyUnified.subRequirements || [],
-                                mapping.category,
-                                selectedIndustrySector,
-                                selectedFrameworks['nis2']
-                              );
-                              console.log('[DATABASE RENDER] Using database content for:', mapping.category, 'sections:', enhancedSubReqs.length);
-                            }
+                            // Always use enhanced content (dynamic generation)
+                            const categoryName = mapping.category.replace(/^\d+\. /, '');
+                            const dynamicContent = generatedContent.get(categoryName) || [];
+                            enhancedSubReqs = dynamicContent;
+                            console.log('[DYNAMIC RENDER] Using dynamic content for:', categoryName, 'sections:', dynamicContent.length);
                             
                             // Group enhanced sub-requirements for better organization
                             let groupedSubReqs: Record<string, string[]> = {};
@@ -4026,10 +4028,11 @@ For detailed implementation guidance, please refer to the specific framework doc
                                                 );
                                               }
                                               
-                                              // Fallback
+                                              // Fallback - use MarkdownText for formatting
+                                              console.log('[FALLBACK] Using fallback path for text:', trimmed.substring(0, 100));
                                               return (
                                                 <div key={partIdx} className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-                                                  <div>{trimmed}</div>
+                                                  <MarkdownText text={trimmed} />
                                                 </div>
                                               );
                                             })}
@@ -4041,7 +4044,9 @@ For detailed implementation guidance, please refer to the specific framework doc
                                       return (
                                         <div key={i} className="flex items-start space-x-2 text-sm">
                                           <ArrowRight className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
-                                          <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{subReq}</span>
+                                          <span className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                            <MarkdownText text={subReq} />
+                                          </span>
                                         </div>
                                       );
                                     })}

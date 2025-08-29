@@ -74,7 +74,7 @@ export class EnhancedUnifiedRequirementsGenerator {
         official_description_length: (r as any).official_description?.length || 0,
         audit_ready_guidance_length: (r as any).audit_ready_guidance?.length || 0,
         has_technical_content: /\.(dll|exe|jar|so)|automated|technical|software|inventory|unauthorized/.test(
-          ((r as any).audit_ready_guidance || (r as any).official_description || r.description || '').toLowerCase()
+          (r.description || (r as any).official_description || '').toLowerCase()
         )
       })));
 
@@ -384,17 +384,14 @@ export class EnhancedUnifiedRequirementsGenerator {
     requirements.forEach((req, index) => {
       console.log(`🔍 [COMBINE] Processing requirement ${index + 1}/${requirements.length}: ${req.control_id}`);
       
-      // Get the most detailed source - prioritize audit_ready_guidance for complete details
-      const bestSource = (req as any).audit_ready_guidance || (req as any).official_description || req.description || '';
-      console.log(`📊 [COMBINE] Best source for ${req.control_id}:`, {
-        has_audit_guidance: !!(req as any).audit_ready_guidance,
-        audit_guidance_length: (req as any).audit_ready_guidance?.length || 0,
-        has_official_desc: !!(req as any).official_description,
-        official_desc_length: (req as any).official_description?.length || 0,
+      // Get the DESCRIPTION source - this contains the concise technical requirement
+      const bestSource = req.description || (req as any).official_description || '';
+      console.log(`📊 [COMBINE] Using DESCRIPTION source for ${req.control_id}:`, {
         has_description: !!req.description,
         description_length: req.description?.length || 0,
-        selected_source: (req as any).audit_ready_guidance ? 'audit_ready_guidance' : 
-                        (req as any).official_description ? 'official_description' : 'description',
+        has_official_desc: !!(req as any).official_description,
+        official_desc_length: (req as any).official_description?.length || 0,
+        selected_source: req.description ? 'description' : 'official_description',
         source_length: bestSource.length
       });
       
@@ -465,57 +462,13 @@ export class EnhancedUnifiedRequirementsGenerator {
   
   
   /**
-   * Extract comprehensive key concepts for better deduplication
+   * SIMPLIFIED: No concept extraction filtering - preserve all content as-is
+   * This method now just returns the full text for content comparison
    */
   private extractEnhancedKeyConcepts(text: string): string[] {
-    const concepts: string[] = [];
-    
-    // Extract action phrases with objects (more comprehensive)
-    const actionPatterns = [
-      /(maintain|implement|establish|deploy|configure|monitor|control|enforce|utilize|employ|use|install|create|develop|ensure|verify|validate)\s+[\w\s]{5,30}/gi,
-      /(technical\s+controls?|security\s+controls?|access\s+controls?|application\s+controls?)\s+[\w\s]{5,25}/gi,
-      /(software\s+inventory|hardware\s+inventory|asset\s+inventory)\s+[\w\s]{5,25}/gi
-    ];
-    
-    actionPatterns.forEach(pattern => {
-      const matches = text.match(pattern);
-      if (matches) {
-        concepts.push(...matches.map(m => m.toLowerCase().trim()));
-      }
-    });
-    
-    // Extract comprehensive technical terms
-    const enhancedTechTerms = [
-      // File and software terms
-      /\b(dll|exe|ocx|so|jar|library|libraries|software\s+libraries|third-party\s+libraries)\b/gi,
-      /\b(unauthorized\s+software|approved\s+software|software\s+whitelist|allowlist|blocklist)\b/gi,
-      /\b(application\s+whitelisting|endpoint\s+protection|antivirus|anti-malware)\b/gi,
-      
-      // Control mechanisms
-      /\b(digital\s+signing|code\s+signing|hash-based\s+verification|certificate\s+validation)\b/gi,
-      /\b(vulnerability\s+scanning|security\s+scanning|automated\s+detection)\b/gi,
-      /\b(inventory\s+tools|discovery\s+tools|scanning\s+tools|monitoring\s+tools)\b/gi,
-      
-      // Process terms
-      /\b(automated\s+discovery|continuous\s+monitoring|real-time\s+detection)\b/gi,
-      /\b(software\s+categories|software\s+classification|risk\s+assessment)\b/gi
-    ];
-    
-    enhancedTechTerms.forEach(pattern => {
-      const matches = text.match(pattern);
-      if (matches) {
-        concepts.push(...matches.map(m => m.toLowerCase().trim()));
-      }
-    });
-    
-    // Extract file extension mentions
-    const fileExtensions = text.match(/\.\w{2,4}\b/g);
-    if (fileExtensions && fileExtensions.length > 0) {
-      concepts.push(`file extensions: ${[...new Set(fileExtensions)].join(', ')}`);
-    }
-    
-    // Remove duplicates and short concepts
-    return [...new Set(concepts)].filter(c => c.length > 5);
+    // Return the full text for similarity comparison - no filtering
+    // This ensures we don't lose any technical details through concept extraction
+    return [text.substring(0, 200)]; // Just use first part for similarity matching
   }
   
   
@@ -559,89 +512,40 @@ export class EnhancedUnifiedRequirementsGenerator {
   }
   
   /**
-   * Extract SPECIFIC technical details from requirement text using AGGRESSIVE LOGIC
-   * This method now captures ALL technical details without truncation
+   * Extract SPECIFIC technical details from requirement DESCRIPTION field for injection into sub-categories
+   * This preserves the original structure but injects actual technical details from database descriptions
    */
   private extractSpecificDetails(requirementText: string, req: RequirementDetail): string {
     console.log(`🔍 [EXTRACT] Processing "${req.control_id}": ${req.title}`);
-    console.log(`📝 [EXTRACT] Source text length: ${requirementText.length}`);
+    console.log(`📝 [EXTRACT] Description text length: ${requirementText.length}`);
     
-    // Split into sentences for analysis
-    const textSentences = requirementText.split(/(?<=[.!?])\s+/);
-    
-    // 1. HIGHEST PRIORITY: Find sentences with file extensions (.dll, .ocx, .so)
-    const fileExtPattern = /\.(dll|exe|ocx|so|jar|war|ear|msi|app|deb|rpm|dmg|pkg|bat|cmd|ps1|vbs|js|py|pl|sh|bin|lib)/i;
-    for (const sentence of textSentences) {
-      if (fileExtPattern.test(sentence)) {
-        // Found a sentence with file extensions - use the FULL sentence!
-        const cleanSentence = this.cleanText(sentence);
-        console.log(`📂 [EXTRACT] Found file extension sentence: "${cleanSentence}"`);
-        
-        // Return the complete sentence with technical details
-        if (cleanSentence.length > 20) {
-          return cleanSentence;
-        }
-      }
+    if (!requirementText || requirementText.trim().length === 0) {
+      console.log(`⚠️ [EXTRACT] Empty description for ${req.control_id}`);
+      return `Implement ${req.title?.toLowerCase() || 'security control'}`;
     }
     
-    // 2. Look for sentences with specific technical implementations
-    const technicalSentencePatterns = [
-      /use\s+technical\s+controls\s+to\s+[^.]+/i,
-      /implement\s+[^.]*\s+(control|signing|verification|scanning|monitoring)[^.]*/i,
-      /deploy\s+[^.]*\s+(tools?|systems?|controls?)[^.]*/i,
-      /establish\s+[^.]*\s+(procedures?|standards?|controls?)[^.]*/i,
-      /block\s+unauthorized\s+[^.]*/i,
-      /ensure\s+that\s+only\s+[^.]*/i,
-      /reassess\s+[^.]+/i,
-      /maintain\s+[^.]+\s+(inventory|library|software)[^.]*/i
-    ];
+    // Clean but preserve the core description content
+    const cleanDescription = this.cleanText(requirementText);
     
-    for (const sentence of textSentences) {
-      for (const pattern of technicalSentencePatterns) {
-        if (pattern.test(sentence)) {
-          const cleanSentence = this.cleanText(sentence);
-          console.log(`🔧 [EXTRACT] Found technical sentence: "${cleanSentence}"`);
-          
-          if (cleanSentence.length > 30) {
-            return cleanSentence;
-          }
-        }
-      }
+    // Extract the FIRST sentence which usually contains the core technical requirement
+    const sentences = cleanDescription.split(/(?<=[.!?])\s+/);
+    const firstSentence = sentences[0] || cleanDescription;
+    
+    // For technical requirements, prefer the complete first sentence if it contains technical details
+    const hasTechnicalDetails = /\.(dll|exe|ocx|so)|DLLs?|shared\s+objects?|technical\s+controls?|unauthorized|authorized|library|libraries|software|implement|deploy|establish|maintain|ensure/i.test(firstSentence);
+    
+    if (hasTechnicalDetails && firstSentence.length > 30 && firstSentence.length < 300) {
+      console.log(`✅ [EXTRACT] Using technical first sentence: "${firstSentence}"`);
+      return firstSentence;
     }
     
-    // 3. Look for any sentence with key technical terms and good length
-    for (const sentence of textSentences) {
-      const cleanSentence = this.cleanText(sentence);
-      const lowerSentence = cleanSentence.toLowerCase();
+    // Otherwise take a reasonable portion that captures the core requirement
+    const excerpt = cleanDescription.length > 200 ? 
+      cleanDescription.substring(0, 200).replace(/\s+\S*$/, '...') : 
+      cleanDescription;
       
-      // Check for important technical keywords and reasonable length
-      if (cleanSentence.length > 40 && cleanSentence.length < 300) {
-        const hasImportantTerms = [
-          'software', 'technical', 'control', 'authorized', 'unauthorized',
-          'library', 'libraries', 'automated', 'security', 'scanning',
-          'verification', 'signing', 'inventory', 'deployment'
-        ].some(term => lowerSentence.includes(term));
-        
-        if (hasImportantTerms) {
-          console.log(`🎯 [EXTRACT] Found good technical sentence: "${cleanSentence}"`);
-          return cleanSentence;
-        }
-      }
-    }
-    
-    // 4. Fallback: Use the first meaningful sentence that's not too short
-    for (const sentence of textSentences) {
-      const cleanSentence = this.cleanText(sentence);
-      if (cleanSentence.length > 25 && cleanSentence.length < 250) {
-        console.log(`🔄 [EXTRACT] Using fallback sentence: "${cleanSentence}"`);
-        return cleanSentence;
-      }
-    }
-    
-    // 5. Last resort: Take first part of requirement text
-    const fallbackText = this.cleanText(requirementText.substring(0, 150));
-    console.log(`📋 [EXTRACT] Using fallback text: "${fallbackText}"`);
-    return fallbackText + (requirementText.length > 150 ? '...' : '');
+    console.log(`📝 [EXTRACT] Using description excerpt: "${excerpt}"`);
+    return excerpt;
   }
   
   
@@ -688,8 +592,9 @@ export class EnhancedUnifiedRequirementsGenerator {
           console.log(`🔗 [FORMAT] Adding framework references for ${section.frameworks.size} frameworks`);
           const frameworkRefs = this.buildFrameworkReferences(section.requirements);
           if (frameworkRefs) {
-            content += `\n\n**Framework References:** ${frameworkRefs}`;
+            content += `\n\n**Framework References:**\n${frameworkRefs}`;
             console.log(`✅ [FORMAT] Added references: "${frameworkRefs}"`);
+            console.log(`🎯 [DEBUG] Content now contains: "${content.substring(0, 200)}"`);
           } else {
             console.log(`⚠️ [FORMAT] No framework references generated`);
           }
@@ -721,7 +626,7 @@ export class EnhancedUnifiedRequirementsGenerator {
     const formatted: string[] = [];
     
     requirements.slice(0, 5).forEach(req => {
-      const bestSource = (req as any).audit_ready_guidance || (req as any).official_description || req.description || '';
+      const bestSource = req.description || (req as any).official_description || '';
       if (bestSource.length > 20) {
         const extracted = this.extractSpecificDetails(bestSource, req);
         if (extracted && extracted.trim().length > 10) {

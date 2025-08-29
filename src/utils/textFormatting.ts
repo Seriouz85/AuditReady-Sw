@@ -13,9 +13,17 @@ export function cleanMarkdownFormatting(text: string): string {
   // Remove all types of markdown formatting and special characters
   let cleaned = text;
   
-  // Remove bold markdown formatting (** or __)
-  cleaned = cleaned.replace(/\*\*(.*?)\*\*/g, '$1');
+  // Preserve bold for subsection titles and Framework References using temporary markers
+  // First preserve the ones we want to keep by marking them temporarily
+  cleaned = cleaned.replace(/\*\*([a-p]\)\s[^*]+)\*\*/g, '§§§PRESERVE_BOLD§§§$1§§§PRESERVE_BOLD§§§');
+  cleaned = cleaned.replace(/\*\*(Framework References:?)\*\*/g, '§§§PRESERVE_BOLD§§§$1§§§PRESERVE_BOLD§§§');
+  
+  // Remove all other bold markdown formatting
+  cleaned = cleaned.replace(/\*\*([^*]+)\*\*/g, '$1');
   cleaned = cleaned.replace(/__(.*?)__/g, '$1');
+  
+  // Restore the kept bold formatting
+  cleaned = cleaned.replace(/§§§PRESERVE_BOLD§§§([^§]+)§§§PRESERVE_BOLD§§§/g, '**$1**');
   
   // Remove italic markdown formatting (* or _)
   cleaned = cleaned.replace(/(?<!\*)\*(?!\*)([^*]+)\*(?!\*)/g, '$1');

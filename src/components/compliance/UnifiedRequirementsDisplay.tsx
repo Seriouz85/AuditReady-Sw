@@ -309,7 +309,7 @@ export function UnifiedRequirementsDisplay({
 
                           {requirement.references.length > 0 && (
                             <div className="mt-4 space-y-2">
-                              <h4 className="font-medium text-cyan-400 text-sm">Framework References:</h4>
+                              <h4 className="font-semibold text-blue-400 text-sm">Framework References:</h4>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 {requirement.references.map(ref => (
                                   <div key={ref.framework} className="bg-gray-900/50 p-2 rounded text-xs">
