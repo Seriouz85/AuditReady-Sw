@@ -170,15 +170,42 @@ export default function ComplianceSimplification() {
       let formattedRequirements: string[] = [];
       
       if (categoryName === 'Governance & Leadership') {
-        // Use original database-driven approach for Governance & Leadership
+        // GOVERNANCE SPECIAL PATH: Inject mapped requirements while preserving structure
         try {
-          const cacheKey = `unified-requirements-${categoryName}-${selectedFrameworkArray.join('-')}-${selectedFrameworks.cisControls || 'none'}`;
+          // Get all mapped requirements for Governance from selected frameworks
+          const allGovernanceRequirements: any[] = [];
           
-          let unifiedData = complianceCacheService.get<string[]>(cacheKey);
+          const currentMapping = filteredUnifiedMappings.find(m => 
+            m.auditReadyUnified.title.includes('Governance') || 
+            m.category === 'Governance & Leadership'
+          );
           
-          if (!unifiedData) {
-            // Fetch from database using the original working approach
-            const { data: mappedData } = await supabase
+          if (currentMapping?.frameworks) {
+            // Collect ALL mapped requirements from selected frameworks
+            if (selectedFrameworks.iso27001 && currentMapping.frameworks.iso27001) {
+              allGovernanceRequirements.push(...currentMapping.frameworks.iso27001.map((req: any) => ({ ...req, framework: 'ISO/IEC 27001' })));
+            }
+            if (selectedFrameworks.iso27002 && currentMapping.frameworks.iso27002) {
+              allGovernanceRequirements.push(...currentMapping.frameworks.iso27002.map((req: any) => ({ ...req, framework: 'ISO/IEC 27002' })));
+            }
+            if (selectedFrameworks.cisControls && currentMapping.frameworks.cisControls) {
+              allGovernanceRequirements.push(...currentMapping.frameworks.cisControls.map((req: any) => ({ ...req, framework: 'CIS Controls v8' })));
+            }
+            if (selectedFrameworks.gdpr && currentMapping.frameworks.gdpr) {
+              allGovernanceRequirements.push(...currentMapping.frameworks.gdpr.map((req: any) => ({ ...req, framework: 'GDPR' })));
+            }
+            if (selectedFrameworks.nis2 && currentMapping.frameworks.nis2) {
+              allGovernanceRequirements.push(...currentMapping.frameworks.nis2.map((req: any) => ({ ...req, framework: 'NIS2 Directive' })));
+            }
+          }
+          
+          console.log(`🎯 [GOVERNANCE] Found ${allGovernanceRequirements.length} total mapped requirements`);
+          
+          // HÄMTA HELA URSPRUNGLIGA STRUKTUREN FRÅN DATABASEN - BEHÅLL ALLT!
+          let originalSubRequirements: string[] = [];
+          
+          try {
+            const { data: originalData } = await supabase
               .from('unified_requirements')
               .select(`
                 sub_requirements,
@@ -186,23 +213,252 @@ export default function ComplianceSimplification() {
               `)
               .eq('unified_compliance_categories.name', categoryName);
               
-            if (mappedData && mappedData.length > 0 && mappedData[0]?.sub_requirements) {
-              unifiedData = mappedData[0].sub_requirements as string[];
-              complianceCacheService.set(cacheKey, unifiedData, { ttl: 5 * 60 * 1000 });
+            if (originalData && originalData.length > 0 && originalData[0]?.sub_requirements) {
+              originalSubRequirements = originalData[0].sub_requirements as string[];
+              console.log(`✅ [GOVERNANCE] Retrieved ${originalSubRequirements.length} original sections from database`);
             }
+          } catch (error) {
+            console.error('[GOVERNANCE] Could not fetch original structure:', error);
+            // Fallback till de första sektionerna om databasen misslyckas
+            originalSubRequirements = [
+              "a) LEADERSHIP COMMITMENT AND ACCOUNTABILITY - ISO 27001 requires an Information Security Management System (ISMS), a systematic approach to managing security. Top management must actively lead information security with documented commitment, regular reviews (at least quarterly), and personal accountability. Executive leadership must demonstrate visible commitment to information security (ISO 27001 Clause 5.1)",
+              "b) SCOPE AND BOUNDARIES DEFINITION - Define and document the scope of your information security management system (ISMS), including all assets, locations, and business processes that require protection",
+              "c) ORGANIZATIONAL STRUCTURE - (ISMS Requirement: Define roles and responsibilities as part of your ISMS implementation) AND GOVERNANCE"
+            ];
           }
           
-          if (unifiedData && Array.isArray(unifiedData)) {
-            formattedRequirements = unifiedData.map(content => 
-              content
-                .replace(/\*Available in selected compliance frameworks\*/g, '')
-                .replace(/\*+/g, '') // Remove all asterisks
-                .replace(/\s+/g, ' ')
-                .trim()
-            ).filter(content => content.length > 0);
+          // Distribute mapped requirements across subsections (ensuring no duplicates)
+          const usedRequirements = new Set<string>();
+          const subsectionRequirements: { [key: string]: any[] } = {};
+          
+          // SMART FÖRDELNING: Alla requirements måste fördelas - inga får missas!
+          // Steg 1: Kategorisera alla requirements efter typ
+          const categorizedReqs = {
+            leadership: [],
+            scope: [],
+            organizational: [],
+            policy: [],
+            risk: [],
+            resource: [],
+            competence: [],
+            awareness: [],
+            communication: [],
+            document: [],
+            performance: [],
+            improvement: [],
+            asset: [],
+            thirdParty: [],
+            project: [],
+            general: [] // För requirements som inte matchar någon specifik kategori
+          };
+          
+          // Kategorisera alla requirements
+          allGovernanceRequirements.forEach(req => {
+            const reqText = ((req.title || '') + ' ' + (req.description || '')).toLowerCase();
+            let categorized = false;
+            
+            if (reqText.includes('awareness') || reqText.includes('training') || reqText.includes('education')) {
+              categorizedReqs.awareness.push(req);
+              categorized = true;
+            } else if (reqText.includes('leadership') || reqText.includes('top management') || reqText.includes('commitment') || reqText.includes('accountability')) {
+              categorizedReqs.leadership.push(req);
+              categorized = true;
+            } else if (reqText.includes('scope') || reqText.includes('boundaries') || reqText.includes('isms scope')) {
+              categorizedReqs.scope.push(req);
+              categorized = true;
+            } else if (reqText.includes('organizational structure') || reqText.includes('roles') || reqText.includes('responsibilities')) {
+              categorizedReqs.organizational.push(req);
+              categorized = true;
+            } else if (reqText.includes('policy') || reqText.includes('policies')) {
+              categorizedReqs.policy.push(req);
+              categorized = true;
+            } else if (reqText.includes('risk') && (reqText.includes('governance') || reqText.includes('management'))) {
+              categorizedReqs.risk.push(req);
+              categorized = true;
+            } else if (reqText.includes('resource') || reqText.includes('budget') || reqText.includes('allocation')) {
+              categorizedReqs.resource.push(req);
+              categorized = true;
+            } else if (reqText.includes('competence') || reqText.includes('competency') || reqText.includes('skills')) {
+              categorizedReqs.competence.push(req);
+              categorized = true;
+            } else if (reqText.includes('communication') || reqText.includes('stakeholder')) {
+              categorizedReqs.communication.push(req);
+              categorized = true;
+            } else if (reqText.includes('document') || reqText.includes('procedure') || reqText.includes('records')) {
+              categorizedReqs.document.push(req);
+              categorized = true;
+            } else if (reqText.includes('performance') || reqText.includes('monitoring') || reqText.includes('measurement')) {
+              categorizedReqs.performance.push(req);
+              categorized = true;
+            } else if (reqText.includes('improvement') || reqText.includes('corrective')) {
+              categorizedReqs.improvement.push(req);
+              categorized = true;
+            } else if (reqText.includes('asset') || reqText.includes('disposal') || reqText.includes('equipment')) {
+              categorizedReqs.asset.push(req);
+              categorized = true;
+            } else if (reqText.includes('third party') || reqText.includes('supplier') || reqText.includes('vendor')) {
+              categorizedReqs.thirdParty.push(req);
+              categorized = true;
+            } else if (reqText.includes('project')) {
+              categorizedReqs.project.push(req);
+              categorized = true;
+            }
+            
+            if (!categorized) {
+              categorizedReqs.general.push(req);
+            }
+          });
+          
+          console.log('📊 [GOVERNANCE] Kategoriserade requirements:', {
+            leadership: categorizedReqs.leadership.length,
+            awareness: categorizedReqs.awareness.length,
+            competence: categorizedReqs.competence.length,
+            document: categorizedReqs.document.length,
+            general: categorizedReqs.general.length
+          });
+          
+          // Steg 2: Fördela requirements till rätt subsektioner
+          originalSubRequirements.forEach((subReq, index) => {
+            const letter = String.fromCharCode(97 + index); // a, b, c, d...
+            subsectionRequirements[letter] = [];
+            
+            const sectionText = subReq.toLowerCase();
+            let assigned = [];
+            
+            // Matcha subsektioner med kategorier
+            if (sectionText.includes('awareness') && sectionText.includes('training')) {
+              assigned = categorizedReqs.awareness.splice(0, 3); // Ta upp till 3 awareness requirements
+            } else if (sectionText.includes('leadership') && (sectionText.includes('commitment') || sectionText.includes('accountability'))) {
+              assigned = categorizedReqs.leadership.splice(0, 3);
+            } else if (sectionText.includes('scope') && sectionText.includes('boundaries')) {
+              assigned = categorizedReqs.scope.splice(0, 3);
+            } else if (sectionText.includes('organizational') && sectionText.includes('structure')) {
+              assigned = categorizedReqs.organizational.splice(0, 3);
+            } else if (sectionText.includes('policy')) {
+              assigned = categorizedReqs.policy.splice(0, 3);
+            } else if (sectionText.includes('risk') && sectionText.includes('governance')) {
+              assigned = categorizedReqs.risk.splice(0, 3);
+            } else if (sectionText.includes('resource')) {
+              assigned = categorizedReqs.resource.splice(0, 3);
+            } else if (sectionText.includes('competence') && sectionText.includes('management')) {
+              assigned = categorizedReqs.competence.splice(0, 3);
+            } else if (sectionText.includes('communication')) {
+              assigned = categorizedReqs.communication.splice(0, 3);
+            } else if (sectionText.includes('document') || sectionText.includes('procedure')) {
+              assigned = categorizedReqs.document.splice(0, 3);
+            } else if (sectionText.includes('performance') || sectionText.includes('monitoring')) {
+              assigned = categorizedReqs.performance.splice(0, 3);
+            } else if (sectionText.includes('improvement')) {
+              assigned = categorizedReqs.improvement.splice(0, 3);
+            } else if (sectionText.includes('asset')) {
+              assigned = categorizedReqs.asset.splice(0, 3);
+            } else if (sectionText.includes('third') && sectionText.includes('party')) {
+              assigned = categorizedReqs.thirdParty.splice(0, 3);
+            } else if (sectionText.includes('project') && sectionText.includes('management')) {
+              assigned = categorizedReqs.project.splice(0, 3);
+            }
+            
+            // Om vi inte fick några specifika, ta från general pool
+            if (assigned.length === 0 && categorizedReqs.general.length > 0) {
+              assigned = categorizedReqs.general.splice(0, 2);
+            }
+            
+            subsectionRequirements[letter] = assigned;
+            
+            if (assigned.length > 0) {
+              console.log(`✅ [GOVERNANCE] Subsektion ${letter} fick ${assigned.length} requirements`);
+            }
+          });
+          
+          // Steg 3: Fördela återstående requirements till subsektioner som har plats
+          const remainingReqs = [
+            ...categorizedReqs.leadership,
+            ...categorizedReqs.awareness,
+            ...categorizedReqs.competence,
+            ...categorizedReqs.document,
+            ...categorizedReqs.organizational,
+            ...categorizedReqs.policy,
+            ...categorizedReqs.risk,
+            ...categorizedReqs.resource,
+            ...categorizedReqs.communication,
+            ...categorizedReqs.performance,
+            ...categorizedReqs.improvement,
+            ...categorizedReqs.asset,
+            ...categorizedReqs.thirdParty,
+            ...categorizedReqs.project,
+            ...categorizedReqs.general
+          ];
+          
+          if (remainingReqs.length > 0) {
+            console.log(`📦 [GOVERNANCE] ${remainingReqs.length} requirements kvar att fördela`);
+            
+            // Fördela jämnt över alla subsektioner som har färre än 3 requirements
+            originalSubRequirements.forEach((subReq, index) => {
+              const letter = String.fromCharCode(97 + index);
+              while (subsectionRequirements[letter].length < 3 && remainingReqs.length > 0) {
+                subsectionRequirements[letter].push(remainingReqs.shift());
+              }
+            });
           }
+          
+          console.log(`🎯 [GOVERNANCE] Alla ${allGovernanceRequirements.length} requirements fördelade!`);
+          
+          // SPARA subsectionRequirements GLOBALT så framework references kan använda dem
+          window.governanceSubsectionRequirements = subsectionRequirements;
+          
+          // Format with injected requirements and proper bullet points
+          formattedRequirements = originalSubRequirements.map((subReq, index) => {
+            const letter = String.fromCharCode(97 + index);
+            const letterMatch = subReq.match(/^([a-p])\)\s+(.+)/);
+            if (!letterMatch) return subReq;
+            
+            const title = letterMatch[2].split(' - ')[0];
+            const originalText = letterMatch[2];
+            const injectedReqs = subsectionRequirements[letter] || [];
+            
+            // BEHÅLL EXAKT URSPRUNGLIG FORMATERING + lägg till injected requirements
+            let originalContent = subReq; // Behåll exakt som det var i databasen
+            
+            // TA BORT ALLA JOBBIGA STJÄRNOR!
+            originalContent = originalContent
+              .replace(/\*Available in selected compliance frameworks\*/g, '')
+              .replace(/\*+/g, '') // Ta bort alla stjärnor
+              .replace(/\s+/g, ' ') // Normalisera whitespace
+              .trim();
+            
+            let content = originalContent;
+            
+            // Lägg till injected requirements EFTER original innehåll (inte ersätt!)
+            if (injectedReqs.length > 0) {
+              content += '\n\nImplementation Requirements:\n\n';
+              injectedReqs.forEach(req => {
+                // FIXA BRUTEN TEXT - inga avklippta meningar
+                let cleanDesc = req.description?.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim() || req.title || '';
+                
+                // Om texten är längre än 200 tecken, klipp vid första meningen
+                if (cleanDesc.length > 200) {
+                  const sentences = cleanDesc.split(/[.!?]+/);
+                  if (sentences.length > 1 && sentences[0].length > 50) {
+                    cleanDesc = sentences[0].trim() + '.';
+                  } else {
+                    cleanDesc = cleanDesc.substring(0, 180).replace(/\s+\S*$/, '') + '...';
+                  }
+                }
+                
+                // EGEN RAD för varje bullet point
+                content += `• ${cleanDesc}\n\n`;
+              });
+              
+              // TA BORT FRAMEWORK REFERENCES HÄRIFRÅN - de ska bara vara i blå sektionen!
+            }
+            
+            return content;
+          });
+          
+          console.log(`✅ [GOVERNANCE] Generated ${formattedRequirements.length} formatted sections with injected requirements`);
+          
         } catch (error) {
-          console.error('[GOVERNANCE] Error fetching unified requirements:', error);
+          console.error('[GOVERNANCE] Error injecting requirements:', error);
           formattedRequirements = [];
         }
       } else {
@@ -3591,7 +3847,16 @@ For detailed implementation guidance, please refer to the specific framework doc
                                   // Use dynamic generated content if available, otherwise fallback to database content
                                   const categoryName = mapping.category.replace(/^\d+\. /, '');
                                   const dynamicContent = generatedContent.get(categoryName) || [];
-                                  const contentToRender = dynamicContent.length > 0 ? dynamicContent : mapping.auditReadyUnified.subRequirements;
+                                  
+                                  let contentToRender = dynamicContent.length > 0 ? dynamicContent : mapping.auditReadyUnified.subRequirements;
+                                  
+                                  // Add framework references to fallback content if using database subRequirements
+                                  console.log('🔍 [DEBUG] Category:', categoryName);
+                                  console.log('🔍 [DEBUG] Dynamic content:', dynamicContent);
+                                  console.log('🔍 [DEBUG] Dynamic content length:', dynamicContent.length);
+                                  console.log('🔍 [DEBUG] SubRequirements exist:', !!mapping.auditReadyUnified?.subRequirements);
+                                  console.log('🔍 [DEBUG] Selected frameworks:', selectedFrameworks);
+                                  
                                   
                                   console.log('[RENDER DEBUG] Category:', categoryName, 'Dynamic content available:', dynamicContent.length > 0);
                                   if (contentToRender.length > 0) {
@@ -4024,6 +4289,57 @@ For detailed implementation guidance, please refer to the specific framework doc
                                                         <div className="leading-relaxed">{implementationSteps}</div>
                                                       </div>
                                                     )}
+                                                    
+                                                    {/* FRAMEWORK REFERENCES - SAME AS OTHER CATEGORIES */}
+                                                    <div className="ml-4 mt-3">
+                                                      <div className="font-semibold text-blue-400 mb-2">Framework References:</div>
+                                                      <div className="leading-relaxed text-gray-600 dark:text-gray-400">
+{(() => {
+                                                          // Get the actual framework references for THIS specific subsection
+                                                          const subsectionLetter = title.match(/^([a-p])\)/)?.[1];
+                                                          if (!subsectionLetter) {
+                                                            return '';
+                                                          }
+                                                          
+                                                          // Get the actual injected requirements from global state
+                                                          const globalSubsectionRequirements = (window as any).governanceSubsectionRequirements;
+                                                          if (!globalSubsectionRequirements) {
+                                                            return '';
+                                                          }
+                                                          
+                                                          // Find requirements for THIS subsection
+                                                          const subsectionReqs = globalSubsectionRequirements[subsectionLetter] || [];
+                                                          if (subsectionReqs.length === 0) {
+                                                            return '';
+                                                          }
+                                                          
+                                                          // Build framework references based on actual injected requirements
+                                                          const frameworkRefs = new Map<string, string[]>();
+                                                          subsectionReqs.forEach((req: any) => {
+                                                            const framework = req.framework;
+                                                            const code = req.code || req.id;
+                                                            if (framework && code) {
+                                                              if (!frameworkRefs.has(framework)) {
+                                                                frameworkRefs.set(framework, []);
+                                                              }
+                                                              frameworkRefs.get(framework)!.push(code);
+                                                            }
+                                                          });
+                                                          
+                                                          // Return formatted framework references
+                                                          if (frameworkRefs.size > 0) {
+                                                            const refTexts: string[] = [];
+                                                            frameworkRefs.forEach((codes, framework) => {
+                                                              refTexts.push(`${framework}: ${codes.join(', ')}`);
+                                                            });
+                                                            return refTexts.join(' | ');
+                                                          }
+                                                          
+                                                          return '';
+                                                        })()}
+                                                      </div>
+                                                    </div>
+                                                    
                                                   </div>
                                                 );
                                               }
