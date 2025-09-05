@@ -182,20 +182,20 @@ export default function ComplianceSimplification() {
           
           if (currentMapping?.frameworks) {
             // Collect ALL mapped requirements from selected frameworks
-            if (selectedFrameworks.iso27001 && currentMapping.frameworks.iso27001) {
-              allGovernanceRequirements.push(...currentMapping.frameworks.iso27001.map((req: any) => ({ ...req, framework: 'ISO/IEC 27001' })));
+            if (selectedFrameworks['iso27001'] && currentMapping.frameworks['iso27001']) {
+              allGovernanceRequirements.push(...currentMapping.frameworks['iso27001'].map((req: any) => ({ ...req, framework: 'ISO/IEC 27001' })));
             }
-            if (selectedFrameworks.iso27002 && currentMapping.frameworks.iso27002) {
-              allGovernanceRequirements.push(...currentMapping.frameworks.iso27002.map((req: any) => ({ ...req, framework: 'ISO/IEC 27002' })));
+            if (selectedFrameworks['iso27002'] && currentMapping.frameworks['iso27002']) {
+              allGovernanceRequirements.push(...currentMapping.frameworks['iso27002'].map((req: any) => ({ ...req, framework: 'ISO/IEC 27002' })));
             }
-            if (selectedFrameworks.cisControls && currentMapping.frameworks.cisControls) {
-              allGovernanceRequirements.push(...currentMapping.frameworks.cisControls.map((req: any) => ({ ...req, framework: 'CIS Controls v8' })));
+            if (selectedFrameworks['cisControls'] && currentMapping.frameworks['cisControls']) {
+              allGovernanceRequirements.push(...currentMapping.frameworks['cisControls'].map((req: any) => ({ ...req, framework: 'CIS Controls v8' })));
             }
-            if (selectedFrameworks.gdpr && currentMapping.frameworks.gdpr) {
-              allGovernanceRequirements.push(...currentMapping.frameworks.gdpr.map((req: any) => ({ ...req, framework: 'GDPR' })));
+            if (selectedFrameworks['gdpr'] && currentMapping.frameworks['gdpr']) {
+              allGovernanceRequirements.push(...currentMapping.frameworks['gdpr'].map((req: any) => ({ ...req, framework: 'GDPR' })));
             }
-            if (selectedFrameworks.nis2 && currentMapping.frameworks.nis2) {
-              allGovernanceRequirements.push(...currentMapping.frameworks.nis2.map((req: any) => ({ ...req, framework: 'NIS2 Directive' })));
+            if (selectedFrameworks['nis2'] && currentMapping.frameworks['nis2']) {
+              allGovernanceRequirements.push(...currentMapping.frameworks['nis2'].map((req: any) => ({ ...req, framework: 'NIS2 Directive' })));
             }
           }
           
@@ -228,28 +228,27 @@ export default function ComplianceSimplification() {
           }
           
           // Distribute mapped requirements across subsections (ensuring no duplicates)
-          const usedRequirements = new Set<string>();
           const subsectionRequirements: { [key: string]: any[] } = {};
           
           // SMART FÖRDELNING: Alla requirements måste fördelas - inga får missas!
           // Steg 1: Kategorisera alla requirements efter typ
           const categorizedReqs = {
-            leadership: [],
-            scope: [],
-            organizational: [],
-            policy: [],
-            risk: [],
-            resource: [],
-            competence: [],
-            awareness: [],
-            communication: [],
-            document: [],
-            performance: [],
-            improvement: [],
-            asset: [],
-            thirdParty: [],
-            project: [],
-            general: [] // För requirements som inte matchar någon specifik kategori
+            leadership: [] as any[],
+            scope: [] as any[],
+            organizational: [] as any[],
+            policy: [] as any[],
+            risk: [] as any[],
+            resource: [] as any[],
+            competence: [] as any[],
+            awareness: [] as any[],
+            communication: [] as any[],
+            document: [] as any[],
+            performance: [] as any[],
+            improvement: [] as any[],
+            asset: [] as any[],
+            thirdParty: [] as any[],
+            project: [] as any[],
+            general: [] as any[] // För requirements som inte matchar någon specifik kategori
           };
           
           // Kategorisera alla requirements
@@ -393,10 +392,16 @@ export default function ComplianceSimplification() {
             console.log(`📦 [GOVERNANCE] ${remainingReqs.length} requirements kvar att fördela`);
             
             // Fördela jämnt över alla subsektioner som har färre än 3 requirements
-            originalSubRequirements.forEach((subReq, index) => {
+            originalSubRequirements.forEach((_, index) => {
               const letter = String.fromCharCode(97 + index);
+              if (!subsectionRequirements[letter]) {
+                subsectionRequirements[letter] = [];
+              }
               while (subsectionRequirements[letter].length < 3 && remainingReqs.length > 0) {
-                subsectionRequirements[letter].push(remainingReqs.shift());
+                const req = remainingReqs.shift();
+                if (req) {
+                  subsectionRequirements[letter].push(req);
+                }
               }
             });
           }
@@ -404,7 +409,7 @@ export default function ComplianceSimplification() {
           console.log(`🎯 [GOVERNANCE] Alla ${allGovernanceRequirements.length} requirements fördelade!`);
           
           // SPARA subsectionRequirements GLOBALT så framework references kan använda dem
-          window.governanceSubsectionRequirements = subsectionRequirements;
+          (window as any).governanceSubsectionRequirements = subsectionRequirements;
           
           // Format with injected requirements and proper bullet points
           formattedRequirements = originalSubRequirements.map((subReq, index) => {
@@ -412,8 +417,6 @@ export default function ComplianceSimplification() {
             const letterMatch = subReq.match(/^([a-p])\)\s+(.+)/);
             if (!letterMatch) return subReq;
             
-            const title = letterMatch[2].split(' - ')[0];
-            const originalText = letterMatch[2];
             const injectedReqs = subsectionRequirements[letter] || [];
             
             // BEHÅLL EXAKT URSPRUNGLIG FORMATERING + lägg till injected requirements
