@@ -8,11 +8,12 @@ const Documents = () => {
   const { organization, isDemo } = useAuth();
   
   // Read the correct key from environment variables
-  const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || ""; 
+  // Fallback to OpenRouter if Gemini key is expired
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || ""; 
 
   // Check if the key is missing and potentially handle the error
-  if (!geminiApiKey) {
-    console.error("Error: VITE_GEMINI_API_KEY is not set in the environment variables.");
+  if (!apiKey) {
+    console.error("Error: No API key found. Please configure VITE_OPENROUTER_API_KEY or VITE_GEMINI_API_KEY in your .env file.");
     // Optionally, render an error message or prevent rendering the generator
     // return <div>API Key is missing. Please configure it in your .env file.</div>;
   }
@@ -24,7 +25,7 @@ const Documents = () => {
       <Route path="" element={<Navigate to="library" replace />} />
       <Route path="library" element={<DocumentLibrary organizationId={organizationId} />} />
       <Route path="missing" element={<MissingEvidence />} />
-      <Route path="generator" element={<DocumentGenerator apiKey={geminiApiKey} />} />
+      <Route path="generator" element={<DocumentGenerator apiKey={apiKey} />} />
     </Routes>
   );
 };

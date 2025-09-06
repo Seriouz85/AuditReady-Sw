@@ -231,20 +231,25 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
   const testApiConnection = async () => {
     try {
       console.log('Testing API connection...');
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+      const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
 
       const testBody = {
-        contents: [{
-          parts: [{
-            text: "Hello, this is a test message. Please respond with 'OK' if you receive this."
-          }]
-        }]
+        model: 'microsoft/wizardlm-2-8x22b:nitro',
+        messages: [{
+          role: 'user',
+          content: "Hello, this is a test message. Please respond with 'OK' if you receive this."
+        }],
+        temperature: 0.7,
+        max_tokens: 50
       };
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Audit Readiness Hub'
         },
         body: JSON.stringify(testBody)
       });
@@ -295,17 +300,8 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
   // Modified handleUserInput to trigger document generation
   const handleUserInput = async () => {
     if (!userInput.trim()) return;
-
-    // Test API connection before proceeding
-    const isConnected = await testApiConnection();
-    if (!isConnected) {
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        type: 'system',
-        content: 'Error: Unable to connect to AI service. Please check your API key and internet connection.'
-      }]);
-      return;
-    }
+    
+    setIsGenerating(true);
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -329,9 +325,9 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
     setMessages(prev => [...prev, thinkingMessage]);
 
     try {
-      console.log('Making API request to Gemini...');
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-      console.log('Request URL:', apiUrl.replace(apiKey, '[REDACTED]'));
+      console.log('Making API request to AI service...');
+      const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+      console.log('Request URL:', apiUrl);
 
       let promptText = `You are an expert in IT security and information security documentation.
 
@@ -381,11 +377,13 @@ Be concise, professional, and focused.`;
       }
 
       const requestBody = {
-        contents: [{
-          parts: [{
-            text: promptText
-          }]
-        }]
+        model: 'microsoft/wizardlm-2-8x22b:nitro',
+        messages: [{
+          role: 'user',
+          content: promptText
+        }],
+        temperature: 0.7,
+        max_tokens: 4000
       };
 
       console.log('Request body:', JSON.stringify(requestBody, null, 2));
@@ -394,9 +392,10 @@ Be concise, professional, and focused.`;
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Origin': window.location.origin,
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Audit Readiness Hub'
         },
-        mode: 'cors',
         body: JSON.stringify(requestBody)
       });
 
@@ -422,8 +421,8 @@ Be concise, professional, and focused.`;
       const data = await response.json();
       console.log('API Response:', data);
 
-      const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                         data.candidates?.[0]?.content?.text ||
+      const aiResponse = data.choices?.[0]?.message?.content ||
+                         data.message?.content ||
                          data.text;
 
       if (!aiResponse) {
@@ -469,6 +468,8 @@ Be concise, professional, and focused.`;
           content: `Error: ${errorMessage}. Please try again.`
         }
       ]);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -482,8 +483,8 @@ Be concise, professional, and focused.`;
         .join('\n');
 
       console.log('Generating final document...');
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-      console.log('Request URL:', apiUrl.replace(apiKey, '[REDACTED]'));
+      const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+      console.log('Request URL:', apiUrl);
 
       let promptText = `You are an expert in IT security and information security documentation. Create a professional "${selectedDocType?.name}" based on the conversation below.
 
@@ -503,13 +504,14 @@ IMPORTANT GUIDELINES:
 
 FORMATTING REQUIREMENTS:
 1. Use clean, numbered headers (1, 1.1, 1.1.1) instead of hash symbols (#)
-2. For bullet points, use standard bullet format with a dash (-) at the start of each point, not asterisks (*) or other symbols
+2. For bullet points, use ONLY dash (-) at the start of each point. NEVER use asterisks (*), stars, or any other symbols
 3. Ensure proper indentation and consistent spacing between sections
 4. Use ALL CAPS for main section titles
 5. Use Title Case for subsection titles
 6. Add a blank line between paragraphs and sections for readability
 7. Keep line lengths reasonable - avoid extremely long paragraphs
 8. For lists, use consistent formatting throughout
+9. NEVER use asterisk (*) symbols anywhere in the document - they are completely forbidden
 
 CRITICAL: Output ONLY the final document content. Do NOT include any hypothetical user responses, explanations of what you're doing, or anything outside the actual document content. Start directly with the document title and metadata.
 
@@ -570,13 +572,14 @@ DOCUMENT STRUCTURE:
 
 FORMATTING REQUIREMENTS:
 1. Use clean, numbered headers (1, 1.1, 1.1.1) instead of hash symbols (#)
-2. For bullet points, use standard bullet format with a dash (-) at the start of each point, not asterisks (*) or other symbols
+2. For bullet points, use ONLY dash (-) at the start of each point. NEVER use asterisks (*), stars, or any other symbols
 3. Ensure proper indentation and consistent spacing between sections
 4. Use ALL CAPS for main section titles
 5. Use Title Case for subsection titles
 6. Add a blank line between paragraphs and sections for readability
 7. Keep line lengths reasonable - avoid extremely long paragraphs
 8. For lists, use consistent formatting throughout
+9. NEVER use asterisk (*) symbols anywhere in the document - they are completely forbidden
 
 CRITICAL: Output ONLY the final document content. Start directly with the document title and metadata. Do NOT switch to a different process type.
 
@@ -584,11 +587,13 @@ Create the complete "${processName}" process document now, formatted for immedia
       }
 
       const requestBody = {
-        contents: [{
-          parts: [{
-            text: promptText
-          }]
-        }]
+        model: 'microsoft/wizardlm-2-8x22b:nitro',
+        messages: [{
+          role: 'user',
+          content: promptText
+        }],
+        temperature: 0.7,
+        max_tokens: 4000
       };
 
       console.log('Request body:', JSON.stringify(requestBody, null, 2));
@@ -597,9 +602,10 @@ Create the complete "${processName}" process document now, formatted for immedia
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Origin': window.location.origin,
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Audit Readiness Hub'
         },
-        mode: 'cors',
         body: JSON.stringify(requestBody)
       });
 
@@ -625,8 +631,8 @@ Create the complete "${processName}" process document now, formatted for immedia
       const data = await response.json();
       console.log('API Response:', data);
 
-      const documentContent = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                             data.candidates?.[0]?.content?.text ||
+      const documentContent = data.choices?.[0]?.message?.content ||
+                             data.message?.content ||
                              data.text ||
                              '';
 

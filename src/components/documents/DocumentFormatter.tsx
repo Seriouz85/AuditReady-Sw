@@ -10,8 +10,15 @@ const DocumentFormatter: React.FC<DocumentFormatterProps> = ({ content }) => {
     // If no content, return empty array
     if (!content) return [];
     
+    // Clean up any remaining asterisks that might be used for emphasis or bullets
+    const cleanedContent = content
+      .replace(/^\*\s/gm, '- ')        // Replace asterisk bullets at start of line with dashes
+      .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove bold markdown formatting
+      .replace(/\*([^*]+)\*/g, '$1')      // Remove italic markdown formatting
+      .replace(/\* /g, '- ')              // Replace any other asterisk bullets with dashes
+    
          // Split content into sections by lines
-    const lines = content.split('\n');
+    const lines = cleanedContent.split('\n');
     
     // Track the current section level for styling
     let currentSectionLevel = 0;

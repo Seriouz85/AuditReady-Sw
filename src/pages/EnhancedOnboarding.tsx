@@ -9,7 +9,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/utils/toast";
-import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ZoomToggle } from "@/components/ui/zoom-toggle";
 import { SubscriptionService, SUBSCRIPTION_PLANS, type SubscriptionPlan } from "@/services/billing/SubscriptionService";
@@ -36,7 +35,6 @@ interface OnboardingData {
 
 const EnhancedOnboarding = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
