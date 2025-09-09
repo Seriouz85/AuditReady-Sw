@@ -63,8 +63,8 @@ import { RequirementValidationService } from '@/services/rag/RequirementValidati
 // TYPE DEFINITIONS
 // ============================================================================
 
-interface EnhancedKnowledgeSource extends KnowledgeSource {
-  id: string;
+interface EnhancedKnowledgeSource extends Omit<KnowledgeSource, 'id'> {
+  id: string; // Required id, not optional
   status: 'active' | 'inactive' | 'pending' | 'error' | 'reviewing' | 'approved' | 'rejected';
   approvalStatus: 'pending' | 'approved' | 'rejected' | 'needs_review';
   lastScraped?: string;
@@ -275,7 +275,7 @@ export function EnhancedKnowledgeManager() {
       const enhancedSources: EnhancedKnowledgeSource[] = (data || []).map(source => ({
         ...source,
         approvalStatus: source.status === 'active' ? 'approved' : 'pending',
-        contentChunks: source.knowledge_content?.[0]?.count || 0,
+        contentChunks: Array.isArray(source.knowledge_content) ? source.knowledge_content.length : 0,
         qualityScore: 0.85, // Mock quality score
         metadata: source.metadata || {}
       }));
@@ -532,12 +532,12 @@ export function EnhancedKnowledgeManager() {
       clearInterval(progressInterval);
       setGenerationProgress(100);
       
-      if (result.success && result.guidance) {
+      if (result.success && result.content) {
         // Add to guidance previews
         const newGuidance: GuidancePreview = {
           category,
-          content: result.guidance,
-          quality: result.quality || 0.85,
+          content: result.content,
+          quality: result.qualityScore || 0.85,
           sources: result.sourcesUsed || [],
           frameworks: FRAMEWORKS.slice(0, 3),
           lastGenerated: new Date().toISOString(),

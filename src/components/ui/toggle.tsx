@@ -4,6 +4,9 @@ import { type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { toggleVariants } from "./toggle-variants"
 
+// Re-export toggleVariants for use in toggle-group
+export { toggleVariants }
+
 export const Toggle = React.forwardRef<
   React.ElementRef<typeof TogglePrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &

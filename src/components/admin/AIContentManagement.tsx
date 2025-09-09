@@ -30,7 +30,10 @@ import {
   Database,
   FileText,
   AlertCircle,
-  Lightbulb
+  Lightbulb,
+  Zap,
+  Award,
+  AlertTriangle
 } from 'lucide-react';
 
 // ============================================================================
@@ -696,7 +699,7 @@ export function AIContentManagement() {
                               <Badge variant="outline">Q{category.quality}</Badge>
                             </div>
                           </div>
-                          <Progress value={(category.usage / analytics.topCategories[0].usage) * 100} className="h-2" />
+                          <Progress value={(category.usage / (analytics.topCategories?.[0]?.usage || 1)) * 100} className="h-2" />
                         </div>
                       ))}
                     </div>

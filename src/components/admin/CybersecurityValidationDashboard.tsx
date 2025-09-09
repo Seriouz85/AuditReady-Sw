@@ -43,8 +43,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { AdminSecurityControlPanel, type SecurityDashboardMetrics, type ContentApprovalQueue, type SecurityMonitoringEvent } from '@/services/security/AdminSecurityControlPanel';
-import { CybersecurityValidationFramework, type SecurityValidationResult } from '@/services/security/CybersecurityValidationFramework';
+import { AdminSecurityControlPanel, type SecurityDashboardMetrics, type ContentApprovalQueue } from '@/services/security/AdminSecurityControlPanel';
+import { CybersecurityValidationFramework, type SecurityValidationResult, type SecurityMonitoringEvent } from '@/services/security/CybersecurityValidationFramework';
 
 interface ThreatAnalysisModalProps {
   content: any;

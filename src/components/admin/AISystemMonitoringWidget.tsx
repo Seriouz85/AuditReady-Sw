@@ -9,10 +9,7 @@ import {
   Activity, 
   AlertTriangle, 
   CheckCircle, 
-  TrendingUp,
-  TrendingDown,
   Minus,
-  Zap,
   Clock,
   Shield,
   RefreshCw
@@ -87,11 +84,7 @@ const AISystemMonitoringWidget: React.FC<AISystemMonitoringWidgetProps> = ({
     }
   };
 
-  const getTrendIcon = (value: number, baseline: number = 0) => {
-    if (value > baseline * 1.1) return <TrendingUp className="h-4 w-4 text-green-500" />;
-    if (value < baseline * 0.9) return <TrendingDown className="h-4 w-4 text-red-500" />;
-    return <Minus className="h-4 w-4 text-gray-500" />;
-  };
+  // Removed unused getTrendIcon function
 
   if (isLoading && !healthStatus) {
     return (

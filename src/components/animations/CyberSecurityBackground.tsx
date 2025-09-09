@@ -67,16 +67,16 @@ export const CyberSecurityBackground: React.FC = () => {
       
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
+          const dx = (nodes[i]?.x || 0) - (nodes[j]?.x || 0);
+          const dy = (nodes[i]?.y || 0) - (nodes[j]?.y || 0);
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < 150) {
             const opacity = (150 - distance) / 150 * 0.3;
             ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
             ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.moveTo(nodes[i]?.x || 0, nodes[i]?.y || 0);
+            ctx.lineTo(nodes[j]?.x || 0, nodes[j]?.y || 0);
             ctx.stroke();
           }
         }

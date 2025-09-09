@@ -3,7 +3,7 @@
  * Advanced workflow system for content approval with validation steps
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,45 +16,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import {
   CheckCircle,
   XCircle,
   Clock,
-  AlertTriangle,
   Users,
-  FileText,
-  MessageSquare,
-  Calendar,
   Eye,
   Edit,
   Send,
   RefreshCw,
-  Filter,
   Search,
-  ArrowRight,
-  ChevronDown,
-  ChevronRight,
   User,
   Shield,
-  Zap,
-  Star,
-  Flag,
-  ThumbsUp,
-  ThumbsDown,
-  MoreHorizontal,
-  Bell,
   GitBranch,
   Target,
-  Award,
   Activity,
-  TrendingUp
+  TrendingUp,
+  Copy
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import { RequirementValidationService, type ValidationResult } from '@/services/rag/RequirementValidationService';
 
 // ============================================================================
@@ -185,14 +166,10 @@ export function ApprovalWorkflowManager() {
   const [selectedItem, setSelectedItem] = useState<ApprovalItem | null>(null);
   const [showItemDetails, setShowItemDetails] = useState(false);
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
-  const [showRuleEditor, setShowRuleEditor] = useState(false);
-  const [showWorkflowEditor, setShowWorkflowEditor] = useState(false);
   
   // Form states
   const [approvalAction, setApprovalAction] = useState<'approve' | 'reject' | 'request_changes'>('approve');
   const [approvalComment, setApprovalComment] = useState('');
-  const [newRule, setNewRule] = useState<Partial<ApprovalRule>>({});
-  const [newTemplate, setNewTemplate] = useState<Partial<WorkflowTemplate>>({});
 
   // Load data
   useEffect(() => {
@@ -298,7 +275,7 @@ export function ApprovalWorkflowManager() {
               required: true,
               estimatedTime: 45,
               dependencies: ['step_1'],
-              assignee: user?.email
+              assignee: user?.email || undefined
             },
             {
               id: 'step_3',
@@ -527,17 +504,17 @@ export function ApprovalWorkflowManager() {
         case 'approve':
           updatedItem.status = 'approved';
           updatedItem.approvedAt = now;
-          updatedItem.approvedBy = user?.email;
+          updatedItem.approvedBy = user?.email || undefined;
           break;
         case 'reject':
           updatedItem.status = 'rejected';
           updatedItem.reviewedAt = now;
-          updatedItem.reviewedBy = user?.email;
+          updatedItem.reviewedBy = user?.email || undefined;
           break;
         case 'request_changes':
           updatedItem.status = 'changes_requested';
           updatedItem.reviewedAt = now;
-          updatedItem.reviewedBy = user?.email;
+          updatedItem.reviewedBy = user?.email || undefined;
           break;
       }
 
@@ -559,7 +536,7 @@ export function ApprovalWorkflowManager() {
       if (currentStep) {
         currentStep.status = action === 'approve' ? 'completed' : 'failed';
         currentStep.completedAt = now;
-        currentStep.completedBy = user?.email;
+        currentStep.completedBy = user?.email || undefined;
         
         if (action === 'approve' && updatedItem.workflow.currentStep < updatedItem.workflow.totalSteps) {
           updatedItem.workflow.currentStep += 1;
@@ -586,31 +563,7 @@ export function ApprovalWorkflowManager() {
     }
   };
 
-  const handleBulkAction = async (action: string, selectedIds: string[]) => {
-    if (selectedIds.length === 0) return;
-
-    try {
-      // Simulate bulk action
-      const updatedItems = approvalItems.map(item => {
-        if (selectedIds.includes(item.id)) {
-          return {
-            ...item,
-            status: action === 'approve' ? 'approved' : 'rejected' as any,
-            [action === 'approve' ? 'approvedAt' : 'reviewedAt']: new Date().toISOString(),
-            [action === 'approve' ? 'approvedBy' : 'reviewedBy']: user?.email
-          };
-        }
-        return item;
-      });
-
-      setApprovalItems(updatedItems);
-      toast.success(`Bulk ${action} completed for ${selectedIds.length} items`);
-
-    } catch (error) {
-      console.error('Bulk action failed:', error);
-      toast.error('Bulk action failed');
-    }
-  };
+  // Removed unused handleBulkAction function
 
   const handleValidateItem = async (item: ApprovalItem) => {
     try {
@@ -658,7 +611,7 @@ export function ApprovalWorkflowManager() {
       rejected: 'destructive',
       changes_requested: 'outline'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'outline'}>{status.replace('_', ' ')}</Badge>;
+    return <Badge variant={(variants[status as keyof typeof variants] || 'outline') as "default" | "secondary" | "destructive" | "outline"}>{status.replace('_', ' ')}</Badge>;
   };
 
   const getPriorityBadge = (priority: string) => {
@@ -668,7 +621,7 @@ export function ApprovalWorkflowManager() {
       medium: 'secondary',
       low: 'outline'
     };
-    return <Badge variant={variants[priority as keyof typeof variants] || 'outline'}>{priority}</Badge>;
+    return <Badge variant={(variants[priority as keyof typeof variants] || 'outline') as "default" | "secondary" | "destructive" | "outline"}>{priority}</Badge>;
   };
 
   const getTypeBadge = (type: string) => {
@@ -678,7 +631,7 @@ export function ApprovalWorkflowManager() {
       content: 'secondary',
       template: 'outline'
     };
-    return <Badge variant={variants[type as keyof typeof variants] || 'outline'}>{type}</Badge>;
+    return <Badge variant={(variants[type as keyof typeof variants] || 'outline') as "default" | "secondary" | "destructive" | "outline"}>{type}</Badge>;
   };
 
   const getWorkflowProgress = (item: ApprovalItem) => {
@@ -711,11 +664,11 @@ export function ApprovalWorkflowManager() {
         </div>
         
         <div className="flex items-center space-x-3">
-          <Button variant="outline" onClick={() => setShowRuleEditor(true)}>
+          <Button variant="outline" onClick={() => toast.info('Rule editor coming soon')}>
             <Shield className="h-4 w-4 mr-2" />
             Manage Rules
           </Button>
-          <Button variant="outline" onClick={() => setShowWorkflowEditor(true)}>
+          <Button variant="outline" onClick={() => toast.info('Workflow editor coming soon')}>
             <GitBranch className="h-4 w-4 mr-2" />
             Workflow Templates
           </Button>
@@ -818,10 +771,28 @@ export function ApprovalWorkflowManager() {
               </SelectContent>
             </Select>
             
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              More Filters
-            </Button>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="requirements">Requirements</SelectItem>
+                <SelectItem value="guidance">Guidance</SelectItem>
+                <SelectItem value="policies">Policies</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Assignee" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Assignees</SelectItem>
+                <SelectItem value="unassigned">Unassigned</SelectItem>
+                <SelectItem value="me">Assigned to Me</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -1070,7 +1041,7 @@ export function ApprovalWorkflowManager() {
                     Automated rules for content approval
                   </CardDescription>
                 </div>
-                <Button onClick={() => setShowRuleEditor(true)}>
+                <Button onClick={() => toast.info('Rule editor coming soon')}>
                   <Shield className="h-4 w-4 mr-2" />
                   Create Rule
                 </Button>
@@ -1138,7 +1109,7 @@ export function ApprovalWorkflowManager() {
                     Define approval workflow templates
                   </CardDescription>
                 </div>
-                <Button onClick={() => setShowWorkflowEditor(true)}>
+                <Button onClick={() => toast.info('Workflow editor coming soon')}>
                   <GitBranch className="h-4 w-4 mr-2" />
                   Create Template
                 </Button>
@@ -1366,7 +1337,7 @@ export function ApprovalWorkflowManager() {
           <div className="space-y-4">
             <div>
               <Label>Decision</Label>
-              <Select value={approvalAction} onValueChange={setApprovalAction}>
+              <Select value={approvalAction} onValueChange={(value) => setApprovalAction(value as "approve" | "reject" | "request_changes")}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

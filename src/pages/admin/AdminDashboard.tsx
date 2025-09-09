@@ -2050,9 +2050,9 @@ export const AdminDashboard: React.FC = () => {
                   <Building className="w-4 h-4 mr-3" />
                   Billing Configuration
                 </Button>
-                <Button variant="outline" className="w-full justify-start border-slate-200 text-slate-700 hover:bg-slate-50">
+                <Button variant="outline" className="w-full justify-start border-slate-200 text-slate-700 hover:bg-slate-50" onClick={() => navigate('/admin/system/settings#email')}>
                   <Mail className="w-4 h-4 mr-3" />
-                  Email Settings
+                  Email Management
                 </Button>
               </CardContent>
             </Card>

@@ -433,9 +433,10 @@ const AIIntelligencePanel: React.FC<AIIntelligencePanelProps> = ({ onClose }) =>
     setInputValue('');
     setIsLoading(true);
 
+    // Use intelligent prompt analysis if no preset provided
+    const templateConfig = presetPrompt || analyzePromptAndGetTemplate(messageText);
+
     try {
-      // Use intelligent prompt analysis if no preset provided
-      const templateConfig = presetPrompt || analyzePromptAndGetTemplate(messageText);
       
       // Prepare one-shot diagram request with intelligent routing
       const request: OneShotDiagramRequest = {

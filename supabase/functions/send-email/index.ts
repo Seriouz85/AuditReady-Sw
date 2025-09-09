@@ -33,19 +33,22 @@ serve(async (req) => {
     
     // Get Resend API key from environment
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+    console.log('🔑 RESEND_API_KEY available:', !!RESEND_API_KEY)
+    
     if (!RESEND_API_KEY) {
       // Fallback to demo mode if no API key
-      console.log('Demo mode: Email would be sent', {
-        to: emailRequest.to,
+      console.log('📧 Demo mode: Email would be sent', {
+        to: emailRequest.to.map(r => r.email),
         subject: emailRequest.subject,
-        from: emailRequest.from
+        from: emailRequest.from?.email || 'noreply@auditready.com'
       })
       
       return new Response(
         JSON.stringify({ 
           success: true,
           demo: true,
-          message: 'Email logged in demo mode'
+          messageId: `demo-${Date.now()}`,
+          message: 'Email logged in demo mode - no RESEND_API_KEY configured'
         }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -82,11 +85,16 @@ serve(async (req) => {
     const result = await response.json()
 
     if (!response.ok) {
-      console.error('Resend error:', result)
-      throw new Error(`Resend API error: ${response.status} - ${result.message || 'Unknown error'}`)
+      console.error('❌ Resend API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+        request: { ...resendRequest, html: '[HTML_CONTENT]' } // Don't log full HTML
+      })
+      throw new Error(`Resend API error: ${response.status} - ${result.message || result.error || response.statusText}`)
     }
 
-    console.log('Email sent successfully via Resend:', result.id)
+    console.log('✅ Email sent successfully via Resend:', result.id)
 
     return new Response(
       JSON.stringify({ 

@@ -3,21 +3,17 @@
  * Comprehensive management interface for all 21 compliance categories
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import {
   Target,
@@ -25,8 +21,6 @@ import {
   TrendingUp,
   CheckCircle,
   AlertTriangle,
-  Clock,
-  Users,
   FileText,
   Zap,
   Eye,
@@ -35,23 +29,11 @@ import {
   Trash2,
   Plus,
   RefreshCw,
-  Download,
-  Filter,
   Search,
-  Calendar,
-  Award,
   Shield,
-  Lightbulb,
-  BookOpen,
-  Settings,
-  ChevronRight,
-  ChevronDown,
-  Star,
   TrendingDown,
-  Activity,
-  Globe
+  Activity
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import { RealTimeGuidanceEditor } from './RealTimeGuidanceEditor';
 import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
 
@@ -403,7 +385,7 @@ export function CategoryGuidanceManager() {
       requiredFrameworks: category.frameworks.slice(0, 2),
       estimatedTime: 30 + Math.floor(Math.random() * 60),
       difficulty: ['basic', 'intermediate', 'advanced'][Math.floor(Math.random() * 3)] as any,
-      tags: ['template', 'standard', category.name.split(' ')[0].toLowerCase()]
+      tags: ['template', 'standard', category.name?.split(' ')[0]?.toLowerCase() || 'general']
     }));
 
     setTemplates(mockTemplates);
@@ -557,7 +539,7 @@ export function CategoryGuidanceManager() {
       medium: 'secondary',
       low: 'outline'
     };
-    return <Badge variant={variants[priority as keyof typeof variants] || 'outline'}>{priority}</Badge>;
+    return <Badge variant={(variants[priority as keyof typeof variants] || 'outline') as "default" | "secondary" | "destructive" | "outline"}>{priority}</Badge>;
   };
 
   const getStatusBadge = (status: string) => {
@@ -568,7 +550,7 @@ export function CategoryGuidanceManager() {
       published: 'default',
       archived: 'outline'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'outline'}>{status}</Badge>;
+    return <Badge variant={(variants[status as keyof typeof variants] || 'outline') as "default" | "secondary" | "destructive" | "outline"}>{status}</Badge>;
   };
 
   const getTrendIcon = (trend: string) => {

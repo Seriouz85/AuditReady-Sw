@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/utils/toast';
 import { VersionInfo } from '@/components/admin/VersionInfo';
 import { DeploymentHistory } from '@/components/admin/DeploymentHistory';
+import { EmailManagementConsole } from '@/components/admin/EmailManagementConsole';
 import { 
   ArrowLeft, 
   Settings, 
@@ -602,42 +603,44 @@ export const SystemSettings: React.FC = () => {
           </Card>
         </TabsContent>
 
-            <TabsContent value="email" className="space-y-4">
+            <TabsContent value="email" className="space-y-6">
+              {/* Email Configuration Section */}
               <Card className="bg-white/70 backdrop-blur-sm shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="flex items-center text-slate-800">
                     <div className="rounded-full bg-green-600 p-2 mr-3">
-                      <Mail className="w-5 h-5 text-white" />
+                      <Settings className="w-5 h-5 text-white" />
                     </div>
-                    Email Settings
+                    Email Configuration
                   </CardTitle>
-                  <CardDescription>Email delivery and SMTP configuration</CardDescription>
+                  <CardDescription>Basic email delivery and SMTP configuration</CardDescription>
                 </CardHeader>
-            <CardContent className="space-y-6">
-              {getSettingsByCategory('email').map((setting) => (
-                <div key={setting.id} className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">{setting.key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Label>
-                    <p className="text-sm text-muted-foreground">{setting.description}</p>
-                    {setting.is_sensitive && (
-                      <Badge variant="outline" className="text-xs">
-                        <Key className="w-3 h-3 mr-1" />
-                        Sensitive
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="w-64">
-                    {renderSettingInput(setting)}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                <CardContent className="space-y-6">
+                  {getSettingsByCategory('email').map((setting) => (
+                    <div key={setting.id} className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <Label className="text-sm font-medium">{setting.key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Label>
+                        <p className="text-sm text-muted-foreground">{setting.description}</p>
+                        {setting.is_sensitive && (
+                          <Badge variant="outline" className="text-xs">
+                            <Key className="w-3 h-3 mr-1" />
+                            Sensitive
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="w-64">
+                        {renderSettingInput(setting)}
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
+              {/* Test Email Configuration */}
               <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center text-green-800">
-                    <Mail className="w-5 h-5 mr-2" />
+                    <TestTube className="w-5 h-5 mr-2" />
                     Test Email Configuration
                   </CardTitle>
                   <CardDescription>Send a test email to verify settings</CardDescription>
@@ -667,6 +670,11 @@ export const SystemSettings: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Email Management Console */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-6">
+                <EmailManagementConsole />
+              </div>
         </TabsContent>
 
             <TabsContent value="limits" className="space-y-4">
