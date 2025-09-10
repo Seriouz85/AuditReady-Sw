@@ -5,6 +5,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import ReactFlow, {
   Node,
   Edge,
@@ -20,6 +21,7 @@ import ReactFlow, {
   MiniMap,
   useReactFlow
 } from 'reactflow';
+import { toPng, toSvg } from 'html-to-image';
 import 'reactflow/dist/style.css';
 import '../../styles/layout-fixes.css';
 
@@ -59,6 +61,10 @@ import { NodePropertiesPanel } from './NodePropertiesPanel';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
 // import { BackgroundColorPicker } from './BackgroundColorPicker'; // TODO: Implement background picker
 import SmartNodeTypes from './nodes/SmartNodeTypes';
+import LoadDiagramModal from './components/LoadDiagramModal';
+import SaveDiagramModal from './components/SaveDiagramModal';
+import ClearConfirmationDialog from './components/ClearConfirmationDialog';
+import CollaborationInviteModal from './components/CollaborationInviteModal';
 
 // Types
 interface EnterpriseAREditorProps {
@@ -91,8 +97,13 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showCollaborationModal, setShowCollaborationModal] = useState(false);
 
   // Hooks
+  const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { } = useAccessibility();
   const { } = useReactFlow();
@@ -103,6 +114,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     edges: storeEdges,
     projectName,
     projectDescription,
+    setProjectName,
+    setProjectDescription,
     clearSelection,
     addNode: storeAddNode,
     addEdge: storeAddEdge,
@@ -115,23 +128,475 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     resetDiagram
   } = useDiagramStore();
 
-  // Save and Export Functions
-  const handleSave = useCallback(() => {
-    const diagramData = {
-      nodes,
-      edges,
-      projectName: projectName || 'Untitled Diagram',
-      projectDescription,
-      timestamp: new Date().toISOString(),
-      version: '1.0'
+  // Auto-sizing utility function
+  const calculateNodeSize = useCallback((text: string, description: string = '', shapeType: string = 'rectangle') => {
+    const baseWidth = 120;
+    const baseHeight = 40;
+    const charWidth = 8; // Average character width
+    const lineHeight = 20; // Line height for text
+    
+    // Calculate text dimensions
+    const textLength = text.length;
+    const descLength = description.length;
+    const totalChars = textLength + (descLength > 0 ? descLength * 0.7 : 0); // Description uses smaller font
+    
+    // Calculate required width
+    let width = Math.max(baseWidth, Math.min(totalChars * charWidth + 40, 300));
+    let height = baseHeight;
+    
+    // Add height for description
+    if (description) {
+      height += lineHeight;
+    }
+    
+    // Adjust for long text (wrap to multiple lines)
+    if (textLength > 15) {
+      const lines = Math.ceil(textLength / 15);
+      height = Math.max(height, lines * lineHeight + 20);
+    }
+    
+    // Shape-specific adjustments
+    if (shapeType === 'circle') {
+      const size = Math.max(width, height);
+      width = height = size;
+    } else if (shapeType === 'diamond') {
+      // Diamond shapes need extra space due to rotation
+      width = Math.max(width * 1.2, height * 1.2);
+      height = width;
+    }
+    
+    return { width, height };
+  }, []);
+
+  // Shape adding functionality with auto-sizing
+  const handleAddShape = useCallback((shapeType: string) => {
+    const initialLabel = shapeType.charAt(0).toUpperCase() + shapeType.slice(1);
+    const { width, height } = calculateNodeSize(initialLabel, '', shapeType);
+    
+    const newNode = {
+      id: `${shapeType}-${Date.now()}`,
+      type: 'custom',
+      position: { 
+        x: 400 + Math.random() * 100, // Add slight randomness to avoid overlap
+        y: 200 + Math.random() * 100
+      },
+      data: {
+        label: initialLabel,
+        shape: shapeType,
+        description: '',
+        fillColor: '#dbeafe',
+        strokeColor: '#2563eb',
+        textColor: '#1e293b',
+        autoWidth: width,
+        autoHeight: height
+      },
+      style: {
+        background: '#dbeafe',
+        border: '2px solid #2563eb',
+        borderRadius: shapeType === 'circle' ? '50%' : shapeType === 'diamond' ? '4px' : '8px',
+        color: '#1e293b',
+        padding: '12px 16px',
+        fontSize: '14px',
+        fontWeight: '600',
+        width: `${width}px`,
+        height: `${height}px`,
+        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }
     };
     
-    // Save to localStorage for demo
-    localStorage.setItem('ar-editor-diagram', JSON.stringify(diagramData));
-    console.log('✅ Diagram saved successfully!', diagramData);
+    setNodes(prevNodes => [...prevNodes, newNode]);
+    storeAddNode(newNode);
+    
+    // Enhanced feedback for shape addition
+    console.log(`✅ Added ${shapeType} shape to canvas:`, newNode);
+    
+    // Brief visual feedback (can be enhanced with toast notifications later)
+    const feedback = document.createElement('div');
+    feedback.innerHTML = `✅ ${shapeType.charAt(0).toUpperCase() + shapeType.slice(1)} added!`;
+    feedback.style.cssText = `
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      z-index: 10000;
+      animation: slideIn 0.3s ease-out;
+    `;
+    
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(feedback);
+    
+    // Remove feedback after 2 seconds
+    setTimeout(() => {
+      if (feedback.parentNode) {
+        feedback.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => feedback.remove(), 300);
+      }
+    }, 2000);
+    
+  }, [calculateNodeSize, setNodes, storeAddNode]);
+
+  // Back to dashboard handler
+  const handleBackToDashboard = useCallback(() => {
+    // Navigate back to main dashboard using React Router (preserves auth state)
+    navigate('/app/documents');
+  }, [navigate]);
+
+  // Save and Export Functions - Updated to show save dialog
+  const handleSave = useCallback(() => {
+    console.log('🔥 SAVE BUTTON CLICKED - opening save dialog');
+    setShowSaveModal(true);
+  }, []);
+
+  // Actual save function called from SaveDiagramModal
+  const handleSaveConfirm = useCallback(async (saveData: {
+    projectName: string;
+    projectDescription: string;
+    isPublic: boolean;
+    tags: string[];
+    overwrite?: boolean;
+  }) => {
+    console.log('🔥 SAVE CONFIRMED - handleSaveConfirm called!', saveData);
+    try {
+      const diagramData = {
+        id: `diagram_${Date.now()}`,
+        nodes,
+        edges,
+        projectName: projectName || 'Untitled Process Flow',
+        projectDescription: projectDescription || 'Created with AR Editor',
+        timestamp: new Date().toISOString(),
+        version: '1.0',
+        nodeCount: nodes.length,
+        edgeCount: edges.length,
+        createdBy: 'current-user', // TODO: Get from auth context
+        organizationId: 'current-org', // TODO: Get from auth context
+        isPublic: true, // Shared with organization
+        tags: ['process-flow', 'ar-editor']
+      };
+      
+      // Save to organization shared storage (localStorage simulation for now)
+      const orgDiagrams = JSON.parse(localStorage.getItem('org-shared-diagrams') || '[]');
+      
+      // Check if updating existing diagram
+      const existingIndex = orgDiagrams.findIndex(d => d.projectName === diagramData.projectName);
+      if (existingIndex >= 0) {
+        orgDiagrams[existingIndex] = { ...orgDiagrams[existingIndex], ...diagramData, updatedAt: new Date().toISOString() };
+      } else {
+        orgDiagrams.push(diagramData);
+      }
+      
+      localStorage.setItem('org-shared-diagrams', JSON.stringify(orgDiagrams));
+      localStorage.setItem('ar-editor-last-save', Date.now().toString());
+      
+      // Also save to store for immediate persistence
+      storeSetNodes(nodes);
+      storeSetEdges(edges);
+      
+      console.log('✅ Diagram saved successfully!', diagramData);
+      
+      // Enhanced user feedback with proper toast notification
+      const saveTime = new Date().toLocaleTimeString();
+      
+      // Create a beautiful toast notification
+      const toast = document.createElement('div');
+      toast.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #10b981, #059669);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          font-weight: 600;
+          box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+          z-index: 10000;
+          max-width: 400px;
+          animation: slideInRight 0.3s ease-out;
+        ">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 24px;">✅</div>
+            <div>
+              <div style="font-size: 16px; margin-bottom: 4px;">Diagram Saved Successfully!</div>
+              <div style="font-size: 14px; opacity: 0.9;">
+                📊 ${diagramData.nodeCount} shapes, ${diagramData.edgeCount} connections<br>
+                ⏰ Saved at ${saveTime}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add animation CSS
+      if (!document.querySelector('#toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+          @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      document.body.appendChild(toast);
+      
+      // Remove toast after 4 seconds with animation
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, 4000);
+      
+    } catch (error) {
+      console.error('❌ Save failed:', error);
+      
+      // Error toast
+      const errorToast = document.createElement('div');
+      errorToast.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          font-weight: 600;
+          box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+          z-index: 10000;
+          max-width: 400px;
+          animation: slideInRight 0.3s ease-out;
+        ">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 24px;">❌</div>
+            <div>
+              <div style="font-size: 16px;">Save Failed</div>
+              <div style="font-size: 14px; opacity: 0.9;">Please try again</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(errorToast);
+      setTimeout(() => {
+        if (errorToast.parentNode) {
+          errorToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+          setTimeout(() => errorToast.remove(), 300);
+        }
+      }, 3000);
+    }
   }, [nodes, edges, projectName, projectDescription]);
 
-  const handleExport = useCallback((format: 'png' | 'svg' | 'json' = 'png') => {
+  // Load diagram functionality
+  const handleLoad = useCallback(() => {
+    setShowLoadModal(true);
+  }, []);
+
+  const handleLoadDiagram = useCallback((diagramData: any) => {
+    console.log('🔥 LOADING DIAGRAM:', diagramData);
+    
+    // Load the diagram data into the editor
+    setNodes(diagramData.nodes || []);
+    setEdges(diagramData.edges || []);
+    
+    // Update store
+    storeSetNodes(diagramData.nodes || []);
+    storeSetEdges(diagramData.edges || []);
+    
+    // Update project info
+    setProjectName(diagramData.projectName);
+    setProjectDescription(diagramData.projectDescription);
+    
+    // Success toast
+    const loadToast = document.createElement('div');
+    loadToast.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        z-index: 10000;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 24px;">📂</div>
+          <div>
+            <div style="font-size: 16px; margin-bottom: 4px;">Diagram Loaded Successfully!</div>
+            <div style="font-size: 14px; opacity: 0.9;">
+              📊 ${diagramData.nodeCount || 0} shapes, ${diagramData.edgeCount || 0} connections<br>
+              📁 ${diagramData.projectName}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(loadToast);
+    setTimeout(() => {
+      if (loadToast.parentNode) {
+        loadToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => loadToast.remove(), 300);
+      }
+    }, 4000);
+    
+    setShowLoadModal(false);
+  }, [setNodes, setEdges, storeSetNodes, storeSetEdges, setProjectName, setProjectDescription]);
+
+  // Clear canvas functionality
+  const handleClear = useCallback(() => {
+    setShowClearDialog(true);
+  }, []);
+
+  const handleClearConfirm = useCallback(() => {
+    console.log('🔥 CLEARING CANVAS');
+    
+    // Clear all nodes and edges
+    setNodes([]);
+    setEdges([]);
+    
+    // Update store
+    storeSetNodes([]);
+    storeSetEdges([]);
+    
+    // Clear selection
+    clearSelection();
+    
+    // Success toast
+    const clearToast = document.createElement('div');
+    clearToast.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #f59e0b, #ea580c);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        z-index: 10000;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 24px;">🗑️</div>
+          <div>
+            <div style="font-size: 16px; margin-bottom: 4px;">Canvas Cleared!</div>
+            <div style="font-size: 14px; opacity: 0.9;">
+              Ready for your next masterpiece
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(clearToast);
+    setTimeout(() => {
+      if (clearToast.parentNode) {
+        clearToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => clearToast.remove(), 300);
+      }
+    }, 3000);
+    
+  }, [setNodes, setEdges, storeSetNodes, storeSetEdges, clearSelection]);
+
+  // Present mode handler - true fullscreen like PowerPoint
+  const handlePresentMode = useCallback(async () => {
+    if (selectedMode !== 'present') {
+      setSelectedMode('present');
+      
+      // Hide all panels for clean presentation
+      setActivePanel('');
+      setShowPropertiesPanel(false);
+      setShowEdgePropertiesPanel(false);
+      
+      // Request true fullscreen like PowerPoint
+      try {
+        const editorElement = document.querySelector('.enterprise-ar-editor') as HTMLElement;
+        if (editorElement && document.fullscreenEnabled) {
+          await editorElement.requestFullscreen();
+          setIsFullscreen(true);
+          
+          // Add ESC key handler for fullscreen exit (hidden from user)
+          const handleEscapeKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+              setSelectedMode('design');
+              setIsFullscreen(false);
+              document.removeEventListener('keydown', handleEscapeKey);
+            }
+          };
+          
+          document.addEventListener('keydown', handleEscapeKey);
+          
+          // Handle fullscreen change events
+          const handleFullscreenChange = () => {
+            if (!document.fullscreenElement) {
+              setSelectedMode('design');
+              setIsFullscreen(false);
+              document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            }
+          };
+          
+          document.addEventListener('fullscreenchange', handleFullscreenChange);
+          
+          console.log('🎯 Entered true fullscreen Present mode (PowerPoint style)');
+        } else {
+          // Fallback for browsers that don't support fullscreen
+          setIsFullscreen(true);
+          console.log('🎯 Entered Present mode (fullscreen API not supported)');
+        }
+      } catch (error) {
+        console.warn('Could not enter fullscreen:', error);
+        setIsFullscreen(true); // Fallback to UI fullscreen
+      }
+    } else {
+      // Exit present mode
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+      setSelectedMode('design');
+      setIsFullscreen(false);
+    }
+  }, [selectedMode, isFullscreen]);
+
+  // Collaborate mode handler - TODO: Implement collaboration features
+  const handleCollaborateMode = useCallback(() => {
+    setSelectedMode('collaborate');
+    setShowCollaborationModal(true);
+    console.log('🤝 Switched to Collaborate mode - opening invitation modal');
+  }, []);
+
+  const handleExport = useCallback(async (format: 'png' | 'svg' | 'json' = 'png') => {
+    console.log('🔥 EXPORT BUTTON CLICKED - handleExport called with format:', format);
     const diagramData = {
       nodes,
       edges,
@@ -139,24 +604,279 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       timestamp: new Date().toISOString()
     };
     
+    const fileName = `${diagramData.projectName.replace(/\s+/g, '_')}`;
+    
     if (format === 'json') {
       const dataStr = JSON.stringify(diagramData, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${diagramData.projectName.replace(/\s+/g, '_')}.json`;
+      link.download = `${fileName}.json`;
       link.click();
       URL.revokeObjectURL(url);
-      console.log('📁 Exported as JSON');
-    } else {
-      console.log(`🖼️ Export as ${format.toUpperCase()} - Feature coming soon!`);
+      
+      console.log('📁 Exported as JSON:', { fileName: `${fileName}.json`, size: dataStr.length });
+      
+      // Enhanced export feedback with toast
+      const exportTime = new Date().toLocaleTimeString();
+      
+      const exportToast = document.createElement('div');
+      exportToast.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          font-weight: 600;
+          box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+          z-index: 10000;
+          max-width: 400px;
+          animation: slideInRight 0.3s ease-out;
+        ">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 24px;">📁</div>
+            <div>
+              <div style="font-size: 16px; margin-bottom: 4px;">Export Successful!</div>
+              <div style="font-size: 14px; opacity: 0.9;">
+                📄 ${fileName}.json<br>
+                📦 ${(dataStr.length / 1024).toFixed(1)} KB • ${diagramData.nodes.length} shapes<br>
+                ⏰ ${exportTime}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(exportToast);
+      setTimeout(() => {
+        if (exportToast.parentNode) {
+          exportToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+          setTimeout(() => exportToast.remove(), 300);
+        }
+      }, 4000);
+    } else if (format === 'png' || format === 'svg') {
+      try {
+        // Find the ReactFlow canvas element - look for the main viewport
+        const reactFlowElement = document.querySelector('.react-flow__viewport') || 
+                                 document.querySelector('.react-flow') || 
+                                 document.querySelector('.react-flow__renderer');
+        if (!reactFlowElement) {
+          throw new Error('ReactFlow canvas not found');
+        }
+
+        // Show loading toast
+        const loadingToast = document.createElement('div');
+        loadingToast.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease-out;
+          ">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="font-size: 24px; animation: spin 1s linear infinite;">⏳</div>
+              <div>
+                <div style="font-size: 16px;">Exporting Canvas...</div>
+                <div style="font-size: 14px; opacity: 0.9;">Capturing ${format.toUpperCase()} image</div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(loadingToast);
+
+        // Auto-fit to content bounds - calculate bounding box of all nodes
+        const nodeBounds = nodes.reduce((bounds, node) => {
+          const x = node.position.x;
+          const y = node.position.y;
+          const width = node.width || 150; // Default width
+          const height = node.height || 40; // Default height
+          
+          return {
+            minX: Math.min(bounds.minX, x),
+            minY: Math.min(bounds.minY, y),
+            maxX: Math.max(bounds.maxX, x + width),
+            maxY: Math.max(bounds.maxY, y + height)
+          };
+        }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+
+        // Add padding around content
+        const padding = 100;
+        const contentWidth = Math.max(800, nodeBounds.maxX - nodeBounds.minX + padding * 2);
+        const contentHeight = Math.max(600, nodeBounds.maxY - nodeBounds.minY + padding * 2);
+
+        // Get the main ReactFlow element and temporarily adjust its size for export
+        const mainReactFlowElement = document.querySelector('.react-flow') as HTMLElement;
+        if (!mainReactFlowElement) {
+          throw new Error('ReactFlow element not found');
+        }
+
+        // Store original styles
+        const originalStyle = {
+          width: mainReactFlowElement.style.width,
+          height: mainReactFlowElement.style.height,
+          transform: mainReactFlowElement.style.transform
+        };
+
+        // Temporarily adjust the viewport to fit all content
+        mainReactFlowElement.style.width = `${contentWidth}px`;
+        mainReactFlowElement.style.height = `${contentHeight}px`;
+
+        // Get the viewport element and adjust its transform to show all content
+        const viewport = mainReactFlowElement.querySelector('.react-flow__viewport') as HTMLElement;
+        if (viewport) {
+          // Calculate the transform to center all content
+          const offsetX = -nodeBounds.minX + padding;
+          const offsetY = -nodeBounds.minY + padding;
+          viewport.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1)`;
+        }
+
+        // Wait for React to update the DOM
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Capture the full canvas
+        const exportFunction = format === 'png' ? toPng : toSvg;
+        const dataUrl = await exportFunction(mainReactFlowElement, {
+          quality: 1.0,
+          pixelRatio: 2,
+          backgroundColor: '#ffffff',
+          width: contentWidth,
+          height: contentHeight,
+          style: {
+            transform: 'scale(1)',
+            transformOrigin: 'top left'
+          },
+          filter: (node) => {
+            // Include background, nodes, and edges, but exclude UI controls
+            if (node.classList) {
+              return !node.classList.contains('react-flow__controls') && 
+                     !node.classList.contains('react-flow__minimap') &&
+                     !node.classList.contains('react-flow__panel') &&
+                     !node.classList.contains('react-flow__attribution') &&
+                     !node.hasAttribute('data-floating-ui-portal') &&
+                     !node.closest('[data-floating-ui-portal]');
+            }
+            return true;
+          }
+        });
+
+        // Restore original styles
+        mainReactFlowElement.style.width = originalStyle.width;
+        mainReactFlowElement.style.height = originalStyle.height;
+        mainReactFlowElement.style.transform = originalStyle.transform;
+        if (viewport) {
+          // Reset viewport transform
+          viewport.style.transform = '';
+        }
+
+        // Remove loading toast
+        if (loadingToast.parentNode) {
+          loadingToast.remove();
+        }
+
+        // Create download link
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${fileName}.${format}`;
+        link.click();
+
+        console.log('✅ Successfully exported as', format.toUpperCase());
+
+        // Show success toast
+        const successToast = document.createElement('div');
+        successToast.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease-out;
+          ">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="font-size: 24px;">✅</div>
+              <div>
+                <div style="font-size: 16px;">Export Successful!</div>
+                <div style="font-size: 14px; opacity: 0.9;">
+                  💾 ${fileName}.${format}<br>
+                  📐 Canvas exported as ${format.toUpperCase()}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(successToast);
+        setTimeout(() => {
+          if (successToast.parentNode) {
+            successToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => successToast.remove(), 300);
+          }
+        }, 4000);
+
+      } catch (error) {
+        console.error('❌ Export failed:', error);
+        
+        // Show error toast
+        const errorToast = document.createElement('div');
+        errorToast.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease-out;
+          ">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="font-size: 24px;">❌</div>
+              <div>
+                <div style="font-size: 16px;">Export Failed</div>
+                <div style="font-size: 14px; opacity: 0.9;">Could not capture canvas</div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(errorToast);
+        setTimeout(() => {
+          if (errorToast.parentNode) {
+            errorToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => errorToast.remove(), 300);
+          }
+        }, 3000);
+      }
     }
   }, [nodes, edges, projectName]);
 
   const handleShare = useCallback(() => {
+    console.log('🔗 Share clicked - Opening collaboration modal');
+    setShowCollaborationModal(true);
+    
+    // Legacy share functionality as fallback
     const shareUrl = `${window.location.origin}/shared-diagram/${Date.now()}`;
-    if (navigator.share) {
+    if (navigator.share && false) { // Disabled in favor of collaboration modal
       navigator.share({
         title: projectName || 'Untitled Diagram',
         text: projectDescription || 'Check out my diagram!',
@@ -171,25 +891,52 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   // Beautiful Node Types
   const nodeTypes = useMemo(() => SmartNodeTypes, []);
 
-  // Connection handler
+  // Connection handler with professional straight lines for process flows
   const onConnect = useCallback(
     (params: Connection) => {
-      const newEdge = addEdge({
-        ...params,
-        type: 'smoothstep',
-        animated: true,
-        style: {
-          stroke: currentTheme.colors.accent,
-          strokeWidth: 2
-        }
-      }, edges);
-      setEdges(newEdge);
-      storeAddEdge({
-        id: `edge-${Date.now()}`,
+      const edgeId = `edge-${Date.now()}`;
+      const edgeStyle = {
+        stroke: currentTheme.colors.accent,
+        strokeWidth: 2,
+        strokeDasharray: '0', // Solid line for professional appearance
+        zIndex: 1 // Ensure edges stay below text
+      };
+      
+      const markerEnd = {
+        type: 'arrowclosed' as const,
+        color: currentTheme.colors.accent,
+        strokeWidth: 2,
+        width: 12,
+        height: 12
+      };
+      
+      const newEdge = {
+        id: edgeId,
         source: params.source!,
         target: params.target!,
-        type: 'smoothstep',
-        animated: true
+        sourceHandle: params.sourceHandle,
+        targetHandle: params.targetHandle,
+        type: 'straight', // Professional straight lines
+        animated: false, // Disable animation for cleaner appearance
+        style: edgeStyle,
+        markerEnd,
+        data: {
+          strokeColor: currentTheme.colors.accent,
+          strokeWidth: 2,
+          label: '', // Can be set later via properties panel
+        },
+        zIndex: 1
+      };
+      
+      setEdges((eds) => addEdge(newEdge, eds));
+      storeAddEdge(newEdge);
+      
+      console.log('✨ Created straight edge:', {
+        id: edgeId,
+        type: 'straight',
+        from: params.source,
+        to: params.target,
+        style: 'professional'
       });
     },
     [edges, setEdges, storeAddEdge, currentTheme]
@@ -253,6 +1000,33 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             styleUpdates.color = updates.textColor;
           }
           
+          // Auto-resize if text content changed
+          if (updates.label || updates.description || updates.autoWidth || updates.autoHeight) {
+            if (updates.autoWidth && updates.autoHeight) {
+              // Use provided dimensions
+              styleUpdates.width = `${updates.autoWidth}px`;
+              styleUpdates.height = `${updates.autoHeight}px`;
+            } else if (updates.label || updates.description) {
+              // Recalculate dimensions based on text
+              const newLabel = updates.label || node.data.label || '';
+              const newDescription = updates.description || node.data.description || '';
+              const shapeType = node.data.shape || 'rectangle';
+              
+              const { width: newWidth, height: newHeight } = calculateNodeSize(
+                newLabel, 
+                newDescription, 
+                shapeType
+              );
+              
+              styleUpdates.width = `${newWidth}px`;
+              styleUpdates.height = `${newHeight}px`;
+              
+              // Store dimensions in data for future reference
+              dataUpdates.autoWidth = newWidth;
+              dataUpdates.autoHeight = newHeight;
+            }
+          }
+          
           return {
             ...node,
             data: dataUpdates,
@@ -268,7 +1042,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       });
       return updatedNodes;
     });
-  }, [storeSetNodes]);
+  }, [storeSetNodes, calculateNodeSize]);
 
   // Edge Update Handler - with store sync
   const handleEdgeUpdate = useCallback((edgeId: string, updates: Partial<Edge>) => {
@@ -515,6 +1289,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
 
   // Optimized ReactFlow changes handlers - reduced store syncing for smoother dragging
   const handleNodesChange = useCallback((changes: any) => {
+    console.log('🔥 NODES CHANGE:', changes);
     onNodesChange(changes);
     
     // Only sync to store on drag end, not during dragging for smoother performance
@@ -547,43 +1322,190 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     }
   }, [onEdgesChange, edges, storeSetEdges]);
 
-  // Keyboard shortcuts
+  // Delete selected nodes/edges
+  const handleDeleteSelected = useCallback(() => {
+    console.log('🔥 DELETE KEY PRESSED - handleDeleteSelected called!');
+    const selectedNodeIds = nodes.filter(node => node.selected).map(node => node.id);
+    const selectedEdgeIds = edges.filter(edge => edge.selected).map(edge => edge.id);
+    console.log('Selected nodes for deletion:', selectedNodeIds);
+    console.log('Selected edges for deletion:', selectedEdgeIds);
+    
+    if (selectedNodeIds.length > 0 || selectedEdgeIds.length > 0) {
+      // Remove selected nodes
+      const newNodes = nodes.filter(node => !selectedNodeIds.includes(node.id));
+      // Remove selected edges and edges connected to deleted nodes
+      const newEdges = edges.filter(edge => 
+        !selectedEdgeIds.includes(edge.id) &&
+        !selectedNodeIds.includes(edge.source) &&
+        !selectedNodeIds.includes(edge.target)
+      );
+      
+      setNodes(newNodes);
+      setEdges(newEdges);
+      storeSetNodes(newNodes);
+      storeSetEdges(newEdges);
+      
+      console.log(`✅ Deleted ${selectedNodeIds.length} nodes and ${selectedEdgeIds.length + (edges.length - newEdges.length - selectedEdgeIds.length)} edges`);
+    }
+  }, [nodes, edges, setNodes, setEdges, storeSetNodes, storeSetEdges]);
+
+  // Keyboard shortcuts - ENHANCED MAC SUPPORT for delete functionality
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.metaKey || event.ctrlKey) {
-        switch (event.key) {
-          case 'z':
-            event.preventDefault();
-            if (event.shiftKey) {
-              redo();
-            } else {
-              undo();
-            }
-            break;
-          case 's':
-            event.preventDefault();
-            // Auto-save
-            break;
-          case 'n':
-            event.preventDefault();
-            resetDiagram();
-            break;
-          case 'f':
-            event.preventDefault();
-            setIsFullscreen(!isFullscreen);
-            break;
+      // Skip if user is typing in an input field
+      const target = event.target as HTMLElement;
+      const isInputField = target && (
+        target.tagName === 'INPUT' || 
+        target.tagName === 'TEXTAREA' || 
+        target.contentEditable === 'true' ||
+        target.getAttribute('role') === 'textbox'
+      );
+      
+      console.log('🔥 KEY PRESSED:', {
+        key: event.key,
+        code: event.code,
+        target: target?.tagName,
+        isInputField,
+        metaKey: event.metaKey,
+        ctrlKey: event.ctrlKey,
+        altKey: event.altKey,
+        shiftKey: event.shiftKey
+      });
+      
+      // IMPROVED Mac delete support - handle all delete key variations
+      const isMac = navigator.platform.indexOf('Mac') > -1;
+      const isDeleteKey = (
+        event.key === 'Delete' || 
+        event.key === 'Backspace' ||
+        event.code === 'Delete' ||
+        event.code === 'Backspace' ||
+        event.keyCode === 8 || // Backspace keyCode
+        event.keyCode === 46 || // Delete keyCode
+        // Mac-specific delete combinations - SIMPLIFIED for Mac
+        (isMac && event.key === 'Backspace') || // Regular backspace on Mac should delete
+        // Windows/Linux variations
+        event.key === 'Del'
+      );
+      
+      if (isDeleteKey && !isInputField) {
+        const selectedNodes = nodes.filter(n => n.selected);
+        const selectedEdges = edges.filter(e => e.selected);
+        
+        console.log('🔥 DELETE KEY DETECTED (MAC-ENHANCED)!', {
+          key: event.key,
+          keyCode: event.keyCode,
+          code: event.code,
+          isMac,
+          platform: navigator.platform,
+          selectedNodes: selectedNodes.length,
+          selectedEdges: selectedEdges.length
+        });
+        
+        // Only proceed if there's something to delete
+        if (selectedNodes.length > 0 || selectedEdges.length > 0) {
+          // Prevent default behavior and propagation
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          
+          // Force delete execution
+          handleDeleteSelected();
         }
+        return false;
       }
-
-      if (event.key === 'Escape') {
-        clearSelection();
-        setActivePanel('');
+      
+      // Handle keyboard shortcuts (only when not in input fields)
+      if (!isInputField) {
+        // Meta/Ctrl key combinations
+        if (event.metaKey || event.ctrlKey) {
+          switch (event.key.toLowerCase()) {
+            case 'z':
+              event.preventDefault();
+              event.stopPropagation();
+              if (event.shiftKey) {
+                redo();
+                console.log('🔥 Redo triggered');
+              } else {
+                undo();
+                console.log('🔥 Undo triggered');
+              }
+              break;
+            case 's':
+              event.preventDefault();
+              event.stopPropagation();
+              handleSave();
+              console.log('🔥 Save triggered');
+              break;
+            case 'o':
+              event.preventDefault();
+              event.stopPropagation();
+              handleLoad();
+              console.log('🔥 Load triggered');
+              break;
+            case 'f':
+              if (!event.shiftKey) { // Cmd+F for fullscreen, not search
+                event.preventDefault();
+                event.stopPropagation();
+                setIsFullscreen(!isFullscreen);
+                console.log('🔥 Fullscreen toggled');
+              }
+              break;
+            case 'n':
+              event.preventDefault();
+              event.stopPropagation();
+              resetDiagram();
+              console.log('🔥 New diagram triggered');
+              break;
+            case 'a':
+              // Select all nodes (cross-platform)
+              event.preventDefault();
+              event.stopPropagation();
+              setNodes(prevNodes => prevNodes.map(node => ({ ...node, selected: true })));
+              setEdges(prevEdges => prevEdges.map(edge => ({ ...edge, selected: true })));
+              console.log('🔥 Select all triggered');
+              break;
+          }
+        }
+        
+        // Escape key - clear selections and close panels
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          clearSelection();
+          setActivePanel('');
+          setSelectedNode(null);
+          setSelectedEdge(null);
+          setShowPropertiesPanel(false);
+          setShowEdgePropertiesPanel(false);
+          console.log('🔥 Escape - cleared selections');
+        }
+        
+        // Arrow keys for moving selected nodes (Mac/PC compatible)
+        const isArrowKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.code);
+        if (isArrowKey) {
+          const selectedNodeIds = nodes.filter(node => node.selected).map(node => node.id);
+          if (selectedNodeIds.length > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const moveDistance = event.shiftKey ? 20 : 5; // Hold shift for larger movements
+            const deltaX = event.code === 'ArrowLeft' ? -moveDistance : event.code === 'ArrowRight' ? moveDistance : 0;
+            const deltaY = event.code === 'ArrowUp' ? -moveDistance : event.code === 'ArrowDown' ? moveDistance : 0;
+            
+            setNodes(prevNodes => prevNodes.map(node => 
+              selectedNodeIds.includes(node.id) 
+                ? { ...node, position: { x: node.position.x + deltaX, y: node.position.y + deltaY } }
+                : node
+            ));
+            
+            console.log(`🔥 Arrow key movement: ${event.code}, distance: ${moveDistance}`);
+          }
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, resetDiagram, clearSelection, isFullscreen]);
+  }, [undo, redo, resetDiagram, clearSelection, isFullscreen, handleDeleteSelected, handleSave, handleLoad]);
 
   // Render active panel component
   const renderActivePanel = () => {
@@ -591,6 +1513,31 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     if (!config) return null;
 
     const Component = config.component;
+    
+    // Get current viewport for centering nodes where user is looking
+    const getViewportCenter = () => {
+      const viewport = document.querySelector('.react-flow__viewport');
+      if (viewport) {
+        const rect = viewport.getBoundingClientRect();
+        const transform = viewport.style.transform;
+        const matches = transform.match(/translate\((-?\d+(?:\.\d+)?)px,\s*(-?\d+(?:\.\d+)?)px\)\s*scale\((\d+(?:\.\d+)?)\)/);
+        
+        if (matches) {
+          const [, x, y, scale] = matches;
+          return {
+            x: (rect.width / 2 - parseFloat(x)) / parseFloat(scale),
+            y: (rect.height / 2 - parseFloat(y)) / parseFloat(scale)
+          };
+        }
+      }
+      return { x: 400, y: 200 }; // fallback center
+    };
+    
+    // Pass viewport information to BeautifulNodePalette for better centering
+    if (config.id === 'nodes') {
+      return <Component onClose={() => setActivePanel('')} getViewportCenter={getViewportCenter} />;
+    }
+    
     return <Component onClose={() => setActivePanel('')} />;
   };
 
@@ -695,7 +1642,15 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         <div className="toolbar w-full overflow-hidden">
           <EnterpriseToolbar
             mode={selectedMode}
-            onModeChange={setSelectedMode}
+            onModeChange={(mode) => {
+              if (mode === 'present') {
+                handlePresentMode();
+              } else if (mode === 'collaborate') {
+                handleCollaborateMode();
+              } else {
+                setSelectedMode(mode);
+              }
+            }}
             isPlaying={isPlaying}
             onPlayToggle={() => setIsPlaying(!isPlaying)}
             animationSpeed={animationSpeed}
@@ -707,11 +1662,16 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             onSave={handleSave}
             onExport={handleExport}
             onShare={handleShare}
+            onAddShape={handleAddShape}
+            onBackToDashboard={handleBackToDashboard}
+            onDeleteSelected={handleDeleteSelected}
+            onLoad={handleLoad}
+            onClear={handleClear}
           />
         </div>
 
         {/* ReactFlow Canvas */}
-        <div className="relative h-full w-full overflow-hidden min-h-0">
+        <div className="relative h-full w-full overflow-hidden min-h-0" tabIndex={0}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -724,7 +1684,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             onEdgeClick={handleEdgeClick}
             onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
-            connectionMode={ConnectionMode.Loose}
+            connectionMode={ConnectionMode.Strict} // Changed to Strict for better alignment
+            connectionRadius={20} // Larger connection radius for easier connections
             fitView
             attributionPosition="bottom-left"
             className="bg-transparent"
@@ -735,15 +1696,33 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             nodesDraggable={true}
             nodesConnectable={true}
             elementsSelectable={true}
-            selectNodesOnDrag={false}
+            selectNodesOnDrag={true}
             panOnDrag={true}
             zoomOnScroll={true}
             zoomOnPinch={true}
+            multiSelectionKeyCode="Shift"
+            deleteKeyCode={['Delete', 'Backspace']} // Cross-platform delete support
             minZoom={0.1}
             maxZoom={4}
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-            snapToGrid={false}
-            snapGrid={[15, 15]}
+            snapToGrid={true} // Enable grid snapping for better alignment
+            snapGrid={[20, 20]} // Increased grid size for better alignment
+            // Professional edge defaults
+            defaultEdgeOptions={{
+              type: 'straight',
+              animated: false,
+              style: {
+                strokeWidth: 2,
+                stroke: currentTheme.colors.accent,
+                zIndex: 1
+              },
+              markerEnd: {
+                type: 'arrowclosed',
+                color: currentTheme.colors.accent,
+                width: 12,
+                height: 12
+              }
+            }}
           >
             <Background
               variant={backgroundPatterns.dots}
@@ -910,6 +1889,39 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       <EditorSettings
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
+      />
+
+      {/* Load Diagram Modal */}
+      <LoadDiagramModal
+        isOpen={showLoadModal}
+        onClose={() => setShowLoadModal(false)}
+        onLoad={handleLoadDiagram}
+      />
+
+      {/* Save Diagram Modal */}
+      <SaveDiagramModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        onSave={handleSaveConfirm}
+        initialName={projectName}
+        initialDescription={projectDescription}
+        existingDiagrams={JSON.parse(localStorage.getItem('org-shared-diagrams') || '[]')}
+      />
+
+      {/* Clear Confirmation Dialog */}
+      <ClearConfirmationDialog
+        isOpen={showClearDialog}
+        onClose={() => setShowClearDialog(false)}
+        onConfirm={handleClearConfirm}
+        nodeCount={nodes.length}
+        edgeCount={edges.length}
+      />
+
+      {/* Collaboration Invite Modal */}
+      <CollaborationInviteModal
+        isOpen={showCollaborationModal}
+        onClose={() => setShowCollaborationModal(false)}
+        projectName={projectName || 'Untitled Diagram'}
       />
 
       {/* Color Palette Popup */}

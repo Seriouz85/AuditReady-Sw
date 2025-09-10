@@ -241,17 +241,19 @@ const ColorPalettePopup: React.FC<ColorPalettePopupProps> = ({
                   ))}
 
                   <div className="pt-4 border-t border-gray-200">
-                    <Label className="text-xs font-medium text-gray-700 mb-2">Quick Gradient Builder</Label>
-                    <div className="space-y-2">
-                      <div className="flex space-x-2">
+                    <Label className="text-xs font-medium text-gray-700 mb-3">Quick Gradient Builder</Label>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            const gradient = `linear-gradient(90deg, ${customColor} 0%, #ffffff 100%)`;
+                            const baseColor = customColor || currentColor || '#3b82f6';
+                            const gradient = `linear-gradient(90deg, ${baseColor} 0%, #ffffff 100%)`;
+                            console.log('🎨 Creating horizontal gradient:', gradient);
                             handleColorClick(gradient);
                           }}
-                          className="text-xs flex-1"
+                          className="text-xs flex-1 h-8 hover:bg-blue-50"
                         >
                           → Horizontal
                         </Button>
@@ -259,10 +261,12 @@ const ColorPalettePopup: React.FC<ColorPalettePopupProps> = ({
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            const gradient = `linear-gradient(180deg, ${customColor} 0%, #ffffff 100%)`;
+                            const baseColor = customColor || currentColor || '#3b82f6';
+                            const gradient = `linear-gradient(180deg, ${baseColor} 0%, #ffffff 100%)`;
+                            console.log('🎨 Creating vertical gradient:', gradient);
                             handleColorClick(gradient);
                           }}
-                          className="text-xs flex-1"
+                          className="text-xs flex-1 h-8 hover:bg-blue-50"
                         >
                           ↓ Vertical
                         </Button>
@@ -270,13 +274,26 @@ const ColorPalettePopup: React.FC<ColorPalettePopupProps> = ({
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            const gradient = `linear-gradient(135deg, ${customColor} 0%, #ffffff 100%)`;
+                            const baseColor = customColor || currentColor || '#3b82f6';
+                            const gradient = `linear-gradient(135deg, ${baseColor} 0%, #ffffff 100%)`;
+                            console.log('🎨 Creating diagonal gradient:', gradient);
                             handleColorClick(gradient);
                           }}
-                          className="text-xs flex-1"
+                          className="text-xs flex-1 h-8 hover:bg-blue-50"
                         >
                           ↘ Diagonal
                         </Button>
+                      </div>
+                      
+                      {/* Preview of current gradient */}
+                      <div className="text-center">
+                        <Label className="text-[10px] text-gray-500 mb-1 block">Preview</Label>
+                        <div 
+                          className="w-full h-6 rounded border-2 border-gray-200"
+                          style={{
+                            background: `linear-gradient(90deg, ${customColor || currentColor || '#3b82f6'} 0%, #ffffff 100%)`
+                          }}
+                        />
                       </div>
                     </div>
                   </div>

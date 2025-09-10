@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DocumentFormatter from "./DocumentFormatter";
-// import ProfessionalEditor from "./ProfessionalEditor";
+import { ReactFlowProvider } from 'reactflow';
+import EnterpriseAREditor from '../editor/EnterpriseAREditor';
+import { ThemeProvider } from '../editor/themes/AdvancedThemeSystem';
+import { AccessibilityProvider } from '../editor/accessibility/AccessibilitySystem';
 import {
   Box,
   Typography,
@@ -134,17 +137,6 @@ const documentTypes: DocumentType[] = [
     ]
   },
   {
-    id: 'create-custom',
-    name: 'AR Editor (Legacy)',
-    description: 'Create professional diagrams with our AuditReady Editor - featuring 14+ diagram types, modern design, audit-specific themes, and AI-powered workflow creation',
-    icon: <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><BrushIcon /><AIIcon sx={{ fontSize: '0.9em' }} /></Box>,
-    initialQuestions: [
-      'What type of diagram would you like to create? (Flowchart, Sequence, Gantt, etc.)',
-      'Would you prefer to start with a template or write Mermaid syntax?',
-      'What is the primary purpose of this diagram?'
-    ]
-  },
-  {
     id: 'enterprise-ar-editor',
     name: '🚀 Enterprise AR Editor',
     description: 'NEW! Jaw-dropping AI-powered enterprise diagram editor with 50+ templates, real-time collaboration, stunning animations, and professional themes. Transformed from F- to A+ level!',
@@ -189,14 +181,6 @@ const DocumentGenerator = ({ apiKey }: DocumentGeneratorProps) => {
   // Handle document type selection
   const handleTypeSelection = () => {
     if (!selectedType) return;
-
-    // If it's the graphical editor option, open the standalone editor in a new window
-    if (selectedType === 'create-custom') {
-      window.open('/editor', '_blank');
-      // Reset the selected type to prevent further processing
-      setSelectedType('');
-      return;
-    }
 
     // If it's the new Enterprise AR Editor, open the AR Editor Showcase
     if (selectedType === 'enterprise-ar-editor') {
@@ -811,11 +795,13 @@ Create the complete "${processName}" process document now, formatted for immedia
   //   }
   // }, [showGraphicalEditor]);
 
-  // Handler function to open the graphical editor
-  const openGraphicalEditor = React.useCallback(() => {
-    console.log('Opening professional diagram editor');
-    // Navigate directly to the graphical editor
-    window.location.href = '/editor';
+  // State for showing the Enterprise AR Editor
+  const [showEnterpriseEditor, setShowEnterpriseEditor] = useState(false);
+
+  // Handler function to open the Enterprise AR Editor
+  const openEnterpriseAREditor = React.useCallback(() => {
+    console.log('Opening Enterprise AR Editor');
+    setShowEnterpriseEditor(true);
   }, []);
 
   // Handler to return from graphical editor - not used currently but kept for reference
@@ -823,6 +809,31 @@ Create the complete "${processName}" process document now, formatted for immedia
   //   console.log('Returning from diagram editor');
   //   setShowGraphicalEditor(false);
   // }, []);
+
+  // Show Enterprise AR Editor directly without marketing page
+  if (showEnterpriseEditor) {
+    return (
+      <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 1000 }}>
+          <Button
+            onClick={() => setShowEnterpriseEditor(false)}
+            variant="contained"
+            color="secondary"
+            startIcon={<EditIcon />}
+          >
+            Back to Document Generator
+          </Button>
+        </Box>
+        <ThemeProvider>
+          <AccessibilityProvider>
+            <ReactFlowProvider>
+              <EnterpriseAREditor />
+            </ReactFlowProvider>
+          </AccessibilityProvider>
+        </ThemeProvider>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{
@@ -951,10 +962,7 @@ Create the complete "${processName}" process document now, formatted for immedia
                     key={type.id}
                     elevation={0}
                     onClick={() => {
-                      if (type.id === 'create-custom') {
-                        // Use the dedicated handler for opening the dialog
-                        openGraphicalEditor();
-                      } else if (type.id === 'enterprise-ar-editor') {
+                      if (type.id === 'enterprise-ar-editor') {
                         // Open the new Enterprise AR Editor
                         window.open('/ar-editor-showcase', '_blank');
                       } else {
@@ -967,7 +975,7 @@ Create the complete "${processName}" process document now, formatted for immedia
                       borderRadius: 2,
                       cursor: 'pointer',
                       border: '1px solid',
-                      borderColor: type.id === 'enterprise-ar-editor' ? 'error.main' : type.id === 'create-custom' ? 'primary.main' : 'divider',
+                      borderColor: type.id === 'enterprise-ar-editor' ? 'error.main' : 'divider',
                       transition: 'all 0.2s',
                       '&:hover': {
                         boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
@@ -984,10 +992,6 @@ Create the complete "${processName}" process document now, formatted for immedia
                         boxShadow: '0 8px 24px rgba(255,82,82,0.15)',
                         transform: 'scale(1.02)'
                       }),
-                      ...(type.id === 'create-custom' && {
-                        background: 'linear-gradient(45deg, rgba(0,171,85,0.05), rgba(0,123,85,0.05))',
-                        borderWidth: '2px'
-                      })
                     }}
                   >
                     {type.id === 'enterprise-ar-editor' && (
@@ -1010,33 +1014,12 @@ Create the complete "${processName}" process document now, formatted for immedia
                         🔥 NEW
                       </Box>
                     )}
-                    {type.id === 'create-custom' && (
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: -10,
-                          right: -10,
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                          fontSize: '0.65rem',
-                          fontWeight: 'bold',
-                          px: 1,
-                          py: 0.5,
-                          borderRadius: '10px',
-                          boxShadow: '0 2px 8px rgba(0,171,85,0.24)'
-                        }}
-                      >
-                        LEGACY
-                      </Box>
-                    )}
                     <Box
                       sx={{
                         bgcolor: type.id === 'enterprise-ar-editor' 
                           ? 'linear-gradient(45deg, #FF5252, #FFAB00)' 
-                          : type.id === 'create-custom' 
-                          ? 'primary.main' 
                           : 'primary.lighter',
-                        color: (type.id === 'create-custom' || type.id === 'enterprise-ar-editor') ? 'white' : 'primary.main',
+                        color: type.id === 'enterprise-ar-editor' ? 'white' : 'primary.main',
                         borderRadius: '50%',
                         width: 48,
                         height: 48,

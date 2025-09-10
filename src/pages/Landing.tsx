@@ -21,7 +21,18 @@ import {
   ClipboardCheck,
   Building2,
   Crown,
-  Clock
+  Clock,
+  Target,
+  TrendingUp,
+  Folder,
+  Database,
+  Activity,
+  Gauge,
+  Layers,
+  Cpu,
+  Brain,
+  Eye,
+  Briefcase
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -463,7 +474,10 @@ export default function Landing() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold`}>Compliance Score</h3>
-                        <PieChart className={`h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                        <div className="relative">
+                          <div className={`absolute -inset-1 rounded-full ${theme === 'light' ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : 'bg-gradient-to-r from-blue-400 to-indigo-400'} opacity-25 blur animate-spin`} style={{animationDuration: '8s'}}></div>
+                          <Gauge className={`relative h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                        </div>
                       </div>
                       <div className={`text-3xl font-bold ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`}>87%</div>
                       <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} text-sm mt-2`}>+12% from last month</p>
@@ -473,7 +487,10 @@ export default function Landing() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold`}>Active Assessments</h3>
-                        <ClipboardCheck className={`h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                        <div className="relative">
+                          <div className={`absolute -inset-1 rounded-full ${theme === 'light' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'} opacity-20 blur animate-pulse`}></div>
+                          <Target className={`relative h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                        </div>
                       </div>
                       <div className={`text-3xl font-bold ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`}>12</div>
                       <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} text-sm mt-2`}>3 due this week</p>
@@ -483,7 +500,10 @@ export default function Landing() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} font-semibold`}>Risk Score</h3>
-                        <LineChart className={`h-5 w-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                        <div className="relative">
+                          <div className={`absolute -inset-1 rounded-full ${theme === 'light' ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-green-400 to-emerald-400'} opacity-30 blur animate-pulse`}></div>
+                          <TrendingUp className={`relative h-5 w-5 ${theme === 'light' ? 'text-green-600' : 'text-green-500'} animate-bounce`} style={{animationDuration: '3s'}} />
+                        </div>
                       </div>
                       <div className="text-3xl font-bold text-green-500">Low</div>
                       <p className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} text-sm mt-2`}>No critical findings</p>
@@ -516,8 +536,9 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className={`rounded-full ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'} p-3`}>
-                  <CheckCircle2 className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                <div className={`relative rounded-full ${theme === 'light' ? 'bg-gradient-to-br from-emerald-100 to-green-100' : 'bg-gradient-to-br from-emerald-500/20 to-green-500/20'} p-3 overflow-hidden group`}>
+                  <div className={`absolute -inset-2 rounded-full ${theme === 'light' ? 'bg-gradient-to-r from-emerald-400 to-green-500' : 'bg-gradient-to-r from-emerald-400 to-green-400'} opacity-20 blur-lg group-hover:opacity-50 transition-all duration-300`}></div>
+                  <Cpu className={`relative h-6 w-6 ${theme === 'light' ? 'text-emerald-600' : 'text-emerald-500'} transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`} />
                 </div>
                 <div>
                   <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>Smart Control Mapping</h3>
@@ -528,8 +549,9 @@ export default function Landing() {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className={`rounded-full ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'} p-3`}>
-                  <BarChart3 className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                <div className={`relative rounded-full ${theme === 'light' ? 'bg-gradient-to-br from-blue-100 to-purple-100' : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'} p-3 overflow-hidden`}>
+                  <div className={`absolute -inset-2 rounded-full ${theme === 'light' ? 'bg-gradient-to-r from-blue-400 to-purple-500' : 'bg-gradient-to-r from-blue-400 to-purple-400'} opacity-20 blur-lg animate-pulse`}></div>
+                  <Activity className={`relative h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'} animate-pulse`} />
                 </div>
                 <div>
                   <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>Real-time Progress Tracking</h3>
@@ -540,8 +562,9 @@ export default function Landing() {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className={`rounded-full ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-500/20'} p-3`}>
-                  <FileText className={`h-6 w-6 ${theme === 'light' ? 'text-blue-600' : 'text-blue-500'}`} />
+                <div className={`relative rounded-full ${theme === 'light' ? 'bg-gradient-to-br from-green-100 to-blue-100' : 'bg-gradient-to-br from-green-500/20 to-blue-500/20'} p-3 overflow-hidden group`}>
+                  <div className={`absolute -inset-2 rounded-full ${theme === 'light' ? 'bg-gradient-to-r from-green-400 to-blue-500' : 'bg-gradient-to-r from-green-400 to-blue-400'} opacity-20 blur-lg group-hover:opacity-40 transition-opacity`}></div>
+                  <Database className={`relative h-6 w-6 ${theme === 'light' ? 'text-green-600' : 'text-green-500'} transform group-hover:scale-110 transition-transform`} />
                 </div>
                 <div>
                   <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-2`}>Evidence Management</h3>
@@ -673,8 +696,9 @@ export default function Landing() {
 
             <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10 border-purple-500/30'}`}>
               <CardContent className="p-6">
-                <div className={`rounded-full ${theme === 'light' ? 'bg-purple-600' : 'bg-purple-500'} p-3 w-fit mb-4`}>
-                  <FileText className="h-6 w-6 text-white" />
+                <div className={`relative rounded-full ${theme === 'light' ? 'bg-gradient-to-br from-purple-600 to-indigo-600' : 'bg-gradient-to-br from-purple-500 to-indigo-500'} p-3 w-fit mb-4 overflow-hidden group`}>
+                  <div className="absolute -inset-1 rounded-full bg-white/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
+                  <Layers className="relative h-6 w-6 text-white transform group-hover:scale-110 transition-transform" />
                 </div>
                 <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
                   Complete Audit Trails
@@ -701,8 +725,9 @@ export default function Landing() {
 
             <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 border-orange-200' : 'bg-gradient-to-br from-orange-900/20 to-orange-800/10 border-orange-500/30'}`}>
               <CardContent className="p-6">
-                <div className={`rounded-full ${theme === 'light' ? 'bg-orange-600' : 'bg-orange-500'} p-3 w-fit mb-4`}>
-                  <BarChart3 className="h-6 w-6 text-white" />
+                <div className={`relative rounded-full ${theme === 'light' ? 'bg-gradient-to-br from-orange-600 to-red-500' : 'bg-gradient-to-br from-orange-500 to-red-400'} p-3 w-fit mb-4 overflow-hidden group`}>
+                  <div className="absolute -inset-1 rounded-full bg-white/30 blur-md opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <Gauge className="relative h-6 w-6 text-white transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-300" />
                 </div>
                 <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
                   Custom Dashboard Builder
@@ -878,8 +903,9 @@ export default function Landing() {
 
             <Card className={`${theme === 'light' ? 'bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200' : 'bg-gradient-to-br from-purple-900/20 to-purple-800/10 border-purple-500/30'}`}>
               <CardContent className="p-6">
-                <div className={`rounded-full ${theme === 'light' ? 'bg-purple-600' : 'bg-purple-500'} p-3 w-fit mb-4`}>
-                  <BarChart3 className="h-6 w-6 text-white" />
+                <div className={`relative rounded-full ${theme === 'light' ? 'bg-gradient-to-br from-purple-600 via-violet-600 to-blue-600' : 'bg-gradient-to-br from-purple-500 via-violet-500 to-blue-500'} p-3 w-fit mb-4 overflow-hidden group`}>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity animate-spin"></div>
+                  <Brain className="relative h-6 w-6 text-white transform group-hover:scale-110 transition-transform z-10" />
                 </div>
                 <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} mb-3`}>
                   Analytics Dashboard

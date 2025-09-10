@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Mail, Building, User, X, Check, AlertTriangle, FileEdit, Trash2, Shield, CheckSquare, ExternalLink, FileText, FileDown } from "lucide-react";
+import { Plus, Search, Filter, Mail, Building, User, X, Check, AlertTriangle, FileEdit, Trash2, Shield, CheckSquare, ExternalLink, FileText, FileDown, Save } from "lucide-react";
 import { suppliers as initialSuppliers, internalUsers, standards, requirements } from "@/data/mockData";
 import { InternalUser, Supplier, SupplierStandard, Requirement, Standard, RequirementStatus } from "@/types";
 import { toast } from "@/utils/toast";
@@ -76,6 +76,8 @@ const Suppliers = () => {
   const [isReportPreviewVisible, setIsReportPreviewVisible] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isEnhancedReviewOpen, setIsEnhancedReviewOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedSupplier, setEditedSupplier] = useState<Supplier | null>(null);
   
   // Ref for the modal container to handle click-outside
   const modalRef = useRef<HTMLDivElement>(null);
@@ -99,8 +101,31 @@ const Suppliers = () => {
   const [selectedRequirements, setSelectedRequirements] = useState<Record<string, boolean>>({});
   const [activeStandardId, setActiveStandardId] = useState<string>('');
   
-  // Get filtered suppliers
-  const filteredSuppliers = suppliers.filter((supplier) => {
+  // Function to calculate supplier risk score
+  const calculateSupplierRiskScore = (supplier: Supplier): number => {
+    // This is a placeholder calculation - in production, this would be based on actual assessment responses
+    // For now, we'll use a simple calculation based on associated standards
+    if (supplier.associatedStandards.length === 0) return 0;
+    
+    const completedStandards = supplier.associatedStandards.filter(s => s.status === 'completed').length;
+    const totalStandards = supplier.associatedStandards.length;
+    
+    if (totalStandards === 0) return 0;
+    
+    // Calculate base score (higher is better)
+    const baseScore = (completedStandards / totalStandards) * 100;
+    
+    // Add some randomness for demo purposes (in production, this would be based on actual fulfillment levels)
+    const variance = Math.random() * 20 - 10; // +/- 10%
+    
+    return Math.round(Math.max(0, Math.min(100, baseScore + variance)));
+  };
+
+  // Get filtered suppliers with risk scores
+  const filteredSuppliers = suppliers.map(supplier => ({
+    ...supplier,
+    riskScore: calculateSupplierRiskScore(supplier)
+  })).filter((supplier) => {
     const matchesSearch = 
       supplier.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       supplier.organizationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -133,12 +158,142 @@ const Suppliers = () => {
 
   const handleViewSupplier = (supplier: Supplier) => {
     setSelectedSupplier(supplier);
+    setEditedSupplier(supplier);
+    setIsEditMode(false);
     setIsEnhancedReviewOpen(true);
   };
 
   const handleCloseEnhancedReview = () => {
     setIsEnhancedReviewOpen(false);
     setSelectedSupplier(null);
+    setEditedSupplier(null);
+    setIsEditMode(false);
+  };
+
+  const handleEditMode = () => {
+    setIsEditMode(true);
+    setEditedSupplier(selectedSupplier);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setEditedSupplier(selectedSupplier);
+  };
+
+  const handleSaveSupplier = () => {
+    if (!editedSupplier || !selectedSupplier) return;
+
+    // Update the supplier in the list
+    setSuppliers(prevSuppliers =>
+      prevSuppliers.map(s =>
+        s.id === selectedSupplier.id ? editedSupplier : s
+      )
+    );
+
+    // Update the selected supplier
+    setSelectedSupplier(editedSupplier);
+    setIsEditMode(false);
+    toast.success("Supplier details updated successfully");
+  };
+
+  const handleEditFieldChange = (field: string, value: any) => {
+    if (!editedSupplier) return;
+
+    if (field.includes('.')) {
+      // Handle nested fields (e.g., contact.name)
+      const [parent, child] = field.split('.');
+      setEditedSupplier({
+        ...editedSupplier,
+        [parent]: {
+          ...(editedSupplier as any)[parent],
+          [child]: value
+        }
+      });
+    } else {
+      setEditedSupplier({
+        ...editedSupplier,
+        [field]: value
+      });
+    }
+  };
+
+  const handleExportAssessment = (standard: SupplierStandard) => {
+    if (!selectedSupplier) return;
+    
+    const assessmentData = {
+      supplier: {
+        name: selectedSupplier.name,
+        organizationNumber: selectedSupplier.organizationNumber,
+        contact: selectedSupplier.contact,
+        category: selectedSupplier.category
+      },
+      assessment: {
+        standardName: getStandardName(standard.standardId),
+        status: standard.status,
+        sentDate: standard.sentDate,
+        completedDate: standard.completedDate,
+        requirementsCount: standard.requirementIds.length
+      },
+      exportDate: new Date().toISOString(),
+      exportType: 'individual_assessment'
+    };
+
+    const dataStr = JSON.stringify(assessmentData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${selectedSupplier.name.replace(/\s+/g, '_')}_${getStandardName(standard.standardId).replace(/\s+/g, '_')}_assessment.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    toast.success('Assessment data exported successfully');
+  };
+
+  const handleExportAllAssessments = () => {
+    if (!selectedSupplier) return;
+
+    const allAssessmentsData = {
+      supplier: {
+        name: selectedSupplier.name,
+        organizationNumber: selectedSupplier.organizationNumber,
+        contact: selectedSupplier.contact,
+        internalResponsible: selectedSupplier.internalResponsible,
+        category: selectedSupplier.category,
+        status: selectedSupplier.status,
+        riskScore: filteredSuppliers.find(s => s.id === selectedSupplier.id)?.riskScore || 0
+      },
+      assessments: selectedSupplier.associatedStandards.map(standard => ({
+        standardName: getStandardName(standard.standardId),
+        standardId: standard.standardId,
+        status: standard.status,
+        sentDate: standard.sentDate,
+        completedDate: standard.completedDate,
+        requirementIds: standard.requirementIds,
+        requirementsCount: standard.requirementIds.length
+      })),
+      summary: {
+        totalAssessments: selectedSupplier.associatedStandards.length,
+        completedAssessments: selectedSupplier.associatedStandards.filter(s => s.status === 'completed').length,
+        inProgressAssessments: selectedSupplier.associatedStandards.filter(s => s.status === 'in-progress').length,
+        draftAssessments: selectedSupplier.associatedStandards.filter(s => s.status === 'draft').length
+      },
+      exportDate: new Date().toISOString(),
+      exportType: 'complete_supplier_profile'
+    };
+
+    const dataStr = JSON.stringify(allAssessmentsData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${selectedSupplier.name.replace(/\s+/g, '_')}_complete_assessment_data.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    toast.success('Complete assessment data exported successfully');
   };
 
   const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -546,6 +701,20 @@ const Suppliers = () => {
     }
   };
 
+  const getRiskScoreBadge = (score: number) => {
+    if (score >= 80) {
+      return <Badge className="bg-green-500 text-white">{score}%</Badge>;
+    } else if (score >= 60) {
+      return <Badge className="bg-yellow-500 text-white">{score}%</Badge>;
+    } else if (score >= 40) {
+      return <Badge className="bg-orange-500 text-white">{score}%</Badge>;
+    } else if (score > 0) {
+      return <Badge className="bg-red-500 text-white">{score}%</Badge>;
+    } else {
+      return <Badge variant="outline" className="text-gray-500">N/A</Badge>;
+    }
+  };
+
   // Add this function to directly export PDF without opening the review dialog
   const handleDirectPDFExport = (standardId: string) => {
     if (!selectedSupplier) return;
@@ -616,24 +785,43 @@ const Suppliers = () => {
           </div>
           
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleOpenStandardsDialog}>
-              <CheckSquare className="mr-2 h-4 w-4" />
-              Quick Setup
-            </Button>
-            <Button 
-              onClick={() => setIsEnhancedReviewOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-            >
-              <Shield className="mr-2 h-4 w-4" />
-              Assessment
-            </Button>
-            <Button variant="outline" onClick={() => {
-              toast.info('Feature Preview: Full supplier portal with external access coming next!');
-              window.open('/supplier-portal?email=demo@example.com&token=demo-token', '_blank');
-            }}>
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Supplier Portal
-            </Button>
+            {!isEditMode ? (
+              <>
+                <Button variant="outline" onClick={handleEditMode}>
+                  <FileEdit className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+                <Button variant="outline" onClick={handleOpenStandardsDialog}>
+                  <CheckSquare className="mr-2 h-4 w-4" />
+                  Quick Setup
+                </Button>
+                <Button 
+                  onClick={() => setIsEnhancedReviewOpen(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+                >
+                  <Shield className="mr-2 h-4 w-4" />
+                  Assessment
+                </Button>
+                <Button variant="outline" onClick={() => {
+                  toast.info('Feature Preview: Full supplier portal with external access coming next!');
+                  window.open('/supplier-portal?email=demo@example.com&token=demo-token', '_blank');
+                }}>
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Supplier Portal
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={handleCancelEdit}>
+                  <X className="mr-2 h-4 w-4" />
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveSupplier} className="bg-green-600 hover:bg-green-700 text-white">
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </Button>
+              </>
+            )}
           </div>
         </div>
         
@@ -657,27 +845,52 @@ const Suppliers = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Category</h3>
-                  <p>{selectedSupplier.category || 'N/A'}</p>
+                  {isEditMode ? (
+                    <Input
+                      value={editedSupplier?.category || ''}
+                      onChange={(e) => handleEditFieldChange('category', e.target.value)}
+                      placeholder="E.g. Cloud Services, Hardware"
+                    />
+                  ) : (
+                    <p>{selectedSupplier.category || 'N/A'}</p>
+                  )}
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Website</h3>
-                  {selectedSupplier.website ? (
-                    <a 
-                      href={selectedSupplier.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline flex items-center gap-1"
-                    >
-                      {selectedSupplier.website}
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                  {isEditMode ? (
+                    <Input
+                      value={editedSupplier?.website || ''}
+                      onChange={(e) => handleEditFieldChange('website', e.target.value)}
+                      placeholder="https://example.com"
+                    />
                   ) : (
-                    <p>N/A</p>
+                    selectedSupplier.website ? (
+                      <a 
+                        href={selectedSupplier.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline flex items-center gap-1"
+                      >
+                        {selectedSupplier.website}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : (
+                      <p>N/A</p>
+                    )
                   )}
                 </div>
                 <div className="md:col-span-2">
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
-                  <p>{selectedSupplier.address || 'N/A'}</p>
+                  {isEditMode ? (
+                    <Textarea
+                      value={editedSupplier?.address || ''}
+                      onChange={(e) => handleEditFieldChange('address', e.target.value)}
+                      placeholder="Full postal address"
+                      rows={2}
+                    />
+                  ) : (
+                    <p>{selectedSupplier.address || 'N/A'}</p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -690,50 +903,187 @@ const Suppliers = () => {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Contact Person</h3>
-                <p className="font-medium">{selectedSupplier.contact.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedSupplier.contact.title || 'N/A'}</p>
+                {isEditMode ? (
+                  <>
+                    <Input
+                      value={editedSupplier?.contact.name || ''}
+                      onChange={(e) => handleEditFieldChange('contact.name', e.target.value)}
+                      placeholder="Contact name"
+                      className="mb-2"
+                    />
+                    <Input
+                      value={editedSupplier?.contact.title || ''}
+                      onChange={(e) => handleEditFieldChange('contact.title', e.target.value)}
+                      placeholder="Job title"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <p className="font-medium">{selectedSupplier.contact.name}</p>
+                    <p className="text-sm text-muted-foreground">{selectedSupplier.contact.title || 'N/A'}</p>
+                  </>
+                )}
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
-                <p>{selectedSupplier.contact.email}</p>
+                {isEditMode ? (
+                  <Input
+                    type="email"
+                    value={editedSupplier?.contact.email || ''}
+                    onChange={(e) => handleEditFieldChange('contact.email', e.target.value)}
+                    placeholder="contact@example.com"
+                  />
+                ) : (
+                  <p>{selectedSupplier.contact.email}</p>
+                )}
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Phone</h3>
-                <p>{selectedSupplier.contact.phone || 'N/A'}</p>
+                {isEditMode ? (
+                  <Input
+                    value={editedSupplier?.contact.phone || ''}
+                    onChange={(e) => handleEditFieldChange('contact.phone', e.target.value)}
+                    placeholder="+1 (555) 123-4567"
+                  />
+                ) : (
+                  <p>{selectedSupplier.contact.phone || 'N/A'}</p>
+                )}
               </div>
               <div className="pt-2 border-t">
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Internal Responsible</h3>
-                <p className="font-medium">{selectedSupplier.internalResponsible.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedSupplier.internalResponsible.department || 'N/A'}</p>
-                <p className="text-sm">{selectedSupplier.internalResponsible.email}</p>
+                {isEditMode ? (
+                  <Select 
+                    value={editedSupplier?.internalResponsible.id || ''} 
+                    onValueChange={(value) => {
+                      const selectedUser = internalUsers.find(user => user.id === value);
+                      if (selectedUser) {
+                        handleEditFieldChange('internalResponsible', {
+                          id: selectedUser.id,
+                          name: selectedUser.name,
+                          email: selectedUser.email,
+                          department: selectedUser.department
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select responsible person" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {internalUsers.map(user => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} ({user.department})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <>
+                    <p className="font-medium">{selectedSupplier.internalResponsible.name}</p>
+                    <p className="text-sm text-muted-foreground">{selectedSupplier.internalResponsible.department || 'N/A'}</p>
+                    <p className="text-sm">{selectedSupplier.internalResponsible.email}</p>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
         
-        {/* Assessment Action Card */}
-        <Card>
-          <CardContent className="py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Shield className="h-8 w-8 text-blue-600" />
-                <div>
-                  <h3 className="text-lg font-semibold">Supplier Assessment</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Create and manage comprehensive security assessments
-                  </p>
+        {/* Assessment History & Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Assessment History */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Assessment History
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {selectedSupplier.associatedStandards.length > 0 ? (
+                <>
+                  {selectedSupplier.associatedStandards.map((standard, index) => {
+                    const standardInfo = standards.find(s => s.id === standard.standardId);
+                    const lastReview = standard.sentDate ? new Date(standard.sentDate) : null;
+                    
+                    return (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-medium">{getStandardName(standard.standardId)}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {lastReview ? `Last review: ${lastReview.toLocaleDateString()}` : 'No reviews yet'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {standard.requirementIds.length} requirements
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getRequirementStatus(standard.status)}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleExportAssessment(standard)}
+                          >
+                            <FileDown className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              ) : (
+                <div className="text-center py-6 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">No assessments conducted yet</p>
+                  <p className="text-xs">Launch an assessment to get started</p>
                 </div>
-              </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Assessment Action Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Shield className="h-5 w-5 text-blue-600" />
+                New Assessment
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-4">
+                Create and manage comprehensive security assessments with your suppliers.
+              </p>
+              
+              {/* Risk Score Display */}
+              {filteredSuppliers.find(s => s.id === selectedSupplier.id) && (
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium">Current Risk Score</p>
+                    <p className="text-xs text-muted-foreground">Based on latest assessments</p>
+                  </div>
+                  {getRiskScoreBadge(filteredSuppliers.find(s => s.id === selectedSupplier.id)?.riskScore || 0)}
+                </div>
+              )}
+              
               <Button 
                 onClick={() => setIsEnhancedReviewOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
               >
                 <Shield className="mr-2 h-4 w-4" />
                 Launch Assessment
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+              
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleExportAllAssessments()}
+              >
+                <FileDown className="mr-2 h-4 w-4" />
+                Export All Data
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Replace the old Manage Standards/Requirements Dialog */}
         <Dialog open={isStandardsOpen} onOpenChange={setIsStandardsOpen}>
@@ -1326,6 +1676,10 @@ const Suppliers = () => {
                     <div><span className="font-medium">Contact:</span> {supplier.contact.name}</div>
                     <div><span className="font-medium">Responsible:</span> {supplier.internalResponsible.name}</div>
                     <div className="flex items-center">
+                      <span className="font-medium mr-2">Risk Score:</span>
+                      {getRiskScoreBadge(supplier.riskScore)}
+                    </div>
+                    <div className="flex items-center">
                       <span className="font-medium mr-2">Status:</span>
                       {getStatusBadge(supplier.status)}
                     </div>
@@ -1344,6 +1698,7 @@ const Suppliers = () => {
                   <TableHead className="min-w-[120px] hidden md:table-cell">Category</TableHead>
                   <TableHead className="min-w-[150px]">Contact</TableHead>
                   <TableHead className="min-w-[150px] hidden lg:table-cell">Internal Responsible</TableHead>
+                  <TableHead className="min-w-[100px]">Risk Score</TableHead>
                   <TableHead className="min-w-[100px]">Status</TableHead>
                   <TableHead className="text-right min-w-[100px]">Actions</TableHead>
                 </TableRow>
@@ -1355,6 +1710,7 @@ const Suppliers = () => {
                     <TableCell className="hidden md:table-cell">{supplier.category || 'N/A'}</TableCell>
                     <TableCell>{supplier.contact.name}</TableCell>
                     <TableCell className="hidden lg:table-cell">{supplier.internalResponsible.name}</TableCell>
+                    <TableCell>{getRiskScoreBadge(supplier.riskScore)}</TableCell>
                     <TableCell>{getStatusBadge(supplier.status)}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" onClick={(e) => {

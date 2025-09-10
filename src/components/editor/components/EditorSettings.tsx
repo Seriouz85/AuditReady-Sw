@@ -195,7 +195,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+          className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -226,10 +226,10 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="flex h-[calc(90vh-120px)]">
+          <div className="flex flex-1 min-h-0">
             {/* Settings Content */}
             <div className="flex-1">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
                 <TabsList className="w-full justify-start px-6 py-4 bg-gray-50 border-b">
                   <TabsTrigger value="canvas" className="flex items-center space-x-2">
                     <Grid3X3 className="w-4 h-4" />
@@ -253,7 +253,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
                   </TabsTrigger>
                 </TabsList>
 
-                <ScrollArea className="flex-1">
+                <ScrollArea className="flex-1 overflow-auto">
                   <div className="p-6">
                     {/* Canvas Settings */}
                     <TabsContent value="canvas" className="space-y-6">
@@ -590,7 +590,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-gray-200 bg-gray-50">
+          <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-gray-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Button

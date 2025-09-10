@@ -625,7 +625,7 @@ class OneShotDiagramService {
               id: `dep-${dependencyTask.id}-${task.id}`,
               source: dependencyTask.id,
               target: task.id,
-              type: 'smoothstep',
+              type: 'straight', // Improved straight arrows for better alignment
               style: { stroke: '#64748b', strokeWidth: 2 },
               markerEnd: { type: MarkerType.ArrowClosed, color: '#64748b' },
               label: 'depends on'
@@ -642,6 +642,48 @@ class OneShotDiagramService {
     const now = new Date();
     const daysDiff = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     return 100 + (daysDiff * 30); // 30px per day
+  }
+
+  /**
+   * 📐 IMPROVED ALIGNMENT POSITIONING
+   * Creates perfectly aligned grid positions for process flows
+   */
+  private createAlignedPositions(nodeCount: number, diagramType: string): Array<{x: number, y: number}> {
+    const positions: Array<{x: number, y: number}> = [];
+    const GRID_SIZE = 150; // Standard spacing for better alignment
+    const START_X = 400; // Center alignment
+    const START_Y = 100; // Top margin
+    
+    if (diagramType === 'flowchart' || diagramType === 'process') {
+      // Vertical flow with perfect center alignment
+      for (let i = 0; i < nodeCount; i++) {
+        positions.push({
+          x: START_X, // All nodes perfectly centered
+          y: START_Y + (i * GRID_SIZE) // Equal vertical spacing
+        });
+      }
+    } else if (diagramType === 'network') {
+      // Grid layout for network diagrams
+      const cols = Math.ceil(Math.sqrt(nodeCount));
+      for (let i = 0; i < nodeCount; i++) {
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+        positions.push({
+          x: START_X + (col - (cols-1)/2) * GRID_SIZE, // Center horizontally
+          y: START_Y + row * GRID_SIZE
+        });
+      }
+    } else {
+      // Default linear layout with perfect alignment
+      for (let i = 0; i < nodeCount; i++) {
+        positions.push({
+          x: START_X,
+          y: START_Y + (i * GRID_SIZE)
+        });
+      }
+    }
+    
+    return positions;
   }
 
   private calculateTaskWidth(duration: number): number {
@@ -1008,7 +1050,7 @@ class OneShotDiagramService {
         id: 'e1',
         source: 'start',
         target: 'risk-register',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1016,7 +1058,7 @@ class OneShotDiagramService {
         id: 'e2a',
         source: 'risk-register',
         target: 'likelihood-assessment',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1024,7 +1066,7 @@ class OneShotDiagramService {
         id: 'e2b',
         source: 'risk-register',
         target: 'impact-assessment',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1032,7 +1074,7 @@ class OneShotDiagramService {
         id: 'e3a',
         source: 'likelihood-assessment',
         target: 'risk-analysis',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1040,7 +1082,7 @@ class OneShotDiagramService {
         id: 'e3b',
         source: 'impact-assessment',
         target: 'risk-analysis',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1048,7 +1090,7 @@ class OneShotDiagramService {
         id: 'e4',
         source: 'risk-analysis',
         target: 'risk-evaluation',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1058,7 +1100,7 @@ class OneShotDiagramService {
         source: 'risk-evaluation',
         target: 'accept-residual-risk',
         label: 'Yes',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#16a34a', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
       },
@@ -1067,7 +1109,7 @@ class OneShotDiagramService {
         source: 'risk-evaluation',
         target: 'treatment-selection',
         label: 'No',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#dc2626', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
       },
@@ -1077,7 +1119,7 @@ class OneShotDiagramService {
         source: 'treatment-selection',
         target: 'accept',
         label: 'Accept',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#d97706', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#d97706' }
       },
@@ -1086,7 +1128,7 @@ class OneShotDiagramService {
         source: 'treatment-selection',
         target: 'mitigate',
         label: 'Mitigate',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#2563eb', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#2563eb' }
       },
@@ -1095,7 +1137,7 @@ class OneShotDiagramService {
         source: 'treatment-selection',
         target: 'transfer',
         label: 'Transfer',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#6366f1', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#6366f1' }
       },
@@ -1104,7 +1146,7 @@ class OneShotDiagramService {
         source: 'treatment-selection',
         target: 'avoid',
         label: 'Avoid',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#dc2626', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
       },
@@ -1113,7 +1155,7 @@ class OneShotDiagramService {
         id: 'e7a',
         source: 'mitigate',
         target: 'implementation',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1121,7 +1163,7 @@ class OneShotDiagramService {
         id: 'e7b',
         source: 'transfer',
         target: 'implementation',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1129,7 +1171,7 @@ class OneShotDiagramService {
         id: 'e8',
         source: 'implementation',
         target: 'monitoring',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1137,7 +1179,7 @@ class OneShotDiagramService {
         id: 'e9',
         source: 'monitoring',
         target: 'effectiveness-check',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1147,7 +1189,7 @@ class OneShotDiagramService {
         source: 'effectiveness-check',
         target: 'accept-residual',
         label: 'Yes',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#16a34a', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
       },
@@ -1156,7 +1198,7 @@ class OneShotDiagramService {
         source: 'effectiveness-check',
         target: 'treatment-selection',
         label: 'No - Reassess',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#dc2626', strokeWidth: 2, strokeDasharray: '5 5' },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
       },
@@ -1165,7 +1207,7 @@ class OneShotDiagramService {
         id: 'e11',
         source: 'accept',
         target: 'accept-residual',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#16a34a', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
       },
@@ -1175,7 +1217,7 @@ class OneShotDiagramService {
         source: 'accept-residual',
         target: 'start',
         label: 'Continuous Monitoring',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '10 5' },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#8b5cf6' }
       }
@@ -1360,7 +1402,7 @@ class OneShotDiagramService {
         id: 'e1',
         source: 'detection',
         target: 'initial-triage',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#dc2626', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
       },
@@ -1369,7 +1411,7 @@ class OneShotDiagramService {
         source: 'initial-triage',
         target: 'low-severity',
         label: 'Low',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#16a34a', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
       },
@@ -1378,7 +1420,7 @@ class OneShotDiagramService {
         source: 'initial-triage',
         target: 'high-severity',
         label: 'High/Critical',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#dc2626', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
       },
@@ -1386,7 +1428,7 @@ class OneShotDiagramService {
         id: 'e3a',
         source: 'low-severity',
         target: 'analysis',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1394,7 +1436,7 @@ class OneShotDiagramService {
         id: 'e3b',
         source: 'high-severity',
         target: 'analysis',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1402,7 +1444,7 @@ class OneShotDiagramService {
         id: 'e4a',
         source: 'analysis',
         target: 'containment',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#2563eb', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#2563eb' }
       },
@@ -1410,7 +1452,7 @@ class OneShotDiagramService {
         id: 'e4b',
         source: 'analysis',
         target: 'eradication',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1418,7 +1460,7 @@ class OneShotDiagramService {
         id: 'e4c',
         source: 'analysis',
         target: 'recovery',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#16a34a', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
       },
@@ -1426,7 +1468,7 @@ class OneShotDiagramService {
         id: 'e5',
         source: 'containment',
         target: 'lessons-learned',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1434,7 +1476,7 @@ class OneShotDiagramService {
         id: 'e6',
         source: 'eradication',
         target: 'lessons-learned',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
@@ -1442,7 +1484,7 @@ class OneShotDiagramService {
         id: 'e7',
         source: 'recovery',
         target: 'lessons-learned',
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       }
@@ -1497,14 +1539,63 @@ class OneShotDiagramService {
     return this.generateGenericTemplate(request);
   }
 
+  /**
+   * 🎯 ENHANCED GENERIC TEMPLATE
+   * Creates richer, more professional generic process flows
+   */
   private generateGenericTemplate(request: OneShotDiagramRequest): Promise<OneShotDiagramResponse> {
+    const { prompt, complexity = 'medium' } = request;
+    
+    // Analyze prompt for meaningful steps
+    const steps = this.extractStepsFromPrompt(prompt, complexity);
+    const nodes = this.createEnhancedFlowchartNodes(steps, complexity);
+    const edges = this.createEnhancedFlowchartEdges(steps, complexity);
+    
+    // Ensure minimum richness for any diagram
+    if (nodes.length < 5) {
+      return this.generateMinimumRichTemplate(request);
+    }
+
+    return Promise.resolve({
+      success: true,
+      nodes,
+      edges,
+      title: this.generateTitleFromPrompt(request.prompt),
+      description: `Professional ${request.diagramType} process with ${steps.length} steps, decision points, and workflow optimization`,
+      confidence: 0.85,
+      processingTime: 0,
+      suggestions: [
+        'Customize process steps for your specific workflow',
+        'Add role-based swimlanes for multi-department processes',
+        'Include exception handling paths',
+        'Add timing and SLA considerations',
+        'Integrate with existing systems and tools'
+      ],
+      metadata: {
+        diagramType: request.diagramType,
+        nodeCount: nodes.length,
+        edgeCount: edges.length,
+        usedTemplate: true,
+        apiProvider: 'template'
+      }
+    });
+  }
+  
+  /**
+   * 💎 MINIMUM RICHNESS TEMPLATE
+   * Ensures every diagram has at least 8+ nodes with decision points and parallel paths
+   */
+  private generateMinimumRichTemplate(request: OneShotDiagramRequest): Promise<OneShotDiagramResponse> {
+    const positions = this.createAlignedPositions(10, 'flowchart');
+    
     const nodes: Node[] = [
+      // Start
       {
         id: 'start',
         type: 'custom',
-        position: { x: 300, y: 100 },
+        position: positions[0],
         data: {
-          label: 'Start',
+          label: 'Process Initiation',
           shape: 'circle',
           fillColor: '#dbeafe',
           strokeColor: '#2563eb',
@@ -1513,12 +1604,43 @@ class OneShotDiagramService {
           onUpdate: () => {}
         }
       },
+      // Input validation
       {
-        id: 'process',
+        id: 'input-validation',
         type: 'custom',
-        position: { x: 300, y: 200 },
+        position: positions[1],
         data: {
-          label: 'Process Step',
+          label: 'Input Validation',
+          shape: 'diamond',
+          fillColor: '#fef3c7',
+          strokeColor: '#d97706',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Error handling path
+      {
+        id: 'error-handling',
+        type: 'custom',
+        position: { x: 150, y: positions[1].y },
+        data: {
+          label: 'Error Handling',
+          shape: 'rectangle',
+          fillColor: '#fee2e2',
+          strokeColor: '#dc2626',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Primary processing
+      {
+        id: 'primary-processing',
+        type: 'custom',
+        position: positions[2],
+        data: {
+          label: 'Primary Processing',
           shape: 'rectangle',
           fillColor: '#f1f5f9',
           strokeColor: '#475569',
@@ -1527,12 +1649,118 @@ class OneShotDiagramService {
           onUpdate: () => {}
         }
       },
+      // Parallel process 1
       {
-        id: 'end',
+        id: 'parallel-1',
         type: 'custom',
-        position: { x: 300, y: 300 },
+        position: { x: 200, y: positions[3].y },
         data: {
-          label: 'End',
+          label: 'Validation Check',
+          shape: 'rectangle',
+          fillColor: '#e0e7ff',
+          strokeColor: '#6366f1',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Parallel process 2
+      {
+        id: 'parallel-2',
+        type: 'custom',
+        position: { x: 600, y: positions[3].y },
+        data: {
+          label: 'Documentation',
+          shape: 'parallelogram',
+          fillColor: '#f0f9ff',
+          strokeColor: '#0ea5e9',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Quality check
+      {
+        id: 'quality-check',
+        type: 'custom',
+        position: positions[4],
+        data: {
+          label: 'Quality Assurance',
+          shape: 'diamond',
+          fillColor: '#fef3c7',
+          strokeColor: '#d97706',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Approval process
+      {
+        id: 'approval-required',
+        type: 'custom',
+        position: positions[5],
+        data: {
+          label: 'Approval Required?',
+          shape: 'diamond',
+          fillColor: '#fef3c7',
+          strokeColor: '#d97706',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Approval workflow
+      {
+        id: 'stakeholder-approval',
+        type: 'custom',
+        position: { x: 650, y: positions[5].y },
+        data: {
+          label: 'Stakeholder Approval',
+          shape: 'rectangle',
+          fillColor: '#fef3c7',
+          strokeColor: '#d97706',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Final processing
+      {
+        id: 'final-processing',
+        type: 'custom',
+        position: positions[6],
+        data: {
+          label: 'Final Processing',
+          shape: 'rectangle',
+          fillColor: '#f1f5f9',
+          strokeColor: '#475569',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // Output generation
+      {
+        id: 'output-generation',
+        type: 'custom',
+        position: positions[7],
+        data: {
+          label: 'Output Generation',
+          shape: 'parallelogram',
+          fillColor: '#f0f9ff',
+          strokeColor: '#0ea5e9',
+          textColor: '#1e293b',
+          onLabelChange: () => {},
+          onUpdate: () => {}
+        }
+      },
+      // End
+      {
+        id: 'completion',
+        type: 'custom',
+        position: positions[8],
+        data: {
+          label: 'Process Completion',
           shape: 'circle',
           fillColor: '#dcfce7',
           strokeColor: '#16a34a',
@@ -1544,19 +1772,140 @@ class OneShotDiagramService {
     ];
 
     const edges: Edge[] = [
+      // Main flow
       {
         id: 'e1',
         source: 'start',
-        target: 'process',
-        type: 'smoothstep',
+        target: 'input-validation',
+        type: 'straight',
+        style: { stroke: '#1e293b', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
+      },
+      // Error path
+      {
+        id: 'e2a',
+        source: 'input-validation',
+        target: 'error-handling',
+        label: 'Invalid',
+        type: 'straight',
+        style: { stroke: '#dc2626', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
+      },
+      // Success path
+      {
+        id: 'e2b',
+        source: 'input-validation',
+        target: 'primary-processing',
+        label: 'Valid',
+        type: 'straight',
+        style: { stroke: '#16a34a', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
+      },
+      // Error recovery
+      {
+        id: 'e3',
+        source: 'error-handling',
+        target: 'start',
+        label: 'Retry',
+        type: 'straight',
+        style: { stroke: '#dc2626', strokeWidth: 2, strokeDasharray: '5,5' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
+      },
+      // Parallel processing
+      {
+        id: 'e4a',
+        source: 'primary-processing',
+        target: 'parallel-1',
+        type: 'straight',
+        style: { stroke: '#6366f1', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#6366f1' }
+      },
+      {
+        id: 'e4b',
+        source: 'primary-processing',
+        target: 'parallel-2',
+        type: 'straight',
+        style: { stroke: '#0ea5e9', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#0ea5e9' }
+      },
+      // Convergence to quality check
+      {
+        id: 'e5a',
+        source: 'parallel-1',
+        target: 'quality-check',
+        type: 'straight',
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       },
       {
-        id: 'e2',
-        source: 'process',
-        target: 'end',
-        type: 'smoothstep',
+        id: 'e5b',
+        source: 'parallel-2',
+        target: 'quality-check',
+        type: 'straight',
+        style: { stroke: '#1e293b', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
+      },
+      // Quality check decisions
+      {
+        id: 'e6-fail',
+        source: 'quality-check',
+        target: 'primary-processing',
+        label: 'Fail - Rework',
+        type: 'straight',
+        style: { stroke: '#dc2626', strokeWidth: 2, strokeDasharray: '5,5' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
+      },
+      {
+        id: 'e6-pass',
+        source: 'quality-check',
+        target: 'approval-required',
+        label: 'Pass',
+        type: 'straight',
+        style: { stroke: '#16a34a', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
+      },
+      // Approval flow
+      {
+        id: 'e7a',
+        source: 'approval-required',
+        target: 'stakeholder-approval',
+        label: 'Yes',
+        type: 'straight',
+        style: { stroke: '#d97706', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#d97706' }
+      },
+      {
+        id: 'e7b',
+        source: 'approval-required',
+        target: 'final-processing',
+        label: 'No',
+        type: 'straight',
+        style: { stroke: '#16a34a', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' }
+      },
+      // Approval completion
+      {
+        id: 'e8',
+        source: 'stakeholder-approval',
+        target: 'final-processing',
+        type: 'straight',
+        style: { stroke: '#1e293b', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
+      },
+      // Final flow
+      {
+        id: 'e9',
+        source: 'final-processing',
+        target: 'output-generation',
+        type: 'straight',
+        style: { stroke: '#1e293b', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
+      },
+      {
+        id: 'e10',
+        source: 'output-generation',
+        target: 'completion',
+        type: 'straight',
         style: { stroke: '#1e293b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#1e293b' }
       }
@@ -1567,14 +1916,15 @@ class OneShotDiagramService {
       nodes,
       edges,
       title: this.generateTitleFromPrompt(request.prompt),
-      description: `Basic ${request.diagramType} diagram template`,
-      confidence: 0.75,
+      description: `Comprehensive process workflow with ${nodes.length} steps, multiple decision points, parallel processing, error handling, and approval workflows`,
+      confidence: 0.88,
       processingTime: 0,
       suggestions: [
-        'Add more specific steps',
-        'Include decision points',
-        'Customize colors and styling',
-        'Add labels to connections'
+        'Customize step names for your specific process',
+        'Add role assignments and responsibilities',
+        'Include timing and SLA requirements',
+        'Add integration points with external systems',
+        'Configure notification and escalation rules'
       ],
       metadata: {
         diagramType: request.diagramType,
@@ -2066,13 +2416,19 @@ CRITICAL: Include at least 4-5 decision diamonds, show parallel paths, and feedb
     return components;
   }
 
-  private createFlowchartNodes(steps: any[]): Node[] {
+  /**
+   * 📐 ENHANCED FLOWCHART NODE CREATION
+   * Creates professional flowchart nodes with better positioning and styling
+   */
+  private createEnhancedFlowchartNodes(steps: any[], complexity: string): Node[] {
+    const positions = this.createAlignedPositions(steps.length, 'flowchart');
+    
     return steps.map((step, index) => {
       const shape = step.shape || (step.type === 'start' || step.type === 'end' ? 'circle' : 'rectangle');
       let fillColor = '#f1f5f9';
       let strokeColor = '#475569';
       
-      // Color coding based on step type and shape
+      // Enhanced color coding based on step type and shape
       if (step.type === 'start') {
         fillColor = '#dbeafe';
         strokeColor = '#2563eb';
@@ -2085,12 +2441,18 @@ CRITICAL: Include at least 4-5 decision diamonds, show parallel paths, and feedb
       } else if (shape === 'parallelogram') {
         fillColor = '#e0e7ff';
         strokeColor = '#6366f1';
+      } else if (step.name.toLowerCase().includes('error') || step.name.toLowerCase().includes('fail')) {
+        fillColor = '#fee2e2';
+        strokeColor = '#dc2626';
+      } else if (step.name.toLowerCase().includes('approval') || step.name.toLowerCase().includes('review')) {
+        fillColor = '#fef3c7';
+        strokeColor = '#d97706';
       }
       
       return {
         id: step.id,
         type: 'custom',
-        position: { x: 400, y: 100 + index * 120 },
+        position: positions[index] || { x: 400, y: 100 + index * 120 },
         data: {
           label: step.name,
           shape,
@@ -2103,9 +2465,18 @@ CRITICAL: Include at least 4-5 decision diamonds, show parallel paths, and feedb
       };
     });
   }
+  
+  private createFlowchartNodes(steps: any[]): Node[] {
+    return this.createEnhancedFlowchartNodes(steps, 'medium');
+  }
 
-  private createFlowchartEdges(steps: any[]): Edge[] {
+  /**
+   * 🔗 ENHANCED FLOWCHART EDGE CREATION
+   * Creates professional flowchart edges with decision branching and feedback loops
+   */
+  private createEnhancedFlowchartEdges(steps: any[], complexity: string): Edge[] {
     const edges: Edge[] = [];
+    let edgeCounter = 0;
     
     for (let i = 0; i < steps.length - 1; i++) {
       const currentStep = steps[i];
@@ -2115,28 +2486,65 @@ CRITICAL: Include at least 4-5 decision diamonds, show parallel paths, and feedb
       let edgeStyle = { stroke: '#1e293b', strokeWidth: 2 };
       let label = undefined;
       
-      // Add labels for decision points
+      // Enhanced logic for decision points with branching
       if (currentStep.shape === 'diamond') {
-        if (nextStep.type === 'end') {
-          label = 'Yes';
-          edgeStyle.stroke = '#16a34a';
-        } else {
-          label = 'Continue';
+        // Create main success path
+        label = nextStep.type === 'end' ? 'Approved' : 'Yes/Continue';
+        edgeStyle.stroke = '#16a34a';
+        
+        // Add alternative path for decision points (failure/rejection)
+        if (i > 1 && complexity !== 'simple') {
+          const alternativeTarget = i > 2 ? steps[Math.max(0, i - 2)].id : 'start';
+          edges.push({
+            id: `edge-alt-${edgeCounter++}`,
+            source: currentStep.id,
+            target: alternativeTarget,
+            type: 'straight',
+            label: 'No/Reject',
+            style: { stroke: '#dc2626', strokeWidth: 2, strokeDasharray: '5,5' },
+            markerEnd: { type: MarkerType.ArrowClosed, color: '#dc2626' }
+          });
         }
+      } else if (currentStep.name.toLowerCase().includes('error')) {
+        // Error recovery paths
+        label = 'Retry';
+        edgeStyle = { stroke: '#dc2626', strokeWidth: 2, strokeDasharray: '5,5' };
+      } else if (currentStep.name.toLowerCase().includes('parallel') || currentStep.name.toLowerCase().includes('validation')) {
+        // Parallel process styling
+        edgeStyle.stroke = '#6366f1';
       }
       
+      // Main edge
       edges.push({
-        id: `edge-${i}`,
+        id: `edge-${edgeCounter++}`,
         source: currentStep.id,
         target: nextStep.id,
-        type: 'smoothstep',
+        type: 'straight',
         label,
         style: edgeStyle,
         markerEnd: { type: MarkerType.ArrowClosed, color: edgeStyle.stroke }
       });
+      
+      // Add feedback loops for complex processes
+      if (complexity === 'complex' && currentStep.name.toLowerCase().includes('review') && i < steps.length - 2) {
+        const feedbackTarget = steps[Math.max(0, i - 1)].id;
+        edges.push({
+          id: `edge-feedback-${edgeCounter++}`,
+          source: currentStep.id,
+          target: feedbackTarget,
+          type: 'straight',
+          label: 'Revision Required',
+          style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '10,5' },
+          markerEnd: { type: MarkerType.ArrowClosed, color: '#f59e0b' }
+        });
+      }
     }
     
     return edges;
+  }
+  
+  private createFlowchartEdges(steps: any[]): Edge[] {
+    return this.createEnhancedFlowchartEdges(steps, 'medium');
   }
 
   private createNetworkNodes(components: any[]): Node[] {
@@ -2165,7 +2573,7 @@ CRITICAL: Include at least 4-5 decision diamonds, show parallel paths, and feedb
         id: `conn-${i}`,
         source: components[i].id,
         target: components[i + 1].id,
-        type: 'smoothstep',
+        type: 'straight', // Improved straight arrows for better alignment
         style: { stroke: '#64748b', strokeWidth: 2 },
         markerEnd: { type: MarkerType.ArrowClosed, color: '#64748b' }
       });

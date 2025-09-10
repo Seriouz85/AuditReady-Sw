@@ -31,6 +31,8 @@ import { useTheme } from '../themes/AdvancedThemeSystem';
 
 interface BeautifulNodePaletteProps {
   onClose: () => void;
+  onNodeAdd?: (nodeData: any) => void;
+  getViewportCenter?: () => { x: number; y: number };
 }
 
 // Node categories with stunning designs
@@ -137,10 +139,10 @@ const beautifulNodes = [
     style: {
       background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
       border: '2px solid rgba(79, 172, 254, 0.3)',
-      transform: 'rotate(45deg)',
+      clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)', // True diamond shape
       color: 'white',
-      width: '60px',
-      height: '60px',
+      width: '80px',
+      height: '80px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -384,7 +386,7 @@ const beautifulNodes = [
   }
 ];
 
-const BeautifulNodePalette: React.FC<BeautifulNodePaletteProps> = ({ onClose }) => {
+const BeautifulNodePalette: React.FC<BeautifulNodePaletteProps> = ({ onClose, onNodeAdd, getViewportCenter }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [draggedNode, setDraggedNode] = useState<any>(null);
@@ -414,29 +416,20 @@ const BeautifulNodePalette: React.FC<BeautifulNodePaletteProps> = ({ onClose }) 
   const onDragStart = (event: React.DragEvent, node: any) => {
     setDraggedNode(node);
     
-    // Create proper drag data with all styling information
+    // Create proper drag data for beautiful shapes
     const dragData = {
       nodeType: node.id,
-      type: 'process', // ReactFlow node type
+      type: 'custom', // Use custom to route to BeautifulShapeNode
       data: { 
         label: node.name,
+        nodeType: node.id, // Important: This routes to BeautifulShapeNode
         shape: node.id.includes('diamond') ? 'diamond' : 
                node.id.includes('circle') ? 'circle' : 'rectangle',
         description: node.description,
-        customStyle: node.style
-      },
-      style: {
-        background: node.style?.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        border: node.style?.border || '2px solid rgba(102, 126, 234, 0.3)',
-        borderRadius: node.style?.borderRadius || '8px',
-        color: node.style?.color || 'white',
-        padding: '12px 16px',
-        fontSize: '14px',
-        fontWeight: '600',
-        boxShadow: node.style?.boxShadow || '0 4px 20px rgba(102, 126, 234, 0.25)',
-        minWidth: '120px',
-        textAlign: 'center'
+        customStyle: node.style,
+        isBeautifulShape: true
       }
+      // BeautifulShapeNode handles all styling
     };
     
     event.dataTransfer.setData('application/reactflow', JSON.stringify(dragData));
@@ -446,50 +439,44 @@ const BeautifulNodePalette: React.FC<BeautifulNodePaletteProps> = ({ onClose }) 
 
   // Handle node click (add to canvas)
   const handleNodeClick = (node: any) => {
-    // Get canvas center position (better than random placement)
-    const canvasCenter = { x: 400, y: 200 };
+    // Get current viewport center where user is looking, or fallback to canvas center
+    const canvasCenter = getViewportCenter ? getViewportCenter() : { x: 400, y: 200 };
     const offset = { 
       x: (Math.random() - 0.5) * 200, // ±100px from center
       y: (Math.random() - 0.5) * 100   // ±50px from center  
     };
     
-    // Map node shapes to supported ReactFlow node shapes
+    // Map node shapes to supported ReactFlow node shapes - each shape should match its name
     const getNodeShape = (nodeId: string) => {
       if (nodeId.includes('diamond') || nodeId === 'decision') return 'diamond';
       if (nodeId.includes('circle') || nodeId === 'circle') return 'circle';
       if (nodeId.includes('hexagon')) return 'hexagon';
       if (nodeId.includes('parallelogram')) return 'parallelogram';
-      return 'rectangle'; // default
+      if (nodeId.includes('cloud')) return 'cloud';
+      if (nodeId.includes('database')) return 'database';
+      if (nodeId.includes('server')) return 'server';
+      if (nodeId.includes('user')) return 'user';
+      if (nodeId.includes('team')) return 'team';
+      return 'rectangle'; // default for basic rectangles
     };
     
     const newNode = {
       id: `${node.id}-${Date.now()}`,
-      type: 'process', // Correct type from SmartNodeTypes
+      type: 'custom', // Use custom to route to BeautifulShapeNode
       position: { 
         x: Math.max(50, canvasCenter.x + offset.x), // Keep within reasonable bounds
         y: Math.max(50, canvasCenter.y + offset.y)
       },
       data: { 
         label: node.name,
-        nodeType: node.id,
+        nodeType: node.id, // Important: This routes to BeautifulShapeNode
         shape: getNodeShape(node.id),
         description: node.description,
-        // Apply original styling for visual consistency
-        customStyle: node.style
-      },
-      // Apply beautiful styling directly to ReactFlow node
-      style: {
-        background: node.style?.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        border: node.style?.border || '2px solid rgba(102, 126, 234, 0.3)',
-        borderRadius: node.style?.borderRadius || '8px',
-        color: node.style?.color || 'white',
-        padding: '12px 16px',
-        fontSize: '14px',
-        fontWeight: '600',
-        boxShadow: node.style?.boxShadow || '0 4px 20px rgba(102, 126, 234, 0.25)',
-        minWidth: '120px',
-        textAlign: 'center'
+        // Mark as beautiful shape for routing
+        customStyle: node.style,
+        isBeautifulShape: true
       }
+      // Remove inline styles - BeautifulShapeNode handles all styling
     };
     
     console.log('✅ Adding beautiful node to canvas:', newNode);
@@ -631,21 +618,34 @@ const BeautifulNodePalette: React.FC<BeautifulNodePaletteProps> = ({ onClose }) 
                   >
                     <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50 hover:bg-white/95 hover:shadow-xl transition-all duration-300 overflow-hidden">
                       <CardContent className="p-3 md:p-4">
-                        {/* Node Preview */}
+                        {/* Node Preview - Clean Preview without duplicates */}
                         <div className="flex items-center justify-center h-16 md:h-20 mb-2 md:mb-3 relative">
                           <motion.div
                             className="relative"
                             style={{
-                              ...node.style,
-                              transform: 'scale(0.7)',
+                              // Clean preview styles - only core shape and gradient
+                              background: node.style?.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              borderRadius: node.id === 'circle' ? '50%' : 
+                                          node.id === 'diamond' ? '0' : '6px',
+                              width: node.id === 'circle' ? '50px' : 
+                                     node.id === 'diamond' ? '35px' : '60px',
+                              height: node.id === 'circle' ? '50px' : 
+                                      node.id === 'diamond' ? '35px' : '40px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              // Diamond shape using clip-path instead of rotation
+                              clipPath: node.id === 'diamond' ? 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' : 'none',
+                              boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                              transform: 'scale(0.8)',
                               transformOrigin: 'center'
                             }}
                             whileHover={{ 
-                              scale: 0.8,
-                              rotate: node.id.includes('diamond') ? 45 : 0
+                              scale: 0.9,
+                              boxShadow: '0 6px 20px rgba(0,0,0,0.15)'
                             }}
                           >
-                            <Icon className="w-6 h-6 mx-auto" />
+                            <Icon className="w-4 h-4 text-white drop-shadow-sm" />
                           </motion.div>
                           
                           {node.isPremium && (
@@ -672,15 +672,16 @@ const BeautifulNodePalette: React.FC<BeautifulNodePaletteProps> = ({ onClose }) 
                         />
                         
                         <motion.div
-                          className="absolute bottom-3 left-3 right-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          className="absolute bottom-2 left-2 right-2 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                           initial={false}
                         >
                           <Button
                             size="sm"
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-md text-xs px-3 py-1.5"
+                            onClick={() => handleNodeClick(node)}
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-md text-[10px] px-2 py-1 h-6"
                           >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Add to Canvas
+                            <Plus className="w-2.5 h-2.5 mr-1" />
+                            Add
                           </Button>
                         </motion.div>
                       </CardContent>

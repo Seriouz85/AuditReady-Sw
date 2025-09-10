@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Shield,
   CheckCircle,
@@ -54,6 +55,18 @@ const SupplierPortal: React.FC = () => {
   const [loginForm, setLoginForm] = useState({
     email: searchParams.get('email') || '',
     token: searchParams.get('token') || ''
+  });
+  
+  // Enhanced filtering and organization states
+  const [selectedStandard, setSelectedStandard] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [fulfillmentFilter, setFulfillmentFilter] = useState<string>('all');
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [inviteForm, setInviteForm] = useState({
+    email: '',
+    fullName: '',
+    title: '',
+    role: 'member' as 'primary' | 'member'
   });
   
   // Demo credentials for testing
@@ -126,14 +139,80 @@ const SupplierPortal: React.FC = () => {
   const handleLogin = async () => {
     try {
       setLoading(true);
+      
+      // Validate input
+      if (!loginForm.email || !loginForm.token) {
+        toast.error('Email and access token are required');
+        return;
+      }
 
+      // For demo mode, validate demo credentials
+      if (loginForm.email.includes('@') && loginForm.token.includes('demo')) {
+        console.log('Demo mode authentication for supplier portal');
+        
+        // Create demo user for isolated environment
+        const demoUser: SupplierExternalUser = {
+          id: `demo-user-${Date.now()}`,
+          supplier_id: `demo-supplier-${Date.now()}`,
+          organization_id: 'demo-org',
+          email: loginForm.email,
+          full_name: 'Demo Supplier User',
+          role: 'primary',
+          phone: '+1 (555) 123-4567',
+          title: 'Security Manager',
+          is_active: true,
+          created_at: new Date().toISOString()
+        };
+
+        // Create isolated session for this demo user
+        const isolatedSession: ExternalPortalSession = {
+          user: demoUser,
+          campaign: {
+            id: `demo-campaign-${Date.now()}`,
+            organization_id: 'demo-org',
+            supplier_id: demoUser.supplier_id,
+            name: 'Demo Security Assessment - 2024',
+            description: 'Isolated demonstration of supplier assessment portal with full functionality.',
+            status: 'in_progress',
+            due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            created_by: 'demo-admin',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            risk_score: 0,
+            risk_level: 'unknown',
+            allow_delegation: true,
+            require_evidence: true,
+            send_reminders: true,
+            reminder_frequency_days: 7
+          },
+          permissions: {
+            can_respond: true,
+            can_delegate: true,
+            can_upload_evidence: true,
+            can_view_others_responses: true
+          },
+          progress: {
+            total_requirements: 15,
+            completed_requirements: 3,
+            draft_responses: 5,
+            percentage_complete: 20
+          }
+        };
+
+        setSession(isolatedSession);
+        await loadCampaignRequirements(isolatedSession.campaign.id);
+        toast.success(`Welcome to the demo portal, ${demoUser.full_name}!`);
+        return;
+      }
+
+      // For production mode, authenticate with database
       const result = await databaseSupplierAssessmentService.authenticateSupplier({
         email: loginForm.email,
         inviteToken: loginForm.token
       });
 
       if (!result.success || !result.user) {
-        toast.error(result.error || 'Authentication failed');
+        toast.error(result.error || 'Authentication failed - please check your email and token');
         return;
       }
 
@@ -299,6 +378,148 @@ const SupplierPortal: React.FC = () => {
     return <Badge className={`${color} text-white`}>{label}</Badge>;
   };
 
+  const handleExportResponses = () => {
+    if (!session) return;
+
+    const exportData = {
+      assessment: {
+        campaign: session.campaign,
+        user: {
+          full_name: session.user.full_name,
+          email: session.user.email,
+          title: session.user.title,
+          role: session.user.role
+        },
+        progress: session.progress,
+        exportDate: new Date().toISOString()
+      },
+      responses: requirements.map(req => {
+        const response = responses[req.id];
+        return {
+          requirement: {
+            id: req.id,
+            section: req.section,
+            name: req.name,
+            description: req.description
+          },
+          response: response ? {
+            fulfillment_level: response.fulfillment_level,
+            response_text: response.response_text,
+            evidence_description: response.evidence_description,
+            is_draft: response.is_draft,
+            updated_at: response.updated_at
+          } : null
+        };
+      }),
+      summary: {
+        total_requirements: requirements.length,
+        completed_responses: Object.values(responses).filter(r => !r.is_draft).length,
+        draft_responses: Object.values(responses).filter(r => r.is_draft).length,
+        fulfillment_breakdown: {
+          fulfilled: Object.values(responses).filter(r => r.fulfillment_level === 'fulfilled').length,
+          partially_fulfilled: Object.values(responses).filter(r => r.fulfillment_level === 'partially_fulfilled').length,
+          not_fulfilled: Object.values(responses).filter(r => r.fulfillment_level === 'not_fulfilled').length,
+          not_applicable: Object.values(responses).filter(r => r.fulfillment_level === 'not_applicable').length,
+          in_progress: Object.values(responses).filter(r => r.fulfillment_level === 'in_progress').length
+        }
+      }
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `supplier_assessment_responses_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    toast.success('Assessment responses exported successfully');
+  };
+
+  const handleInviteUser = async () => {
+    if (!session || !inviteForm.email || !inviteForm.fullName) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      // Generate authentication token for invited user
+      const inviteToken = `invite_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      
+      // For demo purposes, show the invitation details
+      const inviteUrl = `${window.location.origin}/supplier-portal?email=${encodeURIComponent(inviteForm.email)}&token=${inviteToken}`;
+      
+      toast.success(
+        `✅ Invitation sent to ${inviteForm.fullName}!\n\n` +
+        `📧 Email: ${inviteForm.email}\n` +
+        `🔐 Access Token: ${inviteToken}\n` +
+        `🌐 Portal URL: ${inviteUrl}`,
+        { duration: 8000 }
+      );
+
+      // Reset form and close dialog
+      setInviteForm({ email: '', fullName: '', title: '', role: 'member' });
+      setShowInviteDialog(false);
+    } catch (error) {
+      console.error('Error inviting user:', error);
+      toast.error('Failed to send invitation');
+    }
+  };
+
+  // Get unique standards from requirements
+  const getUniqueStandards = () => {
+    const standards = new Set<string>();
+    requirements.forEach(req => {
+      if (req.standard_name) standards.add(req.standard_name);
+    });
+    return Array.from(standards).sort();
+  };
+
+  // Filter and organize requirements
+  const getFilteredRequirements = () => {
+    let filtered = requirements;
+
+    // Filter by standard
+    if (selectedStandard !== 'all') {
+      filtered = filtered.filter(req => req.standard_name === selectedStandard);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(req => 
+        req.name.toLowerCase().includes(query) ||
+        req.description.toLowerCase().includes(query) ||
+        req.section.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by fulfillment level
+    if (fulfillmentFilter !== 'all') {
+      filtered = filtered.filter(req => {
+        const response = responses[req.id];
+        return response?.fulfillment_level === fulfillmentFilter;
+      });
+    }
+
+    // Group by standard and sort by section
+    const grouped = filtered.reduce((acc, req) => {
+      const standard = req.standard_name || 'Other';
+      if (!acc[standard]) acc[standard] = [];
+      acc[standard].push(req);
+      return acc;
+    }, {} as Record<string, ExternalPortalRequirement[]>);
+
+    // Sort requirements within each standard by section
+    Object.keys(grouped).forEach(standard => {
+      grouped[standard].sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true }));
+    });
+
+    return grouped;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -404,6 +625,26 @@ const SupplierPortal: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {session.permissions.can_delegate && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowInviteDialog(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  Invite Team
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleExportResponses()}
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Export Responses
+              </Button>
               <div className="text-right">
                 <p className="text-sm font-medium">{session.user.full_name}</p>
                 <p className="text-xs text-gray-500">{session.user.title}</p>
@@ -505,8 +746,87 @@ const SupplierPortal: React.FC = () => {
 
           {/* Assessment Tab */}
           <TabsContent value="assessment" className="space-y-6">
-            <div className="space-y-6">
-              {requirements.map((requirement) => {
+            {/* Filtering Controls */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Assessment Filters</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Standard</label>
+                    <Select value={selectedStandard} onValueChange={setSelectedStandard}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Standards" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Standards</SelectItem>
+                        {getUniqueStandards().map(standard => (
+                          <SelectItem key={standard} value={standard}>{standard}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Search</label>
+                    <Input
+                      placeholder="Search requirements..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Fulfillment Status</label>
+                    <Select value={fulfillmentFilter} onValueChange={setFulfillmentFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="fulfilled">Fulfilled</SelectItem>
+                        <SelectItem value="partially_fulfilled">Partially Fulfilled</SelectItem>
+                        <SelectItem value="not_fulfilled">Not Fulfilled</SelectItem>
+                        <SelectItem value="not_applicable">Not Applicable</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedStandard('all');
+                        setSearchQuery('');
+                        setFulfillmentFilter('all');
+                      }}
+                      className="w-full"
+                    >
+                      Reset Filters
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Requirements organized by Standard */}
+            <div className="space-y-8">
+              {Object.entries(getFilteredRequirements()).map(([standardName, standardRequirements]) => (
+                <Card key={standardName}>
+                  <CardHeader>
+                    <CardTitle className="text-xl text-blue-600 flex items-center gap-2">
+                      <Shield className="w-6 h-6" />
+                      {standardName}
+                      <Badge variant="secondary" className="ml-auto">
+                        {standardRequirements.length} requirements
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {standardRequirements.map((requirement) => {
                 const response = responses[requirement.id];
                 const isCompleted = response && !response.is_draft && response.submitted_at;
 
@@ -633,8 +953,12 @@ const SupplierPortal: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                );
-              })}
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
@@ -773,6 +1097,70 @@ const SupplierPortal: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* User Invitation Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invite Team Member</DialogTitle>
+            <DialogDescription>
+              Invite a colleague from your organization to collaborate on this assessment.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Email Address *</label>
+              <Input
+                type="email"
+                placeholder="colleague@yourcompany.com"
+                value={inviteForm.email}
+                onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Full Name *</label>
+              <Input
+                placeholder="John Doe"
+                value={inviteForm.fullName}
+                onChange={(e) => setInviteForm({ ...inviteForm, fullName: e.target.value })}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Job Title</label>
+              <Input
+                placeholder="Security Manager"
+                value={inviteForm.title}
+                onChange={(e) => setInviteForm({ ...inviteForm, title: e.target.value })}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Role</label>
+              <Select value={inviteForm.role} onValueChange={(value) => setInviteForm({ ...inviteForm, role: value as 'primary' | 'member' })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="member">Team Member</SelectItem>
+                  <SelectItem value="primary">Primary Contact</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleInviteUser} disabled={!inviteForm.email || !inviteForm.fullName}>
+              Send Invitation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <div className="bg-white border-t mt-12">

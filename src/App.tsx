@@ -277,7 +277,7 @@ const App = () => {
                   <Route 
                     path="/editor" 
                     element={
-                      <ProtectedRoute>
+                      <ProtectedRoute requireOrganization={false}>
                         <Suspense fallback={<LoadingSpinner text="Loading editor..." />}>
                           <GraphicalEditor />
                         </Suspense>

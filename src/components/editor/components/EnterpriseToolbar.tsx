@@ -32,7 +32,7 @@ import {
   FileText, Image, Video, Link, Mail, Calendar, Clock,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Plus, Minus,
   MousePointer, Hand, Square, Circle, Triangle, Diamond,
-  Type, Brush, Eraser, Eyedropper, Ruler, Crop
+  Type, Brush, Eraser, Eyedropper, Ruler, Crop, Trash2
 } from 'lucide-react';
 
 import { useDiagramStore } from '../../../stores/diagramStore';
@@ -49,8 +49,13 @@ interface EnterpriseToolbarProps {
   onUndo: () => void;
   onRedo: () => void;
   onSave: () => void;
-  onExport: () => void;
+  onExport: (format?: 'png' | 'svg' | 'json') => void;
   onShare: () => void;
+  onAddShape?: (shapeType: string) => void;
+  onBackToDashboard?: () => void;
+  onDeleteSelected?: () => void;
+  onLoad?: () => void;
+  onClear?: () => void;
 }
 
 const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
@@ -66,7 +71,12 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
   onRedo,
   onSave,
   onExport,
-  onShare
+  onShare,
+  onAddShape,
+  onBackToDashboard,
+  onDeleteSelected,
+  onLoad,
+  onClear
 }) => {
   const [selectedTool, setSelectedTool] = useState<string>('select');
   const [isCompactMode, setIsCompactMode] = useState(false);
@@ -156,23 +166,40 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
           isCompactMode ? 'h-14' : 'h-16'
         }`}
       >
-        <div className="h-full flex items-center justify-between px-4 lg:px-6 overflow-x-auto">
-          {/* Left Section - Mode Switcher */}
-          <div className="flex items-center space-x-4">
-            {/* Project Name */}
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+        <div className="h-full flex items-center justify-between px-4 lg:px-6 gap-4 min-w-0">
+          {/* Left Section - Project Info & Mode Switcher */}
+          <div className="flex items-center space-x-4 min-w-0 flex-shrink-0">
+            {/* Back Button & Project Name */}
+            <div className="flex items-center space-x-3 min-w-0">
+              {onBackToDashboard && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onBackToDashboard}
+                        className="text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 flex-shrink-0"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  </TooltipTrigger>
+                  <TooltipContent className="tooltip-content">Back to Dashboard</TooltipContent>
+                </Tooltip>
+              )}
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex-shrink-0">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <h1 className="font-bold text-gray-900 text-sm">
+              <div className="min-w-0 flex-shrink">
+                <h1 className="font-bold text-gray-900 text-sm truncate max-w-[200px]" title={projectName || 'Untitled Diagram'}>
                   {projectName || 'Untitled Diagram'}
                 </h1>
-                <p className="text-xs text-gray-500">Enterprise AR Editor</p>
+                <p className="text-xs text-gray-500 truncate">Enterprise AR Editor</p>
               </div>
             </div>
 
-            <Separator orientation="vertical" className="h-8" />
+            <Separator orientation="vertical" className="h-8 flex-shrink-0" />
 
             {/* Mode Switcher */}
             <div className="hidden sm:flex items-center space-x-1 p-1 bg-gray-100/80 rounded-xl flex-shrink-0">
@@ -185,7 +212,7 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
                     <TooltipTrigger asChild>
                       <motion.button
                         onClick={() => onModeChange(modeConfig.id as any)}
-                        className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                           isActive
                             ? 'text-white shadow-md'
                             : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
@@ -204,7 +231,7 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
                         )}
                         <div className="relative flex items-center space-x-2">
                           <Icon className="w-4 h-4" />
-                          <span>{modeConfig.name}</span>
+                          <span className="hidden lg:inline">{modeConfig.name}</span>
                         </div>
                       </motion.button>
                     </TooltipTrigger>
@@ -269,7 +296,13 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
                   <Tooltip key={tool.id}>
                     <TooltipTrigger asChild>
                       <motion.button
-                        onClick={() => setSelectedTool(tool.id)}
+                        onClick={() => {
+                          setSelectedTool(tool.id);
+                          // Add shape to canvas if it's a shape tool
+                          if (['rectangle', 'circle', 'diamond', 'text'].includes(tool.id) && onAddShape) {
+                            onAddShape(tool.id);
+                          }
+                        }}
                         className={`p-2 rounded-lg transition-all duration-200 ${
                           isActive
                             ? 'bg-blue-100 text-blue-600 shadow-sm'
@@ -353,13 +386,13 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
           </div>
 
           {/* Right Section - Actions & Controls */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
+          <div className="flex items-center space-x-1 flex-shrink-0 overflow-hidden">
             {/* Animation Controls */}
             {mode === 'present' && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-purple-50 rounded-lg border border-purple-200/50 flex-shrink-0"
+                className="hidden xl:flex items-center space-x-2 px-3 py-1 bg-purple-50 rounded-lg border border-purple-200/50 flex-shrink-0"
               >
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -379,7 +412,7 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
                   <TooltipContent className="tooltip-content">{isPlaying ? 'Pause' : 'Play'} Animation</TooltipContent>
                 </Tooltip>
                 
-                <div className="flex items-center space-x-2 text-xs text-purple-600">
+                <div className="hidden 2xl:flex items-center space-x-2 text-xs text-purple-600">
                   <span>Speed:</span>
                   <div className="w-16">
                     <Slider
@@ -396,10 +429,10 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
               </motion.div>
             )}
 
-            <Separator orientation="vertical" className="h-6" />
+            {mode === 'present' && <Separator orientation="vertical" className="h-6 flex-shrink-0" />}
 
             {/* Quick Actions */}
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1 flex-shrink-0 max-w-fit">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
@@ -416,32 +449,85 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
                 <TooltipContent className="tooltip-content">Save (⌘S)</TooltipContent>
               </Tooltip>
 
+              {/* Load/Open button */}
+              {onLoad && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onLoad}
+                        className="text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                      >
+                        <Upload className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  </TooltipTrigger>
+                  <TooltipContent className="tooltip-content">Open (⌘O)</TooltipContent>
+                </Tooltip>
+              )}
+
+              {/* Delete button for testing */}
+              {onDeleteSelected && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onDeleteSelected}
+                        className="text-red-600 hover:text-red-800 hover:bg-red-100/80"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  </TooltipTrigger>
+                  <TooltipContent className="tooltip-content">Delete Selected (Del)</TooltipContent>
+                </Tooltip>
+              )}
+
+              {/* Clear button */}
+              {onClear && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onClear}
+                        className="text-orange-600 hover:text-orange-800 hover:bg-orange-100/80"
+                      >
+                        <Eraser className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  </TooltipTrigger>
+                  <TooltipContent className="tooltip-content">Clear Canvas</TooltipContent>
+                </Tooltip>
+              )}
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
-                        >
-                          <Download className="w-4 h-4" />
-                          <ChevronDown className="w-3 h-3 ml-1" />
-                        </Button>
-                      </motion.div>
-                    </TooltipTrigger>
-                    <TooltipContent className="tooltip-content">Export Options</TooltipContent>
-                  </Tooltip>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                  >
+                    <Download className="w-4 h-4" />
+                    <ChevronDown className="w-3 h-3 ml-1" />
+                  </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 dropdown-content" style={{ zIndex: 'var(--z-tooltip)' }}>
+                <DropdownMenuContent align="end" side="bottom" className="w-48 dropdown-content" style={{ zIndex: 9999 }}>
                   {exportOptions.map((option) => {
                     const Icon = option.icon;
                     return (
                       <DropdownMenuItem
                         key={option.format}
-                        onClick={() => onExport()}
-                        className="flex items-center space-x-3 px-3 py-2"
+                        onClick={() => {
+                          console.log('🔥 DROPDOWN EXPORT CLICKED:', option.format);
+                          onExport(option.format as 'png' | 'svg' | 'json');
+                        }}
+                        className="flex items-center space-x-3 px-3 py-2 cursor-pointer hover:bg-gray-100"
                       >
                         <Icon className="w-4 h-4" />
                         <span>{option.name}</span>
@@ -473,10 +559,10 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
               </Tooltip>
             </div>
 
-            <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6 flex-shrink-0" />
 
-            {/* Settings & Profile */}
-            <div className="flex items-center space-x-1 flex-shrink-0">
+            {/* Settings & Profile - Compact on smaller screens */}
+            <div className="flex items-center space-x-1 flex-shrink-0 ml-auto">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
@@ -484,7 +570,7 @@ const EnterpriseToolbar: React.FC<EnterpriseToolbarProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => setIsCompactMode(!isCompactMode)}
-                      className="text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                      className="text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 hidden lg:flex"
                     >
                       {isCompactMode ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
                     </Button>

@@ -622,7 +622,7 @@ export const SaveExportModal: React.FC<SaveExportModalProps> = ({
                       fontSize: MermaidDesignTokens.typography.fontSize.xs,
                       color: MermaidDesignTokens.colors.text.secondary
                     }}>
-                      Updated: {new Date(project.updatedAt).toLocaleDateString()}
+                      Updated: {project.updatedAt ? new Date(project.updatedAt).toLocaleDateString() : 'Unknown'}
                     </div>
                   </div>
                 ))}

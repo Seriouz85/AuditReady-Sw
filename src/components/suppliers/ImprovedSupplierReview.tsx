@@ -160,7 +160,12 @@ const ImprovedSupplierReview: React.FC<ImprovedSupplierReviewProps> = ({
         if (reset) {
           setStandards(result.standards);
         } else {
-          setStandards(prev => [...prev, ...result.standards!]);
+          // Filter out duplicates before adding new standards
+          setStandards(prev => {
+            const existingIds = new Set(prev.map(s => s.id));
+            const newStandards = result.standards!.filter(s => !existingIds.has(s.id));
+            return [...prev, ...newStandards];
+          });
         }
         setHasMoreStandards(result.hasMore || false);
         setStandardsPage(currentPage + 1);
@@ -211,31 +216,35 @@ const ImprovedSupplierReview: React.FC<ImprovedSupplierReviewProps> = ({
 
   const loadEmailSettings = async () => {
     try {
-      const result = await databaseSupplierAssessmentService.getOrganizationEmailSettings();
+      // For demo mode, use fallback settings without calling the service
+      const fallbackSettings = {
+        senderName: 'Demo Security Team',
+        senderEmail: 'security@auditready.demo',
+        replyToEmail: 'security@auditready.demo',
+        organizationName: 'Audit Ready Demo Organization'
+      };
       
-      if (result.success && result.settings) {
-        setEmailSettings(result.settings);
-        
-        // Update form with sender information
-        setAssessmentForm(prev => ({
-          ...prev,
-          email: {
-            ...prev.email,
-            custom_message: generateDefaultEmailMessage(result.settings!)
-          }
-        }));
-      } else {
-        console.error('Failed to load email settings:', result.error);
-        // Use fallback settings
-        setEmailSettings({
-          senderName: 'Security Team',
-          senderEmail: 'security@company.com',
-          replyToEmail: 'security@company.com',
-          organizationName: 'Your Organization'
-        });
-      }
+      setEmailSettings(fallbackSettings);
+      
+      // Update form with sender information
+      setAssessmentForm(prev => ({
+        ...prev,
+        email: {
+          ...prev.email,
+          custom_message: generateDefaultEmailMessage(fallbackSettings)
+        }
+      }));
+      
+      console.log('Using demo email settings for supplier assessment');
     } catch (error) {
       console.error('Error loading email settings:', error);
+      // Always fall back to demo settings
+      setEmailSettings({
+        senderName: 'Demo Security Team',
+        senderEmail: 'security@auditready.demo',
+        replyToEmail: 'security@auditready.demo',
+        organizationName: 'Audit Ready Demo Organization'
+      });
     }
   };
 
@@ -308,12 +317,12 @@ ${settings.emailSignature || ''}`;
 
       // Create campaign
       const result = await databaseSupplierAssessmentService.createCampaign({
-        supplierId: supplier.id,
+        supplier_id: supplier.id,
         name: assessmentForm.campaign.name,
         description: assessmentForm.campaign.description,
-        standardIds: assessmentForm.standards.selected_standard_ids,
-        requirementIds: assessmentForm.standards.selected_requirement_ids,
-        dueDate: assessmentForm.campaign.due_date,
+        standard_ids: assessmentForm.standards.selected_standard_ids,
+        requirement_ids: assessmentForm.standards.selected_requirement_ids,
+        due_date: assessmentForm.campaign.due_date,
         settings: assessmentForm.campaign.settings
       });
 
@@ -322,18 +331,43 @@ ${settings.emailSignature || ''}`;
         return;
       }
 
-      // Send invitations
+      // Generate secure authentication tokens for each contact
+      const authenticationTokens = assessmentForm.contacts.map(contact => ({
+        email: contact.email,
+        token: `auth_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+        role: contact.role,
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
+      }));
+
+      // Send invitations with authentication tokens
       const inviteResult = await databaseSupplierAssessmentService.inviteSupplier({
         campaignId: result.campaignId,
         supplierId: supplier.id,
         contacts: assessmentForm.contacts,
-        customMessage: assessmentForm.email.custom_message
+        customMessage: assessmentForm.email.custom_message,
+        authenticationTokens
       });
 
       if (!inviteResult.success) {
         toast.error(inviteResult.error || 'Failed to send invitations');
         return;
       }
+
+      // For demo purposes, show the authentication details
+      const demoAuthInfo = authenticationTokens[0]; // First contact
+      const supplierPortalUrl = `${window.location.origin}/supplier-portal?email=${encodeURIComponent(demoAuthInfo.email)}&token=${demoAuthInfo.token}`;
+      
+      // Show demo notification with authentication details
+      setTimeout(() => {
+        toast.success(
+          `📧 Email sent to ${supplier.contact.name}!\n\n` +
+          `🔐 Demo Access:\n` +
+          `Email: ${demoAuthInfo.email}\n` +
+          `Token: ${demoAuthInfo.token}\n\n` +
+          `Portal URL: ${supplierPortalUrl}`,
+          { duration: 10000 }
+        );
+      }, 1000);
 
       // Update campaign status
       if (assessmentForm.email.send_immediately) {

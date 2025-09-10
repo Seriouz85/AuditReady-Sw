@@ -40,8 +40,18 @@ const GanttChartNode: React.FC<NodeProps<GanttNodeData>> = ({ data, selected }) 
     textColor
   } = data;
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
+  const formatDate = (date: Date | string | undefined) => {
+    if (!date) return 'Not set';
+    
+    // Convert string to Date if needed
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    // Check if it's a valid date
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+      return 'Invalid date';
+    }
+    
+    return dateObj.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric'
     });
