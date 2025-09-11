@@ -1,0 +1,106 @@
+/**
+ * ReactFlow Edge Label Export Fix
+ * Eliminates black boxes in edge labels during export
+ * 
+ * ROOT CAUSE: ReactFlow creates SVG <rect> elements with fill="white" 
+ * for edge label backgrounds that render as opaque during html-to-image export
+ */
+
+/* ULTIMATE FIX: Hide ALL possible edge label backgrounds */
+.exporting .react-flow__edge-textbg,
+.exporting .react-flow__edge-textbg rect,
+.exporting rect[class*="textbg"],
+.exporting rect[class*="edge-text"],
+.exporting [data-testid="edge-text-bg"],
+.exporting .react-flow__edge rect,
+.exporting .react-flow__edge-text-bg,
+.exporting .react-flow__edgelabel rect,
+.exporting .react-flow__edgelabel-renderer rect {
+  fill: transparent !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  display: none !important;
+  visibility: hidden !important;
+  stroke: transparent !important;
+}
+
+/* Handle text wrapper elements that can cause artifacts */
+.exporting .react-flow__edge-textwrapper {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Ensure edge text remains visible with proper styling */
+.exporting .react-flow__edge-text {
+  fill: black !important;
+  background: none !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500 !important;
+}
+
+/* NORMAL MODE: Ensure edge text is visible without backgrounds */
+.react-flow__edge-text-clean,
+.react-flow__edge text {
+  background: none !important;
+  background-color: transparent !important;
+  z-index: 1000 !important;
+}
+
+/* Handle edge label renderer container */
+.exporting .react-flow__edgelabel-renderer {
+  background: transparent !important;
+}
+
+/* Catch any SVG rect elements with textbg class */
+.exporting rect[class*="textbg"],
+.exporting rect[class*="edge-text"] {
+  fill: transparent !important;
+  opacity: 0 !important;
+}
+
+/* Additional safety for any background gradients */
+.exporting [class*="edge"][style*="gradient"] {
+  background: transparent !important;
+}
+
+/* Ensure proper text contrast without backgrounds */
+.exporting .react-flow__edge text,
+.exporting .react-flow__edge tspan {
+  fill: #1e293b !important;
+  stroke: none !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* NUCLEAR OPTION: Hide ALL SVG rect elements in edges during export */
+.exporting .react-flow__edge rect {
+  fill: transparent !important;
+  stroke: transparent !important;
+  opacity: 0 !important;
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* HIDE ALL ANCHORS/HANDLES during export */
+.exporting .react-flow__handle,
+.exporting [class*="handle"],
+.exporting [data-handleid],
+.exporting .react-flow__node .w-3.h-3,
+.exporting .react-flow__node .w-4.h-4 {
+  opacity: 0 !important;
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* FINAL NUCLEAR OPTION: Remove ALL rect elements in entire export */
+.exporting rect {
+  fill: transparent !important;
+  stroke: transparent !important;  
+  opacity: 0 !important;
+}
+
+/* BUT keep node backgrounds visible */
+.exporting .react-flow__node rect {
+  fill: white !important;
+  stroke: #e2e8f0 !important;
+  opacity: 1 !important;
+}

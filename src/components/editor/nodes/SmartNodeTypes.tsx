@@ -20,9 +20,9 @@ export const ProcessNode = ({ data, selected }: any) => {
     return <GanttChartNode data={data} selected={selected} />;
   }
   
-  // For diamond shapes, use the dedicated DecisionNode component
+  // For diamond shapes from toolbar, use DecisionNode but with simple white styling like templates
   if (shape === 'diamond') {
-    return <DecisionNode data={data} selected={selected} />;
+    return <DecisionNode data={{...data, fillColor: '#ffffff', strokeColor: '#e2e8f0', textColor: '#1f2937'}} selected={selected} />;
   }
   
   // Beautiful shape styles matching the panel - with professional gradients and shadows
@@ -38,161 +38,126 @@ export const ProcessNode = ({ data, selected }: any) => {
       case 'rectangle':
         return {
           ...baseStyles,
-          background: selected ? 
-            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 
-            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          border: '2px solid rgba(102, 126, 234, 0.3)',
-          borderRadius: '8px',
-          color: 'white',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '4px',
+          color: '#1f2937',
           padding: '12px 20px',
-          boxShadow: selected ? 
-            '0 8px 25px rgba(102, 126, 234, 0.4)' : 
-            '0 4px 20px rgba(102, 126, 234, 0.25)',
+          boxShadow: 'none',
           minWidth: '120px'
         };
       
       case 'circle':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
-            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          border: 'none', // Remove border to avoid double circles
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '50%',
-          color: 'white',
+          color: '#1f2937',
           width: '80px',
           height: '80px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: selected ?
-            '0 8px 25px rgba(240, 147, 251, 0.4)' :
-            '0 4px 20px rgba(240, 147, 251, 0.25)'
+          boxShadow: 'none',
+          outline: 'none',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: '#e2e8f0'
         };
+      
       
       case 'hexagon':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' :
-            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-          border: '2px solid rgba(168, 237, 234, 0.3)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '8px',
           color: '#1f2937',
           padding: '12px 20px',
-          boxShadow: selected ?
-            '0 8px 25px rgba(168, 237, 234, 0.4)' :
-            '0 4px 20px rgba(168, 237, 234, 0.25)',
+          boxShadow: 'none',
           clipPath: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)'
         };
       
       case 'parallelogram':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%)' :
-            'linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%)',
-          border: '2px solid rgba(253, 187, 45, 0.3)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '8px',
-          color: 'white',
+          color: '#1f2937',
           padding: '12px 20px',
-          boxShadow: selected ?
-            '0 8px 25px rgba(253, 187, 45, 0.4)' :
-            '0 4px 20px rgba(253, 187, 45, 0.25)',
+          boxShadow: 'none',
           transform: 'skewX(-12deg)'
         };
       
       case 'cloud':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' :
-            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-          border: '3px solid rgba(79, 172, 254, 0.4)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '50px',
-          color: 'white',
+          color: '#1f2937',
           padding: '16px 32px',
-          boxShadow: selected ?
-            '0 10px 40px rgba(79, 172, 254, 0.4)' :
-            '0 8px 30px rgba(79, 172, 254, 0.3)'
+          boxShadow: 'none'
         };
       
       case 'database':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
-            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          border: '2px solid rgba(240, 147, 251, 0.3)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '20px 20px 40px 40px',
-          color: 'white',
+          color: '#1f2937',
           padding: '16px 20px',
-          boxShadow: selected ?
-            '0 8px 30px rgba(240, 147, 251, 0.4)' :
-            '0 6px 25px rgba(240, 147, 251, 0.3)',
+          boxShadow: 'none',
           minHeight: '60px'
         };
       
       case 'server':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' :
-            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          border: '3px solid rgba(102, 126, 234, 0.4)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '16px',
-          color: 'white',
+          color: '#1f2937',
           padding: '20px',
-          boxShadow: selected ?
-            '0 10px 35px rgba(102, 126, 234, 0.4)' :
-            '0 8px 30px rgba(102, 126, 234, 0.35)',
+          boxShadow: 'none',
           minHeight: '80px'
         };
       
       case 'user':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' :
-            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-          border: '2px solid rgba(168, 237, 234, 0.4)',
+          background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+          border: 'none',
           borderRadius: '50% 50% 20px 20px',
           color: '#2d3748',
           padding: '20px 16px 12px',
-          boxShadow: selected ?
-            '0 8px 30px rgba(168, 237, 234, 0.4)' :
-            '0 6px 25px rgba(168, 237, 234, 0.3)',
+          boxShadow: '0 6px 20px rgba(168, 237, 234, 0.3)',
           minWidth: '60px'
         };
       
       case 'team':
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' :
-            'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-          border: '3px solid rgba(255, 236, 210, 0.5)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '20px',
-          color: '#744210',
+          color: '#1f2937',
           padding: '18px 24px',
-          boxShadow: selected ?
-            '0 10px 35px rgba(252, 182, 159, 0.4)' :
-            '0 8px 30px rgba(252, 182, 159, 0.3)'
+          boxShadow: 'none'
         };
         
       default:
         return {
           ...baseStyles,
-          background: selected ?
-            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' :
-            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          border: '2px solid rgba(102, 126, 234, 0.3)',
-          borderRadius: '8px',
-          color: 'white',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '4px',
+          color: '#1f2937',
           padding: '12px 20px',
-          boxShadow: selected ?
-            '0 8px 25px rgba(102, 126, 234, 0.4)' :
-            '0 4px 20px rgba(102, 126, 234, 0.25)',
+          boxShadow: 'none',
           minWidth: '120px'
         };
     }
@@ -223,15 +188,20 @@ export const ProcessNode = ({ data, selected }: any) => {
   return (
     <div 
       style={customStyles}
-      className="hover:scale-105"
+      className="relative"
     >
-      <Handle type="target" position={Position.Top} className="w-3 h-3" style={{ zIndex: 15 }} />
+      {/* 4 handles - HIDDEN by default, visible when selected */}
+      <Handle type="source" position={Position.Top} id="top" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Right} id="right" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Left} id="left" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      
       <div 
         className={`text-center ${contentClasses}`}
         style={{
           zIndex: 20, // Ensure text stays above everything
           position: 'relative',
-          textShadow: shape === 'circle' ? '0 2px 4px rgba(0,0,0,0.3)' : 'none'
+          textShadow: 'none'
         }}
       >
         <div className="text-sm font-semibold leading-tight">{data.label}</div>
@@ -242,14 +212,13 @@ export const ProcessNode = ({ data, selected }: any) => {
             }`} 
             title={data.description}
             style={{
-              textShadow: 'inherit'
+              textShadow: 'none'
             }}
           >
             {data.description}
           </div>
         )}
       </div>
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3" style={{ zIndex: 15 }} />
     </div>
   );
 };
@@ -259,8 +228,8 @@ export const DecisionNode = ({ data, selected }: any) => {
   const size = 120; // Increased size for better text readability
   const hasCustomStyle = data.fillColor || data.strokeColor || data.textColor;
   
-  // Apply custom styles with beautiful gradients from panel
-  let fillColor = selected ? '#4facfe' : '#4facfe'; // Beautiful blue gradient like panel
+  // Apply custom styles - default to beautiful gradient, or use toolbar white style
+  let fillColor = '#4facfe'; // Default beautiful blue
   let strokeColor = '#00f2fe';
   let textColor = '#ffffff';
   
@@ -281,30 +250,34 @@ export const DecisionNode = ({ data, selected }: any) => {
       className="relative transition-all duration-200"
       style={{ width: size, height: size }}
     >
-      {/* Handles positioned at diamond edges */}
+      {/* 4 diamond handles - hidden by default */}
       <Handle 
-        type="target" 
+        type="source" 
         position={Position.Top} 
-        className="w-3 h-3" 
-        style={{ top: -6, left: '50%', transform: 'translateX(-50%)', zIndex: 15 }} 
+        id="top"
+        className="w-3 h-3 transition-opacity duration-200" 
+        style={{ top: -6, left: '50%', transform: 'translateX(-50%)', zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} 
       />
       <Handle 
         type="source" 
         position={Position.Bottom} 
-        className="w-3 h-3" 
-        style={{ bottom: -6, left: '50%', transform: 'translateX(-50%)', zIndex: 15 }} 
+        id="bottom"
+        className="w-3 h-3 transition-opacity duration-200" 
+        style={{ bottom: -6, left: '50%', transform: 'translateX(-50%)', zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} 
       />
       <Handle 
         type="source" 
         position={Position.Left} 
-        className="w-3 h-3" 
-        style={{ left: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 15 }} 
+        id="left"
+        className="w-3 h-3 transition-opacity duration-200" 
+        style={{ left: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} 
       />
       <Handle 
         type="source" 
         position={Position.Right} 
-        className="w-3 h-3" 
-        style={{ right: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 15 }} 
+        id="right"
+        className="w-3 h-3 transition-opacity duration-200" 
+        style={{ right: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} 
       />
       
       {/* True Diamond Shape using SVG - matching panel styling */}
@@ -347,7 +320,7 @@ export const DecisionNode = ({ data, selected }: any) => {
             color: textColor,
             maxWidth: '70px', // Limit width to fit inside diamond
             wordBreak: 'break-word',
-            textShadow: '0 2px 4px rgba(0,0,0,0.3)' // Dark shadow for white text on blue background
+            textShadow: 'none'
           }}
         >
           <div className="text-xs font-semibold leading-none mb-1" style={{ fontSize: '11px' }}>
@@ -382,7 +355,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
   // Map shapes to their icons and styles
   const getShapeConfig = (shapeType: string) => {
     const configs = {
-      // Basic shapes
+      // Basic shapes - RESTORE BEAUTIFUL COLORS
       'circle': { 
         icon: Circle, 
         style: { background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '50%' },
@@ -402,7 +375,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
         iconColor: 'white'
       },
       
-      // Network & IT
+      // Network & IT - RESTORE BEAUTIFUL COLORS
       'server': { 
         icon: Server, 
         style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '16px' },
@@ -419,7 +392,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
         iconColor: 'white'
       },
       
-      // Business Elements  
+      // Business Elements - RESTORE BEAUTIFUL COLORS
       'user': { 
         icon: User, 
         style: { background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '50% 50% 20px 20px' },
@@ -431,7 +404,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
         iconColor: '#744210'
       },
       
-      // Data & Analytics
+      // Data & Analytics - RESTORE BEAUTIFUL COLORS
       'chart-bar': { 
         icon: BarChart3, 
         style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '12px' },
@@ -446,7 +419,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
         iconColor: 'white'
       },
       
-      // Flow elements
+      // Flow elements - RESTORE BEAUTIFUL COLORS
       'process': { 
         icon: Box, 
         style: { background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', borderRadius: '12px' },
@@ -470,22 +443,25 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
     ...config.style,
     width: shape === 'circle' || shape === 'chart-pie' ? '100px' : 
            shape === 'diamond' ? '100px' : '140px',
-    height: '120px', // Increased height to fit icon + text under
+    height: shape === 'circle' || shape === 'chart-pie' ? '100px' : '120px', // Circle must be square for perfect circle
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'flex-start',
     padding: '12px',
-    boxShadow: selected ? 
-      '0 8px 25px rgba(0,0,0,0.3)' : '0 4px 15px rgba(0,0,0,0.15)',
+    boxShadow: 'none',
     transition: 'all 0.2s ease',
     position: 'relative' as const,
     overflow: 'hidden'
   };
   
   return (
-    <div style={containerStyle} className="hover:scale-105">
-      <Handle type="target" position={Position.Top} className="w-3 h-3" style={{ zIndex: 15 }} />
+    <div style={containerStyle} className="hover:scale-105 relative">
+      {/* 4 handles for Beautiful Shapes - hidden by default */}
+      <Handle type="source" position={Position.Top} id="top" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Right} id="right" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Left} id="left" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} />
       
       {/* Icon Section - Only for complex shapes, not basic shapes */}
       {!['rectangle', 'circle', 'diamond'].includes(nodeType || shape) && (
@@ -511,7 +487,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
         }`}
         style={{ 
           color: config.iconColor,
-          textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+          textShadow: 'none',
           maxWidth: '100%'
         }}
       >
@@ -537,8 +513,6 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
           </div>
         )}
       </div>
-      
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3" style={{ zIndex: 15 }} />
     </div>
   );
 };
@@ -546,17 +520,13 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
 // Beautiful Start/End Node  
 export const StartEndNode = ({ data, selected }: any) => {
   const styles: React.CSSProperties = {
-    background: selected 
-      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
-      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-    border: '2px solid rgba(16, 185, 129, 0.3)',
+    background: '#10b981',
+    border: '2px solid #059669',
     borderRadius: '50px',
     color: 'white',
     padding: '12px 32px',
     fontWeight: '500',
-    boxShadow: selected 
-      ? '0 8px 25px rgba(16, 185, 129, 0.4)' 
-      : '0 4px 20px rgba(16, 185, 129, 0.25)',
+    boxShadow: 'none',
     transition: 'all 0.2s ease',
     position: 'relative' as const,
     zIndex: 10
@@ -565,11 +535,15 @@ export const StartEndNode = ({ data, selected }: any) => {
   return (
     <div 
       style={styles}
-      className="hover:scale-105"
+      className="hover:scale-105 relative"
     >
-      <Handle type="target" position={Position.Top} className="w-3 h-3" style={{ zIndex: 15 }} />
+      {/* 4 handles for Start/End nodes - hidden by default */}
+      <Handle type="source" position={Position.Top} id="top" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#10b981', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Right} id="right" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#10b981', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#10b981', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      <Handle type="source" position={Position.Left} id="left" className="w-3 h-3 transition-opacity duration-200" style={{ zIndex: 15, background: '#10b981', border: '1px solid white', opacity: selected ? 1 : 0 }} />
+      
       <div className="text-sm font-semibold text-center">{data.label}</div>
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3" style={{ zIndex: 15 }} />
     </div>
   );
 };
@@ -585,17 +559,12 @@ export const CustomNode = ({ data, selected }: any) => {
   }
   
   // Beautiful shapes from the Beautiful Node Palette - use BeautifulShapeNode
+  // EXCLUDE basic shapes (circle, diamond, rectangle) - they should use ProcessNode for toolbar
   const beautifulShapes = [
-    'circle', 'diamond', 'rectangle', 'server', 'database', 'cloud', 
-    'user', 'team', 'chart-bar', 'chart-pie', 'process', 'start-end'
+    'server', 'database', 'cloud', 'user', 'team', 'chart-bar', 'chart-pie', 'process', 'start-end'
   ];
   
-  if (beautifulShapes.includes(nodeType) || data.customStyle) {
-    return <BeautifulShapeNode data={data} selected={selected} />;
-  }
-  
-  // Legacy diamond handling
-  if (shape === 'diamond') {
+  if (beautifulShapes.includes(nodeType) || data.customStyle || data.isBeautifulShape) {
     return <BeautifulShapeNode data={data} selected={selected} />;
   }
   

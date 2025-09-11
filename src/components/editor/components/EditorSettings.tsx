@@ -35,6 +35,16 @@ import { useDiagramStore } from '../../../stores/diagramStore';
 interface EditorSettingsProps {
   isOpen: boolean;
   onClose: () => void;
+  currentSettings?: {
+    showGrid: boolean;
+    showMiniMap: boolean;
+    animationSpeed: number;
+  };
+  onSettingsChange?: (settings: {
+    showGrid: boolean;
+    showMiniMap: boolean;
+    animationSpeed: number;
+  }) => void;
 }
 
 interface SettingsState {
@@ -74,7 +84,7 @@ interface SettingsState {
 }
 
 const defaultSettings: SettingsState = {
-  showGrid: true,
+  showGrid: false,
   gridSize: 20,
   snapToGrid: true,
   showMinimap: true,
@@ -106,8 +116,15 @@ const defaultSettings: SettingsState = {
   }
 };
 
-const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
-  const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose, currentSettings, onSettingsChange }) => {
+  const [settings, setSettings] = useState<SettingsState>(() => ({
+    ...defaultSettings,
+    ...(currentSettings && {
+      showGrid: currentSettings.showGrid,
+      showMinimap: currentSettings.showMiniMap,
+      animationSpeed: currentSettings.animationSpeed
+    })
+  }));
   const [hasChanges, setHasChanges] = useState(false);
   const [activeTab, setActiveTab] = useState('canvas');
 
@@ -131,9 +148,12 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
 
   // Save settings and apply to store
   const handleSave = () => {
-    // Apply settings to diagram store
-    setShowGrid(settings.showGrid);
-    setShowMinimap(settings.showMinimap);
+    // Apply settings via callback to parent component
+    onSettingsChange?.({
+      showGrid: settings.showGrid,
+      showMiniMap: settings.showMinimap,
+      animationSpeed: settings.animationSpeed
+    });
     
     // Save to localStorage for persistence
     localStorage.setItem('ar-editor-settings', JSON.stringify(settings));
@@ -142,6 +162,9 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose }) => {
     
     // Show success feedback
     console.log('✅ Settings saved successfully', settings);
+    
+    // Close settings panel
+    onClose();
   };
 
   // Reset to defaults

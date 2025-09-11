@@ -21,7 +21,8 @@ import ReactFlow, {
   MiniMap,
   useReactFlow
 } from 'reactflow';
-import { toPng, toSvg } from 'html-to-image';
+import { useExportCanvas } from '../../hooks/useExportCanvas';
+import { usePresentMode } from '../../hooks/usePresentMode';
 import 'reactflow/dist/style.css';
 import '../../styles/layout-fixes.css';
 
@@ -43,6 +44,7 @@ import {
 import { useDiagramStore } from '../../stores/diagramStore';
 import { useTheme } from '../editor/themes/AdvancedThemeSystem';
 import { useAccessibility } from '../editor/accessibility/AccessibilitySystem';
+import { useNodeAlignment } from '../../hooks/useNodeAlignment';
 
 // Components
 import AIIntelligencePanel from './panels/AIIntelligencePanel';
@@ -61,6 +63,7 @@ import { NodePropertiesPanel } from './NodePropertiesPanel';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
 // import { BackgroundColorPicker } from './BackgroundColorPicker'; // TODO: Implement background picker
 import SmartNodeTypes from './nodes/SmartNodeTypes';
+import { customEdgeTypes } from './edges/CustomEdges';
 import LoadDiagramModal from './components/LoadDiagramModal';
 import SaveDiagramModal from './components/SaveDiagramModal';
 import ClearConfirmationDialog from './components/ClearConfirmationDialog';
@@ -86,7 +89,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const [selectedMode, setSelectedMode] = useState<'design' | 'present' | 'collaborate'>(mode);
   const [activePanel, setActivePanel] = useState<string>('templates');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
   const [showMiniMap, setShowMiniMap] = useState(true);
   const [animationSpeed, setAnimationSpeed] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
@@ -107,6 +110,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const { currentTheme } = useTheme();
   const { } = useAccessibility();
   const { } = useReactFlow();
+  const { handleNodeDrag } = useNodeAlignment(nodes);
   
   // Store
   const {
@@ -175,7 +179,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     
     const newNode = {
       id: `${shapeType}-${Date.now()}`,
-      type: 'custom',
+      type: 'process',
       position: { 
         x: 400 + Math.random() * 100, // Add slight randomness to avoid overlap
         y: 200 + Math.random() * 100
@@ -184,20 +188,21 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         label: initialLabel,
         shape: shapeType,
         description: '',
-        fillColor: '#dbeafe',
-        strokeColor: '#2563eb',
-        textColor: '#1e293b',
+        fillColor: '#ffffff',
+        strokeColor: '#e2e8f0',
+        textColor: '#1f2937',
         autoWidth: width,
         autoHeight: height
       },
       style: {
-        background: '#dbeafe',
-        border: '2px solid #2563eb',
-        borderRadius: shapeType === 'circle' ? '50%' : shapeType === 'diamond' ? '4px' : '8px',
-        color: '#1e293b',
-        padding: '12px 16px',
+        background: '#ffffff',
+        border: '2px solid #e2e8f0',
+        borderRadius: shapeType === 'circle' ? '50%' : '4px',
+        color: '#1f2937',
+        padding: '12px 20px',
         fontSize: '14px',
-        fontWeight: '600',
+        fontWeight: '500',
+        boxShadow: 'none',
         width: `${width}px`,
         height: `${height}px`,
         textAlign: 'center',
@@ -529,64 +534,6 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     
   }, [setNodes, setEdges, storeSetNodes, storeSetEdges, clearSelection]);
 
-  // Present mode handler - true fullscreen like PowerPoint
-  const handlePresentMode = useCallback(async () => {
-    if (selectedMode !== 'present') {
-      setSelectedMode('present');
-      
-      // Hide all panels for clean presentation
-      setActivePanel('');
-      setShowPropertiesPanel(false);
-      setShowEdgePropertiesPanel(false);
-      
-      // Request true fullscreen like PowerPoint
-      try {
-        const editorElement = document.querySelector('.enterprise-ar-editor') as HTMLElement;
-        if (editorElement && document.fullscreenEnabled) {
-          await editorElement.requestFullscreen();
-          setIsFullscreen(true);
-          
-          // Add ESC key handler for fullscreen exit (hidden from user)
-          const handleEscapeKey = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-              setSelectedMode('design');
-              setIsFullscreen(false);
-              document.removeEventListener('keydown', handleEscapeKey);
-            }
-          };
-          
-          document.addEventListener('keydown', handleEscapeKey);
-          
-          // Handle fullscreen change events
-          const handleFullscreenChange = () => {
-            if (!document.fullscreenElement) {
-              setSelectedMode('design');
-              setIsFullscreen(false);
-              document.removeEventListener('fullscreenchange', handleFullscreenChange);
-            }
-          };
-          
-          document.addEventListener('fullscreenchange', handleFullscreenChange);
-          
-          console.log('🎯 Entered true fullscreen Present mode (PowerPoint style)');
-        } else {
-          // Fallback for browsers that don't support fullscreen
-          setIsFullscreen(true);
-          console.log('🎯 Entered Present mode (fullscreen API not supported)');
-        }
-      } catch (error) {
-        console.warn('Could not enter fullscreen:', error);
-        setIsFullscreen(true); // Fallback to UI fullscreen
-      }
-    } else {
-      // Exit present mode
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-      setSelectedMode('design');
-      setIsFullscreen(false);
-    }
-  }, [selectedMode, isFullscreen]);
 
   // Collaborate mode handler - TODO: Implement collaboration features
   const handleCollaborateMode = useCallback(() => {
@@ -595,280 +542,94 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     console.log('🤝 Switched to Collaborate mode - opening invitation modal');
   }, []);
 
-  const handleExport = useCallback(async (format: 'png' | 'svg' | 'json' = 'png') => {
-    console.log('🔥 EXPORT BUTTON CLICKED - handleExport called with format:', format);
-    const diagramData = {
-      nodes,
-      edges,
-      projectName: projectName || 'Untitled Diagram',
-      timestamp: new Date().toISOString()
+  // Drag and Drop handlers for Beautiful Shapes consistency
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    
+    const reactFlowBounds = (event.target as Element).getBoundingClientRect();
+    const type = event.dataTransfer.getData('application/reactflow');
+    
+    if (!type) return;
+    
+    try {
+      const nodeData = JSON.parse(type);
+      
+      // Use same positioning logic as click
+      const position = {
+        x: event.clientX - reactFlowBounds.left - 60,
+        y: event.clientY - reactFlowBounds.top - 30
+      };
+      
+      // Create node IDENTICAL to click behavior for Beautiful Shapes
+      const newNode = {
+        id: `${nodeData.nodeType || nodeData.type || 'node'}-${Date.now()}`,
+        type: 'custom', // Always use custom for Beautiful Shapes consistency
+        position,
+        data: {
+          label: nodeData.data?.label || 'New Node',
+          nodeType: nodeData.data?.nodeType || nodeData.nodeType,
+          shape: nodeData.data?.shape || 'rectangle',
+          description: nodeData.data?.description || '',
+          isBeautifulShape: nodeData.data?.isBeautifulShape || false,
+          ...nodeData.data
+        }
+      };
+      
+      console.log('✅ Dropped Beautiful Shape (matches click behavior):', newNode);
+      setNodes(nds => [...nds, newNode]);
+      storeAddNode(newNode);
+      
+    } catch (error) {
+      console.error('❌ Drop failed:', error);
+    }
+  }, [setNodes, storeAddNode]);
+  
+  // Initialize export hook
+  const { handleExport } = useExportCanvas({ nodes, edges, projectName });
+  
+  // Initialize present mode hook
+  const { isPresenting, togglePresentMode } = usePresentMode({
+    onModeChange: (mode) => setSelectedMode(mode),
+    onStateChange: (states) => {
+      setActivePanel(states.activePanel);
+      setShowPropertiesPanel(states.showPropertiesPanel);
+      setShowEdgePropertiesPanel(states.showEdgePropertiesPanel);
+      setShowSettings(states.showSettings);
+      setShowColorPalette(states.showColorPalette);
+      setShowMiniMap(states.showMiniMap);
+      setShowGrid(states.showGrid);
+    }
+  });
+
+  // Present mode handler using extracted hook
+  const handlePresentMode = useCallback(() => {
+    const currentStates = {
+      activePanel,
+      showPropertiesPanel,
+      showEdgePropertiesPanel,
+      showSettings,
+      showColorPalette,
+      showMiniMap,
+      showGrid
     };
     
-    const fileName = `${diagramData.projectName.replace(/\s+/g, '_')}`;
-    
-    if (format === 'json') {
-      const dataStr = JSON.stringify(diagramData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${fileName}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-      
-      console.log('📁 Exported as JSON:', { fileName: `${fileName}.json`, size: dataStr.length });
-      
-      // Enhanced export feedback with toast
-      const exportTime = new Date().toLocaleTimeString();
-      
-      const exportToast = document.createElement('div');
-      exportToast.innerHTML = `
-        <div style="
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-          color: white;
-          padding: 16px 24px;
-          border-radius: 12px;
-          font-weight: 600;
-          box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-          z-index: 10000;
-          max-width: 400px;
-          animation: slideInRight 0.3s ease-out;
-        ">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="font-size: 24px;">📁</div>
-            <div>
-              <div style="font-size: 16px; margin-bottom: 4px;">Export Successful!</div>
-              <div style="font-size: 14px; opacity: 0.9;">
-                📄 ${fileName}.json<br>
-                📦 ${(dataStr.length / 1024).toFixed(1)} KB • ${diagramData.nodes.length} shapes<br>
-                ⏰ ${exportTime}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      
-      document.body.appendChild(exportToast);
-      setTimeout(() => {
-        if (exportToast.parentNode) {
-          exportToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
-          setTimeout(() => exportToast.remove(), 300);
-        }
-      }, 4000);
-    } else if (format === 'png' || format === 'svg') {
-      try {
-        // Find the ReactFlow canvas element - look for the main viewport
-        const reactFlowElement = document.querySelector('.react-flow__viewport') || 
-                                 document.querySelector('.react-flow') || 
-                                 document.querySelector('.react-flow__renderer');
-        if (!reactFlowElement) {
-          throw new Error('ReactFlow canvas not found');
-        }
-
-        // Show loading toast
-        const loadingToast = document.createElement('div');
-        loadingToast.innerHTML = `
-          <div style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
-            z-index: 10000;
-            max-width: 400px;
-            animation: slideInRight 0.3s ease-out;
-          ">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="font-size: 24px; animation: spin 1s linear infinite;">⏳</div>
-              <div>
-                <div style="font-size: 16px;">Exporting Canvas...</div>
-                <div style="font-size: 14px; opacity: 0.9;">Capturing ${format.toUpperCase()} image</div>
-              </div>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(loadingToast);
-
-        // Auto-fit to content bounds - calculate bounding box of all nodes
-        const nodeBounds = nodes.reduce((bounds, node) => {
-          const x = node.position.x;
-          const y = node.position.y;
-          const width = node.width || 150; // Default width
-          const height = node.height || 40; // Default height
-          
-          return {
-            minX: Math.min(bounds.minX, x),
-            minY: Math.min(bounds.minY, y),
-            maxX: Math.max(bounds.maxX, x + width),
-            maxY: Math.max(bounds.maxY, y + height)
-          };
-        }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
-
-        // Add padding around content
-        const padding = 100;
-        const contentWidth = Math.max(800, nodeBounds.maxX - nodeBounds.minX + padding * 2);
-        const contentHeight = Math.max(600, nodeBounds.maxY - nodeBounds.minY + padding * 2);
-
-        // Get the main ReactFlow element and temporarily adjust its size for export
-        const mainReactFlowElement = document.querySelector('.react-flow') as HTMLElement;
-        if (!mainReactFlowElement) {
-          throw new Error('ReactFlow element not found');
-        }
-
-        // Store original styles
-        const originalStyle = {
-          width: mainReactFlowElement.style.width,
-          height: mainReactFlowElement.style.height,
-          transform: mainReactFlowElement.style.transform
-        };
-
-        // Temporarily adjust the viewport to fit all content
-        mainReactFlowElement.style.width = `${contentWidth}px`;
-        mainReactFlowElement.style.height = `${contentHeight}px`;
-
-        // Get the viewport element and adjust its transform to show all content
-        const viewport = mainReactFlowElement.querySelector('.react-flow__viewport') as HTMLElement;
-        if (viewport) {
-          // Calculate the transform to center all content
-          const offsetX = -nodeBounds.minX + padding;
-          const offsetY = -nodeBounds.minY + padding;
-          viewport.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1)`;
-        }
-
-        // Wait for React to update the DOM
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Capture the full canvas
-        const exportFunction = format === 'png' ? toPng : toSvg;
-        const dataUrl = await exportFunction(mainReactFlowElement, {
-          quality: 1.0,
-          pixelRatio: 2,
-          backgroundColor: '#ffffff',
-          width: contentWidth,
-          height: contentHeight,
-          style: {
-            transform: 'scale(1)',
-            transformOrigin: 'top left'
-          },
-          filter: (node) => {
-            // Include background, nodes, and edges, but exclude UI controls
-            if (node.classList) {
-              return !node.classList.contains('react-flow__controls') && 
-                     !node.classList.contains('react-flow__minimap') &&
-                     !node.classList.contains('react-flow__panel') &&
-                     !node.classList.contains('react-flow__attribution') &&
-                     !node.hasAttribute('data-floating-ui-portal') &&
-                     !node.closest('[data-floating-ui-portal]');
-            }
-            return true;
-          }
-        });
-
-        // Restore original styles
-        mainReactFlowElement.style.width = originalStyle.width;
-        mainReactFlowElement.style.height = originalStyle.height;
-        mainReactFlowElement.style.transform = originalStyle.transform;
-        if (viewport) {
-          // Reset viewport transform
-          viewport.style.transform = '';
-        }
-
-        // Remove loading toast
-        if (loadingToast.parentNode) {
-          loadingToast.remove();
-        }
-
-        // Create download link
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = `${fileName}.${format}`;
-        link.click();
-
-        console.log('✅ Successfully exported as', format.toUpperCase());
-
-        // Show success toast
-        const successToast = document.createElement('div');
-        successToast.innerHTML = `
-          <div style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-            z-index: 10000;
-            max-width: 400px;
-            animation: slideInRight 0.3s ease-out;
-          ">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="font-size: 24px;">✅</div>
-              <div>
-                <div style="font-size: 16px;">Export Successful!</div>
-                <div style="font-size: 14px; opacity: 0.9;">
-                  💾 ${fileName}.${format}<br>
-                  📐 Canvas exported as ${format.toUpperCase()}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(successToast);
-        setTimeout(() => {
-          if (successToast.parentNode) {
-            successToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
-            setTimeout(() => successToast.remove(), 300);
-          }
-        }, 4000);
-
-      } catch (error) {
-        console.error('❌ Export failed:', error);
-        
-        // Show error toast
-        const errorToast = document.createElement('div');
-        errorToast.innerHTML = `
-          <div style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
-            z-index: 10000;
-            max-width: 400px;
-            animation: slideInRight 0.3s ease-out;
-          ">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="font-size: 24px;">❌</div>
-              <div>
-                <div style="font-size: 16px;">Export Failed</div>
-                <div style="font-size: 14px; opacity: 0.9;">Could not capture canvas</div>
-              </div>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(errorToast);
-        setTimeout(() => {
-          if (errorToast.parentNode) {
-            errorToast.firstElementChild.style.animation = 'slideOutRight 0.3s ease-in';
-            setTimeout(() => errorToast.remove(), 300);
-          }
-        }, 3000);
-      }
-    }
-  }, [nodes, edges, projectName]);
+    togglePresentMode(currentStates);
+    console.log('🎯 Present mode toggled via hook');
+  }, [
+    togglePresentMode, 
+    activePanel, 
+    showPropertiesPanel, 
+    showEdgePropertiesPanel, 
+    showSettings, 
+    showColorPalette, 
+    showMiniMap, 
+    showGrid
+  ]);
 
   const handleShare = useCallback(() => {
     console.log('🔗 Share clicked - Opening collaboration modal');
@@ -916,14 +677,14 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         target: params.target!,
         sourceHandle: params.sourceHandle,
         targetHandle: params.targetHandle,
-        type: 'straight', // Professional straight lines
+        type: 'step', // Back to standard step edge
         animated: false, // Disable animation for cleaner appearance
         style: edgeStyle,
         markerEnd,
+        label: '', // ReactFlow label on root level - can be set later via properties panel
         data: {
           strokeColor: currentTheme.colors.accent,
           strokeWidth: 2,
-          label: '', // Can be set later via properties panel
         },
         zIndex: 1
       };
@@ -961,6 +722,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     setSelectedNode(null);
     setSelectedEdge(null);
   }, []);
+
 
   // Node Update Handler - with store sync
   const handleNodeUpdate = useCallback((nodeId: string, updates: any) => {
@@ -1120,58 +882,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
     }
   }, [selectedNode, selectedEdge, handleNodeUpdate, handleEdgeUpdate]);
 
-  // Drag and drop handlers
-  const onDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
+  // Drag and drop handlers already defined above
 
-  const onDrop = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault();
-
-      const reactFlowBounds = event.currentTarget.getBoundingClientRect();
-      const type = event.dataTransfer.getData('application/reactflow');
-
-      // Check if the dropped element is valid
-      if (typeof type === 'undefined' || !type) {
-        return;
-      }
-
-      try {
-        const nodeData = JSON.parse(type);
-        
-        // Calculate the position where the node should be dropped
-        const position = {
-          x: event.clientX - reactFlowBounds.left - 60, // Center the node
-          y: event.clientY - reactFlowBounds.top - 20
-        };
-
-        const newNode = {
-          id: `${nodeData.type || 'node'}-${Date.now()}`,
-          type: 'process',
-          position,
-          data: {
-            label: nodeData.data?.label || 'New Node',
-            shape: nodeData.type === 'diamond' ? 'diamond' : nodeData.type === 'circle' ? 'circle' : 'rectangle',
-            ...nodeData.data
-          },
-          style: nodeData.data?.style || {
-            background: '#ffffff',
-            border: '2px solid #e2e8f0',
-            borderRadius: '8px',
-            color: '#1e293b'
-          }
-        };
-
-        console.log('Dropping node at position:', position, newNode);
-        storeAddNode(newNode);
-      } catch (error) {
-        console.error('Failed to parse dropped node data:', error);
-      }
-    },
-    [storeAddNode]
-  );
 
   // Panel animations - optimized for performance
   const panelVariants = {
@@ -1556,7 +1268,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         `
       }}
     >
-      {/* Left Sidebar - Panel Navigation */}
+      {/* Left Sidebar - Panel Navigation - Hidden in present mode */}
+      {selectedMode !== 'present' && (
       <motion.div 
         className="sidebar w-12 md:w-16 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 flex flex-col items-center py-2 md:py-4 space-y-1 md:space-y-2 overflow-y-auto gpu-accelerated"
         style={{ gridArea: 'sidebar' }}
@@ -1612,10 +1325,11 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
           );
         })}
       </motion.div>
+      )}
 
-      {/* Active Panel */}
+      {/* Active Panel - Hidden in present mode */}
       <AnimatePresence mode="wait">
-        {activePanel && (
+        {activePanel && selectedMode !== 'present' && (
           <motion.div
             key={activePanel}
             variants={panelVariants}
@@ -1638,7 +1352,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         animate={selectedMode}
         transition={{ type: 'spring', stiffness: 200, damping: 20, mass: 0.8 }}
       >
-        {/* Top Toolbar */}
+        {/* Top Toolbar - Hidden in present mode */}
+        {selectedMode !== 'present' && (
         <div className="toolbar w-full overflow-hidden">
           <EnterpriseToolbar
             mode={selectedMode}
@@ -1669,23 +1384,33 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             onClear={handleClear}
           />
         </div>
+        )}
 
         {/* ReactFlow Canvas */}
-        <div className="relative h-full w-full overflow-hidden min-h-0" tabIndex={0}>
+        <div 
+          className={`relative overflow-hidden min-h-0 ${
+            selectedMode === 'present' 
+              ? 'fixed inset-0 w-screen h-screen z-50' 
+              : 'h-full w-full'
+          }`} 
+          tabIndex={0}
+        >
           <ReactFlow
             nodes={nodes}
             edges={edges}
             onNodesChange={handleNodesChange}
             onEdgesChange={handleEdgesChange}
             onConnect={onConnect}
+            connectionLineType="step" // Default connection preview to stepped
             onDrop={onDrop}
             onDragOver={onDragOver}
             onNodeClick={handleNodeClick}
             onEdgeClick={handleEdgeClick}
             onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
-            connectionMode={ConnectionMode.Strict} // Changed to Strict for better alignment
-            connectionRadius={20} // Larger connection radius for easier connections
+            edgeTypes={customEdgeTypes}
+            connectionMode={ConnectionMode.Loose} // Allow flexible connections
+            connectionRadius={40} // Much larger radius for easier anchor connections
             fitView
             attributionPosition="bottom-left"
             className="bg-transparent"
@@ -1705,11 +1430,11 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
             minZoom={0.1}
             maxZoom={4}
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-            snapToGrid={true} // Enable grid snapping for better alignment
-            snapGrid={[20, 20]} // Increased grid size for better alignment
-            // Professional edge defaults
+            snapToGrid={false} // Disable to allow custom alignment
+            onNodeDrag={handleNodeDrag} // Custom alignment for stepped lines
+            // Professional edge defaults - stepped lines by default
             defaultEdgeOptions={{
-              type: 'straight',
+              type: 'step',
               animated: false,
               style: {
                 strokeWidth: 2,
@@ -1724,12 +1449,14 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
               }
             }}
           >
-            <Background
-              variant={backgroundPatterns.dots}
-              gap={20}
-              size={1}
-              color={`${currentTheme.colors.border}40`}
-            />
+            {showGrid && (
+              <Background
+                variant={backgroundPatterns.dots}
+                gap={20}
+                size={1}
+                color={`${currentTheme.colors.border}40`}
+              />
+            )}
             
             {showMiniMap && (
               <MiniMap
@@ -1889,6 +1616,16 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       <EditorSettings
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
+        currentSettings={{
+          showGrid,
+          showMiniMap,
+          animationSpeed
+        }}
+        onSettingsChange={(newSettings) => {
+          setShowGrid(newSettings.showGrid);
+          setShowMiniMap(newSettings.showMiniMap);
+          setAnimationSpeed(newSettings.animationSpeed);
+        }}
       />
 
       {/* Load Diagram Modal */}
