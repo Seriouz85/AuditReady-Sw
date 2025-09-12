@@ -44,7 +44,7 @@ import {
 import { useDiagramStore } from '../../stores/diagramStore';
 import { useTheme } from '../editor/themes/AdvancedThemeSystem';
 import { useAccessibility } from '../editor/accessibility/AccessibilitySystem';
-import { useNodeAlignment } from '../../hooks/useNodeAlignment';
+import { useNodeAlignment } from '@/hooks/useNodeAlignment';
 
 // Components
 import AIIntelligencePanel from './panels/AIIntelligencePanel';
@@ -189,26 +189,14 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         shape: shapeType,
         description: '',
         fillColor: '#ffffff',
-        strokeColor: '#e2e8f0',
+        strokeColor: '#000000',
         textColor: '#1f2937',
         autoWidth: width,
         autoHeight: height
       },
       style: {
-        background: '#ffffff',
-        border: '2px solid #e2e8f0',
-        borderRadius: shapeType === 'circle' ? '50%' : '4px',
-        color: '#1f2937',
-        padding: '12px 20px',
-        fontSize: '14px',
-        fontWeight: '500',
-        boxShadow: 'none',
         width: `${width}px`,
-        height: `${height}px`,
-        textAlign: 'center',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        height: `${height}px`
       }
     };
     
