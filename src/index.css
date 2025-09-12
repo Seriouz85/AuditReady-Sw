@@ -25,6 +25,17 @@ html {
   display: none;  /* Chrome, Safari and Opera */
 }
 
+/* ReactFlow Node Border Fix - Prevent double borders on custom nodes */
+.react-flow__node {
+  border: none !important;
+}
+
+.react-flow__node-custom,
+.react-flow__node-process,
+.react-flow__node-decision {
+  border: none !important;
+}
+
 @layer base {
   :root {
     --background: 210 33% 98%;
