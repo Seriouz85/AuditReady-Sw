@@ -215,6 +215,28 @@ export function RequirementTable({
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {/* Display categories with consistent color scheme */}
+                    {/* Debug DORA requirements */}
+                    {req.code?.startsWith('Article') && (() => {
+                      console.log('🔍 DORA REQUIREMENT DEBUG:', {
+                        code: req.code,
+                        title: req.name,
+                        categories: req.categories,
+                        tags: req.tags,
+                        categoriesLength: req.categories?.length,
+                        tagsLength: req.tags?.length
+                      });
+                      // Also add to window for inspection
+                      if (typeof window !== 'undefined') {
+                        (window as any).doraDebugData = (window as any).doraDebugData || [];
+                        (window as any).doraDebugData.push({
+                          code: req.code,
+                          title: req.name,
+                          categories: req.categories,
+                          tags: req.tags
+                        });
+                      }
+                      return null;
+                    })()}
                     {req.categories && req.categories.length > 0 ? (
                       req.categories.map((category, index) => {
                         // Handle both object categories and string categoryIds

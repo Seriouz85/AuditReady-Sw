@@ -28,6 +28,14 @@ const Requirements = () => {
   const priorityFromUrl = searchParams.get("priority") as RequirementPriority | null;
   const { t } = useTranslation();
   const { isDemo, organization } = useAuth();
+  
+  // CRITICAL DEBUG: Always log when Requirements page loads
+  console.log('🚨 REQUIREMENTS PAGE LOADED!', { 
+    standardIdFromUrl, 
+    isDemo, 
+    organization: organization?.id,
+    timestamp: new Date().toISOString() 
+  });
   const requirementsService = useRequirementsService();
   
   const [searchQuery, setSearchQuery] = useState("");

@@ -200,6 +200,65 @@ export class RequirementsService {
         // Create categories as string array (not objects)
         const categoryNames = unifiedCategory ? [unifiedCategory['name']] : [];
 
+        // Categories should come from database unified_mappings, not hardcoded fixes
+        let finalTags = requirement['tags'] || [];
+        let finalCategories = categoryNames;
+        
+        // DATABASE AUDIT: Log requirements missing proper category mappings
+        if (finalCategories.length === 0 && finalTags.length > 0) {
+          console.warn(`⚠️ DATABASE ISSUE: ${requirement['control_id']} (${requirement['framework']}) has no unified category mapping but has old tags:`, finalTags);
+          console.warn(`   → This requirement should be properly mapped to a unified_compliance_category in the database`);
+          console.warn(`   → Current unified_mappings:`, unifiedMappings);
+        }
+        
+        // TEMPORARY: Only for demo purposes - remove when database is fixed
+        // TODO: Remove this section once database has proper unified_requirement_mappings
+        if (process.env.NODE_ENV === 'development' && finalCategories.length === 0 && finalTags.length > 0) {
+          console.log(`🔧 TEMP FIX (DEV ONLY): Applying temporary category mapping for ${requirement['control_id']}`);
+          
+          // Map old-style tags to categories as temporary fix
+          const tempTagMapping: Record<string, string> = {
+            'tag-governance-and-leadership': 'Governance & Leadership',
+            'tag-governance': 'Governance & Leadership',
+            'tag-risk-management': 'Risk Management', 
+            'tag-incident-response': 'Incident Response Management',
+            'tag-supplier-risk': 'Supplier & Third-Party Risk Management'
+          };
+          
+          for (const tag of finalTags) {
+            if (tempTagMapping[tag]) {
+              finalCategories = [tempTagMapping[tag]];
+              finalTags = [];
+              console.log(`🔧 TEMP: "${tag}" → "${tempTagMapping[tag]}" for ${requirement['control_id']}`);
+              break;
+            }
+          }
+          
+          // Article-based mapping for DORA/GDPR as temporary fallback
+          if (finalCategories.length === 0) {
+            if (requirement['control_id']?.includes('Article 56')) {
+              finalCategories = ['Governance & Leadership'];
+              finalTags = [];
+              console.log(`🔧 TEMP: Article 56 → "Governance & Leadership"`);
+            } else if (requirement['control_id']?.match(/^Article\s+([1-5])$/i)) {
+              finalCategories = ['Governance & Leadership'];
+              finalTags = [];
+              console.log(`🔧 TEMP: ${requirement['control_id']} → "Governance & Leadership"`);
+            }
+          }
+        }
+
+        // Debug all requirements for DORA standard
+        if (requirement['standard_id'] === 'dora' || requirement['control_id']?.startsWith('Article')) {
+          console.log(`📋 REQUIREMENT DEBUG: ${requirement['control_id']} (${requirement['framework']})`, {
+            originalTags: requirement['tags'],
+            originalCategories: categoryNames,
+            finalTags: finalTags,
+            finalCategories: finalCategories,
+            standardId: requirement['standard_id']
+          });
+        }
+
         return {
           id: requirement['id'],
           code: requirement['control_id'],
@@ -209,8 +268,8 @@ export class RequirementsService {
           status,
           priority: (requirement['priority'] || 'medium') as RequirementPriority,
           section: unifiedCategoryName, // Use unified category name
-          tags: requirement['tags'] || [], // Get tags from requirements_library
-          categories: categoryNames, // Use unified category names as strings
+          tags: finalTags, // Use processed tags
+          categories: finalCategories, // Use processed categories
           appliesTo: (orgReq as any)['applies_to'] || [],
           organizationStatus: (orgReq as any)['status'] as string,
           fulfillmentPercentage: (orgReq as any)['fulfillment_percentage'] || 0,
@@ -370,6 +429,36 @@ export class RequirementsService {
         // Return unified category name as string (as expected by Requirement interface)
         const categoryNames = unifiedCategory ? [unifiedCategory['name']] : [];
 
+        // Categories should come from database unified_mappings, not hardcoded fixes (same as other method)
+        let finalTags = (req as any)['tags'] || [];
+        let finalCategories = categoryNames;
+        
+        // DATABASE AUDIT: Log requirements missing proper category mappings
+        if (finalCategories.length === 0 && finalTags.length > 0) {
+          console.warn(`⚠️ DATABASE ISSUE (getStandardRequirementsWithDefaultStatus): ${(req as any)['control_id']} (${(req as any)['framework']}) has no unified category mapping but has old tags:`, finalTags);
+        }
+        
+        // TEMPORARY: Only for demo purposes - remove when database is fixed
+        if (process.env.NODE_ENV === 'development' && finalCategories.length === 0 && finalTags.length > 0) {
+          const tempTagMapping: Record<string, string> = {
+            'tag-governance-and-leadership': 'Governance & Leadership',
+            'tag-governance': 'Governance & Leadership'
+          };
+          
+          for (const tag of finalTags) {
+            if (tempTagMapping[tag]) {
+              finalCategories = [tempTagMapping[tag]];
+              finalTags = [];
+              break;
+            }
+          }
+          
+          if (finalCategories.length === 0 && (req as any)['control_id']?.includes('Article 56')) {
+            finalCategories = ['Governance & Leadership'];
+            finalTags = [];
+          }
+        }
+
         return {
           id: (req as any)['id'],
           code: (req as any)['control_id'],
@@ -379,8 +468,8 @@ export class RequirementsService {
           status: 'not-fulfilled' as RequirementStatus,
           priority: ((req as any)['priority'] || 'medium') as RequirementPriority,
           section: unifiedCategoryName,
-          tags: (req as any)['tags'] || [], // Get tags from requirements_library
-          categories: categoryNames,
+          tags: finalTags, // Use processed tags
+          categories: finalCategories, // Use processed categories
           appliesTo: [],
           organizationStatus: 'not-fulfilled',
           fulfillmentPercentage: 0,

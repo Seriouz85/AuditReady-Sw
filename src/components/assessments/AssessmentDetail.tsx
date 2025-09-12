@@ -166,16 +166,96 @@ export function AssessmentDetail({
 
   // Sort requirements within each standard group by control_id/section for proper ordering
   Object.keys(groupedFilteredRequirements).forEach(standardId => {
+    console.log(`🔄 SORTING STANDARD: ${standardId} with ${groupedFilteredRequirements[standardId]?.length} requirements`);
+    
+    // Log the requirements before sorting for major frameworks
+    if (standardId === 'dora' || standardId === 'iso27001' || standardId === 'cisControls') {
+      console.log(`📋 ${standardId.toUpperCase()} REQUIREMENTS BEFORE SORTING:`, 
+        groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
+      );
+    }
+    
     groupedFilteredRequirements[standardId]?.sort((a, b) => {
       // First sort by section, then by control ID or name
       const sectionCompare = (a.section || '').localeCompare(b.section || '');
       if (sectionCompare !== 0) return sectionCompare;
       
-      // Try to sort by control ID if available, otherwise by name
+      // UNIVERSAL numerical sorting for ALL frameworks
       const aId = a.code || a.name || '';
       const bId = b.code || b.name || '';
+      
+      // Universal patterns for numerical requirements
+      const patterns = [
+        { name: 'Article', regex: /^Article\s+(\d+)$/i },           // DORA: Article 1, Article 2...
+        { name: 'Control', regex: /^(\d+)\.(\d+)\.(\d+)$/i },       // CIS: 1.1.1, 1.1.2...
+        { name: 'Section', regex: /^([A-Z])\.(\d+)\.(\d+)$/i },     // ISO: A.5.1, A.5.2...
+        { name: 'Clause', regex: /^(\d+)\.(\d+)$/i },              // Generic: 4.1, 4.2...
+        { name: 'Number', regex: /^(\d+)$/i }                      // Simple: 1, 2, 3...
+      ];
+      
+      let aMatch = null, bMatch = null, patternUsed = null;
+      
+      // Find which pattern matches both requirements
+      for (const pattern of patterns) {
+        const aTest = aId.match(pattern.regex);
+        const bTest = bId.match(pattern.regex);
+        
+        if (aTest && bTest) {
+          aMatch = aTest;
+          bMatch = bTest;
+          patternUsed = pattern.name;
+          break;
+        }
+      }
+      
+      // Debug logging for all numerical sorting
+      if (aMatch && bMatch) {
+        console.log(`🔢 UNIVERSAL SORT (${patternUsed}): "${aId}" vs "${bId}"`, { aMatch, bMatch });
+      }
+      
+      if (aMatch && bMatch) {
+        // Both match the same numerical pattern - sort numerically
+        if (patternUsed === 'Article') {
+          // Article X format
+          const result = parseInt(aMatch[1]) - parseInt(bMatch[1]);
+          console.log(`📊 ${patternUsed} SORT: ${aMatch[1]} vs ${bMatch[1]} = ${result}`);
+          return result;
+        } else if (patternUsed === 'Control') {
+          // Multi-level control format (1.1.1 vs 1.1.2)
+          for (let i = 1; i < aMatch.length; i++) {
+            const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+            if (diff !== 0) return diff;
+          }
+          return 0;
+        } else if (patternUsed === 'Section') {
+          // Letter.number.number format (A.5.1 vs A.5.2)
+          const letterDiff = aMatch[1].localeCompare(bMatch[1]);
+          if (letterDiff !== 0) return letterDiff;
+          for (let i = 2; i < aMatch.length; i++) {
+            const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+            if (diff !== 0) return diff;
+          }
+          return 0;
+        } else if (patternUsed === 'Clause' || patternUsed === 'Number') {
+          // Simple numerical comparison
+          for (let i = 1; i < aMatch.length; i++) {
+            const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+            if (diff !== 0) return diff;
+          }
+          return 0;
+        }
+      }
+      
+      // Fallback: Use standard numeric-aware sorting for all other cases
       return aId.localeCompare(bId, undefined, { numeric: true });
     });
+    
+    // Log the requirements after sorting for all frameworks (debug purposes)
+    if (standardId === 'dora' || standardId === 'iso27001' || standardId === 'cisControls') {
+      console.log(`✅ ${standardId.toUpperCase()} REQUIREMENTS AFTER SORTING:`, 
+        groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
+      );
+    }
   });
 
   // Debug logging to identify mixing issues
