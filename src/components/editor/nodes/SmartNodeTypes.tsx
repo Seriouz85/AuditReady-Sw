@@ -22,7 +22,7 @@ export const ProcessNode = ({ data, selected }: any) => {
   
   // For diamond shapes from toolbar, use DecisionNode but with simple white styling like templates
   if (shape === 'diamond') {
-    return <DecisionNode data={{...data, fillColor: '#ffffff', strokeColor: '#e2e8f0', textColor: '#1f2937'}} selected={selected} />;
+    return <DecisionNode data={{...data, fillColor: '#ffffff', strokeColor: '#000000', textColor: '#1f2937'}} selected={selected} />;
   }
   
   // Beautiful shape styles matching the panel - with professional gradients and shadows
@@ -39,7 +39,7 @@ export const ProcessNode = ({ data, selected }: any) => {
         return {
           ...baseStyles,
           background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          border: '1px solid #000000',
           borderRadius: '4px',
           color: '#1f2937',
           padding: '12px 20px',
@@ -51,7 +51,7 @@ export const ProcessNode = ({ data, selected }: any) => {
         return {
           ...baseStyles,
           background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          border: '1px solid #000000',
           borderRadius: '50%',
           color: '#1f2937',
           width: '80px',
@@ -60,10 +60,7 @@ export const ProcessNode = ({ data, selected }: any) => {
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: 'none',
-          outline: 'none',
-          borderWidth: '1px',
-          borderStyle: 'solid',
-          borderColor: '#e2e8f0'
+          outline: 'none'
         };
       
       
@@ -280,25 +277,13 @@ export const DecisionNode = ({ data, selected }: any) => {
         style={{ right: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 15, background: '#3b82f6', border: '1px solid white', opacity: selected ? 1 : 0 }} 
       />
       
-      {/* True Diamond Shape using SVG - matching panel styling */}
+      {/* Clean Diamond Shape using SVG - with black border for toolbar */}
       <svg width={size} height={size} className="absolute inset-0" style={{ zIndex: 10 }}>
-        <defs>
-          <linearGradient id={`diamond-gradient-${data.id || 'default'}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4facfe" />
-            <stop offset="100%" stopColor="#00f2fe" />
-          </linearGradient>
-          <filter id={`diamond-shadow-${data.id || 'default'}`}>
-            <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.25" />
-          </filter>
-        </defs>
         <path
           d={`M ${size/2} 12 L ${size-12} ${size/2} L ${size/2} ${size-12} L 12 ${size/2} Z`}
-          fill={hasCustomStyle && data.fillColor && !data.fillColor.includes('gradient') 
-            ? fillColor 
-            : `url(#diamond-gradient-${data.id || 'default'})`}
-          stroke="none"
-          filter={`url(#diamond-shadow-${data.id || 'default'})`}
-          className={selected ? 'drop-shadow-lg' : 'drop-shadow-md hover:drop-shadow-lg'}
+          fill={hasCustomStyle && data.fillColor ? fillColor : '#ffffff'}
+          stroke={hasCustomStyle && data.strokeColor ? strokeColor : '#000000'}
+          strokeWidth="1"
         />
       </svg>
       
