@@ -44,7 +44,8 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
     iso27002: { totalRequirements: 0, coverage: 0, mappings: 0 },
     cisControls: { totalRequirements: 0, coverage: 0, mappings: 0 },
     gdpr: { totalRequirements: 0, coverage: 0, mappings: 0 },
-    nis2: { totalRequirements: 0, coverage: 0, mappings: 0 }
+    nis2: { totalRequirements: 0, coverage: 0, mappings: 0 },
+    dora: { totalRequirements: 0, coverage: 0, mappings: 0 }
   };
   
   // Calculate statistics from actual mapping data
@@ -116,9 +117,21 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
           const domainIndex = mapping.pentagon_domain;
           const requirementCount = mapping.frameworks[key].length;
           
+          // Debug DORA specifically
+          if (key === 'dora') {
+            console.log(`🔍 DORA MAPPING DEBUG - Category: ${mapping.category}, Domain: ${domainIndex}, Requirements: ${requirementCount}`);
+          }
+          
           if (domainIndex !== undefined && domainIndex !== null && 
               domainIndex >= 0 && domainIndex <= 4) {
             domainIntensity[domainIndex] = (domainIntensity[domainIndex] || 0) + requirementCount;
+            
+            // Debug DORA domain assignment
+            if (key === 'dora') {
+              console.log(`🔍 DORA DOMAIN DEBUG - Added ${requirementCount} requirements to domain ${domainIndex}, total now: ${domainIntensity[domainIndex]}`);
+            }
+          } else if (key === 'dora') {
+            console.warn(`⚠️ DORA DOMAIN WARNING - Category "${mapping.category}" has invalid pentagon_domain: ${domainIndex}`);
           }
         }
       });
@@ -255,6 +268,11 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       const result = selection === true || (selection && typeof selection === 'string' && selection !== '');
       console.log(`🔍 CIS DEBUG - key: ${key}, selection: ${selection}, type: ${typeof selection}, result: ${result}`);
       return result;
+    } else if (key === 'dora') {
+      // Debug DORA selection specifically
+      const result = selection === true;
+      console.log(`🔍 DORA DEBUG - key: ${key}, selection: ${selection}, type: ${typeof selection}, result: ${result}`);
+      return result;
     } else {
       return selection === true;
     }
@@ -323,6 +341,26 @@ export const PentagonVisualization: React.FC<PentagonVisualizationProps> = ({
       stats: frameworkStats['nis2'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
       zone: {
         points: isFrameworkSelected('nis2') ? generateAreaCoverage('nis2') : [],
+        path: ''
+      }
+    },
+    {
+      key: 'dora',
+      name: 'DORA',
+      color: '#dc2626',
+      secondaryColor: '#ef4444',
+      stats: frameworkStats['dora'] || { totalRequirements: 0, coverage: 0, mappings: 0 },
+      zone: {
+        points: (() => {
+          const selected = isFrameworkSelected('dora');
+          console.log(`🔍 DORA AREA DEBUG - isSelected: ${selected}`);
+          if (selected) {
+            const points = generateAreaCoverage('dora');
+            console.log(`🔍 DORA AREA DEBUG - generated points:`, points);
+            return points;
+          }
+          return [];
+        })(),
         path: ''
       }
     }

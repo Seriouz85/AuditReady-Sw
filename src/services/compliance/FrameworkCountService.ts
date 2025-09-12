@@ -8,6 +8,7 @@ export interface FrameworkCounts {
   cisIG3: number;
   gdpr: number;
   nis2: number;
+  dora: number;
 }
 
 class FrameworkCountService {
@@ -56,7 +57,8 @@ class FrameworkCountService {
       cisIG2: 0,
       cisIG3: 0,
       gdpr: 0,
-      nis2: 0
+      nis2: 0,
+      dora: 0
     };
 
     // Get counts for each framework individually using exact name patterns
@@ -67,7 +69,8 @@ class FrameworkCountService {
       { namePattern: 'CIS Controls Implementation Group 2 (IG2)', key: 'cisIG2' as keyof FrameworkCounts },
       { namePattern: 'CIS Controls Implementation Group 3 (IG3)', key: 'cisIG3' as keyof FrameworkCounts },
       { namePattern: 'GDPR', key: 'gdpr' as keyof FrameworkCounts },
-      { namePattern: 'NIS2 Directive', key: 'nis2' as keyof FrameworkCounts }
+      { namePattern: 'NIS2 Directive', key: 'nis2' as keyof FrameworkCounts },
+      { namePattern: 'DORA (Digital Operational Resilience Act)', key: 'dora' as keyof FrameworkCounts }
     ];
 
     for (const framework of frameworks) {
@@ -115,7 +118,8 @@ class FrameworkCountService {
       cisIG2: 130,   // CIS IG2 safeguards in database
       cisIG3: 153,   // CIS IG3 safeguards in database
       gdpr: 40,      // GDPR articles in database
-      nis2: 51       // NIS2 articles + industry-specific requirements in database
+      nis2: 51,      // NIS2 articles + industry-specific requirements in database
+      dora: 64       // DORA articles in database
     };
   }
 

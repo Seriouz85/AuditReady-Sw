@@ -970,6 +970,10 @@ export class EnhancedUnifiedRequirementsGenerator {
         console.log('[MAPPING] ✅ Added all CIS Controls IG levels');
       }
     }
+    if (selectedFrameworks.includes('dora')) {
+      frameworkNames.push('DORA (Digital Operational Resilience Act)');
+      console.log('[MAPPING] ✅ Added DORA');
+    }
     
     console.log('[MAPPING] 🎯 Final mapped framework names:', frameworkNames);
     return frameworkNames;

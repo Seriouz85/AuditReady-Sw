@@ -109,6 +109,9 @@ export default function ComplianceSimplification() {
     if (selectedFrameworks.nis2 && mapping.frameworks?.nis2?.length > 0) {
       badges.push({ name: 'NIS2', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', variant: 'default' });
     }
+    if (selectedFrameworks.dora && mapping.frameworks?.dora?.length > 0) {
+      badges.push({ name: 'DORA', color: 'bg-red-500/20 text-red-300 border-red-500/30', variant: 'default' });
+    }
     
     return badges;
   };
@@ -120,12 +123,14 @@ export default function ComplianceSimplification() {
     cisControls: 'ig1' | 'ig2' | 'ig3' | null;
     gdpr: boolean;
     nis2: boolean;
+    dora: boolean;
   }>({
     iso27001: true,
     iso27002: true,
     cisControls: 'ig3',
     gdpr: false,
-    nis2: false
+    nis2: false,
+    dora: false
   });
   
   // AI generation state
@@ -197,6 +202,9 @@ export default function ComplianceSimplification() {
             if (selectedFrameworks['nis2'] && currentMapping.frameworks['nis2']) {
               allGovernanceRequirements.push(...currentMapping.frameworks['nis2'].map((req: any) => ({ ...req, framework: 'NIS2 Directive' })));
             }
+            if (selectedFrameworks['dora'] && currentMapping.frameworks['dora']) {
+              allGovernanceRequirements.push(...currentMapping.frameworks['dora'].map((req: any) => ({ ...req, framework: 'DORA (Digital Operational Resilience Act)' })));
+            }
           }
           
           console.log(`🎯 [GOVERNANCE] Found ${allGovernanceRequirements.length} total mapped requirements`);
@@ -251,59 +259,105 @@ export default function ComplianceSimplification() {
             general: [] as any[] // För requirements som inte matchar någon specifik kategori
           };
           
-          // Kategorisera alla requirements
+          // Enhanced categorization with DORA-specific keywords
           allGovernanceRequirements.forEach(req => {
             const reqText = ((req.title || '') + ' ' + (req.description || '')).toLowerCase();
+            const framework = req.framework || '';
             let categorized = false;
             
-            if (reqText.includes('awareness') || reqText.includes('training') || reqText.includes('education')) {
+            // Enhanced awareness/training matching (including DORA digital literacy)
+            if (reqText.includes('awareness') || reqText.includes('training') || reqText.includes('education') || 
+                reqText.includes('digital literacy') || reqText.includes('staff competence') || reqText.includes('skill development')) {
               categorizedReqs.awareness.push(req);
               categorized = true;
-            } else if (reqText.includes('leadership') || reqText.includes('top management') || reqText.includes('commitment') || reqText.includes('accountability')) {
+            } 
+            // Enhanced leadership matching (including DORA governance)
+            else if (reqText.includes('leadership') || reqText.includes('top management') || reqText.includes('commitment') || 
+                     reqText.includes('accountability') || reqText.includes('governance and organisation') || 
+                     reqText.includes('senior management') || (reqText.includes('governance') && framework.includes('DORA'))) {
               categorizedReqs.leadership.push(req);
               categorized = true;
-            } else if (reqText.includes('scope') || reqText.includes('boundaries') || reqText.includes('isms scope')) {
+            } 
+            // Enhanced scope matching (including DORA operational resilience scope)
+            else if (reqText.includes('scope') || reqText.includes('boundaries') || reqText.includes('isms scope') ||
+                     reqText.includes('operational resilience') || reqText.includes('digital operational')) {
               categorizedReqs.scope.push(req);
               categorized = true;
-            } else if (reqText.includes('organizational structure') || reqText.includes('roles') || reqText.includes('responsibilities')) {
+            } 
+            // Enhanced organizational structure (including DORA roles)
+            else if (reqText.includes('organizational structure') || reqText.includes('roles') || reqText.includes('responsibilities') ||
+                     reqText.includes('organization') || reqText.includes('reporting structure')) {
               categorizedReqs.organizational.push(req);
               categorized = true;
-            } else if (reqText.includes('policy') || reqText.includes('policies')) {
+            } 
+            // Enhanced policy matching (including DORA ICT policies)
+            else if (reqText.includes('policy') || reqText.includes('policies') || reqText.includes('ict policy') || 
+                     reqText.includes('digital operational resilience policy')) {
               categorizedReqs.policy.push(req);
               categorized = true;
-            } else if (reqText.includes('risk') && (reqText.includes('governance') || reqText.includes('management'))) {
+            } 
+            // Enhanced risk matching (including DORA ICT risk management)
+            else if ((reqText.includes('risk') && (reqText.includes('governance') || reqText.includes('management'))) ||
+                     reqText.includes('ict risk') || reqText.includes('operational risk') || reqText.includes('resilience risk')) {
               categorizedReqs.risk.push(req);
               categorized = true;
-            } else if (reqText.includes('resource') || reqText.includes('budget') || reqText.includes('allocation')) {
+            } 
+            // Enhanced resource matching
+            else if (reqText.includes('resource') || reqText.includes('budget') || reqText.includes('allocation') ||
+                     reqText.includes('financial resources') || reqText.includes('human resources')) {
               categorizedReqs.resource.push(req);
               categorized = true;
-            } else if (reqText.includes('competence') || reqText.includes('competency') || reqText.includes('skills')) {
+            } 
+            // Enhanced competence matching (including DORA digital skills)
+            else if (reqText.includes('competence') || reqText.includes('competency') || reqText.includes('skills') ||
+                     reqText.includes('digital skills') || reqText.includes('technical competence')) {
               categorizedReqs.competence.push(req);
               categorized = true;
-            } else if (reqText.includes('communication') || reqText.includes('stakeholder')) {
+            } 
+            // Enhanced communication matching
+            else if (reqText.includes('communication') || reqText.includes('stakeholder') || reqText.includes('reporting') ||
+                     reqText.includes('information sharing') || reqText.includes('coordination')) {
               categorizedReqs.communication.push(req);
               categorized = true;
-            } else if (reqText.includes('document') || reqText.includes('procedure') || reqText.includes('records')) {
+            } 
+            // Enhanced documentation matching (including DORA documentation requirements)
+            else if (reqText.includes('document') || reqText.includes('procedure') || reqText.includes('records') ||
+                     reqText.includes('documentation') || reqText.includes('register') || reqText.includes('inventory')) {
               categorizedReqs.document.push(req);
               categorized = true;
-            } else if (reqText.includes('performance') || reqText.includes('monitoring') || reqText.includes('measurement')) {
+            } 
+            // Enhanced performance matching (including DORA performance indicators)
+            else if (reqText.includes('performance') || reqText.includes('monitoring') || reqText.includes('measurement') ||
+                     reqText.includes('kpi') || reqText.includes('metrics') || reqText.includes('indicators')) {
               categorizedReqs.performance.push(req);
               categorized = true;
-            } else if (reqText.includes('improvement') || reqText.includes('corrective')) {
+            } 
+            // Enhanced improvement matching
+            else if (reqText.includes('improvement') || reqText.includes('corrective') || reqText.includes('enhancement') ||
+                     reqText.includes('optimization') || reqText.includes('continuous improvement')) {
               categorizedReqs.improvement.push(req);
               categorized = true;
-            } else if (reqText.includes('asset') || reqText.includes('disposal') || reqText.includes('equipment')) {
+            } 
+            // Enhanced asset matching (including DORA ICT assets)
+            else if (reqText.includes('asset') || reqText.includes('disposal') || reqText.includes('equipment') ||
+                     reqText.includes('ict asset') || reqText.includes('digital asset') || reqText.includes('inventory')) {
               categorizedReqs.asset.push(req);
               categorized = true;
-            } else if (reqText.includes('third party') || reqText.includes('supplier') || reqText.includes('vendor')) {
+            } 
+            // Enhanced third party matching (including DORA ICT third-party)
+            else if (reqText.includes('third party') || reqText.includes('supplier') || reqText.includes('vendor') ||
+                     reqText.includes('ict third-party') || reqText.includes('service provider') || reqText.includes('outsourcing')) {
               categorizedReqs.thirdParty.push(req);
               categorized = true;
-            } else if (reqText.includes('project')) {
+            } 
+            // Enhanced project matching
+            else if (reqText.includes('project') || reqText.includes('implementation') || reqText.includes('deployment')) {
               categorizedReqs.project.push(req);
               categorized = true;
             }
             
             if (!categorized) {
+              console.log(`🔍 [GOVERNANCE] Uncategorized requirement: ${req.code} - ${req.title}`);
               categorizedReqs.general.push(req);
             }
           });
@@ -324,37 +378,75 @@ export default function ComplianceSimplification() {
             const sectionText = subReq.toLowerCase();
             let assigned = [];
             
-            // Matcha subsektioner med kategorier
-            if (sectionText.includes('awareness') && sectionText.includes('training')) {
-              assigned = categorizedReqs.awareness.splice(0, 3); // Ta upp till 3 awareness requirements
-            } else if (sectionText.includes('leadership') && (sectionText.includes('commitment') || sectionText.includes('accountability'))) {
+            // Enhanced subsection matching with broader keyword coverage
+            // Pattern: Match section keywords to categorized requirements for proper injection
+            
+            if (sectionText.includes('awareness') || sectionText.includes('training') || sectionText.includes('education') || sectionText.includes('competence')) {
+              assigned = categorizedReqs.awareness.splice(0, 3);
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched AWARENESS (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('leadership') || sectionText.includes('commitment') || sectionText.includes('accountability') || 
+                     sectionText.includes('management') || sectionText.includes('governance') || sectionText.includes('responsibility')) {
               assigned = categorizedReqs.leadership.splice(0, 3);
-            } else if (sectionText.includes('scope') && sectionText.includes('boundaries')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched LEADERSHIP (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('scope') || sectionText.includes('boundaries') || sectionText.includes('definition') || 
+                     sectionText.includes('applicability') || sectionText.includes('coverage')) {
               assigned = categorizedReqs.scope.splice(0, 3);
-            } else if (sectionText.includes('organizational') && sectionText.includes('structure')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched SCOPE (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('organizational') || sectionText.includes('structure') || sectionText.includes('roles') || 
+                     sectionText.includes('responsibilities') || sectionText.includes('hierarchy')) {
               assigned = categorizedReqs.organizational.splice(0, 3);
-            } else if (sectionText.includes('policy')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched ORGANIZATIONAL (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('policy') || sectionText.includes('policies') || sectionText.includes('directive') || 
+                     sectionText.includes('standard') || sectionText.includes('guideline')) {
               assigned = categorizedReqs.policy.splice(0, 3);
-            } else if (sectionText.includes('risk') && sectionText.includes('governance')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched POLICY (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('risk') || sectionText.includes('threat') || sectionText.includes('vulnerability')) {
               assigned = categorizedReqs.risk.splice(0, 3);
-            } else if (sectionText.includes('resource')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched RISK (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('resource') || sectionText.includes('budget') || sectionText.includes('allocation') || 
+                     sectionText.includes('funding') || sectionText.includes('investment')) {
               assigned = categorizedReqs.resource.splice(0, 3);
-            } else if (sectionText.includes('competence') && sectionText.includes('management')) {
-              assigned = categorizedReqs.competence.splice(0, 3);
-            } else if (sectionText.includes('communication')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched RESOURCE (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('communication') || sectionText.includes('reporting') || sectionText.includes('information sharing') || 
+                     sectionText.includes('stakeholder') || sectionText.includes('coordination')) {
               assigned = categorizedReqs.communication.splice(0, 3);
-            } else if (sectionText.includes('document') || sectionText.includes('procedure')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched COMMUNICATION (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('document') || sectionText.includes('procedure') || sectionText.includes('process') || 
+                     sectionText.includes('documentation') || sectionText.includes('records')) {
               assigned = categorizedReqs.document.splice(0, 3);
-            } else if (sectionText.includes('performance') || sectionText.includes('monitoring')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched DOCUMENTATION (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('performance') || sectionText.includes('monitoring') || sectionText.includes('measurement') || 
+                     sectionText.includes('metrics') || sectionText.includes('kpi') || sectionText.includes('evaluation')) {
               assigned = categorizedReqs.performance.splice(0, 3);
-            } else if (sectionText.includes('improvement')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched PERFORMANCE (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('improvement') || sectionText.includes('enhancement') || sectionText.includes('optimization') || 
+                     sectionText.includes('corrective') || sectionText.includes('continuous')) {
               assigned = categorizedReqs.improvement.splice(0, 3);
-            } else if (sectionText.includes('asset')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched IMPROVEMENT (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('asset') || sectionText.includes('inventory') || sectionText.includes('equipment') || 
+                     sectionText.includes('disposal') || sectionText.includes('lifecycle')) {
               assigned = categorizedReqs.asset.splice(0, 3);
-            } else if (sectionText.includes('third') && sectionText.includes('party')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched ASSET (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('third') || sectionText.includes('party') || sectionText.includes('supplier') || 
+                     sectionText.includes('vendor') || sectionText.includes('outsourcing') || sectionText.includes('service provider')) {
               assigned = categorizedReqs.thirdParty.splice(0, 3);
-            } else if (sectionText.includes('project') && sectionText.includes('management')) {
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched THIRD PARTY (${assigned.length} requirements)`);
+            } 
+            else if (sectionText.includes('project') || sectionText.includes('implementation') || sectionText.includes('deployment')) {
               assigned = categorizedReqs.project.splice(0, 3);
+              console.log(`🎯 [GOVERNANCE] Subsektion ${letter}: Matched PROJECT (${assigned.length} requirements)`);
             }
             
             // Om vi inte fick några specifika, ta från general pool
@@ -512,7 +604,8 @@ export default function ComplianceSimplification() {
     iso27002: true,
     cisControls: 'ig3' as 'ig1' | 'ig2' | 'ig3' | null,
     gdpr: false,
-    nis2: false
+    nis2: false,
+    dora: false
   });
 
   // Function to build guidance content from actual unified requirements
@@ -583,6 +676,8 @@ export default function ComplianceSimplification() {
     let frameworkRefs = '';
     const activeFrameworks = Object.keys(selectedFrameworks).filter(fw => selectedFrameworks[fw]);
     
+    console.log(`🔍 [QA] Building framework references for ${category} with frameworks:`, activeFrameworks);
+    
     if (activeFrameworks.length > 0) {
       frameworkRefs += 'FRAMEWORK REFERENCES:\n\n';
       frameworkRefs += 'Framework References for Selected Standards:\n\n';
@@ -596,16 +691,33 @@ export default function ComplianceSimplification() {
         // Additional filtering here causes double-filtering and duplication issues
         
         if (frameworkData && frameworkData.length > 0) {
-          // Deduplicate requirements within this framework
+          // Enhanced deduplication: code-level + semantic similarity checking
           const uniqueRequirements = frameworkData.filter((req: any) => {
             const code = req.code || req.id || req.requirement || req.number;
-            const uniqueKey = `${framework}-${code}`;
+            const title = req.title || '';
+            const description = req.description || '';
             
-            if (!processedCodes.has(uniqueKey)) {
-              processedCodes.add(uniqueKey);
-              return true;
+            // Primary deduplication: exact code match
+            const uniqueKey = `${framework}-${code}`;
+            if (processedCodes.has(uniqueKey)) {
+              return false;
             }
-            return false;
+            
+            // Secondary deduplication: semantic similarity
+            const content = (title + ' ' + description).toLowerCase();
+            const semanticKey = content.substring(0, 100); // First 100 chars for similarity
+            
+            // Check for similar content across all frameworks
+            const similarContentKey = `content-${semanticKey}`;
+            if (processedCodes.has(similarContentKey)) {
+              console.log(`🔄 [DEDUP] Semantic duplicate detected: ${code} similar to existing content`);
+              return false;
+            }
+            
+            // Add both keys to prevent duplicates
+            processedCodes.add(uniqueKey);
+            processedCodes.add(similarContentKey);
+            return true;
           });
           
           if (uniqueRequirements.length > 0) {
@@ -614,11 +726,34 @@ export default function ComplianceSimplification() {
               iso27002: 'ISO 27002', 
               cisControls: 'CIS Controls v8',
               gdpr: 'GDPR',
-              nis2: 'NIS2 Directive'
+              nis2: 'NIS2 Directive',
+              dora: 'DORA (Digital Operational Resilience Act)'
             }[framework] || framework;
             
             frameworkRefs += `${frameworkName}: ${uniqueRequirements.map((req: any) => `${req.code} (${req.title})`).join(', ')}\n\n`;
           }
+        }
+      });
+    }
+    
+    // FALLBACK: Ensure framework references appear even when no requirements are mapped
+    if (frameworkRefs === '') {
+      console.log(`⚠️ [FALLBACK] No framework references found for ${category}, adding fallback`);
+      frameworkRefs = 'FRAMEWORK REFERENCES:\n\n';
+      frameworkRefs += 'Selected Standards for Compliance Verification:\n\n';
+      
+      activeFrameworks.forEach(framework => {
+        if (selectedFrameworks[framework]) {
+          const frameworkName = {
+            iso27001: 'ISO 27001',
+            iso27002: 'ISO 27002', 
+            cisControls: 'CIS Controls v8',
+            gdpr: 'GDPR',
+            nis2: 'NIS2 Directive',
+            dora: 'DORA (Digital Operational Resilience Act)'
+          }[framework] || framework;
+          
+          frameworkRefs += `${frameworkName}: Applicable requirements to be verified during implementation\n\n`;
         }
       });
     }
@@ -805,6 +940,7 @@ export default function ComplianceSimplification() {
         cisControls: 'CIS Controls v8',
         gdpr: 'GDPR',
         nis2: 'NIS2 Directive',
+        dora: 'DORA (Digital Operational Resilience Act)',
         nist: 'NIST Framework'
       }[framework] || framework.toUpperCase();
       
@@ -1002,8 +1138,12 @@ For detailed implementation guidance, please refer to the specific framework doc
     iso27002: Boolean(selectedFrameworks['iso27002']),
     cisControls: selectedFrameworks['cisControls'] || false, // Pass actual IG level string (ig1, ig2, ig3) or false
     gdpr: Boolean(selectedFrameworks['gdpr']),
-    nis2: Boolean(selectedFrameworks['nis2'])
+    nis2: Boolean(selectedFrameworks['nis2']),
+    dora: Boolean(selectedFrameworks['dora'])
   };
+  
+  console.log('🚨 DORA DEBUG: frameworksForHook constructed:', frameworksForHook);
+  console.log('🚨 DORA DEBUG: DORA in frameworksForHook?', frameworksForHook.dora);
   
   const { data: fetchedComplianceMapping, isLoading: isLoadingMappings, refetch: refetchComplianceData } = useComplianceMappingData(frameworksForHook, selectedIndustrySector || undefined);
   
@@ -1041,7 +1181,8 @@ For detailed implementation guidance, please refer to the specific framework doc
     iso27002: true,
     cisControls: 'ig3', // Maximum coverage with IG3
     gdpr: true,
-    nis2: true
+    nis2: true,
+    dora: true
   };
   
   const { data: maxComplianceMapping } = useComplianceMappingData(allFrameworksSelection);
@@ -1055,7 +1196,9 @@ For detailed implementation guidance, please refer to the specific framework doc
   
   // Handle generation button
   const handleGenerate = () => {
-    console.log('Generate button clicked', { frameworksSelected, selectedFrameworks });
+    console.log('🚨 DORA DEBUG: Generate button clicked', { frameworksSelected, selectedFrameworks });
+    console.log('🚨 DORA DEBUG: DORA selected in frameworksSelected?', frameworksSelected.dora);
+    console.log('🚨 DORA DEBUG: DORA selected in selectedFrameworks?', selectedFrameworks.dora);
     setIsGenerating(true);
     setShowGeneration(true);
     
@@ -1065,7 +1208,8 @@ For detailed implementation guidance, please refer to the specific framework doc
       iso27002: Boolean(frameworksSelected['iso27002']),
       cisControls: frameworksSelected['cisControls'] as 'ig1' | 'ig2' | 'ig3' | null,
       gdpr: Boolean(frameworksSelected['gdpr']),
-      nis2: Boolean(frameworksSelected['nis2'])
+      nis2: Boolean(frameworksSelected['nis2']),
+      dora: Boolean(frameworksSelected['dora'])
     });
     
     // Force invalidate React Query cache to ensure fresh data including unified categories
@@ -2138,7 +2282,8 @@ For detailed implementation guidance, please refer to the specific framework doc
           { key: 'iso27002', title: 'ISO 27002:2022', selected: selectedFrameworks.iso27002 },
           { key: 'cisControls', title: `CIS Controls - ${selectedFrameworks.cisControls?.toUpperCase() || 'IG3'} (v8.1.2)`, selected: selectedFrameworks.cisControls },
           { key: 'gdpr', title: 'GDPR (EU 2016/679)', selected: selectedFrameworks.gdpr },
-          { key: 'nis2', title: 'NIS2 Directive (EU 2022/2555)', selected: selectedFrameworks.nis2 }
+          { key: 'nis2', title: 'NIS2 Directive (EU 2022/2555)', selected: selectedFrameworks.nis2 },
+          { key: 'dora', title: 'DORA (EU 2022/2554)', selected: selectedFrameworks.dora }
         ];
         
         frameworksToCheck.forEach(framework => {
@@ -2487,13 +2632,13 @@ For detailed implementation guidance, please refer to the specific framework doc
     let filtered = complianceMappingData || [];
     
     // First, filter to show only GDPR group when GDPR is selected, or non-GDPR groups when other frameworks are selected
-    if (selectedFrameworks['gdpr'] && !selectedFrameworks['iso27001'] && !selectedFrameworks['iso27002'] && !selectedFrameworks['cisControls'] && !selectedFrameworks['nis2']) {
+    if (selectedFrameworks['gdpr'] && !selectedFrameworks['iso27001'] && !selectedFrameworks['iso27002'] && !selectedFrameworks['cisControls'] && !selectedFrameworks['nis2'] && !selectedFrameworks['dora']) {
       // GDPR only - show only the unified GDPR group
       filtered = filtered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (!selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
+    } else if (!selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'] || selectedFrameworks['dora'])) {
       // Other frameworks without GDPR - show only non-GDPR groups
       filtered = filtered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
+    } else if (selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'] || selectedFrameworks['dora'])) {
       // Mixed selection - show all relevant groups
       filtered = complianceMappingData || [];
     } else {
@@ -2514,7 +2659,8 @@ For detailed implementation guidance, please refer to the specific framework doc
             iso27002: [],
             cisControls: [],
             nis2: [],
-            gdpr: mapping.frameworks?.['gdpr'] || []
+            gdpr: mapping.frameworks?.['gdpr'] || [],
+            dora: []
           }
         };
       }
@@ -2527,7 +2673,8 @@ For detailed implementation guidance, please refer to the specific framework doc
           iso27002: selectedFrameworks['iso27002'] && mapping.frameworks?.['iso27002'] ? mapping.frameworks['iso27002'] : [],
           nis2: selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2'] || []) : [],
           gdpr: [], // Never show GDPR in non-GDPR groups
-          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? mapping.frameworks['cisControls'] : []
+          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? mapping.frameworks['cisControls'] : [],
+          dora: selectedFrameworks['dora'] ? (mapping.frameworks?.['dora'] || []) : []
         }
       };
       
@@ -2536,7 +2683,8 @@ For detailed implementation guidance, please refer to the specific framework doc
                          (newMapping.frameworks?.iso27002?.length || 0) > 0 || 
                          (newMapping.frameworks?.cisControls?.length || 0) > 0 ||
                          (newMapping.frameworks?.gdpr?.length || 0) > 0 ||
-                         (newMapping.frameworks?.nis2?.length || 0) > 0;
+                         (newMapping.frameworks?.nis2?.length || 0) > 0 ||
+                         (newMapping.frameworks?.dora?.length || 0) > 0;
       
       return hasControls ? newMapping : null;
     }).filter(mapping => mapping !== null);
@@ -2553,6 +2701,10 @@ For detailed implementation guidance, please refer to the specific framework doc
             return (mapping.frameworks?.['cisControls']?.length || 0) > 0;
           case 'gdpr':
             return (mapping.frameworks['gdpr']?.length || 0) > 0;
+          case 'nis2':
+            return (mapping.frameworks['nis2']?.length || 0) > 0;
+          case 'dora':
+            return (mapping.frameworks['dora']?.length || 0) > 0;
           default:
             return true;
         }
@@ -2595,11 +2747,11 @@ For detailed implementation guidance, please refer to the specific framework doc
     let baseFiltered = complianceMappingData || [];
     
     // Apply the SAME framework filtering logic as filteredMappings
-    if (selectedFrameworks['gdpr'] && !selectedFrameworks['iso27001'] && !selectedFrameworks['iso27002'] && !selectedFrameworks['cisControls'] && !selectedFrameworks['nis2']) {
+    if (selectedFrameworks['gdpr'] && !selectedFrameworks['iso27001'] && !selectedFrameworks['iso27002'] && !selectedFrameworks['cisControls'] && !selectedFrameworks['nis2'] && !selectedFrameworks['dora']) {
       baseFiltered = baseFiltered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (!selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
+    } else if (!selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'] || selectedFrameworks['dora'])) {
       baseFiltered = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
-    } else if (selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'])) {
+    } else if (selectedFrameworks['gdpr'] && (selectedFrameworks['iso27001'] || selectedFrameworks['iso27002'] || selectedFrameworks['cisControls'] || selectedFrameworks['nis2'] || selectedFrameworks['dora'])) {
       baseFiltered = complianceMappingData || [];
     } else {
       baseFiltered = baseFiltered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
@@ -2628,7 +2780,8 @@ For detailed implementation guidance, please refer to the specific framework doc
           iso27002: selectedFrameworks['iso27002'] && mapping.frameworks?.['iso27002'] ? mapping.frameworks['iso27002'] : [],
           nis2: selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2'] || []) : [],
           gdpr: [],
-          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? mapping.frameworks['cisControls'] : []
+          cisControls: selectedFrameworks['cisControls'] && mapping.frameworks?.['cisControls'] ? mapping.frameworks['cisControls'] : [],
+          dora: selectedFrameworks['dora'] ? (mapping.frameworks?.['dora'] || []) : []
         }
       };
       
@@ -2636,7 +2789,8 @@ For detailed implementation guidance, please refer to the specific framework doc
                          (newMapping.frameworks?.iso27002?.length || 0) > 0 || 
                          (newMapping.frameworks?.cisControls?.length || 0) > 0 ||
                          (newMapping.frameworks?.gdpr?.length || 0) > 0 ||
-                         (newMapping.frameworks?.nis2?.length || 0) > 0;
+                         (newMapping.frameworks?.nis2?.length || 0) > 0 ||
+                         (newMapping.frameworks?.dora?.length || 0) > 0;
       
       return hasControls ? newMapping : null;
     }).filter(mapping => mapping !== null);
@@ -2653,6 +2807,10 @@ For detailed implementation guidance, please refer to the specific framework doc
             return (mapping.frameworks?.['cisControls']?.length || 0) > 0;
           case 'gdpr':
             return (mapping.frameworks['gdpr']?.length || 0) > 0;
+          case 'nis2':
+            return (mapping.frameworks['nis2']?.length || 0) > 0;
+          case 'dora':
+            return (mapping.frameworks['dora']?.length || 0) > 0;
           default:
             return true;
         }
@@ -3190,7 +3348,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                 
                 <CardContent className="space-y-8">
                   {/* Framework Cards Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-stretch">
                     
                     {/* ISO 27001 Card */}
                     <motion.div
@@ -3521,6 +3679,49 @@ For detailed implementation guidance, please refer to the specific framework doc
                         </motion.div>
                       )}
                     </motion.div>
+
+                    {/* DORA Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 min-h-[140px] flex flex-col ${
+                        frameworksSelected['dora']
+                          ? 'border-red-500 bg-red-50 dark:bg-red-900/20 shadow-lg shadow-red-500/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-red-300'
+                      }`}
+                      onClick={() => handleFrameworkToggle('dora', !frameworksSelected['dora'])}
+                    >
+                      {/* Selected Badge at Top */}
+                      {frameworksSelected['dora'] && (
+                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-red-500 text-white px-3 py-1 text-xs rounded-full">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center space-y-3 flex-1 pt-4">
+                        <div className={`p-2 rounded-full ${frameworksSelected['dora'] ? 'bg-red-500' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                          <Shield className={`w-5 h-5 ${frameworksSelected['dora'] ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-semibold text-sm h-5 flex items-center justify-center">DORA</h3>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-tight h-8 flex items-center justify-center px-1">Digital Operational Resilience</p>
+                          <p className="text-xs text-red-600 dark:text-red-400 font-medium text-center">
+                            {frameworkCounts?.dora || 64} requirements
+                          </p>
+                        </div>
+                      </div>
+                      {frameworksSelected['dora'] && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
                   </div>
 
                   {/* Quick Selection Presets */}
@@ -3528,10 +3729,11 @@ For detailed implementation guidance, please refer to the specific framework doc
                     <h4 className="text-lg font-semibold mb-4 text-center">Quick Presets</h4>
                     <div className="flex flex-wrap justify-center gap-3">
                       {[
-                        { name: 'Comprehensive Security', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig3' as const, gdpr: false, nis2: false } },
-                        { name: 'Privacy Focused', frameworks: { iso27001: false, iso27002: false, cisControls: null, gdpr: true, nis2: false } },
-                        { name: 'EU Compliance', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig2' as const, gdpr: true, nis2: true } },
-                        { name: 'Basic Security', frameworks: { iso27001: true, iso27002: false, cisControls: 'ig1' as const, gdpr: false, nis2: false } }
+                        { name: 'Comprehensive Security', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig3' as const, gdpr: false, nis2: false, dora: false } },
+                        { name: 'Privacy Focused', frameworks: { iso27001: false, iso27002: false, cisControls: null, gdpr: true, nis2: false, dora: false } },
+                        { name: 'EU Compliance', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig2' as const, gdpr: true, nis2: true, dora: true } },
+                        { name: 'Basic Security', frameworks: { iso27001: true, iso27002: false, cisControls: 'ig1' as const, gdpr: false, nis2: false, dora: false } },
+                        { name: 'Financial Services', frameworks: { iso27001: true, iso27002: true, cisControls: 'ig3' as const, gdpr: true, nis2: false, dora: true } }
                       ].map((preset) => (
                         <Button
                           key={preset.name}
@@ -3553,7 +3755,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                     <div className="flex justify-center">
                       <Button
                         onClick={handleGenerate}
-                        disabled={isGenerating || (!frameworksSelected['iso27001'] && !frameworksSelected['iso27002'] && !frameworksSelected['cisControls'] && !frameworksSelected['gdpr'] && !frameworksSelected['nis2'])}
+                        disabled={isGenerating || (!frameworksSelected['iso27001'] && !frameworksSelected['iso27002'] && !frameworksSelected['cisControls'] && !frameworksSelected['gdpr'] && !frameworksSelected['nis2'] && !frameworksSelected['dora'])}
                         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-12 py-4 rounded-xl shadow-lg text-lg transition-all duration-300 transform hover:scale-105"
                         size="lg"
                       >
@@ -3599,7 +3801,8 @@ For detailed implementation guidance, please refer to the specific framework doc
                     { id: 'iso27002', label: 'ISO 27002', icon: <Lock className="w-4 h-4" /> },
                     { id: 'cis', label: 'CIS Controls', icon: <Settings className="w-4 h-4" /> },
                     { id: 'gdpr', label: 'GDPR', icon: <BookOpen className="w-4 h-4" /> },
-                    { id: 'nis2', label: 'NIS2', icon: <Shield className="w-4 h-4" /> }
+                    { id: 'nis2', label: 'NIS2', icon: <Shield className="w-4 h-4" /> },
+                    { id: 'dora', label: 'DORA', icon: <Shield className="w-4 h-4" /> }
                   ].map((filter) => (
                     <Button
                       key={filter.id}
@@ -3689,12 +3892,14 @@ For detailed implementation guidance, please refer to the specific framework doc
                                 (selectedFrameworks['iso27001'] ? 1 : 0) +
                                 (selectedFrameworks['iso27002'] ? 1 : 0) +
                                 (selectedFrameworks['cisControls'] ? 1 : 0) +
-                                (selectedFrameworks['nis2'] ? 1 : 0);
+                                (selectedFrameworks['nis2'] ? 1 : 0) +
+                                (selectedFrameworks['dora'] ? 1 : 0);
                               
                               if (selectedCount === 1) return 'lg:grid-cols-1';
                               if (selectedCount === 2) return 'sm:grid-cols-2';
                               if (selectedCount === 3) return 'sm:grid-cols-2 lg:grid-cols-3';
                               if (selectedCount === 4) return 'sm:grid-cols-2 lg:grid-cols-4';
+                              if (selectedCount === 5) return 'sm:grid-cols-2 lg:grid-cols-5';
                               return 'sm:grid-cols-2 lg:grid-cols-3'; // fallback
                             })()
                           }`}>
@@ -3773,6 +3978,24 @@ For detailed implementation guidance, please refer to the specific framework doc
                             </div>
                           )}
 
+                          {/* DORA Column - Only show if selected */}
+                          {selectedFrameworks['dora'] && (
+                            <div className="p-4 sm:p-6 bg-red-50 dark:bg-red-900/10">
+                              <div className="flex items-center space-x-2 mb-4">
+                                <Shield className="w-5 h-5 text-red-600" />
+                                <h4 className="font-semibold text-red-900 dark:text-red-100">DORA</h4>
+                              </div>
+                              <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-red-300 scrollbar-track-red-100 dark:scrollbar-thumb-red-600 dark:scrollbar-track-red-900">
+                                {(mapping.frameworks['dora'] || []).map((req, i) => (
+                                  <div key={i} className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-red-200 dark:border-red-700">
+                                    <div className="font-medium text-sm text-red-900 dark:text-red-100">{req.code}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">{req.title}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
                         </div>
                         )}
 
@@ -3804,7 +4027,8 @@ For detailed implementation guidance, please refer to the specific framework doc
                                         (selectedFrameworks['iso27001'] ? (mapping.frameworks?.['iso27001']?.length || 0) : 0) + 
                                         (selectedFrameworks['iso27002'] ? (mapping.frameworks?.['iso27002']?.length || 0) : 0) + 
                                         (selectedFrameworks['cisControls'] ? (mapping.frameworks?.['cisControls']?.length || 0) : 0) +
-                                        (selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2']?.length || 0) : 0);
+                                        (selectedFrameworks['nis2'] ? (mapping.frameworks?.['nis2']?.length || 0) : 0) +
+                                        (selectedFrameworks['dora'] ? (mapping.frameworks?.['dora']?.length || 0) : 0);
                                       const reductionPercent = totalFrameworkReqs > 1 ? Math.round((1 - 1 / totalFrameworkReqs) * 100) : 0;
                                       return totalFrameworkReqs > 0 ? `Replaces ${totalFrameworkReqs} requirements - ${reductionPercent}% reduction` : 'No requirements from selected frameworks';
                                     }
@@ -3965,6 +4189,12 @@ For detailed implementation guidance, please refer to the specific framework doc
                         NIS2
                       </Badge>
                     )}
+                    {selectedFrameworks['dora'] && (
+                      <Badge className="bg-red-500 text-white px-3 py-1">
+                        <Shield className="w-3 h-3 mr-1" />
+                        DORA
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
                     Each unified requirement below eliminates duplicate controls and combines overlapping requirements into streamlined, actionable guidelines.
@@ -4056,7 +4286,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                           </Button>
                           <div className="text-xs text-gray-500 dark:text-gray-400">Replaces</div>
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {(mapping.frameworks?.['iso27001']?.length || 0) + (mapping.frameworks?.['iso27002']?.length || 0) + (mapping.frameworks?.['cisControls']?.length || 0) + (mapping.frameworks?.['gdpr']?.length || 0)}
+                            {(mapping.frameworks?.['iso27001']?.length || 0) + (mapping.frameworks?.['iso27002']?.length || 0) + (mapping.frameworks?.['cisControls']?.length || 0) + (mapping.frameworks?.['gdpr']?.length || 0) + (mapping.frameworks?.['nis2']?.length || 0) + (mapping.frameworks?.['dora']?.length || 0)}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">requirements</div>
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -4494,7 +4724,8 @@ For detailed implementation guidance, please refer to the specific framework doc
                     iso27002: selectedFrameworks['iso27002'],
                     cisControls: Boolean(selectedFrameworks['cisControls']),
                     gdpr: selectedFrameworks['gdpr'],
-                    nis2: selectedFrameworks['nis2']
+                    nis2: selectedFrameworks['nis2'],
+                    dora: selectedFrameworks['dora']
                   }}
                   mappingData={filteredMappings}
                 />
@@ -4636,7 +4867,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                     cleanLine.includes('Supporting Requirements:') ||
                     cleanLine.includes('Cross-References:') ||
                     cleanLine.includes('Framework References for Selected Standards:') ||
-                    cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2 Directive):/i) ||
+                    cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls|GDPR|NIS2 Directive|DORA):/i) ||
                     cleanLine.match(/^Art\.\d+(\.\d+)*:/) || // NIS2 articles like "Art.20.1:", "Art.25.1:" etc.
                     cleanLine.match(/^A\.\d+(\.\d+)*:/) || // ISO codes like "A.5.1:", "A.6.2:", etc.
                     cleanLine.match(/^\d+\.\d+(\.\d+)?:/) || // All numeric codes like "7.5.1:", "9.3.2:", "14.1:" etc.
@@ -4730,7 +4961,7 @@ For detailed implementation guidance, please refer to the specific framework doc
               }
               
               // Framework-specific references with enhanced styling
-              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls v8|GDPR|NIS2 Directive):/)) {
+              if (cleanLine.match(/^(ISO 27001|ISO 27002|CIS Controls v8|GDPR|NIS2 Directive|DORA \(Digital Operational Resilience Act\)):/)) {
                 if (!showFrameworkReferences) {
                   return null; // Hide when references are not shown
                 }
@@ -4742,7 +4973,8 @@ For detailed implementation guidance, please refer to the specific framework doc
                   'ISO 27002': 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-400 text-cyan-800 dark:text-cyan-200',
                   'CIS Controls v8': 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 text-purple-800 dark:text-purple-200',
                   'GDPR': 'bg-orange-50 dark:bg-orange-900/20 border-orange-400 text-orange-800 dark:text-orange-200',
-                  'NIS2 Directive': 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 text-indigo-800 dark:text-indigo-200'
+                  'NIS2 Directive': 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 text-indigo-800 dark:text-indigo-200',
+                  'DORA (Digital Operational Resilience Act)': 'bg-red-50 dark:bg-red-900/20 border-red-400 text-red-800 dark:text-red-200'
                 };
                 
                 const colorClass = frameworkColors[framework || ''] || 'bg-gray-50 dark:bg-gray-800/50 border-gray-400 text-gray-800 dark:text-gray-200';

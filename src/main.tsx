@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import './styles/react-flow-export.css';
+import './styles/reactflow-edge-label-export-fix.css';
 import App from './App';
 import { sentryService } from '@/services/monitoring/SentryService';
 import { OptimizedDemoDataService } from '@/services/demo/OptimizedDemoDataService';

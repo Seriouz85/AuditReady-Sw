@@ -303,7 +303,8 @@ class ComplianceUnificationService {
             iso27002: selectedFrameworks.includes('iso27002') ? (categoryFrameworks.iso27002 || []) : [],
             cisControls: selectedFrameworks.includes('cisControls') ? (categoryFrameworks.cisControls || []) : [],
             nis2: selectedFrameworks.includes('nis2') ? (categoryFrameworks.nis2 || []) : [],
-            gdpr: selectedFrameworks.includes('gdpr') ? (categoryFrameworks.gdpr || []) : []
+            gdpr: selectedFrameworks.includes('gdpr') ? (categoryFrameworks.gdpr || []) : [],
+            dora: selectedFrameworks.includes('dora') ? (categoryFrameworks.dora || []) : []
           };
 
           // Apply sector-specific enhancements if NIS2 is selected and sector is provided
@@ -351,7 +352,8 @@ class ComplianceUnificationService {
             nis2: selectedFrameworks.includes('nis2') ? [{ code: 'NIS2-GOV-1', title: 'NIS2 Governance', description: 'NIS2 governance requirement' }] : [],
             gdpr: [],
             iso27002: [],
-            cisControls: []
+            cisControls: [],
+            dora: selectedFrameworks.includes('dora') ? [{ code: 'DORA-GOV-1', title: 'DORA Governance', description: 'DORA governance requirement' }] : []
           }
         },
         {
@@ -363,7 +365,8 @@ class ComplianceUnificationService {
             cisControls: selectedFrameworks.includes('cisControls') ? [{ code: 'CIS-DATA-1', title: 'CIS Data Protection', description: 'CIS data protection requirement' }] : [],
             iso27001: [],
             nis2: [],
-            iso27002: []
+            iso27002: [],
+            dora: []
           }
         },
         {
@@ -373,6 +376,7 @@ class ComplianceUnificationService {
           frameworks: {
             nis2: selectedFrameworks.includes('nis2') ? [{ code: 'NIS2-BC-1', title: 'NIS2 Business Continuity', description: 'NIS2 business continuity requirement' }] : [],
             iso27002: selectedFrameworks.includes('iso27002') ? [{ code: 'ISO27002-BC-1', title: 'ISO 27002 Business Continuity', description: 'ISO 27002 business continuity requirement' }] : [],
+            dora: selectedFrameworks.includes('dora') ? [{ code: 'DORA-BC-1', title: 'DORA Business Continuity', description: 'DORA business continuity requirement' }] : [],
             gdpr: [],
             iso27001: [],
             cisControls: []
@@ -387,7 +391,8 @@ class ComplianceUnificationService {
             iso27002: selectedFrameworks.includes('iso27002') ? [{ code: 'ISO27002-IAM-1', title: 'ISO 27002 Identity Management', description: 'ISO 27002 identity management requirement' }] : [],
             gdpr: [],
             iso27001: [],
-            nis2: []
+            nis2: [],
+            dora: []
           }
         }
       ];
@@ -503,7 +508,8 @@ class ComplianceUnificationService {
           iso27002: [],
           cisControls: [],
           nis2: [],
-          gdpr: []
+          gdpr: [],
+          dora: []
         };
       }
 
@@ -531,6 +537,10 @@ class ComplianceUnificationService {
 
       // Ensure selectedFrameworks is a valid array
       const safeSelectedFrameworks = Array.isArray(selectedFrameworks) ? selectedFrameworks : [];
+      
+      console.log('🚨 DORA DEBUG: safeSelectedFrameworks:', safeSelectedFrameworks);
+      console.log('🚨 DORA DEBUG: DORA in selectedFrameworks?', safeSelectedFrameworks.includes('dora'));
+      console.log('🚨 DORA DEBUG: Total requirements from DB:', allRequirements?.length);
 
       // SIMPLIFIED: Process direct requirements and organize by category and framework
       for (const req of allRequirements || []) {
@@ -543,6 +553,17 @@ class ComplianceUnificationService {
           title: req.title || '',
           description: cleanMarkdownFormatting(req.description || '')
         };
+
+        // Debug DORA requirements specifically
+        if (standardName.includes('DORA')) {
+          console.log('🚨 DORA DEBUG: Processing DORA requirement:', {
+            categoryName,
+            standardName,
+            code: reqData.code,
+            title: reqData.title,
+            selectedFrameworksIncludesDora: safeSelectedFrameworks.includes('dora')
+          });
+        }
 
         // Only process if this category exists in our unified categories
         if (!result[categoryName]) {
@@ -576,6 +597,10 @@ class ComplianceUnificationService {
         }
         if (safeSelectedFrameworks.includes('nis2') && standardName.includes('NIS2')) {
           result[categoryName].nis2.push(reqData);
+        }
+        if (safeSelectedFrameworks.includes('dora') && standardName.includes('DORA')) {
+          console.log('🚨 DORA DEBUG: Found DORA requirement for category:', categoryName, reqData);
+          result[categoryName].dora.push(reqData);
         }
       }
 
@@ -626,6 +651,10 @@ export function useComplianceMappingData(
   const frameworkCodes = Object.entries(selectedFrameworks)
     .filter(([_, selected]) => selected !== false && selected !== null)
     .map(([code]) => code);
+    
+  console.log('🚨 DORA DEBUG: useComplianceMappingData - selectedFrameworks input:', selectedFrameworks);
+  console.log('🚨 DORA DEBUG: useComplianceMappingData - frameworkCodes array:', frameworkCodes);
+  console.log('🚨 DORA DEBUG: useComplianceMappingData - DORA in frameworkCodes?', frameworkCodes.includes('dora'));
     
   // Extract CIS IG level if present
   const cisIGLevel = selectedFrameworks.cisControls && typeof selectedFrameworks.cisControls === 'string' 
