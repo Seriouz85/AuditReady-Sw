@@ -6,10 +6,25 @@ interface MarkdownTextProps {
 }
 
 /**
+ * Handle bold markdown formatting (**text**)
+ */
+const processBoldFormatting = (text: string): React.ReactNode => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/);
+  
+  return parts.map((part, partIndex) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return <strong key={partIndex} className="font-semibold">{boldText}</strong>;
+    }
+    return part;
+  });
+};
+
+/**
  * Format bullet points to ensure they appear on their own lines
  */
 const formatBulletPoints = (text: string): React.ReactNode => {
-  if (!text.includes('•')) return text;
+  if (!text.includes('•')) return processBoldFormatting(text);
   
   const parts = text.split('•');
   const firstPart = parts[0];
@@ -17,11 +32,11 @@ const formatBulletPoints = (text: string): React.ReactNode => {
   
   return (
     <>
-      {firstPart}
+      {processBoldFormatting(firstPart)}
       {bulletParts.map((part, index) => (
         <React.Fragment key={index}>
           <br />
-          <span>• {part.trim()}</span>
+          <span>• {processBoldFormatting(part.trim())}</span>
         </React.Fragment>
       ))}
     </>
@@ -48,8 +63,54 @@ export function MarkdownText({ text, className = '' }: MarkdownTextProps) {
       }
       
 
-      // Check if line starts with a letter pattern like "a) Title:"
-      const letterMatch = line.match(/^([a-z]\))\s+([^:]+):\s*(.*)$/i);
+      // Check for specific titles that should be bold
+      if (line.match(/^i\)\s+COMPETENCE/i)) {
+        console.log('🟢 FOUND i) COMPETENCE LINE:', line);
+        const parts = line.split(' - ');
+        const title = parts[0];
+        const description = parts.slice(1).join(' - ');
+        return (
+          <React.Fragment key={index}>
+            <strong className="font-semibold">{title}</strong>
+            {description && ` - ${description}`}
+            {index < lines.length - 1 && <br />}
+          </React.Fragment>
+        );
+      }
+      
+      if (line.match(/^n\)\s+THIRD/i)) {
+        console.log('🟢 FOUND n) THIRD LINE:', line);
+        const parts = line.split(' - ');
+        const title = parts[0];
+        const description = parts.slice(1).join(' - ');
+        return (
+          <React.Fragment key={index}>
+            <strong className="font-semibold">{title}</strong>
+            {description && ` - ${description}`}
+            {index < lines.length - 1 && <br />}
+          </React.Fragment>
+        );
+      }
+      
+      if (line.match(/^h\)\s+PERSONNEL SECURITY FRAMEWORK/i)) {
+        const parts = line.split(' - ');
+        const title = parts[0];
+        const description = parts.slice(1).join(' - ');
+        return (
+          <React.Fragment key={index}>
+            <strong className="font-semibold">{title}</strong>
+            {description && ` - ${description}`}
+            {index < lines.length - 1 && <br />}
+          </React.Fragment>
+        );
+      }
+
+      // Check if line starts with a letter pattern like "a) **Title**" or "a) Title:"
+      // Handle both bold titles with dash separator and regular titles with colon
+      const boldLetterMatch = line.match(/^([a-z]\))\s+\*\*([^*]+)\*\*\s*-?\s*(.*)$/i);
+      const regularLetterMatch = line.match(/^([a-z]\))\s+([^:]+):\s*(.*)$/i);
+      
+      const letterMatch = boldLetterMatch || regularLetterMatch;
       if (letterMatch) {
         const [, letter, title, description] = letterMatch;
         
@@ -104,10 +165,10 @@ export function MarkdownText({ text, className = '' }: MarkdownTextProps) {
         );
       }
 
-      // Regular line
+      // Regular line with bold formatting
       return (
         <React.Fragment key={index}>
-          {line}
+          {processBoldFormatting(line)}
           {index < lines.length - 1 && <br />}
         </React.Fragment>
       );

@@ -505,10 +505,9 @@ export default function ComplianceSimplification() {
             // BEHÅLL EXAKT URSPRUNGLIG FORMATERING + lägg till injected requirements
             let originalContent = subReq; // Behåll exakt som det var i databasen
             
-            // TA BORT ALLA JOBBIGA STJÄRNOR!
+            // Ta bort bara specifika störande text
             originalContent = originalContent
               .replace(/\*Available in selected compliance frameworks\*/g, '')
-              .replace(/\*+/g, '') // Ta bort alla stjärnor
               .replace(/\s+/g, ' ') // Normalisera whitespace
               .trim();
             
@@ -537,6 +536,9 @@ export default function ComplianceSimplification() {
               
               // TA BORT FRAMEWORK REFERENCES HÄRIFRÅN - de ska bara vara i blå sektionen!
             }
+            
+            // Remove ALL asterisks from the content
+            content = content.replace(/\*/g, '');
             
             return content;
           });
@@ -623,7 +625,7 @@ export default function ComplianceSimplification() {
       const realFrameworkMappings = extractRealFrameworkMappings(categoryMapping, selectedFrameworks);
       
       // Generate comprehensive guidance content using EnhancedUnifiedGuidanceService
-      const guidanceContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+      const guidanceContent = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
         category, 
         selectedFrameworks, 
         categoryMapping
@@ -1036,8 +1038,11 @@ export default function ComplianceSimplification() {
       // THIRD: Fallback to legacy EnhancedUnifiedGuidanceService only if previous methods failed
       if (!finalContent || finalContent.trim().length <= 100) {
         console.warn(`[Guidance Debug] Dynamic guidance failed for ${cleanCategory}, trying legacy service`);
-        const legacyGuidanceResult = await EnhancedUnifiedGuidanceService.getEnhancedGuidance();
-        const legacyGuidance = (legacyGuidanceResult.content as string[])?.[0] || '';
+        const legacyGuidance = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+          cleanCategory,
+          selectedFrameworks,
+          categoryMapping
+        );
         
         if (legacyGuidance && legacyGuidance.trim().length > 100) {
           finalContent = legacyGuidance;
@@ -1436,7 +1441,7 @@ For detailed implementation guidance, please refer to the specific framework doc
       ['', ''],
       ['• Executive Review:', 'Focus on streamlined Category and Unified Requirements'],
       ['• Technical Implementation:', 'Use consolidated requirements for efficient deployment'],  
-      ['• Audit Preparation:', 'Reference unified requirements for evidence collection'],
+      ['• Audit Preparation:', 'Reference unified requirements for implementation'],
       ['• Risk Assessment:', 'Prioritize categories based on organizational context']
     ];
 
@@ -1512,8 +1517,11 @@ For detailed implementation guidance, please refer to the specific framework doc
       // Get unified guidance content using the enhanced service
       
       // Use legacy system for PDF generation (async)
-      const guidanceResult = await EnhancedUnifiedGuidanceService.getEnhancedGuidance();
-      const guidanceContent = (guidanceResult.content as string[])?.[0] || 'Enhanced guidance with actionable insights available in application';
+      const guidanceContent = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+        category,
+        selectedFrameworks,
+        results.data?.[0] // categoryMapping
+      ) || 'Enhanced guidance with actionable insights available in application';
       const unifiedGuidance = cleanMarkdownFormatting(
         guidanceContent.length > 1000 
           ? guidanceContent.substring(guidanceContent.indexOf('**') + 50, 1000) + '\\n\\n[Complete guidance available in application]'
@@ -1902,7 +1910,7 @@ For detailed implementation guidance, please refer to the specific framework doc
       '• Reduced complexity through intelligently consolidated requirements',
       '• Enhanced departmental coordination and consistent implementation',
       '• Clear mapping between different regulatory frameworks and standards',
-      '• Simplified audit preparation with comprehensive evidence collection',
+      '• Simplified audit preparation with comprehensive requirement coverage',
       '',
       'Each category on the following pages contains:',
       '• Unified requirements combining all selected frameworks',
@@ -2049,12 +2057,12 @@ For detailed implementation guidance, please refer to the specific framework doc
       
       // Section 3: AUDIT-READY DOCUMENTATION
       currentX += sectionWidth + gapSize;
-      createSection(currentX, [254, 243, 199], [245, 158, 11], [180, 83, 9], 'AUDIT-READY DOCS', [
-        '• Systematic evidence collection',
-        '• Complete compliance records',
+      createSection(currentX, [254, 243, 199], [245, 158, 11], [180, 83, 9], 'IMPLEMENTATION TRACKING', [
+        '• Systematic implementation monitoring',
+        '• Complete requirement coverage',
         '• Regular gap analysis',
         '• Documented corrective actions',
-        '• Audit trail maintenance'
+        '• Continuous improvement tracking'
       ]);
       
       // Section 4: PRO IMPLEMENTATION TIP
@@ -2100,9 +2108,9 @@ For detailed implementation guidance, please refer to the specific framework doc
         
         const cleanedRequirements = requirements.map((req: any) => {
           const text = typeof req === 'string' ? req : req.description || req.text || '';
-          // Don't clean Governance & Leadership requirements - preserve formatting
+          // For Governance & Leadership, preserve bold formatting
           if (mapping.category === 'Governance & Leadership') {
-            return text;
+            return text; // Don't clean - preserve ** formatting
           }
           return ProfessionalGuidanceService.cleanText(text);
         }).filter((req: string) => req && req.trim().length > 0); // Preserve all non-empty requirements
@@ -4051,6 +4059,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                                 {(() => {
                                   // Use dynamic generated content if available, otherwise fallback to database content
                                   const categoryName = mapping.category.replace(/^\d+\. /, '');
+                                  console.log('🚨🚨🚨 RENDERING CATEGORY:', categoryName);
                                   const dynamicContent = generatedContent.get(categoryName) || [];
                                   
                                   let contentToRender = dynamicContent.length > 0 ? dynamicContent : mapping.auditReadyUnified.subRequirements;
@@ -4068,14 +4077,40 @@ For detailed implementation guidance, please refer to the specific framework doc
                                     console.log('[RENDER DEBUG] First item in contentToRender:', contentToRender[0].substring(0, 100));
                                   }
                                   
-                                  return contentToRender.map((subReq, i) => (
-                                    <div key={i} className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                      <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                                        <MarkdownText text={subReq} />
+                                  return contentToRender.map((subReq, i) => {
+                                    let cleanText = subReq;
+                                    const letter = String.fromCharCode(97 + i);
+                                    
+                                    // FIRST: Handle special titles BEFORE removing asterisks
+                                    if (letter === 'i' && cleanText.includes('COMPETENCE MANAGEMENT')) {
+                                      cleanText = cleanText.replace(
+                                        /^(i\))\s+\*\*(COMPETENCE MANAGEMENT AND DEVELOPMENT)\*\*/,
+                                        '$1 <strong>$2</strong>'
+                                      );
+                                    } else if (letter === 'n' && cleanText.includes('THIRD-PARTY GOVERNANCE')) {
+                                      cleanText = cleanText.replace(
+                                        /^(n\))\s+\*\*(THIRD-PARTY GOVERNANCE FRAMEWORK)\*\*/,
+                                        '$1 <strong>$2</strong>'
+                                      );
+                                    } else if (letter === 'h' && cleanText.includes('PERSONNEL SECURITY')) {
+                                      cleanText = cleanText.replace(
+                                        /^(h\))\s+\*\*(PERSONNEL SECURITY FRAMEWORK)\*\*/,
+                                        '$1 <strong>$2</strong>'
+                                      );
+                                    }
+                                    
+                                    // THEN: Remove remaining asterisks
+                                    cleanText = cleanText.replace(/\*+/g, '');
+                                    
+                                    return (
+                                      <div key={i} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                                        <div 
+                                          className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap"
+                                          dangerouslySetInnerHTML={{ __html: cleanText }}
+                                        />
                                       </div>
-                                    </div>
-                                  ));
+                                    );
+                                  });
                                 })()}
                               </div>
                               </div>
@@ -4568,6 +4603,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                                       }
                                       
                                       // Default display for other categories
+                                      console.log('🔵 DEFAULT DISPLAY - Item', i, ':', subReq.substring(0, 50));
                                       return (
                                         <div key={i} className="flex items-start space-x-2 text-sm">
                                           <ArrowRight className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
@@ -4894,11 +4930,12 @@ For detailed implementation guidance, please refer to the specific framework doc
                 );
               }
               
-              // Section headers for the scorecard categories
-              if (cleanLine.includes('FOUNDATIONAL CONTROLS') || 
+              // Section headers for the scorecard categories (only match operational excellence section headers, not sub-requirements)
+              if ((cleanLine.includes('FOUNDATIONAL CONTROLS') || 
                   cleanLine.includes('ADVANCED CONTROLS') || 
                   cleanLine.includes('AUDIT-READY DOCUMENTATION') || 
-                  cleanLine.includes('CONTINUOUS IMPROVEMENT')) {
+                  cleanLine.includes('CONTINUOUS IMPROVEMENT')) && 
+                  !cleanLine.match(/^[a-z]\)/i)) { // Don't match sub-requirements like "o) CONTINUOUS IMPROVEMENT"
                 
                 const colors: Record<string, string> = {
                   'FOUNDATIONAL CONTROLS': 'bg-blue-600 text-white',

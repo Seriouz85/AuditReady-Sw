@@ -45,7 +45,10 @@ export function cleanMarkdownFormatting(text: string): string {
   
   // Replace multiple bullet points or dashes with periods
   cleaned = cleaned.replace(/•\s*/g, '. ');
-  cleaned = cleaned.replace(/\s*-\s*/g, '. ');
+  // Only replace dashes that are clearly list separators, not hyphenated words
+  // Look for dashes at start of lines or with significant spacing, but preserve hyphenated words like "THIRD-PARTY"
+  cleaned = cleaned.replace(/^[\s]*-[\s]+/gm, '. '); // Line-starting dashes (bullet points)
+  cleaned = cleaned.replace(/[\s]{2,}-[\s]{2,}/g, '. '); // Dashes with multiple spaces (separators)
   
   // Remove excessive technical jargon indicators
   cleaned = cleaned.replace(/\b(REGULATORY|REQUIREMENTS?|OBLIGATIONS?|COMPLIANCE|DIRECTIVE)\b:?\s*/gi, '');
@@ -92,9 +95,84 @@ export function cleanComplianceSubRequirement(text: string): string {
   cleaned = cleaned.replace(/<strong>(.*?)<\/strong>/g, '**$1**'); // Convert to markdown for later processing
   cleaned = cleaned.replace(/<sup>(.*?)<\/sup>/g, '($1)'); // Convert superscript to parentheses
   
-  // Start with basic markdown cleaning
-  cleaned = cleanMarkdownFormatting(cleaned);
+  // Do NOT use cleanMarkdownFormatting here - we want to preserve bold formatting for UI display
+  // Instead, do minimal cleaning while preserving important bold formatting
   
+  // Clean HTML tags but keep markdown
+  cleaned = cleaned.replace(/<[^>]*>/g, ''); // Remove HTML tags but keep markdown
+  
+  // Clean up excessive whitespace
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  // COMPREHENSIVE AUDIT EVIDENCE REMOVAL - Remove all audit evidence patterns from requirements display
+  // This mirrors the logic in AuditEvidenceExtractor to ensure consistency
+  
+  const lines = cleaned.split('\n');
+  const filteredLines = lines.filter(line => {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) return true; // Keep empty lines
+    
+    // Remove audit evidence headers and sections
+    if (/^•?\s*📋.*?audit.*?ready.*?evidence.*?collection/gi.test(trimmedLine)) return false;
+    if (/^•?\s*audit.*?ready.*?evidence.*?collection.*?essential.*?documentation.*?required/gi.test(trimmedLine)) return false;
+    if (/^•?\s*essential.*?documentation.*?required/gi.test(trimmedLine)) return false;
+    if (/technical.*?evidence.*?to.*?collect/gi.test(trimmedLine)) return false;
+    
+    // Remove common audit evidence bullet points (same patterns as AuditEvidenceExtractor)
+    const evidencePatterns = [
+      // Generic audit evidence patterns
+      /^•?\s*documented.*?policy.*?with.*?management.*?approval/gi,
+      /^•?\s*implementation.*?procedures.*?and.*?workflows/gi,
+      /^•?\s*training.*?records.*?and.*?competency.*?assessments/gi,
+      /^•?\s*regular.*?review.*?and.*?update.*?documentation/gi,
+      /^•?\s*compliance.*?monitoring.*?and.*?reporting.*?records/gi,
+      
+      // Software inventory specific patterns
+      /^•?\s*unauthorized.*?software.*?detection.*?and.*?removal.*?procedures/gi,
+      /^•?\s*software.*?allowlisting.*?blocklisting.*?policies.*?and.*?enforcement.*?mechanisms/gi,
+      /^•?\s*incident.*?response.*?procedures.*?for.*?unauthorized.*?software.*?discoveries/gi,
+      /^•?\s*regular.*?software.*?audit.*?reports.*?showing.*?unauthorized.*?software.*?findings/gi,
+      /^•?\s*user.*?access.*?controls.*?preventing.*?unauthorized.*?software.*?installation/gi,
+      /^•?\s*application.*?allowlisting.*?tool.*?configuration.*?and.*?blocked.*?execution.*?logs/gi,
+      /^•?\s*software.*?discovery.*?scans.*?comparing.*?found.*?software.*?against.*?approved.*?inventory/gi,
+      /^•?\s*group.*?policy.*?or.*?endpoint.*?management.*?configurations.*?preventing.*?installations/gi,
+      
+      // Network security patterns
+      /^•?\s*.*?deployment.*?coverage.*?reports.*?across.*?critical.*?enterprise.*?assets/gi,
+      /^•?\s*.*?agent.*?configuration.*?and.*?detection.*?rule.*?sets/gi,
+      /^•?\s*.*?alert.*?generation.*?and.*?investigation.*?logs/gi,
+      /^•?\s*.*?system.*?performance.*?and.*?resource.*?utilization.*?monitoring/gi,
+      /^•?\s*.*?integration.*?with.*?centralized.*?security.*?monitoring.*?and.*?siem.*?systems/gi,
+      /^•?\s*.*?signature.*?and.*?rule.*?update.*?procedures.*?and.*?schedules/gi,
+      
+      // Infrastructure patterns
+      /^•?\s*.*?network.*?infrastructure.*?inventory.*?with.*?current.*?firmware.*?software.*?versions/gi,
+      /^•?\s*.*?patch.*?management.*?procedures.*?for.*?network.*?devices/gi,
+      /^•?\s*.*?update.*?testing.*?results.*?and.*?rollback.*?procedures/gi,
+      /^•?\s*.*?vulnerability.*?scans.*?of.*?network.*?infrastructure.*?showing.*?current.*?patch.*?levels/gi,
+      
+      // SIEM patterns
+      /^•?\s*.*?siem.*?system.*?deployment.*?architecture.*?and.*?data.*?flow.*?diagrams/gi,
+      /^•?\s*.*?log.*?source.*?configuration.*?and.*?collection.*?status.*?across.*?enterprise.*?assets/gi,
+      /^•?\s*.*?security.*?event.*?correlation.*?rules.*?and.*?alerting.*?thresholds.*?configuration/gi,
+      /^•?\s*.*?siem.*?dashboard.*?and.*?reporting.*?capabilities.*?demonstration/gi,
+      /^•?\s*.*?security.*?event.*?storage.*?retention.*?and.*?backup.*?procedures/gi,
+      
+      // HIDS patterns
+      /^•?\s*.*?host.*?based.*?intrusion.*?detection.*?system.*?deployment.*?policy.*?and.*?standards/gi,
+      /^•?\s*.*?enterprise.*?asset.*?risk.*?assessment.*?and.*?hids.*?deployment.*?prioritization/gi,
+      /^•?\s*.*?hids.*?agent.*?configuration.*?and.*?rule.*?management.*?procedures/gi,
+      /^•?\s*.*?hids.*?alert.*?investigation.*?and.*?response.*?procedures/gi,
+      /^•?\s*.*?hids.*?system.*?architecture.*?and.*?integration.*?documentation/gi,
+      /^•?\s*.*?hids.*?performance.*?monitoring.*?and.*?tuning.*?procedures/gi
+    ];
+    
+    // Check if this line matches any audit evidence pattern
+    return !evidencePatterns.some(pattern => pattern.test(trimmedLine));
+  });
+  
+  cleaned = filteredLines.join('\n');
+
   // Remove overly formal compliance language
   cleaned = cleaned.replace(/^REGULATORY\s+INCIDENT\s+REPORTING\s+REQUIREMENTS?:?\s*/gi, '');
   cleaned = cleaned.replace(/^CRITICAL\s+TIMING:?\s*/gi, 'Timing: ');

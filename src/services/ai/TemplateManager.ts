@@ -455,7 +455,7 @@ export class TemplateManager {
       console.log(`[TemplateManager] Migrating category: ${categoryName}`);
       
       // Get content from legacy service
-      const legacyContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+      const legacyContent = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
         categoryName,
         {
           'ISO 27001': true,
