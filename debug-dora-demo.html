@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug DORA Demo Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .requirement { border: 1px solid #ccc; margin: 10px; padding: 10px; }
+        .tags { background: #f0f0f0; padding: 5px; margin: 5px 0; }
+        .categories { background: #e8f5e8; padding: 5px; margin: 5px 0; }
+        .debug { background: #fff3cd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 DORA Requirements Debug (Demo Mode)</h1>
+    <div class="debug">
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Make sure you're in demo mode</li>
+            <li>Go to <a href="http://localhost:3000/requirements?standard=dora" target="_blank">DORA Requirements</a></li>
+            <li>Open browser console (F12)</li>
+            <li>Come back here and click "Check Debug Data"</li>
+        </ol>
+    </div>
+    
+    <button onclick="checkDebugData()" style="padding: 10px; background: #007bff; color: white; border: none; cursor: pointer;">
+        Check Debug Data
+    </button>
+    
+    <div id="results"></div>
+
+    <script>
+        function checkDebugData() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>Debug Results:</h2>';
+            
+            // Try to access the debug data from the main app
+            try {
+                const mainWindow = window.parent || window;
+                
+                // Check if we have debug data from our fix
+                if (mainWindow.doraDebugData) {
+                    results.innerHTML += '<div class="debug"><strong>✅ Debug Data Found!</strong></div>';
+                    
+                    mainWindow.doraDebugData.forEach((req, index) => {
+                        results.innerHTML += `
+                            <div class="requirement">
+                                <h3>${req.code}: ${req.title}</h3>
+                                <div class="categories">
+                                    <strong>Categories (${req.categories?.length || 0}):</strong> 
+                                    ${JSON.stringify(req.categories)}
+                                </div>
+                                <div class="tags">
+                                    <strong>Tags (${req.tags?.length || 0}):</strong> 
+                                    ${JSON.stringify(req.tags)}
+                                </div>
+                                <div>
+                                    <strong>Problem:</strong> 
+                                    ${req.categories?.length === 0 && req.tags?.length > 0 ? 
+                                        '❌ Empty categories, showing old tags' : 
+                                        '✅ Has categories or no tags'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    results.innerHTML += '<div class="debug"><strong>❌ No Debug Data Found</strong><br>This means the DORA requirements page hasn\'t been loaded yet or our debug code isn\'t running.</div>';
+                }
+                
+                // Try to check localStorage/sessionStorage
+                const localStorage_data = localStorage.getItem('requirementsCache');
+                if (localStorage_data) {
+                    results.innerHTML += '<div class="debug"><strong>📦 LocalStorage Cache Found</strong><br>Check browser console for cached data.</div>';
+                    console.log('LocalStorage requirements cache:', JSON.parse(localStorage_data));
+                }
+                
+            } catch (error) {
+                results.innerHTML += `<div class="debug"><strong>❌ Error:</strong> ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-check every 5 seconds
+        setInterval(() => {
+            if (window.doraDebugData && window.doraDebugData.length > 0) {
+                document.getElementById('results').innerHTML = 
+                    `<div class="debug"><strong>🔄 Auto-detected ${window.doraDebugData.length} DORA requirements</strong></div>`;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

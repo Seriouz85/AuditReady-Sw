@@ -57,7 +57,7 @@ export class EnhancedUnifiedGuidanceService {
         content += `**${letter}) ${cleanReq.split(':')[0]}**${cleanReq.includes(':') ? ':' + cleanReq.split(':').slice(1).join(':') : ''}\n\n`;
       });
       
-      content += this.getStandardOperationalExcellence();
+      // Note: Operational excellence content moved to guidance buttons only
       
       return `${references}\n\n${content}`;
     }

@@ -24,6 +24,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import ContentQualityAnalysis from './ContentQualityAnalysis';
 
 interface SystemMetrics {
   uptime: string;
@@ -463,6 +464,7 @@ export function EnhancedAdminConsole({ organizationId: _organizationId }: Enhanc
           <TabsTrigger value="organizations">Organizations</TabsTrigger>
           <TabsTrigger value="activities">User Activities</TabsTrigger>
           <TabsTrigger value="alerts">System Alerts</TabsTrigger>
+          <TabsTrigger value="quality">Content Quality</TabsTrigger>
           <TabsTrigger value="monitoring">Advanced Monitoring</TabsTrigger>
         </TabsList>
 
@@ -675,6 +677,11 @@ export function EnhancedAdminConsole({ organizationId: _organizationId }: Enhanc
               ))}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Content Quality Analysis Tab */}
+        <TabsContent value="quality" className="space-y-4">
+          <ContentQualityAnalysis />
         </TabsContent>
 
         {/* Advanced Monitoring Tab */}

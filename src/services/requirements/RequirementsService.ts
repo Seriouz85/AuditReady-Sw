@@ -73,6 +73,133 @@ export interface RequirementActivity {
 }
 
 export class RequirementsService {
+  // Validate and log mapping issues for debugging
+  private validateRequirementMappings(
+    requirement: any, 
+    unifiedMappings: any[], 
+    methodName: string
+  ): { isValid: boolean; categoryName: string | null; issues: string[] } {
+    const issues: string[] = [];
+    let categoryName: string | null = null;
+    
+    // Check if requirement has basic data
+    if (!requirement?.id || !requirement?.control_id) {
+      issues.push('Missing basic requirement data (id or control_id)');
+      return { isValid: false, categoryName, issues };
+    }
+    
+    // Check unified mappings structure
+    if (!unifiedMappings || !Array.isArray(unifiedMappings)) {
+      issues.push('unified_mappings is missing or not an array');
+    } else if (unifiedMappings.length === 0) {
+      issues.push('unified_mappings array is empty - requirement not mapped to any unified category');
+    } else {
+      // Validate mapping structure
+      const mapping = unifiedMappings[0];
+      if (!mapping?.unified_requirement) {
+        issues.push('unified_mappings[0] missing unified_requirement reference');
+      } else if (!mapping.unified_requirement.category) {
+        issues.push('unified_mappings[0].unified_requirement missing category reference');
+      } else if (!mapping.unified_requirement.category.name) {
+        issues.push('unified_mappings[0].unified_requirement.category missing name field');
+      } else {
+        categoryName = mapping.unified_requirement.category.name;
+      }
+    }
+    
+    const isValid = issues.length === 0 && categoryName !== null;
+    
+    // Log validation results
+    if (!isValid) {
+      console.error(`❌ MAPPING VALIDATION FAILED [${methodName}]: ${requirement.control_id} (${requirement.standard_id})`);
+      console.error(`   → Requirement ID: ${requirement.id}`);
+      console.error(`   → Issues found:`, issues);
+      console.error(`   → Raw unified_mappings:`, JSON.stringify(unifiedMappings, null, 2));
+      console.error(`   → ACTION: This requirement needs proper database mapping in unified_requirement_mappings table`);
+    } else {
+      console.log(`✅ MAPPING VALID [${methodName}]: ${requirement.control_id} → "${categoryName}"`);
+    }
+    
+    return { isValid, categoryName, issues };
+  }
+
+  // Diagnose mapping issues for a specific standard
+  async diagnoseMappingIssues(standardId?: string): Promise<{
+    totalRequirements: number;
+    mappedRequirements: number;
+    unmappedRequirements: number;
+    unmappedDetails: Array<{
+      id: string;
+      control_id: string;
+      title: string;
+      standard_id: string;
+      legacy_tags: string[];
+    }>;
+  }> {
+    try {
+      let query = supabase
+        .from('requirements_library')
+        .select(`
+          id,
+          control_id,
+          title,
+          standard_id,
+          tags,
+          unified_mappings:unified_requirement_mappings (
+            unified_requirement:unified_requirements (
+              category:unified_compliance_categories (
+                name
+              )
+            )
+          )
+        `)
+        .eq('is_active', true);
+
+      if (standardId) {
+        query = query.eq('standard_id', standardId);
+      }
+
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      if (!data) return { totalRequirements: 0, mappedRequirements: 0, unmappedRequirements: 0, unmappedDetails: [] };
+
+      const unmappedDetails = data
+        .filter((req: any) => !req.unified_mappings || req.unified_mappings.length === 0)
+        .map((req: any) => ({
+          id: req.id,
+          control_id: req.control_id,
+          title: req.title,
+          standard_id: req.standard_id,
+          legacy_tags: req.tags || []
+        }));
+
+      const results = {
+        totalRequirements: data.length,
+        mappedRequirements: data.length - unmappedDetails.length,
+        unmappedRequirements: unmappedDetails.length,
+        unmappedDetails
+      };
+
+      console.log('🔍 MAPPING DIAGNOSIS RESULTS:', results);
+      
+      if (unmappedDetails.length > 0) {
+        console.warn('⚠️ UNMAPPED REQUIREMENTS FOUND:');
+        unmappedDetails.forEach(req => {
+          console.warn(`   - ${req.control_id} (${req.standard_id}): ${req.title}`);
+          if (req.legacy_tags.length > 0) {
+            console.warn(`     Legacy tags: ${req.legacy_tags.join(', ')}`);
+          }
+        });
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Error diagnosing mapping issues:', error);
+      return { totalRequirements: 0, mappedRequirements: 0, unmappedRequirements: 0, unmappedDetails: [] };
+    }
+  }
+
   // Get organization's requirements with status for a specific standard
   async getOrganizationRequirements(
     organizationId: string, 
@@ -192,70 +319,32 @@ export class RequirementsService {
           return null;
         }
 
-        // Get unified category from database mappings
-        const unifiedMappings = requirement['unified_mappings'];
-        const unifiedCategory = unifiedMappings?.[0]?.['unified_requirement']?.['category'];
-        const unifiedCategoryName = unifiedCategory?.['name'] || requirement['category'] || 'General';
+        // Use validation function to check database mappings
+        const unifiedMappings = requirement['unified_mappings'] || [];
+        const validation = this.validateRequirementMappings(requirement, unifiedMappings, 'getOrganizationRequirements');
         
-        // Create categories as string array (not objects)
-        const categoryNames = unifiedCategory ? [unifiedCategory['name']] : [];
+        // Get category from validation result or fallback
+        let unifiedCategoryName = validation.categoryName || requirement['category'] || 'General';
+        const categoryNames = validation.categoryName ? [validation.categoryName] : [];
 
-        // Categories should come from database unified_mappings, not hardcoded fixes
+        // Use database mappings exclusively - no hardcoded overrides
         let finalTags = requirement['tags'] || [];
         let finalCategories = categoryNames;
         
-        // DATABASE AUDIT: Log requirements missing proper category mappings
-        if (finalCategories.length === 0 && finalTags.length > 0) {
-          console.warn(`⚠️ DATABASE ISSUE: ${requirement['control_id']} (${requirement['framework']}) has no unified category mapping but has old tags:`, finalTags);
-          console.warn(`   → This requirement should be properly mapped to a unified_compliance_category in the database`);
-          console.warn(`   → Current unified_mappings:`, unifiedMappings);
-        }
-        
-        // TEMPORARY: Only for demo purposes - remove when database is fixed
-        // TODO: Remove this section once database has proper unified_requirement_mappings
-        if (process.env.NODE_ENV === 'development' && finalCategories.length === 0 && finalTags.length > 0) {
-          console.log(`🔧 TEMP FIX (DEV ONLY): Applying temporary category mapping for ${requirement['control_id']}`);
-          
-          // Map old-style tags to categories as temporary fix
-          const tempTagMapping: Record<string, string> = {
-            'tag-governance-and-leadership': 'Governance & Leadership',
-            'tag-governance': 'Governance & Leadership',
-            'tag-risk-management': 'Risk Management', 
-            'tag-incident-response': 'Incident Response Management',
-            'tag-supplier-risk': 'Supplier & Third-Party Risk Management'
-          };
-          
-          for (const tag of finalTags) {
-            if (tempTagMapping[tag]) {
-              finalCategories = [tempTagMapping[tag]];
-              finalTags = [];
-              console.log(`🔧 TEMP: "${tag}" → "${tempTagMapping[tag]}" for ${requirement['control_id']}`);
-              break;
-            }
-          }
-          
-          // Article-based mapping for DORA/GDPR as temporary fallback
-          if (finalCategories.length === 0) {
-            if (requirement['control_id']?.includes('Article 56')) {
-              finalCategories = ['Governance & Leadership'];
-              finalTags = [];
-              console.log(`🔧 TEMP: Article 56 → "Governance & Leadership"`);
-            } else if (requirement['control_id']?.match(/^Article\s+([1-5])$/i)) {
-              finalCategories = ['Governance & Leadership'];
-              finalTags = [];
-              console.log(`🔧 TEMP: ${requirement['control_id']} → "Governance & Leadership"`);
-            }
-          }
+        // Handle validation failures gracefully
+        if (!validation.isValid && finalCategories.length === 0) {
+          console.warn(`⚠️ FALLBACK: Using 'General' category for unmapped requirement ${requirement['control_id']}`);
+          finalCategories = ['General'];
+          unifiedCategoryName = 'General';
         }
 
-        // Debug all requirements for DORA standard
-        if (requirement['standard_id'] === 'dora' || requirement['control_id']?.startsWith('Article')) {
-          console.log(`📋 REQUIREMENT DEBUG: ${requirement['control_id']} (${requirement['framework']})`, {
-            originalTags: requirement['tags'],
-            originalCategories: categoryNames,
-            finalTags: finalTags,
+        // Debug logging for development
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`📋 REQUIREMENT PROCESSED: ${requirement['control_id']} (${requirement['standard_id']})`, {
+            requirementId: requirement['id'],
+            validationResult: validation,
             finalCategories: finalCategories,
-            standardId: requirement['standard_id']
+            needsDatabaseFix: !validation.isValid
           });
         }
 
@@ -421,42 +510,23 @@ export class RequirementsService {
       if (!data || data.length === 0) return [];
 
       return data.map(req => {
-        // Get unified category from database mappings
-        const unifiedMappings = (req as any)['unified_mappings'];
-        const unifiedCategory = unifiedMappings?.[0]?.['unified_requirement']?.['category'];
-        const unifiedCategoryName = unifiedCategory?.['name'] || (req as any)['category'] || 'General';
+        // Use validation function to check database mappings
+        const unifiedMappings = (req as any)['unified_mappings'] || [];
+        const validation = this.validateRequirementMappings(req, unifiedMappings, 'getStandardRequirementsWithDefaultStatus');
         
-        // Return unified category name as string (as expected by Requirement interface)
-        const categoryNames = unifiedCategory ? [unifiedCategory['name']] : [];
+        // Get category from validation result or fallback
+        let unifiedCategoryName = validation.categoryName || (req as any)['category'] || 'General';
+        const categoryNames = validation.categoryName ? [validation.categoryName] : [];
 
-        // Categories should come from database unified_mappings, not hardcoded fixes (same as other method)
+        // Use database mappings exclusively - no hardcoded overrides
         let finalTags = (req as any)['tags'] || [];
         let finalCategories = categoryNames;
         
-        // DATABASE AUDIT: Log requirements missing proper category mappings
-        if (finalCategories.length === 0 && finalTags.length > 0) {
-          console.warn(`⚠️ DATABASE ISSUE (getStandardRequirementsWithDefaultStatus): ${(req as any)['control_id']} (${(req as any)['framework']}) has no unified category mapping but has old tags:`, finalTags);
-        }
-        
-        // TEMPORARY: Only for demo purposes - remove when database is fixed
-        if (process.env.NODE_ENV === 'development' && finalCategories.length === 0 && finalTags.length > 0) {
-          const tempTagMapping: Record<string, string> = {
-            'tag-governance-and-leadership': 'Governance & Leadership',
-            'tag-governance': 'Governance & Leadership'
-          };
-          
-          for (const tag of finalTags) {
-            if (tempTagMapping[tag]) {
-              finalCategories = [tempTagMapping[tag]];
-              finalTags = [];
-              break;
-            }
-          }
-          
-          if (finalCategories.length === 0 && (req as any)['control_id']?.includes('Article 56')) {
-            finalCategories = ['Governance & Leadership'];
-            finalTags = [];
-          }
+        // Handle validation failures gracefully
+        if (!validation.isValid && finalCategories.length === 0) {
+          console.warn(`⚠️ FALLBACK: Using 'General' category for unmapped requirement ${(req as any)['control_id']}`);
+          finalCategories = ['General'];
+          unifiedCategoryName = 'General';
         }
 
         return {
@@ -468,8 +538,8 @@ export class RequirementsService {
           status: 'not-fulfilled' as RequirementStatus,
           priority: ((req as any)['priority'] || 'medium') as RequirementPriority,
           section: unifiedCategoryName,
-          tags: finalTags, // Use processed tags
-          categories: finalCategories, // Use processed categories
+          tags: finalTags, // Database tags only
+          categories: finalCategories, // Database categories only
           appliesTo: [],
           organizationStatus: 'not-fulfilled',
           fulfillmentPercentage: 0,
@@ -591,10 +661,15 @@ export const useRequirementsService = () => {
     return service.getStandardRequirements(standardId);
   };
 
+  const diagnoseMappingIssues = async (standardId?: string) => {
+    return service.diagnoseMappingIssues(standardId);
+  };
+
   return {
     getRequirements,
     updateRequirement,
-    getStandardRequirements
+    getStandardRequirements,
+    diagnoseMappingIssues
   };
 };
 

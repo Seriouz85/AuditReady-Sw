@@ -38,8 +38,26 @@ export interface GuidanceSection {
  */
 export class ContentDeduplicator {
 
-  private readonly SIMILARITY_THRESHOLD = 0.85;
+  // Category-specific similarity thresholds for intelligent deduplication
+  private readonly CATEGORY_THRESHOLDS = {
+    'Governance & Leadership': 0.90, // High precision for policy requirements
+    'Risk Management': 0.85,          // Standard for process requirements
+    'Access Control': 0.80,           // Allow technical variations
+    'Technical Controls': 0.75,       // Lower for technical diversity
+    'Compliance Management': 0.90,    // High for regulatory accuracy
+    'default': 0.85                   // Fallback threshold
+  };
+  
   private readonly PARTIAL_SIMILARITY_THRESHOLD = 0.65;
+  private readonly FRAMEWORK_PRESERVATION_KEYWORDS = [
+    'iso', 'cis', 'nis2', 'nist', 'sox', 'gdpr', 'ccpa', 'hipaa',
+    'technical', 'implementation', 'configure', 'deploy', 'monitor',
+    'encrypt', 'authenticate', 'authorize', 'compliance', 'audit',
+    'policy', 'procedure', 'control', 'requirement', 'standard'
+  ];
+  
+  // Performance optimization: Cache for similarity calculations
+  private similarityCache = new Map<string, number>();
 
   /**
    * Deduplicate requirements by identifying and merging similar content
@@ -166,7 +184,7 @@ export class ContentDeduplicator {
       
       let isDuplicate = false;
       for (let i = 0; i < normalized.length; i++) {
-        if (this.calculateTextSimilarity(normalizedItem, normalized[i]) > this.SIMILARITY_THRESHOLD) {
+        if (this.calculateTextSimilarity(normalizedItem, normalized[i]) > this.getCategoryThreshold('default')) {
           isDuplicate = true;
           break;
         }
@@ -255,23 +273,35 @@ export class ContentDeduplicator {
 
   /**
    * Check if two requirements are similar enough to be merged
+   * Uses category-specific thresholds and framework preservation logic
    */
   private areRequirementsSimilar(req1: AggregatedRequirement, req2: AggregatedRequirement): boolean {
-    // Check text similarity
-    const textSimilarity = this.calculateTextSimilarity(req1.description, req2.description);
-    if (textSimilarity > this.SIMILARITY_THRESHOLD) {
+    // Get category-specific threshold
+    const threshold = this.getCategoryThreshold(req1.category);
+    
+    this.logDeduplicationDecision('debug', `Comparing ${req1.code} vs ${req2.code} (category: ${req1.category}, threshold: ${threshold})`);
+    
+    // Framework preservation check - don't merge if different frameworks with technical keywords
+    if (this.shouldPreserveFrameworkDifferences(req1, req2)) {
+      this.logDeduplicationDecision('info', `Preserving framework differences for ${req1.code} vs ${req2.code}`);
+      return false;
+    }
+    
+    // Enhanced semantic similarity calculation
+    const semanticSimilarity = this.calculateSemanticSimilarity(req1, req2);
+    
+    if (semanticSimilarity > threshold) {
+      this.logDeduplicationDecision('info', `Merging ${req1.code} and ${req2.code} (similarity: ${semanticSimilarity.toFixed(3)})`);
       return true;
     }
 
-    // Check code similarity (e.g., "4.1" and "4.2" might be related)
+    // Check code similarity with relaxed threshold for related codes
     if (this.areCodesSimilar(req1.code, req2.code)) {
-      return textSimilarity > this.PARTIAL_SIMILARITY_THRESHOLD;
-    }
-
-    // Check title similarity
-    const titleSimilarity = this.calculateTextSimilarity(req1.title, req2.title);
-    if (titleSimilarity > 0.8 && textSimilarity > this.PARTIAL_SIMILARITY_THRESHOLD) {
-      return true;
+      const relaxedThreshold = threshold * 0.75; // 25% lower threshold for related codes
+      if (semanticSimilarity > relaxedThreshold) {
+        this.logDeduplicationDecision('info', `Merging related codes ${req1.code} and ${req2.code} (similarity: ${semanticSimilarity.toFixed(3)})`);
+        return true;
+      }
     }
 
     return false;
@@ -418,21 +448,54 @@ export class ContentDeduplicator {
   }
 
   /**
-   * Calculate text similarity using Jaccard similarity
+   * Calculate semantic similarity combining multiple approaches
+   * Replaces simple Jaccard similarity with more sophisticated analysis
+   */
+  private calculateSemanticSimilarity(req1: AggregatedRequirement, req2: AggregatedRequirement): number {
+    const cacheKey = `${req1.id}_${req2.id}`;
+    if (this.similarityCache.has(cacheKey)) {
+      return this.similarityCache.get(cacheKey)!;
+    }
+    
+    // Multiple similarity components with weights
+    const textSimilarity = this.calculateTextSimilarity(req1.description, req2.description) * 0.6;
+    const titleSimilarity = this.calculateTextSimilarity(req1.title, req2.title) * 0.3;
+    const structuralSimilarity = this.calculateStructuralSimilarity(req1, req2) * 0.1;
+    
+    const combinedSimilarity = textSimilarity + titleSimilarity + structuralSimilarity;
+    
+    // Cache the result for performance
+    this.similarityCache.set(cacheKey, combinedSimilarity);
+    this.similarityCache.set(`${req2.id}_${req1.id}`, combinedSimilarity); // Symmetric
+    
+    return combinedSimilarity;
+  }
+  
+  /**
+   * Calculate text similarity using enhanced Jaccard similarity with n-grams
    */
   private calculateTextSimilarity(text1: string, text2: string): number {
+    // Use both word-level and bi-gram analysis for better semantic understanding
     const words1 = new Set(this.normalizeText(text1).split(/\s+/));
     const words2 = new Set(this.normalizeText(text2).split(/\s+/));
     
-    return this.calculateSetOverlap(words1, words2);
+    const wordSimilarity = this.calculateSetOverlap(words1, words2);
+    
+    // Add bi-gram similarity for better phrase matching
+    const bigrams1 = this.generateBigrams(text1);
+    const bigrams2 = this.generateBigrams(text2);
+    const bigramSimilarity = this.calculateSetOverlap(bigrams1, bigrams2);
+    
+    // Weighted combination (favor word similarity but consider phrase structure)
+    return wordSimilarity * 0.7 + bigramSimilarity * 0.3;
   }
 
   /**
    * Calculate overlap between two sets (Jaccard index)
    */
   private calculateSetOverlap(set1: Set<string>, set2: Set<string>): number {
-    const intersection = new Set([...set1].filter(x => set2.has(x)));
-    const union = new Set([...set1, ...set2]);
+    const intersection = new Set(Array.from(set1).filter(x => set2.has(x)));
+    const union = new Set([...Array.from(set1), ...Array.from(set2)]);
     
     return union.size > 0 ? intersection.size / union.size : 0;
   }
@@ -518,5 +581,111 @@ export class ContentDeduplicator {
     const category = requirements[0].category.replace(/\s+/g, '_').toLowerCase();
     const frameworks = [...new Set(requirements.flatMap(req => req.frameworks))].sort().join('_');
     return `group_${category}_${frameworks}`;
+  }
+  
+  /**
+   * Get category-specific similarity threshold
+   */
+  private getCategoryThreshold(category: string): number {
+    return this.CATEGORY_THRESHOLDS[category] || this.CATEGORY_THRESHOLDS.default;
+  }
+  
+  /**
+   * Check if framework differences should be preserved
+   * Prevents over-merging of technical requirements with framework-specific nuances
+   */
+  private shouldPreserveFrameworkDifferences(req1: AggregatedRequirement, req2: AggregatedRequirement): boolean {
+    // Don't merge if different frameworks and contains technical keywords
+    const frameworks1 = new Set(req1.frameworks);
+    const frameworks2 = new Set(req2.frameworks);
+    const hasCommonFramework = Array.from(frameworks1).some(f => frameworks2.has(f));
+    
+    if (hasCommonFramework) {
+      return false; // Same framework, safe to compare
+    }
+    
+    // Check for technical implementation details that should be preserved
+    const combinedText = (req1.description + ' ' + req1.title + ' ' + req2.description + ' ' + req2.title).toLowerCase();
+    const hasTechnicalKeywords = this.FRAMEWORK_PRESERVATION_KEYWORDS.some(keyword => 
+      combinedText.includes(keyword)
+    );
+    
+    if (hasTechnicalKeywords) {
+      // Additional check: very high similarity can override framework preservation
+      const basicSimilarity = this.calculateTextSimilarity(req1.description, req2.description);
+      return basicSimilarity < 0.95; // Only preserve if not nearly identical
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Calculate structural similarity based on requirement properties
+   */
+  private calculateStructuralSimilarity(req1: AggregatedRequirement, req2: AggregatedRequirement): number {
+    let score = 0;
+    
+    // Priority similarity (normalized to 0-1)
+    const priorityDiff = Math.abs(req1.priority - req2.priority);
+    const maxPriority = Math.max(req1.priority, req2.priority, 10); // Assume max priority of 10
+    score += (1 - priorityDiff / maxPriority) * 0.3;
+    
+    // Mapping strength similarity
+    const strength1 = req1.mappingStrength[0] || 'related';
+    const strength2 = req2.mappingStrength[0] || 'related';
+    const strengthValues = { 'exact': 4, 'strong': 3, 'partial': 2, 'related': 1 };
+    const strengthSimilarity = 1 - Math.abs(strengthValues[strength1] - strengthValues[strength2]) / 3;
+    score += strengthSimilarity * 0.2;
+    
+    // Framework overlap
+    const frameworks1 = new Set(req1.frameworks);
+    const frameworks2 = new Set(req2.frameworks);
+    const frameworkOverlap = this.calculateSetOverlap(frameworks1, frameworks2);
+    score += frameworkOverlap * 0.5;
+    
+    return Math.min(score, 1.0); // Cap at 1.0
+  }
+  
+  /**
+   * Generate bi-grams for enhanced text analysis
+   */
+  private generateBigrams(text: string): Set<string> {
+    const normalized = this.normalizeText(text);
+    const words = normalized.split(/\s+/);
+    const bigrams = new Set<string>();
+    
+    for (let i = 0; i < words.length - 1; i++) {
+      if (words[i].length > 2 && words[i + 1].length > 2) { // Skip short words
+        bigrams.add(`${words[i]}_${words[i + 1]}`);
+      }
+    }
+    
+    return bigrams;
+  }
+  
+  /**
+   * Log deduplication decisions for debugging and monitoring
+   */
+  private logDeduplicationDecision(level: 'debug' | 'info' | 'warn', message: string): void {
+    // In production, this could integrate with a proper logging service
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[ContentDeduplicator:${level.toUpperCase()}] ${message}`);
+    }
+  }
+  
+  /**
+   * Clear similarity cache to prevent memory leaks in long-running processes
+   */
+  public clearCache(): void {
+    this.similarityCache.clear();
+  }
+  
+  /**
+   * Get cache statistics for monitoring
+   */
+  public getCacheStats(): { size: number; hitRate?: number } {
+    return {
+      size: this.similarityCache.size
+    };
   }
 }

@@ -38,18 +38,9 @@ import { useComplianceMappingData, useIndustrySectors } from '@/services/complia
 import { supabase } from '@/lib/supabase';
 import { complianceCacheService } from '@/services/compliance/ComplianceCacheService';
 import { EnhancedUnifiedRequirementsGenerator } from '../services/compliance/EnhancedUnifiedRequirementsGenerator';
+import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
 
 // Mock missing services to prevent TypeScript errors
-
-
-const EnhancedUnifiedGuidanceService = {
-  async generate() {
-    return { content: [] };
-  },
-  async getEnhancedGuidance() {
-    return { content: [] };
-  }
-};
 
 const ProfessionalGuidanceService = {
   formatFrameworkName: (name: string) => name,
@@ -631,8 +622,12 @@ export default function ComplianceSimplification() {
       // Extract real framework mappings from categoryMapping
       const realFrameworkMappings = extractRealFrameworkMappings(categoryMapping, selectedFrameworks);
       
-      // Generate simple guidance content
-      const guidanceContent = 'Generated guidance content';
+      // Generate comprehensive guidance content using EnhancedUnifiedGuidanceService
+      const guidanceContent = EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+        category, 
+        selectedFrameworks, 
+        categoryMapping
+      );
       
       // Store the complete guidance data globally so Show References can access it
       (window as any).currentGuidanceData = { content: [guidanceContent] };
@@ -1439,9 +1434,9 @@ For detailed implementation guidance, please refer to the specific framework doc
       ['', ''],
       ['🎯 USAGE GUIDELINES', ''],
       ['', ''],
-      ['• Executive Review:', 'Focus on Category and Unified Requirements columns'],
-      ['• Technical Implementation:', 'Reference Framework-specific control mappings'],
-      ['• Audit Preparation:', 'Use Unified Guidance for evidence collection'],
+      ['• Executive Review:', 'Focus on streamlined Category and Unified Requirements'],
+      ['• Technical Implementation:', 'Use consolidated requirements for efficient deployment'],  
+      ['• Audit Preparation:', 'Reference unified requirements for evidence collection'],
       ['• Risk Assessment:', 'Prioritize categories based on organizational context']
     ];
 
@@ -1493,12 +1488,10 @@ For detailed implementation guidance, please refer to the specific framework doc
     // 🎨 MAIN DATA WORKSHEET - ENTERPRISE GRADE
     const baseHeaders = [
       '📂 Category', 
-      '🎯 Unified Requirements',
-      '📖 Unified Guidance',
-      '📚 References'
+      '🎯 Unified Requirements'
     ];
     
-    // Use the simplified structure: Category, Unified Requirements, Unified Guidance, References
+    // Use the simplified structure: Category, Unified Requirements (only 2 columns for cleaner PDF)
     const headers = baseHeaders;
     
     // Create data rows with enhanced formatting
@@ -1550,9 +1543,7 @@ For detailed implementation guidance, please refer to the specific framework doc
       
       const row = [
         `${index + 1}. ${mapping.category || ''}`,
-        unifiedRequirements,
-        unifiedGuidance,
-        referencesText
+        unifiedRequirements
       ];
 
       xlsxRows.push(row);
@@ -1749,14 +1740,21 @@ For detailed implementation guidance, please refer to the specific framework doc
   };
 
   const exportToPDF = () => {
-    // Get selected frameworks with proper formatting
+    // Get selected frameworks with proper formatting and years
     const selectedFrameworksList = Object.entries(selectedFrameworks)
       .filter(([_, selected]) => selected !== false && selected !== null)
       .map(([framework, value]) => {
-        if (framework === 'cisControls' && typeof value === 'string') {
-          return ProfessionalGuidanceService.formatFrameworkName(`${framework} (${value})`);
-        }
-        return ProfessionalGuidanceService.formatFrameworkName(framework);
+        // Add version/year information to frameworks
+        const frameworkWithVersion = {
+          'iso27001': 'ISO 27001:2022',
+          'iso27002': 'ISO 27002:2022', 
+          'nis2': 'NIS2 Directive 2024',
+          'dora': 'DORA 2024',
+          'gdpr': 'GDPR 2018',
+          'cisControls': `CIS Controls ${typeof value === 'string' ? value.toUpperCase() : 'IG3'} v8.1`
+        }[framework];
+        
+        return frameworkWithVersion || ProfessionalGuidanceService.formatFrameworkName(framework);
       });
 
     // Create new PDF with normal A4 portrait dimensions
@@ -1841,11 +1839,11 @@ For detailed implementation guidance, please refer to the specific framework doc
     doc.text('SELECTED FRAMEWORKS:', margin + 8, currentY + 22);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    // Format frameworks properly for portrait
+    // Format frameworks properly for portrait with proper width constraint
     let yOffset = currentY + 28;
+    const maxFrameworkWidth = pageWidth - (2 * margin) - 20; // Ensure frameworks fit within blue box
     selectedFrameworksList.forEach((framework) => {
-      const capitalizedFramework = framework.charAt(0).toUpperCase() + framework.slice(1);
-      doc.text(`• ${capitalizedFramework}`, margin + 12, yOffset);
+      doc.text(`• ${framework}`, margin + 12, yOffset, { maxWidth: maxFrameworkWidth });
       yOffset += 5;
     });
     
@@ -1908,8 +1906,7 @@ For detailed implementation guidance, please refer to the specific framework doc
       '',
       'Each category on the following pages contains:',
       '• Unified requirements combining all selected frameworks',
-      '• Detailed implementation guidance for practical deployment',
-      '• Complete framework references with specific control mappings',
+      '• Clean, consolidated requirements text for efficient implementation',
       '',
       'This approach reduces duplication and ensures comprehensive coverage while maintaining',
       'compliance with all selected standards.'
@@ -2075,8 +2072,8 @@ For detailed implementation guidance, please refer to the specific framework doc
 
     // MAIN DATA TABLE - CLEAN AND COMPLETE
     const createStunningTable = (data: any[], startY: number, categoryNum?: number, totalCategories?: number) => {
-      // Updated structure: Category, Unified Requirements, Unified Guidance, References  
-      const allHeaders = ['CATEGORY', 'UNIFIED REQUIREMENTS', 'UNIFIED GUIDANCE', 'REFERENCES'];
+      // Simplified structure: Category, Unified Requirements (only these 2 columns)
+      const allHeaders = ['CATEGORY', 'UNIFIED REQUIREMENTS'];
       
       // Add category header for single category pages with better visibility
       if (data.length === 1 && categoryNum && totalCategories) {
@@ -2318,9 +2315,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         
         return [
           ProfessionalGuidanceService.formatCategoryName(mapping.category || '').toUpperCase(),
-          unifiedRequirements,
-          unifiedGuidance,
-          referencesText
+          unifiedRequirements  // Only show unified requirements text
         ];
       });
 
@@ -2352,7 +2347,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         },
         columnStyles: {
           0: { 
-            cellWidth: 32, // Category - properly sized to fit
+            cellWidth: 50, // Category - wider for better readability
             fontStyle: 'bold', 
             fillColor: [231, 243, 255], 
             fontSize: 10,
@@ -2360,29 +2355,12 @@ For detailed implementation guidance, please refer to the specific framework doc
             halign: 'center'
           },
           1: { 
-            cellWidth: 48, // Unified Requirements - fits within bounds
+            cellWidth: 130, // Unified Requirements - much wider to use full page width
             overflow: 'linebreak', 
-            cellPadding: { top: 8, right: 6, bottom: 8, left: 6 }, 
+            cellPadding: { top: 8, right: 8, bottom: 8, left: 8 }, 
             fontSize: 9,
             valign: 'top'
-          },
-          2: { 
-            cellWidth: 58, // Unified Guidance - smaller without operational excellence content
-            overflow: 'linebreak', 
-            cellPadding: { top: 12, right: 8, bottom: 12, left: 8 }, // Increased padding for better spacing
-            fontSize: 9,
-            valign: 'top',
-            lineColor: [200, 200, 200],
-            lineWidth: 0.5
-          },
-          3: { 
-            cellWidth: 38, // References - adequate space
-            overflow: 'linebreak', 
-            cellPadding: { top: 8, right: 6, bottom: 8, left: 6 }, 
-            fontSize: 8,
-            fontStyle: 'normal',
-            textColor: [44, 62, 80]
-          },
+          }
         },
         alternateRowStyles: {
           fillColor: [248, 249, 250]
@@ -2402,9 +2380,9 @@ For detailed implementation guidance, please refer to the specific framework doc
             doc.setFont('helvetica', 'bold');
           }
           
-          // Enhanced styling for Unified Guidance column
-          if (data.column.index === 2 && data.section === 'body') {
-            // Set enhanced styling for guidance content
+          // Enhanced styling for Unified Requirements column (now column 1)
+          if (data.column.index === 1 && data.section === 'body') {
+            // Set enhanced styling for requirements content
             doc.setTextColor(40, 40, 40);
             doc.setFont('helvetica', 'normal');
           }
@@ -2413,7 +2391,7 @@ For detailed implementation guidance, please refer to the specific framework doc
           if (data.section === 'body') {
             doc.setDrawColor(200, 200, 200);
             doc.setLineWidth(0.5);
-            if (data.column.index < 3) {
+            if (data.column.index < 1) {  // Only add border between the 2 columns
               doc.line(
                 data.cell.x + data.cell.width, data.cell.y,
                 data.cell.x + data.cell.width, data.cell.y + data.cell.height
