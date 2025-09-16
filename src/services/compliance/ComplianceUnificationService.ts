@@ -645,10 +645,12 @@ export function useIndustrySectors() {
 }
 
 export function useComplianceMappingData(
-  selectedFrameworks: Record<string, boolean | string>,
+  selectedFrameworks: Record<string, boolean | string> = {},
   industrySectorId?: string
 ) {
-  const frameworkCodes = Object.entries(selectedFrameworks)
+  // Ensure selectedFrameworks is a valid object before calling Object.entries
+  const safeSelectedFrameworks = selectedFrameworks && typeof selectedFrameworks === 'object' ? selectedFrameworks : {};
+  const frameworkCodes = Object.entries(safeSelectedFrameworks)
     .filter(([_, selected]) => selected !== false && selected !== null)
     .map(([code]) => code);
     
@@ -657,8 +659,8 @@ export function useComplianceMappingData(
   console.log('🚨 DORA DEBUG: useComplianceMappingData - DORA in frameworkCodes?', frameworkCodes.includes('dora'));
     
   // Extract CIS IG level if present
-  const cisIGLevel = selectedFrameworks.cisControls && typeof selectedFrameworks.cisControls === 'string' 
-    ? selectedFrameworks.cisControls as 'ig1' | 'ig2' | 'ig3'
+  const cisIGLevel = safeSelectedFrameworks.cisControls && typeof safeSelectedFrameworks.cisControls === 'string' 
+    ? safeSelectedFrameworks.cisControls as 'ig1' | 'ig2' | 'ig3'
     : undefined;
     
   return useQuery({

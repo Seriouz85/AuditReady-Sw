@@ -965,6 +965,11 @@ export default function ComplianceSimplification() {
       // Strip number prefixes for proper lookup (e.g., "01. Risk Management" -> "Risk Management")
       const cleanCategory = category.replace(/^\d+\.\s*/, '');
       
+      console.log(`[DEBUG CRITICAL] Original category parameter:`, category);
+      console.log(`[DEBUG CRITICAL] cleanCategory after regex:`, cleanCategory);
+      console.log(`[DEBUG CRITICAL] category type:`, typeof category);
+      console.log(`[DEBUG CRITICAL] is category a UUID?:`, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(category));
+      
       // Debug: Log what category we're trying to get guidance for
       if (!cleanCategory || cleanCategory.trim() === '') {
         console.warn(`[Guidance Debug] Empty category after cleaning. Original: "${category}"`);
@@ -1020,24 +1025,10 @@ export default function ComplianceSimplification() {
         console.warn(`[Modal] No versioned guidance found for ${cleanCategory}:`, error);
       }
       
-      // SECOND: Use the new dynamic guidance generator as fallback source
+      // SKIP dynamic guidance for now to avoid generic text issue
+      // Use ONLY the legacy EnhancedUnifiedGuidanceService for unified guidance modal
       if (!finalContent || finalContent.trim().length <= 100) {
-        const dynamicGuidance = await buildGuidanceFromUnifiedRequirements(
-          cleanCategory,
-          categoryMapping,
-          frameworksForGuidance,
-          selectedIndustrySector
-        );
-        
-        if (dynamicGuidance && dynamicGuidance.trim().length > 100) {
-          console.log(`[Guidance Debug] Successfully generated dynamic guidance for: ${cleanCategory}`);
-          finalContent = dynamicGuidance;
-        }
-      }
-      
-      // THIRD: Fallback to legacy EnhancedUnifiedGuidanceService only if previous methods failed
-      if (!finalContent || finalContent.trim().length <= 100) {
-        console.warn(`[Guidance Debug] Dynamic guidance failed for ${cleanCategory}, trying legacy service`);
+        console.log(`[Guidance Debug] Using legacy EnhancedUnifiedGuidanceService for: ${cleanCategory}`);
         const legacyGuidance = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
           cleanCategory,
           selectedFrameworks,
@@ -1045,7 +1036,23 @@ export default function ComplianceSimplification() {
         );
         
         if (legacyGuidance && legacyGuidance.trim().length > 100) {
-          finalContent = legacyGuidance;
+          console.log(`[Guidance Debug] Successfully got legacy guidance for: ${cleanCategory}`);
+          
+          // Store the guidance data globally so Show References can access it
+          (window as any).currentGuidanceData = { content: [legacyGuidance] };
+          
+          // Build references section using framework mappings for Show References
+          try {
+            const realFrameworkMappings = extractRealFrameworkMappings(categoryMapping, selectedFrameworks);
+            const referencesSection = buildReferencesSection(realFrameworkMappings);
+            console.log(`[Guidance Debug] Built references section for: ${cleanCategory}`, referencesSection.substring(0, 200));
+            
+            // Combine references section with legacy guidance content (like GitHub version)
+            finalContent = `${referencesSection}\n\n${legacyGuidance}`;
+          } catch (error) {
+            console.warn(`[Guidance Debug] Could not build references for: ${cleanCategory}`, error);
+            finalContent = legacyGuidance; // Fallback to just legacy guidance
+          }
         }
       }
       
@@ -1747,7 +1754,54 @@ For detailed implementation guidance, please refer to the specific framework doc
     console.log(`📊 ${(filteredUnifiedMappings || []).length} categories analyzed across ${selectedFrameworksList.length} frameworks`);
   };
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    try {
+    // FIRST: Ensure all enhanced content is generated before PDF creation
+    console.log('[PDF] Starting enhanced content generation for PDF export...');
+    
+    // Check if we have any frameworks selected
+    const hasSelectedFrameworks = selectedFrameworks.iso27001 || selectedFrameworks.iso27002 || 
+                                   selectedFrameworks.dora || selectedFrameworks.gdpr || 
+                                   selectedFrameworks.cisControls || selectedFrameworks.nis2;
+                                   
+    if (!hasSelectedFrameworks) {
+      console.error('[PDF] No frameworks selected for PDF export');
+      return;
+    }
+    
+    // Generate content for all categories if not already generated
+    console.log('[PDF] Current generated content size:', generatedContent.size);
+    
+    let contentToUse = generatedContent;
+    
+    // ALWAYS generate fresh content for PDF to ensure we get the most complete version
+    console.log('[PDF] Generating enhanced content for PDF...');
+    const newGeneratedContent = new Map();
+    
+    for (const mapping of filteredUnifiedMappings) {
+      const categoryName = mapping.category.replace(/^\d+\. /, '');
+      console.log('[PDF] ORIGINAL category:', mapping.category);
+      console.log('[PDF] CLEANED category for generation:', categoryName);
+      
+      try {
+        const content = await generateDynamicContentForCategory(categoryName);
+        if (content && content.length > 0) {
+          newGeneratedContent.set(categoryName, content);
+          console.log('[PDF] Generated', content.length, 'sections for', categoryName);
+          console.log('[PDF] First section preview for', categoryName + ':', content[0]?.substring(0, 200) + '...');
+        } else {
+          console.warn('[PDF] No content generated for', categoryName);
+        }
+      } catch (error) {
+        console.error('[PDF] Failed to generate content for category', categoryName, error);
+      }
+    }
+    
+    contentToUse = newGeneratedContent;
+    console.log('[PDF] Content generation completed. Generated content for', newGeneratedContent.size, 'categories');
+    console.log('[PDF] Full content Map keys:', Array.from(newGeneratedContent.keys()));
+    console.log('[PDF] Total content items across all categories:', Array.from(newGeneratedContent.values()).reduce((total, arr) => total + arr.length, 0));
+    
     // Get selected frameworks with proper formatting and years
     const selectedFrameworksList = Object.entries(selectedFrameworks)
       .filter(([_, selected]) => selected !== false && selected !== null)
@@ -2102,49 +2156,161 @@ For detailed implementation guidance, please refer to the specific framework doc
       // Prepare table data with COMPLETE content from actual service
       // Loading real unified guidance content from getGuidanceContent function
       const tableData = data.map((mapping) => {
-        // Get unified requirements with clean formatting and better numbering
-        // Use database content directly - no more hardcoded overrides
-        let requirements = mapping.auditReadyUnified?.subRequirements || [];
+        // Get the EXACT same content that UI displays with same logic
+        const categoryName = mapping.category.replace(/^\d+\. /, '');
+        const dynamicContent = contentToUse.get(categoryName) || [];
         
-        const cleanedRequirements = requirements.map((req: any) => {
-          const text = typeof req === 'string' ? req : req.description || req.text || '';
-          // For Governance & Leadership, preserve bold formatting
-          if (mapping.category === 'Governance & Leadership') {
-            return text; // Don't clean - preserve ** formatting
-          }
-          return ProfessionalGuidanceService.cleanText(text);
-        }).filter((req: string) => req && req.trim().length > 0); // Preserve all non-empty requirements
+        console.log('[PDF PROCESSING] Category:', mapping.category, '-> cleaned:', categoryName);
+        console.log('[PDF PROCESSING] Available keys in contentToUse:', Array.from(contentToUse.keys()));
+        console.log('[PDF PROCESSING] Dynamic content length for', categoryName + ':', dynamicContent.length);
         
-        // Also check for requirements in the title if subrequirements are minimal
-        if (cleanedRequirements.length === 0 && mapping.auditReadyUnified?.title) {
-          const titleText = ProfessionalGuidanceService.cleanText(mapping.auditReadyUnified.title);
-          if (titleText.length > 10) {
-            cleanedRequirements.push(titleText);
-          }
+        // Use EXACT same logic as UI for unified requirements
+        let enhancedSubReqs: string[] = [];
+        
+        // Always use enhanced content (dynamic generation) - SAME AS UI LINE 4422-4423
+        enhancedSubReqs = dynamicContent;
+        console.log('[PDF DYNAMIC] Using dynamic content for:', categoryName, 'sections:', dynamicContent.length);
+        
+        // If no dynamic content, log error but continue with fallback
+        if (enhancedSubReqs.length === 0) {
+          console.warn('[PDF] No enhanced content found for:', categoryName, 'falling back to database content');
+          enhancedSubReqs = mapping.auditReadyUnified.subRequirements || [];
         }
         
-        // Format ALL requirements with proper lettering - ensure complete content
-        let unifiedRequirements = '';
-        if (cleanedRequirements.length > 0) {
-          // Add lettering to all requirements consistently
+        console.log('[PDF] Enhanced sub-reqs length:', enhancedSubReqs.length);
+        if (enhancedSubReqs.length > 0) {
+          console.log('[PDF] First enhanced sub-req preview:', enhancedSubReqs[0].substring(0, 100));
+        }
+        
+        // Apply the same grouping logic as UI for proper organization
+        let groupedSubReqs: Record<string, string[]> = {};
+        
+        // Special handling for Governance & Leadership - same as UI
+        const isGovernance = mapping.category === 'Governance & Leadership' || 
+                           mapping.category?.includes('Governance') ||
+                           mapping.category?.toLowerCase().includes('governance');
+        
+        if (isGovernance) {
+          // EXACT same organization as UI: Core Requirements, HR, Monitoring & Compliance
+          const personnelSecurityReq = enhancedSubReqs.find(req => req.includes('PERSONNEL SECURITY'));
+          const competenceManagementReq = enhancedSubReqs.find(req => req.includes('COMPETENCE MANAGEMENT'));
           
-          unifiedRequirements = cleanedRequirements.map((req: string, idx: number) => {
-            const letter = String.fromCharCode(97 + idx); // a, b, c, d, ... p, etc.
-            
-            // Clean the requirement text
-            let cleanReq = req.trim();
-            
-            // Add lettering if not already present
-            if (cleanReq.match(/^[a-z]\)/)) {
-              return cleanReq;
-            } else {
-              // Remove existing numbering/lettering and add proper lettering
-              cleanReq = cleanReq.replace(/^[a-z]\)\s*/i, '').replace(/^\d+\.\s*/, '');
-              return `${letter}) ${cleanReq}`;
-            }
-          }).join('\n\n');
+          const otherReqs = enhancedSubReqs.filter(req => 
+            !req.includes('PERSONNEL SECURITY') && !req.includes('COMPETENCE MANAGEMENT')
+          );
+          
+          const documentedProceduresReq = enhancedSubReqs.find(req => req.includes('DOCUMENTED PROCEDURES MANAGEMENT'));
+          const coreReqs = otherReqs.filter(req => !req.includes('DOCUMENTED PROCEDURES MANAGEMENT')).slice(0, 6);
+          if (documentedProceduresReq) {
+            coreReqs.push(documentedProceduresReq);
+          }
+          
+          groupedSubReqs = {
+            'Core Requirements': coreReqs,
+            'HR': [personnelSecurityReq, competenceManagementReq].filter((req): req is string => Boolean(req)),
+            'Monitoring & Compliance': otherReqs.filter(req => !req.includes('DOCUMENTED PROCEDURES MANAGEMENT')).slice(6)
+          };
         } else {
-          // Fallback: try to extract from title or description
+          // Default grouping for other categories (same as UI)
+          groupedSubReqs = {
+            'Core Requirements': enhancedSubReqs.filter((_, i) => i < Math.ceil(enhancedSubReqs.length / 3)),
+            'Implementation Standards': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length / 3) && i < Math.ceil(enhancedSubReqs.length * 2 / 3)),
+            'Monitoring & Compliance': enhancedSubReqs.filter((_, i) => i >= Math.ceil(enhancedSubReqs.length * 2 / 3))
+          };
+        }
+        
+        // Format ALL grouped requirements with proper lettering and structure - SAME AS UI
+        let unifiedRequirements = '';
+        
+        // Apply EXACT same text processing as UI (lines 4506-4549)
+        const processRequirementText = (subReq: string, isGovernanceItem: boolean = false): string => {
+          if (isGovernanceItem) {
+            // Split the content by requirement letters and keep both title and description (SAME AS UI)
+            const parts = subReq.split(/(?=^[a-p]\)\s)/gm).filter(part => part.trim());
+            
+            let processedText = '';
+            parts.forEach(part => {
+              const trimmed = part.trim();
+              if (!trimmed) return;
+              
+              // Simple approach: Split on first line break or after reasonable title length (SAME AS UI)
+              const lines = trimmed.split('\n');
+              const firstLine = lines[0];
+              if (!firstLine) return;
+              
+              const restOfLines = lines.slice(1).join('\n').trim();
+              
+              // Check if starts with letter pattern (SAME AS UI)
+              if (firstLine.match(/^[a-p]\)\s+/)) {
+                // Find where title likely ends - look for common patterns (SAME AS UI)
+                let titleEnd = firstLine.length;
+                const indicators = [
+                  ' (ISMS Requirement:',
+                  ' (ISO 27001 Foundation:',
+                  ' (ISO 27001 Requirement:',
+                  ' (ISO 27002 Control',
+                  ') DEVELOPMENT -',
+                  ') INTEGRATION -',
+                  ' DEVELOPMENT -',
+                  ' INTEGRATION -',
+                  ' ISO ',
+                  ' ISMS ',
+                  ' Define ',
+                  ' Develop ',
+                  ' Establish ',
+                  ' Implement ',
+                  ' Maintain ',
+                  ' Determine ',
+                  ' Core Requirements',
+                  ' FRAMEWORK',
+                  ' AND DEVELOPMENT',
+                  ' - '
+                ];
+                
+                for (const indicator of indicators) {
+                  const pos = firstLine.indexOf(indicator);
+                  if (pos > 0 && pos < titleEnd) {
+                    titleEnd = pos;
+                  }
+                }
+                
+                const title = firstLine.substring(0, titleEnd).trim();
+                const description = (firstLine.substring(titleEnd) + '\n' + restOfLines).trim();
+                
+                processedText += title + '\n' + description + '\n\n';
+              } else {
+                processedText += trimmed + '\n\n';
+              }
+            });
+            
+            return processedText;
+          } else {
+            // Standard processing for non-governance
+            return subReq + '\n\n';
+          }
+        };
+        
+        // For Governance & Leadership, use special processing (SAME AS UI)
+        if (isGovernance) {
+          enhancedSubReqs.forEach((req: string) => {
+            unifiedRequirements += processRequirementText(req, true);
+          });
+        } else {
+          // For other categories, apply same processing as UI but with grouping
+          Object.entries(groupedSubReqs).forEach(([groupName, requirements]) => {
+            if (requirements.length > 0) {
+              unifiedRequirements += `\n\n**${groupName.toUpperCase()}:**\n\n`;
+              
+              requirements.forEach((req: string, idx: number) => {
+                // Apply same text processing as UI for non-governance items
+                unifiedRequirements += processRequirementText(req, false);
+              });
+            }
+          });
+        }
+        
+        // Fallback if no formatted requirements
+        if (!unifiedRequirements.trim()) {
           const fallbackContent = mapping.auditReadyUnified?.title || mapping.auditReadyUnified?.description || '';
           if (fallbackContent) {
             const cleanTitle = ProfessionalGuidanceService.cleanText(fallbackContent);
@@ -2153,6 +2319,13 @@ For detailed implementation guidance, please refer to the specific framework doc
             unifiedRequirements = 'Complete unified requirements available in application interface';
           }
         }
+        
+        // Clean up the formatted requirements for PDF display
+        const finalRequirements = unifiedRequirements
+          .replace(/\*\*/g, '') // Remove markdown bold
+          .replace(/✅\s*/g, '') // Remove checkmarks that cause green styling
+          .replace(/\n{3,}/g, '\n\n') // Normalize line breaks
+          .trim();
         
         // Get unified guidance content using the enhanced service with better formatting
         
@@ -2323,7 +2496,7 @@ For detailed implementation guidance, please refer to the specific framework doc
         
         return [
           ProfessionalGuidanceService.formatCategoryName(mapping.category || '').toUpperCase(),
-          unifiedRequirements  // Only show unified requirements text
+          finalRequirements  // Use the complete formatted requirements
         ];
       });
 
@@ -2476,11 +2649,9 @@ For detailed implementation guidance, please refer to the specific framework doc
       // Get the final Y position after the table
       const finalY = doc.lastAutoTable?.finalY || startY + 100;
       
-      // Add OPERATIONAL EXCELLENCE INDICATORS as 4-section footer
-      const footerY = finalY + 15;
-      createOperationalExcellenceFooter(doc, footerY, pageWidth, margin);
+      // NO OPERATIONAL EXCELLENCE FOOTER - Removed per user request
       
-      return finalY + 80; // Extra space for footer
+      return finalY + 20; // Return position after table
     };
 
     // Start categories on page 2 - Add new page after introduction
@@ -2610,8 +2781,13 @@ For detailed implementation guidance, please refer to the specific framework doc
 
     doc.save(filename);
     
-    console.log(`🎨 Exported stunning PDF compliance report: ${filename}`);
-    console.log(`📄 ${(filteredUnifiedMappings || []).length} categories across 3 premium-designed pages`);
+    console.log(`✅ Exported professional compliance report: ${filename}`);
+    console.log(`📄 ${allData.length} categories processed successfully`);
+      
+    } catch (error) {
+      console.error('PDF Export Error:', error);
+      alert('Error generating PDF. Please try again.');
+    }
   };
 
   const filteredMappings = useMemo(() => {
@@ -4290,7 +4466,11 @@ For detailed implementation guidance, please refer to the specific framework doc
                             size="sm"
                             className="mb-2 text-xs px-3 py-1 text-emerald-700 border-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-500 dark:hover:bg-emerald-900/20"
                             onClick={() => {
-                              setSelectedGuidanceCategory(mapping.category);
+                              // Clean the category name by removing number prefix (e.g., "01. Governance" -> "Governance")
+                              const cleanCategoryName = mapping.category.replace(/^\d+\. /, '');
+                              console.log('[DEBUG] Original mapping.category:', mapping.category);
+                              console.log('[DEBUG] Clean category name:', cleanCategoryName);
+                              setSelectedGuidanceCategory(cleanCategoryName);
                               setShowUnifiedGuidance(true);
                             }}
                           >
@@ -4828,7 +5008,13 @@ For detailed implementation guidance, please refer to the specific framework doc
                 <Button
                   variant={showFrameworkReferences ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setShowFrameworkReferences(!showFrameworkReferences)}
+                  onClick={() => {
+                    console.log('[Show References] Button clicked! Current state:', showFrameworkReferences);
+                    console.log('[Show References] About to set state to:', !showFrameworkReferences);
+                    setShowFrameworkReferences(!showFrameworkReferences);
+                    console.log('[Show References] State should now be:', !showFrameworkReferences);
+                    console.log('[Show References] Current guidance content length:', getGuidanceContent().length);
+                  }}
                   className="flex items-center space-x-2 text-xs font-medium"
                 >
                   <Eye className="w-4 h-4" />
@@ -4870,7 +5056,13 @@ For detailed implementation guidance, please refer to the specific framework doc
           <div className="prose dark:prose-invert max-w-none pt-6">
             {(selectedGuidanceCategory ? getGuidanceContent() : 'No category selected').split('\n').map((line, index) => {
               // Clean line but preserve basic formatting markers
-              const cleanLine = line.replace(/\*\*/g, '').trim();
+              let cleanLine = line.replace(/\*\*/g, '').trim();
+              
+              // Debug: Log lines that might be references
+              if (cleanLine.includes('FRAMEWORK') || cleanLine.includes('References') || cleanLine.includes('ISO') || cleanLine.includes('CIS') || cleanLine.includes('A.')) {
+                console.log('[References Debug] Found potential reference line:', cleanLine);
+                console.log('[References Debug] showFrameworkReferences state:', showFrameworkReferences);
+              }
               
               if (cleanLine === '') return <div key={index} className="h-3" />;
               
@@ -4888,6 +5080,7 @@ For detailed implementation guidance, please refer to the specific framework doc
                     cleanLine.match(/^Article \d+:/) || // GDPR articles like "Article 32:"
                     cleanLine.match(/^Education\.\d+:/) || // Education.1: etc.
                     cleanLine.match(/^Government\.\d+:/)) { // Government.1: etc.
+                  console.log('[References Debug] HIDING reference line:', cleanLine);
                   return null;
                 }
               }
