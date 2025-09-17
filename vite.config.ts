@@ -67,6 +67,7 @@ export default defineConfig(({ mode }) => ({
     server: {
       port: 3000,
       strictPort: false,
+      host: 'localhost'
     },
     publicDir: 'public',
     assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.ico'],
