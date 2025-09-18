@@ -1,5 +1,22 @@
 # AI Assistant Rules and Guidelines
 
+## 🧠 MEMORY SYSTEM - LOAD AT SESSION START
+**IMPORTANT**: At the beginning of each conversation, retrieve project memory:
+```javascript
+mcp__claude-flow__memory_usage({
+  action: "list", 
+  namespace: "audit-ready"
+})
+```
+Then retrieve critical patterns:
+```javascript
+mcp__claude-flow__memory_usage({
+  action: "retrieve",
+  key: "critical_patterns",
+  namespace: "audit-ready"  
+})
+```
+
 ## ⚠️ CRITICAL DATABASE RULES - NEVER VIOLATE
 
 ### 1. DATABASE DELETION PROHIBITION

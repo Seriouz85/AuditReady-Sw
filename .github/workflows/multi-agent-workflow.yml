@@ -1,0 +1,361 @@
+name: Multi-Agent AI Workflow System
+on:
+  workflow_dispatch:
+    inputs:
+      task_type:
+        description: 'Type of task to execute'
+        required: true
+        default: 'full_development'
+        type: choice
+        options:
+        - full_development
+        - code_review
+        - testing
+        - deployment
+        - documentation
+        - bug_fix
+      task_description:
+        description: 'Detailed task description'
+        required: true
+        type: string
+      priority:
+        description: 'Task priority'
+        required: false
+        default: 'medium'
+        type: choice
+        options:
+        - low
+        - medium
+        - high
+        - critical
+
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Agent 1: Project Analysis & Planning
+  project-analyzer:
+    runs-on: ubuntu-latest
+    outputs:
+      analysis-result: ${{ steps.analyze.outputs.result }}
+      recommendations: ${{ steps.analyze.outputs.recommendations }}
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Load Project Memory
+      id: memory
+      run: |
+        echo "Loading persistent memory from claude-flow..."
+        # This would integrate with your MCP memory system
+        echo "memory_loaded=true" >> $GITHUB_OUTPUT
+    
+    - name: Project Analysis Agent
+      id: analyze
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are a Project Analysis Agent. Analyze this AuditReady Hub project.
+          
+          Load project memory first:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "list",
+            namespace: "audit-ready"
+          })
+          ```
+          
+          Task: ${{ github.event.inputs.task_description || 'Analyze project structure and recommend improvements' }}
+          
+          Analyze:
+          1. Current codebase structure
+          2. Recent changes and patterns
+          3. Technical debt areas
+          4. Performance bottlenecks
+          5. Security considerations
+          
+          Provide JSON output with:
+          - analysis_summary
+          - recommendations[]
+          - risk_areas[]
+          - next_steps[]
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  # Agent 2: Code Architecture & Design
+  architecture-agent:
+    needs: project-analyzer
+    runs-on: ubuntu-latest
+    outputs:
+      architecture-plan: ${{ steps.design.outputs.plan }}
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Architecture Design Agent
+      id: design
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are an Architecture Design Agent for AuditReady Hub.
+          
+          Previous Analysis: ${{ needs.project-analyzer.outputs.analysis-result }}
+          
+          Load project memory:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "retrieve",
+            key: "critical_patterns",
+            namespace: "audit-ready"
+          })
+          ```
+          
+          Design improvements for:
+          1. Component architecture (React/TypeScript)
+          2. Service layer organization
+          3. Database schema optimization
+          4. API design patterns
+          5. State management (Zustand)
+          
+          Follow critical rules:
+          - Never delete from database without permission
+          - Preserve PDF export functionality
+          - Maintain unified guidance system
+          - Keep ComplianceSimplification.tsx as main file
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  # Agent 3: Implementation & Development
+  development-agent:
+    needs: [project-analyzer, architecture-agent]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: npm ci
+    
+    - name: Development Implementation Agent
+      id: implement
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are a Development Implementation Agent.
+          
+          Architecture Plan: ${{ needs.architecture-agent.outputs.architecture-plan }}
+          Task: ${{ github.event.inputs.task_description }}
+          
+          Load project context:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "retrieve",
+            key: "project_context",
+            namespace: "audit-ready"
+          })
+          ```
+          
+          Implement the required changes:
+          1. Follow TypeScript best practices
+          2. Maintain existing patterns in ComplianceSimplification.tsx
+          3. Ensure PDF export continues working (generateDynamicContentForCategory)
+          4. Preserve unified guidance Show References functionality
+          5. Update tests as needed
+          
+          Critical patterns to remember:
+          - Clean category names for PDF export (no number prefix)
+          - buildReferencesSection must be in finalContent
+          - Demo account demo@auditready.com isolation
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    
+    - name: Run Tests
+      run: npm test -- --coverage
+    
+    - name: Run Linting
+      run: npm run lint
+    
+    - name: Build Project
+      run: npm run build
+
+  # Agent 4: Quality Assurance & Testing
+  qa-agent:
+    needs: development-agent
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: npm ci
+    
+    - name: QA Testing Agent
+      id: qa
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are a Quality Assurance Agent for AuditReady Hub.
+          
+          Run comprehensive testing:
+          1. Unit test coverage analysis
+          2. Integration test validation
+          3. E2E testing scenarios
+          4. Performance benchmarking
+          5. Security vulnerability scanning
+          
+          Special focus areas:
+          - PDF export functionality (100% content requirement)
+          - Unified guidance Show References feature
+          - ComplianceSimplification.tsx critical paths
+          - Database operations safety
+          - Memory persistence verification
+          
+          Load recent fixes context:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "retrieve",
+            key: "latest_fixes_2024_01",
+            namespace: "audit-ready"
+          })
+          ```
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    
+    - name: Run E2E Tests
+      run: npm run test:e2e
+    
+    - name: Security Audit
+      run: npm audit --audit-level moderate
+
+  # Agent 5: Documentation & Knowledge Management
+  documentation-agent:
+    needs: [development-agent, qa-agent]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Documentation Agent
+      id: docs
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are a Documentation Agent for AuditReady Hub.
+          
+          Update project documentation:
+          1. API documentation
+          2. Component documentation
+          3. Deployment guides
+          4. Architecture decisions (ADRs)
+          5. Memory system documentation
+          
+          Update persistent memory with new knowledge:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "store",
+            key: "workflow_execution_" + Date.now(),
+            value: "Multi-agent workflow completed successfully. Updated: [list changes]",
+            namespace: "audit-ready",
+            ttl: 7776000
+          })
+          ```
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  # Agent 6: Deployment & Operations
+  deployment-agent:
+    needs: [qa-agent, documentation-agent]
+    runs-on: ubuntu-latest
+    if: github.event.inputs.task_type == 'deployment' || github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: npm ci
+    
+    - name: Build for Production
+      run: npm run build:vercel
+    
+    - name: Deployment Agent
+      id: deploy
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are a Deployment Agent for AuditReady Hub.
+          
+          Handle deployment tasks:
+          1. Vercel deployment configuration
+          2. Environment variable validation
+          3. Database migration checks
+          4. Health checks post-deployment
+          5. Rollback procedures if needed
+          
+          Verify critical components:
+          - Supabase connection (project: quoqvqgijsbwqkqotjys)
+          - PDF export functionality
+          - Unified guidance features
+          - Memory persistence system
+          
+          Update deployment status in memory:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "store",
+            key: "last_deployment",
+            value: "Deployed at " + new Date().toISOString(),
+            namespace: "audit-ready",
+            ttl: 2592000
+          })
+          ```
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    
+    - name: Deploy to Vercel
+      run: npx vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+  # Agent 7: Memory & Knowledge Consolidation
+  memory-agent:
+    needs: [deployment-agent]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Memory Consolidation Agent
+      id: memory
+      uses: anthropics/claude-code-action@v1
+      with:
+        prompt: |
+          You are a Memory Consolidation Agent.
+          
+          Consolidate knowledge from this workflow execution:
+          1. Store successful patterns
+          2. Document failures and solutions
+          3. Update critical rules and guidelines
+          4. Create session summary
+          
+          Update persistent memory with workflow results:
+          ```
+          mcp__claude-flow__memory_usage({
+            action: "store",
+            key: "multi_agent_workflow_" + Date.now(),
+            value: JSON.stringify({
+              task: "${{ github.event.inputs.task_description }}",
+              success: true,
+              agents_involved: 7,
+              key_learnings: "workflow execution patterns",
+              timestamp: new Date().toISOString()
+            }),
+            namespace: "audit-ready",
+            ttl: 31536000
+          })
+          ```
+          
+          Generate workflow summary for future reference.
+        api_key: ${{ secrets.ANTHROPIC_API_KEY }}

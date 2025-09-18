@@ -28,6 +28,11 @@
     "version:major": "node scripts/version.js major",
     "version:release": "node scripts/version.js patch --tag --push",
     "docker:build": "docker build -f Dockerfile.dev -t audit-readiness-hub:latest .",
+    "agents:workflow": "node .claude-flow/workflows/multi-agent-orchestrator.cjs",
+    "agents:analyze": "node .claude-flow/workflows/multi-agent-orchestrator.cjs 'Analyze project structure' code_review",
+    "agents:develop": "node .claude-flow/workflows/multi-agent-orchestrator.cjs 'Full development cycle' full_development",
+    "agents:deploy": "node .claude-flow/workflows/multi-agent-orchestrator.cjs 'Deploy to production' deployment",
+    "agents:test": "npm run test && npm run test:e2e && npm run lint",
     "docker:build:prod": "docker build -f Dockerfile.dev -t audit-readiness-hub:$(node -p \"require('./package.json').version\") --target production .",
     "docker:tag": "docker tag audit-readiness-hub:latest audit-readiness-hub:$(node -p \"require('./package.json').version\")"
   },
@@ -165,6 +170,7 @@
     "tsx": "^4.20.4",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
+    "vercel": "^48.0.2",
     "vite": "^6.3.5",
     "vitest": "^3.2.4"
   }
