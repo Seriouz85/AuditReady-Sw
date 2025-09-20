@@ -33,3 +33,8 @@ Cargo.lock
 *.njsproj
 *.sln
 *.sw?
+.swarm/
+.claude-flow/
+*.db
+*.db-shm
+*.db-wal

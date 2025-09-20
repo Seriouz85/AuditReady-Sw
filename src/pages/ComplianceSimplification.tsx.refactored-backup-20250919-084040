@@ -1,0 +1,691 @@
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cleanMarkdownFormatting, cleanComplianceSubRequirement } from '@/utils/textFormatting';
+import { MarkdownText } from '@/components/ui/MarkdownText';
+import { SectorSpecificEnhancer } from '@/services/compliance/SectorSpecificEnhancer';
+import '../debug/RequirementExtractionTest';
+import { 
+  ArrowLeft, 
+  Shield, 
+  Zap, 
+  Target,
+  CheckCircle,
+  ArrowRight,
+  FileSpreadsheet,
+  Download,
+  ChevronDown,
+  FileText,
+  Lightbulb,
+  Users,
+  BookOpen,
+  Lock,
+  Settings,
+  Eye,
+  Filter,
+  Building2,
+  Factory
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useComplianceMappingData, useIndustrySectors } from '@/services/compliance/ComplianceUnificationService';
+import { supabase } from '@/lib/supabase';
+import { complianceCacheService } from '@/services/compliance/ComplianceCacheService';
+import { EnhancedUnifiedRequirementsGenerator } from '../services/compliance/EnhancedUnifiedRequirementsGenerator';
+import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
+
+// Mock missing services to prevent TypeScript errors
+const ProfessionalGuidanceService = {
+  formatFrameworkName: (name: string) => name,
+  formatCategoryName: (name: string) => name,
+  cleanText: (text: string) => text
+};
+
+import { validateAIEnvironment, getAIProviderInfo, shouldEnableAIByDefault } from '../utils/aiEnvironmentValidator';
+import { AILoadingAnimation } from '@/components/compliance/AILoadingAnimation';
+import { PentagonVisualization } from '@/components/compliance/PentagonVisualization';
+import { useFrameworkCounts } from '@/hooks/useFrameworkCounts';
+import { useQueryClient } from '@tanstack/react-query';
+import { FrameworkFilterService } from '@/services/compliance/FrameworkFilterService';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+// IMPORTED EXTRACTED COMPONENTS
+import { ComplianceOverviewTab } from '@/components/compliance/ComplianceOverviewTab';
+import { UnifiedRequirementsTab } from '@/components/compliance/UnifiedRequirementsTab';
+import FrameworkMappingTab from '@/components/compliance/mapping/FrameworkMappingTab';
+import { FrameworkOverlapTab } from '@/components/compliance/tabs/FrameworkOverlapTab';
+import { UnifiedGuidanceModal } from '@/components/compliance/modals/UnifiedGuidanceModal';
+import { ComplianceExportService } from '@/services/compliance/export/ComplianceExportService';
+import { 
+  useComplianceSimplificationStore,
+  useActiveTab,
+  useSelectedFrameworks,
+  useGeneratedContent,
+  useGenerationState,
+  useGuidanceModal,
+  useFilters
+} from '@/services/compliance/ComplianceSimplificationState';
+
+// Type declaration for jsPDF with autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    lastAutoTable: {
+      finalY: number;
+    };
+  }
+}
+
+export default function ComplianceSimplification() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  // USE STATE MANAGEMENT HOOKS
+  const [activeTab, setActiveTab] = useActiveTab();
+  const [selectedFrameworks, setSelectedFrameworks] = useSelectedFrameworks();
+  const [generatedContent, setGeneratedContent, updateGeneratedContent] = useGeneratedContent();
+  const { isGenerating, setIsGenerating, showGeneration, setShowGeneration } = useGenerationState();
+  const { 
+    showUnifiedGuidance, 
+    setShowUnifiedGuidance,
+    selectedGuidanceCategory,
+    setSelectedGuidanceCategory,
+    showFrameworkReferences,
+    setShowFrameworkReferences
+  } = useGuidanceModal();
+  const {
+    filterFramework,
+    setFilterFramework,
+    filterCategory,
+    setFilterCategory,
+    unifiedCategoryFilter,
+    setUnifiedCategoryFilter
+  } = useFilters();
+
+  // REMAINING LOCAL STATE (only what's truly local to this component)
+  const [selectedMapping, setSelectedMapping] = useState<string | null>(null);
+  const [selectedIndustrySector, setSelectedIndustrySector] = useState<string | null>(null);
+  const [showOperationalExcellence, setShowOperationalExcellence] = useState(false);
+  const [guidanceContent, setGuidanceContent] = useState<string>('');
+  
+  // Get dynamic framework counts from database
+  const { data: frameworkCounts, isLoading: isLoadingCounts } = useFrameworkCounts();
+  
+  // Initialize generator
+  const enhancedGenerator = new EnhancedUnifiedRequirementsGenerator();
+  
+  // Helper function to get framework badges for a mapping
+  const getFrameworkBadges = (mapping: any) => {
+    const badges: { name: string; color: string; variant: 'default' | 'secondary' | 'outline' }[] = [];
+    
+    if (selectedFrameworks.iso27001 && mapping.frameworks?.iso27001?.length > 0) {
+      badges.push({ name: 'ISO 27001', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.iso27002 && mapping.frameworks?.iso27002?.length > 0) {
+      badges.push({ name: 'ISO 27002', color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.cisControls && mapping.frameworks?.cisControls?.length > 0) {
+      badges.push({ name: `CIS ${selectedFrameworks.cisControls.toUpperCase()}`, color: 'bg-green-500/20 text-green-300 border-green-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.gdpr && mapping.frameworks?.gdpr?.length > 0) {
+      badges.push({ name: 'GDPR', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.nis2 && mapping.frameworks?.nis2?.length > 0) {
+      badges.push({ name: 'NIS2', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', variant: 'default' });
+    }
+    if (selectedFrameworks.dora && mapping.frameworks?.dora?.length > 0) {
+      badges.push({ name: 'DORA', color: 'bg-red-500/20 text-red-300 border-red-500/30', variant: 'default' });
+    }
+    
+    return badges;
+  };
+
+  // Function to generate dynamic content for a category - PRESERVE EXACT LOGIC
+  const generateDynamicContentForCategory = async (categoryName: string): Promise<any[]> => {
+    const startTime = Date.now();
+    try {
+      console.log('[ULTRA-FAST] Generating content for:', categoryName);
+      
+      // Convert selected frameworks to array format for the generator
+      const selectedFrameworkArray: string[] = [];
+      if (selectedFrameworks.iso27001) selectedFrameworkArray.push('iso27001');
+      if (selectedFrameworks.iso27002) selectedFrameworkArray.push('iso27002');
+      if (selectedFrameworks.cisControls) selectedFrameworkArray.push('cisControls');
+      if (selectedFrameworks.gdpr) selectedFrameworkArray.push('gdpr');
+      if (selectedFrameworks.nis2) selectedFrameworkArray.push('nis2');
+      if (selectedFrameworks.dora) selectedFrameworkArray.push('dora');
+
+      // Fast cache lookup with framework and CIS version
+      const cacheKey = `fixed-content-${categoryName}-${selectedFrameworkArray.sort().join('-')}-${selectedFrameworks.cisControls || 'all'}`;
+      
+      console.log('[CACHE] Checking cache for key:', cacheKey);
+      const cachedContent = complianceCacheService.get(cacheKey);
+      if (cachedContent) {
+        console.log('[CACHE HIT] Returning cached content for:', categoryName, 'in', Date.now() - startTime, 'ms');
+        return cachedContent;
+      }
+
+      console.log('[CACHE MISS] Generating fresh content for:', categoryName);
+
+      // Find the mapping for this category
+      const currentMapping = filteredUnifiedMappings.find(m => 
+        m.category === categoryName || 
+        m.category.replace(/^\d+\. /, '') === categoryName ||
+        m.category.toLowerCase().includes(categoryName.toLowerCase()) ||
+        categoryName.toLowerCase().includes(m.category.toLowerCase().replace(/^\d+\. /, ''))
+      );
+
+      if (!currentMapping) {
+        console.warn('[NO MAPPING] No mapping found for category:', categoryName);
+        return [];
+      }
+
+      console.log('[MAPPING FOUND]', currentMapping.category, '-> Processing...');
+
+      // Query the database for dynamic content
+      const { data: unifiedReqs, error } = await supabase
+        .from('unified_requirements')
+        .select('*')
+        .eq('category', categoryName)
+        .eq('status', 'active');
+
+      if (error) {
+        console.error('[DB ERROR]', error);
+        return [];
+      }
+
+      let content: any[] = [];
+
+      if (unifiedReqs && unifiedReqs.length > 0) {
+        console.log('[DB SUCCESS] Found', unifiedReqs.length, 'unified requirements');
+        
+        // Process unified requirements
+        unifiedReqs.forEach(req => {
+          if (req.content && typeof req.content === 'string') {
+            try {
+              const parsed = JSON.parse(req.content);
+              if (Array.isArray(parsed)) {
+                content.push(...parsed);
+              } else if (typeof parsed === 'object') {
+                content.push(parsed);
+              }
+            } catch {
+              content.push(req.content);
+            }
+          }
+        });
+      } else {
+        console.log('[FALLBACK] No unified requirements, using generator');
+        
+        // Use the generator as fallback
+        const result = await enhancedGenerator.generateUnifiedRequirements(
+          selectedFrameworkArray,
+          selectedFrameworks.cisControls || 'ig3',
+          null
+        );
+
+        if (result && result.length > 0) {
+          const categoryData = result.find(r => 
+            r.category === categoryName || 
+            r.category.replace(/^\d+\. /, '') === categoryName
+          );
+          
+          if (categoryData && categoryData.auditReadyUnified?.subRequirements) {
+            content = categoryData.auditReadyUnified.subRequirements.map((req: any) => {
+              return `${req.title || ''} ${req.description || ''}`.trim();
+            });
+          }
+        }
+      }
+
+      // Cache the results for 1 hour
+      if (content.length > 0) {
+        complianceCacheService.set(cacheKey, content, 3600000);
+        console.log('[CACHE SET] Cached content for:', categoryName);
+      }
+
+      console.log('[CONTENT GENERATED] Generated', content.length, 'items for', categoryName, 'in', Date.now() - startTime, 'ms');
+      return content;
+
+    } catch (error) {
+      console.error('[GENERATION ERROR] Error generating content for', categoryName, ':', error);
+      return [];
+    }
+  };
+
+  // PRESERVE ALL EXISTING LOGIC - just use hooks instead of useState
+  // Load mapping data and calculate statistics
+  const { data: mappingData, isLoading } = useComplianceMappingData();
+  const { data: industrySectors } = useIndustrySectors();
+
+  // Filter mappings based on selected frameworks
+  const filteredMappings = useMemo(() => {
+    if (!mappingData || mappingData.length === 0) {
+      console.log('[FILTER] No mapping data available');
+      return [];
+    }
+
+    console.log('[FILTER] Original mapping data length:', mappingData.length);
+    console.log('[FILTER] Selected frameworks:', selectedFrameworks);
+
+    const filtered = mappingData.filter((mapping: any) => {
+      // Basic mapping validation
+      if (!mapping.frameworks) {
+        console.log('[FILTER] No frameworks in mapping:', mapping.id);
+        return false;
+      }
+
+      // Check for at least one selected framework with requirements
+      const hasSelectedFramework = (
+        (selectedFrameworks.iso27001 && mapping.frameworks.iso27001?.length > 0) ||
+        (selectedFrameworks.iso27002 && mapping.frameworks.iso27002?.length > 0) ||
+        (selectedFrameworks.cisControls && mapping.frameworks.cisControls?.length > 0) ||
+        (selectedFrameworks.gdpr && mapping.frameworks.gdpr?.length > 0) ||
+        (selectedFrameworks.nis2 && mapping.frameworks.nis2?.length > 0) ||
+        (selectedFrameworks.dora && mapping.frameworks.dora?.length > 0)
+      );
+
+      if (!hasSelectedFramework) {
+        return false;
+      }
+
+      // Apply additional filters
+      const matchesFrameworkFilter = filterFramework === 'all' || 
+        (filterFramework === 'iso27001' && mapping.frameworks.iso27001?.length > 0) ||
+        (filterFramework === 'iso27002' && mapping.frameworks.iso27002?.length > 0) ||
+        (filterFramework === 'cisControls' && mapping.frameworks.cisControls?.length > 0) ||
+        (filterFramework === 'gdpr' && mapping.frameworks.gdpr?.length > 0) ||
+        (filterFramework === 'nis2' && mapping.frameworks.nis2?.length > 0) ||
+        (filterFramework === 'dora' && mapping.frameworks.dora?.length > 0);
+
+      const matchesCategoryFilter = filterCategory === 'all' || 
+        mapping.category.toLowerCase().includes(filterCategory.toLowerCase());
+
+      return matchesFrameworkFilter && matchesCategoryFilter;
+    });
+
+    console.log('[FILTER] Filtered mappings length:', filtered.length);
+    return filtered;
+  }, [mappingData, selectedFrameworks, filterFramework, filterCategory]);
+
+  // Create filtered unified mappings for the unified tab
+  const filteredUnifiedMappings = useMemo(() => {
+    return filteredMappings.filter((mapping: any) => {
+      // Show only mappings that have auditReadyUnified content
+      return mapping.auditReadyUnified && 
+             (mapping.auditReadyUnified.subRequirements?.length > 0 || 
+              mapping.auditReadyUnified.description);
+    });
+  }, [filteredMappings]);
+
+  console.log('[UNIFIED] Filtered unified mappings:', filteredUnifiedMappings.length);
+
+  // PRESERVE ALL EXISTING CALCULATIONS AND STATS - EXACT LOGIC
+  const maximumOverviewStats = useMemo(() => {
+    if (!mappingData || mappingData.length === 0) {
+      return {
+        maxRequirements: 0,
+        unifiedGroups: 0,
+        reduction: 0,
+        reductionPercentage: '0',
+        efficiencyRatio: 0
+      };
+    }
+
+    // Calculate maximum possible requirements across all frameworks
+    let maxRequirements = 0;
+    
+    // Sum requirements from all selected frameworks
+    if (selectedFrameworks.iso27001) {
+      maxRequirements += frameworkCounts?.iso27001 || 114; // ISO 27001 Annex A controls
+    }
+    if (selectedFrameworks.iso27002) {
+      maxRequirements += frameworkCounts?.iso27002 || 114; // ISO 27002 controls
+    }
+    if (selectedFrameworks.cisControls) {
+      const cisCount = selectedFrameworks.cisControls === 'ig1' ? 56 : 
+                      selectedFrameworks.cisControls === 'ig2' ? 74 : 153; // IG3
+      maxRequirements += frameworkCounts?.cisControls || cisCount;
+    }
+    if (selectedFrameworks.gdpr) {
+      maxRequirements += frameworkCounts?.gdpr || 26; // GDPR principles + rights
+    }
+    if (selectedFrameworks.nis2) {
+      maxRequirements += frameworkCounts?.nis2 || 26; // NIS2 security measures
+    }
+    if (selectedFrameworks.dora) {
+      maxRequirements += frameworkCounts?.dora || 29; // DORA ICT risk management
+    }
+
+    const unifiedGroups = filteredUnifiedMappings.length;
+    const reduction = Math.max(0, maxRequirements - unifiedGroups);
+    const reductionPercentage = maxRequirements > 0 ? Math.round((reduction / maxRequirements) * 100) : 0;
+    const efficiencyRatio = unifiedGroups > 0 ? Math.round(maxRequirements / unifiedGroups) : 0;
+
+    return {
+      maxRequirements,
+      unifiedGroups,
+      reduction,
+      reductionPercentage: reductionPercentage.toString(),
+      efficiencyRatio
+    };
+  }, [filteredUnifiedMappings, selectedFrameworks, frameworkCounts]);
+
+  // Function to build guidance content from unified requirements - PRESERVE EXACT LOGIC
+  const buildGuidanceFromUnifiedRequirements = async (
+    category: string
+  ): Promise<string> => {
+    try {
+      console.log(`[Unified Guidance Debug] Building guidance for: ${category}`);
+      
+      if (!category || typeof category !== 'string') {
+        console.warn(`[Unified Guidance Debug] Empty category name provided`);
+        return '';
+      }
+
+      const categoryMapping = filteredUnifiedMappings.find(m => m.category.replace(/^\d+\. /, '') === category);
+      if (!categoryMapping) {
+        console.warn(`[Unified Guidance Debug] No category mapping found for: "${category}"`);
+        return '';
+      }
+
+      // Use the new dynamic guidance generator instead of hardcoded content
+      try {
+        console.log(`[Unified Guidance Debug] Using EnhancedUnifiedGuidanceService for: ${category}`);
+        
+        // Generate comprehensive guidance content using EnhancedUnifiedGuidanceService
+        const guidanceContent = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
+          category,
+          selectedFrameworks,
+          null, // selectedIndustrySector - can be added later if needed
+          categoryMapping
+        );
+
+        if (guidanceContent) {
+          console.log(`[Unified Guidance Debug] Successfully generated guidance for ${category}, length: ${guidanceContent.length}`);
+          return guidanceContent;
+        }
+      } catch (error) {
+        console.error(`[Unified Guidance Debug] Error generating guidance for ${category}:`, error);
+      }
+
+      if (!categoryMapping.auditReadyUnified?.subRequirements?.length) {
+        console.warn(`[Unified Guidance Debug] No unified requirements found for: ${category}`, categoryMapping);
+        return '';
+      }
+
+      // Fallback to basic requirements if guidance service fails
+      console.log(`[Unified Guidance Debug] Building guidance for: ${category}`, {
+        hasMapping: !!categoryMapping,
+        subRequirementsCount: categoryMapping.auditReadyUnified?.subRequirements?.length || 0
+      });
+
+      // Return basic guidance based on requirements
+      return categoryMapping.auditReadyUnified.subRequirements
+        .map((req: any) => `${req.title}: ${req.description}`)
+        .join('\n\n');
+
+    } catch (error) {
+      console.error(`[Unified Guidance Debug] Error in buildGuidanceFromUnifiedRequirements:`, error);
+      return '';
+    }
+  };
+
+  // Export functions using the extracted service
+  const exportToExcel = async () => {
+    try {
+      await ComplianceExportService.exportToExcel({
+        filteredUnifiedMappings,
+        selectedFrameworks,
+        selectedIndustrySector,
+        industrySectors
+      });
+    } catch (error) {
+      console.error('Export to Excel failed:', error);
+    }
+  };
+
+  const exportToPDF = async () => {
+    try {
+      await ComplianceExportService.exportToPDF({
+        filteredUnifiedMappings,
+        selectedFrameworks,
+        selectedIndustrySector,
+        industrySectors
+      });
+    } catch (error) {
+      console.error('Export to PDF failed:', error);
+    }
+  };
+
+  // Generate unified requirements function - PRESERVE EXACT LOGIC
+  const generateUnifiedRequirements = async () => {
+    try {
+      console.log('[GENERATE] Starting unified requirements generation...');
+      setIsGenerating(true);
+      setShowGeneration(true);
+      
+      // Convert selected frameworks to array format
+      const selectedFrameworkArray: string[] = [];
+      if (selectedFrameworks.iso27001) selectedFrameworkArray.push('iso27001');
+      if (selectedFrameworks.iso27002) selectedFrameworkArray.push('iso27002');
+      if (selectedFrameworks.cisControls) selectedFrameworkArray.push('cisControls');
+      if (selectedFrameworks.gdpr) selectedFrameworkArray.push('gdpr');
+      if (selectedFrameworks.nis2) selectedFrameworkArray.push('nis2');
+      if (selectedFrameworks.dora) selectedFrameworkArray.push('dora');
+
+      // Generate using the enhanced generator
+      const result = await enhancedGenerator.generateUnifiedRequirements(
+        selectedFrameworkArray,
+        selectedFrameworks.cisControls || 'ig3',
+        selectedIndustrySector
+      );
+
+      if (result && result.length > 0) {
+        console.log('[GENERATE] Generated', result.length, 'unified requirement groups');
+        
+        // Update the generated content for each category
+        const newContent = new Map(generatedContent);
+        result.forEach(mapping => {
+          const categoryName = mapping.category.replace(/^\d+\. /, '');
+          if (mapping.auditReadyUnified?.subRequirements) {
+            const content = mapping.auditReadyUnified.subRequirements.map((req: any) => 
+              `${req.title}: ${req.description}`
+            );
+            newContent.set(categoryName, content);
+          }
+        });
+        setGeneratedContent(newContent);
+        
+        // Switch to unified tab to show results
+        setActiveTab('unified');
+      }
+      
+    } catch (error) {
+      console.error('[GENERATE] Error generating unified requirements:', error);
+    } finally {
+      setIsGenerating(false);
+      setTimeout(() => setShowGeneration(false), 3000);
+    }
+  };
+
+  // AI Environment validation
+  const aiEnvironment = validateAIEnvironment();
+  const aiProviderInfo = getAIProviderInfo(aiEnvironment.provider);
+
+  // Effect to build guidance content when modal opens - PRESERVE EXACT LOGIC
+  useEffect(() => {
+    const buildGuidanceContent = async () => {
+      if (showUnifiedGuidance && selectedGuidanceCategory) {
+        try {
+          const content = await buildGuidanceFromUnifiedRequirements(selectedGuidanceCategory);
+          console.log(`[GUIDANCE] Built guidance for ${selectedGuidanceCategory}, length: ${content.length}`);
+          setGuidanceContent(content);
+        } catch (error) {
+          console.error(`[GUIDANCE] Error building guidance for ${selectedGuidanceCategory}:`, error);
+          setGuidanceContent('Error loading guidance content. Please try again.');
+        }
+      }
+    };
+
+    buildGuidanceContent();
+  }, [showUnifiedGuidance, selectedGuidanceCategory, selectedFrameworks]);
+
+  // Function to get guidance content for modal
+  const getGuidanceContent = (): string => {
+    return guidanceContent || 'Loading guidance content...';
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
+      {/* Header - PRESERVE EXACT DESIGN */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+              <div className="h-6 w-px bg-slate-300 dark:bg-slate-600" />
+              <div>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+                  Compliance Simplification
+                </h1>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  AI-powered framework unification
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              {/* Export Dropdown - PRESERVE EXACT IMPLEMENTATION */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-slate-700 dark:text-slate-300">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={exportToExcel}>
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Export to Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportToPDF}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Export to PDF
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {/* Tab Navigation - PRESERVE EXACT DESIGN */}
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+              <Target className="w-4 h-4 mr-2" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="mapping" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+              <Shield className="w-4 h-4 mr-2" />
+              Framework Mapping
+            </TabsTrigger>
+            <TabsTrigger value="unified" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              <Zap className="w-4 h-4 mr-2" />
+              Unified Requirements
+            </TabsTrigger>
+            <TabsTrigger value="overlap" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+              <Eye className="w-4 h-4 mr-2" />
+              Framework Overlap
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab - USE EXTRACTED COMPONENT */}
+          <TabsContent value="overview">
+            <ComplianceOverviewTab 
+              maximumOverviewStats={maximumOverviewStats}
+              setActiveTab={setActiveTab}
+            />
+          </TabsContent>
+
+          {/* Unified Requirements Tab - USE EXTRACTED COMPONENT */}
+          <TabsContent value="unified">
+            <UnifiedRequirementsTab 
+              filteredUnifiedMappings={filteredUnifiedMappings}
+              selectedFrameworks={selectedFrameworks}
+              selectedIndustrySector={selectedIndustrySector}
+              unifiedCategoryFilter={unifiedCategoryFilter}
+              setUnifiedCategoryFilter={setUnifiedCategoryFilter}
+              generateDynamicContentForCategory={generateDynamicContentForCategory}
+              setSelectedGuidanceCategory={setSelectedGuidanceCategory}
+              setShowUnifiedGuidance={setShowUnifiedGuidance}
+              generatedContent={generatedContent}
+            />
+          </TabsContent>
+
+          {/* Framework Mapping Tab - USE EXTRACTED COMPONENT */}
+          <TabsContent value="mapping">
+            <FrameworkMappingTab 
+              showGeneration={showGeneration}
+              isGenerating={isGenerating}
+              frameworksSelected={selectedFrameworks}
+              handleFrameworkToggle={(framework: string, value: any) => {
+                setSelectedFrameworks({
+                  ...selectedFrameworks,
+                  [framework]: value
+                });
+              }}
+              frameworkCounts={frameworkCounts || {}}
+              categoryMappings={filteredMappings}
+              selectedFrameworks={selectedFrameworks}
+              selectedMapping={selectedMapping}
+              setSelectedMapping={setSelectedMapping}
+              getFrameworkBadges={getFrameworkBadges}
+              isLoadingCategoryMapping={isLoading}
+              generateUnifiedRequirements={generateUnifiedRequirements}
+            />
+          </TabsContent>
+
+          {/* Framework Overlap Tab - USE EXTRACTED COMPONENT */}
+          <TabsContent value="overlap">
+            <FrameworkOverlapTab 
+              selectedFrameworks={selectedFrameworks}
+              filteredMappings={filteredMappings}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Unified Guidance Modal - USE EXTRACTED COMPONENT */}
+      <UnifiedGuidanceModal 
+        open={showUnifiedGuidance}
+        onOpenChange={setShowUnifiedGuidance}
+        selectedGuidanceCategory={selectedGuidanceCategory}
+        getGuidanceContent={getGuidanceContent}
+        aiEnvironment={aiEnvironment}
+        aiProviderInfo={aiProviderInfo}
+      />
+    </div>
+  );
+}

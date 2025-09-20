@@ -355,6 +355,36 @@ The user must explicitly say one of these phrases for ANY deletion:
 - Unified design system with gradients, colors, and animations
 - Responsive design patterns for different screen sizes
 
+### 29. Maximum File Size Rule - CRITICAL FOR AI EFFICIENCY
+**Rule**: Never allow ANY file to exceed 500 lines to ensure AI can efficiently analyze and fix issues.
+
+**File Size Enforcement**:
+- **Maximum File Size**: 500 lines (HARD LIMIT)
+- **Warning Level**: 400 lines - consider extraction
+- **Critical Level**: 450 lines - must extract before adding features
+- **Emergency Protocol**: If file exceeds 500 lines, immediately extract components
+
+**Benefits of <500 Line Rule**:
+- ✅ AI can easily understand entire file context
+- ✅ Faster development and debugging
+- ✅ Easier code reviews and maintenance
+- ✅ Reduced cognitive load for developers
+- ✅ Better component reusability
+- ✅ Prevents monolithic file growth
+
+**Extraction Strategy When Approaching 500 Lines**:
+1. **Extract UI Components**: Headers, grids, forms, modals
+2. **Extract Business Logic**: Services, utilities, validations
+3. **Extract Type Definitions**: Move interfaces to dedicated type files
+4. **Extract Constants**: Move to shared constant files
+5. **Maintain Functionality**: Ensure no regressions during extraction
+
+**REFACTORING RESPECT RULE**:
+- When refactoring exists, NEVER merge back into monolithic files
+- Always respect component boundaries and extracted architecture
+- Place new features in appropriate extracted components
+- Maintain the 500-line rule across ALL files in the project
+
 ---
 
 **Remember: The user's data is sacred. Protect it at all costs.**
