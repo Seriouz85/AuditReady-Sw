@@ -27,13 +27,13 @@ const Dashboard = () => {
     'total-standards', 'total-requirements', 'total-assessments', 'compliance-score'
   ]);
 
-  // Platform admins should see the Platform Admin Console, not customer dashboard
+  // ONLY payam.razifar@gmail.com should be redirected to Platform Admin Console
   useEffect(() => {
-    if (isPlatformAdmin) {
+    if (isPlatformAdmin && user?.email?.toLowerCase() === 'payam.razifar@gmail.com') {
       console.log("Platform admin detected, redirecting to admin console");
       navigate("/admin", { replace: true });
     }
-  }, [isPlatformAdmin, navigate]);
+  }, [isPlatformAdmin, user?.email, navigate]);
 
   // Cleanup auto-scroll on component unmount
   useEffect(() => {

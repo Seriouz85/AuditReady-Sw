@@ -1,7 +1,7 @@
 // Extracted export functionality from ComplianceSimplification.tsx
 // PRESERVES ALL EXISTING LOGIC EXACTLY - just moved to service
 
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { cleanMarkdownFormatting } from '@/utils/textFormatting';
@@ -32,11 +32,14 @@ export class ComplianceExportService {
       
       const { filteredUnifiedMappings, selectedFrameworks, selectedIndustrySector } = data;
       
-      // Create workbook with multiple sheets
-      const workbook = XLSX.utils.book_new();
+      // Create workbook with multiple sheets using ExcelJS (secure replacement for xlsx)
+      const workbook = new ExcelJS.Workbook();
       
       // Sheet 1: Summary
-      const summaryData = [
+      const summarySheet = workbook.addWorksheet('Summary');
+      
+      // Add summary data
+      const summaryRows = [
         ['AuditReady Compliance Simplification Report'],
         ['Generated on:', new Date().toLocaleDateString()],
         [''],
@@ -51,13 +54,15 @@ export class ComplianceExportService {
         ['Total Unified Groups:', filteredUnifiedMappings.length]
       ];
       
-      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+      summaryRows.forEach(row => {
+        summarySheet.addRow(row);
+      });
       
       // Sheet 2: Unified Requirements
-      const requirementsData = [
-        ['Category', 'Description', 'Sub-Requirements Count', 'Framework Coverage']
-      ];
+      const requirementsSheet = workbook.addWorksheet('Unified Requirements');
+      
+      // Add header row
+      requirementsSheet.addRow(['Category', 'Description', 'Sub-Requirements Count', 'Framework Coverage']);
       
       filteredUnifiedMappings.forEach(mapping => {
         const frameworkCoverage = [];
@@ -80,7 +85,7 @@ export class ComplianceExportService {
           frameworkCoverage.push('DORA');
         }
         
-        requirementsData.push([
+        requirementsSheet.addRow([
           mapping.category.replace(/^\d+\. /, ''),
           cleanMarkdownFormatting(mapping.auditReadyUnified?.description || ''),
           mapping.auditReadyUnified?.subRequirements?.length || 0,
@@ -88,19 +93,17 @@ export class ComplianceExportService {
         ]);
       });
       
-      const requirementsSheet = XLSX.utils.aoa_to_sheet(requirementsData);
-      XLSX.utils.book_append_sheet(workbook, requirementsSheet, 'Unified Requirements');
-      
       // Sheet 3: Detailed Sub-Requirements
-      const detailsData = [
-        ['Category', 'Sub-Requirement', 'Description']
-      ];
+      const detailsSheet = workbook.addWorksheet('Detailed Requirements');
+      
+      // Add header row
+      detailsSheet.addRow(['Category', 'Sub-Requirement', 'Description']);
       
       filteredUnifiedMappings.forEach(mapping => {
         const categoryName = mapping.category.replace(/^\d+\. /, '');
         if (mapping.auditReadyUnified?.subRequirements) {
           mapping.auditReadyUnified.subRequirements.forEach((subReq: any) => {
-            detailsData.push([
+            detailsSheet.addRow([
               categoryName,
               subReq.title || '',
               cleanMarkdownFormatting(subReq.description || '')
@@ -108,9 +111,6 @@ export class ComplianceExportService {
           });
         }
       });
-      
-      const detailsSheet = XLSX.utils.aoa_to_sheet(detailsData);
-      XLSX.utils.book_append_sheet(workbook, detailsSheet, 'Detailed Requirements');
       
       // Generate filename
       const timestamp = new Date().toISOString().split('T')[0];
@@ -124,8 +124,14 @@ export class ComplianceExportService {
       
       const filename = `AuditReady_Compliance_${frameworks.join('_')}_${timestamp}.xlsx`;
       
-      // Write file
-      XLSX.writeFile(workbook, filename);
+      // Write file securely using ExcelJS
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
       console.log('[EXCEL EXPORT] Excel file exported successfully:', filename);
       
     } catch (error) {

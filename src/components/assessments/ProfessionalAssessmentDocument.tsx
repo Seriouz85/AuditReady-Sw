@@ -33,22 +33,27 @@ const styles = StyleSheet.create({
     color: colors.primary
   },
   
-  // Header styles
+  // Header styles - Fixed spacing and positioning
   header: {
     backgroundColor: colors.primary,
     padding: 15,
-    marginBottom: 15,
-    borderRadius: 6
+    marginBottom: 20,
+    borderRadius: 6,
+    position: 'relative'
   },
   headerTitle: {
     color: colors.white,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 5
+    marginBottom: 8,
+    paddingRight: 120, // Leave space for confidential text
+    lineHeight: 1.2
   },
   headerSubtitle: {
     color: colors.light,
-    fontSize: 12
+    fontSize: 11,
+    paddingRight: 120, // Leave space for confidential text
+    lineHeight: 1.3
   },
   confidential: {
     position: 'absolute',
@@ -56,45 +61,49 @@ const styles = StyleSheet.create({
     right: 15,
     color: colors.white,
     fontSize: 8,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textAlign: 'right'
   },
   
-  // Metadata grid - More compact
+  // Metadata grid - Better spacing
   metadataContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 15,
-    gap: 8
+    marginBottom: 20,
+    gap: 10
   },
   metadataCard: {
     flex: 1,
     minWidth: '45%',
     backgroundColor: colors.light,
-    padding: 8,
+    padding: 10,
     borderRadius: 4,
     border: `1pt solid ${colors.border}`,
-    marginBottom: 4
+    marginBottom: 6
   },
   metadataLabel: {
-    fontSize: 8,
+    fontSize: 9,
     color: colors.muted,
     fontWeight: 'bold',
-    marginBottom: 2
+    marginBottom: 3
   },
   metadataValue: {
-    fontSize: 10,
+    fontSize: 11,
     color: colors.primary,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    lineHeight: 1.3
   },
   
-  // Summary section
+  // Summary section - Improved spacing
   sectionHeader: {
     fontSize: 16,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 10,
-    paddingBottom: 5,
-    borderBottom: `2pt solid ${colors.accent}`
+    marginTop: 8,
+    marginBottom: 12,
+    paddingBottom: 6,
+    borderBottom: `2pt solid ${colors.accent}`,
+    lineHeight: 1.2
   },
   
   summaryContainer: {
@@ -105,58 +114,67 @@ const styles = StyleSheet.create({
     border: `1pt solid ${colors.border}`
   },
   
-  // Metrics cards - More compact
+  // Metrics cards - Enhanced spacing and visual appeal
   metricsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 12
+    gap: 12,
+    marginBottom: 18
   },
   metricCard: {
     flex: 1,
     minWidth: '22%',
-    padding: 8,
-    borderRadius: 4,
-    alignItems: 'center'
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    minHeight: 80,
+    justifyContent: 'center'
   },
   metricValue: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 2
+    marginBottom: 6,
+    lineHeight: 1.2
   },
   metricLabel: {
-    fontSize: 8,
-    fontWeight: 'bold'
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 1.3
   },
   
-  // Status specific colors
+  // Status specific colors - Enhanced visual design
   fulfilledCard: {
     backgroundColor: '#dcfce7',
-    border: `1pt solid #bbf7d0`
+    border: `2pt solid #10b981`,
+    boxShadow: '0 2 4 rgba(16, 185, 129, 0.1)'
   },
   fulfilledText: {
-    color: colors.success
+    color: '#065f46'
   },
   partialCard: {
     backgroundColor: '#fef3c7',
-    border: `1pt solid #fed7aa`
+    border: `2pt solid #f59e0b`,
+    boxShadow: '0 2 4 rgba(245, 158, 11, 0.1)'
   },
   partialText: {
-    color: colors.warning
+    color: '#92400e'
   },
   notFulfilledCard: {
     backgroundColor: '#fee2e2',
-    border: `1pt solid #fecaca`
+    border: `2pt solid #ef4444`,
+    boxShadow: '0 2 4 rgba(239, 68, 68, 0.1)'
   },
   notFulfilledText: {
-    color: colors.danger
+    color: '#991b1b'
   },
   notApplicableCard: {
     backgroundColor: '#f3f4f6',
-    border: `1pt solid #d1d5db`
+    border: `2pt solid #6b7280`,
+    boxShadow: '0 2 4 rgba(107, 114, 128, 0.1)'
   },
   notApplicableText: {
-    color: colors.muted
+    color: '#374151'
   },
   
   // Content sections - More compact
@@ -295,7 +313,7 @@ interface ProfessionalAssessmentDocumentProps {
 }
 
 export const ProfessionalAssessmentDocument: React.FC<ProfessionalAssessmentDocumentProps> = ({ data }) => {
-  const { assessment, metrics, requirementsBySection, attachments, standards } = data;
+  const { assessment, metrics, requirementsBySection, requirementNotes, attachments, standards } = data;
 
   // Clean text function to remove encoding issues
   const cleanText = (text: string): string => {
@@ -469,10 +487,12 @@ export const ProfessionalAssessmentDocument: React.FC<ProfessionalAssessmentDocu
                   {cleanText(requirement.description)}
                 </Text>
 
-                {requirement.notes && (
+                {(requirement.notes || requirementNotes[requirement.id]) && (
                   <View style={styles.notesSection}>
                     <Text style={styles.notesHeader}>Assessor Notes</Text>
-                    <Text style={styles.notesText}>{cleanText(requirement.notes)}</Text>
+                    <Text style={styles.notesText}>
+                      {cleanText(requirementNotes[requirement.id] || requirement.notes || '')}
+                    </Text>
                   </View>
                 )}
               </View>

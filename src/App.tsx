@@ -21,6 +21,7 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const EnhancedOnboardingFlow = lazy(() => import("./pages/EnhancedOnboardingFlow"));
 const GuidedStandardImport = lazy(() => import("./pages/GuidedStandardImport"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
+const AuthCallback = lazy(() => import("./pages/auth/AuthCallback"));
 
 // Lazy load informational pages
 const About = lazy(() => import("./pages/About"));
@@ -224,7 +225,11 @@ const App = () => {
                     </Suspense>
                   } />
                   <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
-                  
+                  <Route path="/auth/accept-invitation" element={
+                    <Suspense fallback={<LoadingSpinner text="Loading auth callback..." />}>
+                      <AuthCallback />
+                    </Suspense>
+                  } />
                   {/* Supplier Portal - External access (no authentication required) */}
                   <Route path="/supplier-portal" element={
                     <Suspense fallback={<LoadingSpinner text="Loading supplier portal..." />}>

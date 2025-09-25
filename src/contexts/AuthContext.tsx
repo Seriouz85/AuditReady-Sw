@@ -45,7 +45,7 @@ interface AuthContextType {
   loading: boolean;
   isDemo: boolean;
   isPlatformAdmin: boolean;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signIn: (email: string, password: string) => Promise<{ error?: string; passwordSecurity?: { isWeak: boolean; reason?: string } }>;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
@@ -99,18 +99,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const hasPermission = (permission: string): boolean => {
-    // Platform admins have all permissions
-    if (isPlatformAdmin) {
+    // CRITICAL SECURITY: Demo users NEVER have platform admin permission
+    const isPlatformAdminEmail = user?.email?.toLowerCase() === 'payam.razifar@gmail.com' || 
+                                 user?.email?.toLowerCase() === 'admin@auditready.com';
+    
+    if (permission === 'platform_admin') {
+      // ONLY platform admin emails can have platform admin permission
+      return isPlatformAdmin && isPlatformAdminEmail;
+    }
+    
+    // Platform admins have all other permissions
+    if (isPlatformAdmin && isPlatformAdminEmail) {
       return true;
     }
     
-    // Special check for platform admin permission
-    if (permission === 'platform_admin') {
-      return isPlatformAdmin;
-    }
-    
     if (isDemo) {
-      // Demo users have comprehensive permissions for showcasing features
+      // Demo users have comprehensive permissions for showcasing features (but NOT platform_admin)
       const demoPermissions = [
         'view_dashboard',
         'view_standards',
@@ -404,28 +408,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signIn = async (email: string, password: string): Promise<{ error?: string }> => {
+  const signIn = async (email: string, password: string): Promise<{ error?: string; passwordSecurity?: { isWeak: boolean; reason?: string } }> => {
     try {
       setLoading(true);
 
-      // Check for demo credentials first
-      if (email === 'demo@auditready.com' && password === 'AuditReady@Demo2025!') {
-        // CRITICAL SECURITY: Clear any existing Supabase session first
-        console.log('🛡️ SECURITY: Clearing contaminated session for demo login');
-        try {
-          await supabase.auth.signOut();
-        } catch (signOutError) {
-          console.warn('Could not clear existing session:', signOutError);
-        }
-        
+      // Check for demo credentials first (using environment variables for security)
+      const demoEmail = import.meta.env.VITE_DEMO_EMAIL || 'demo@auditready.com';
+      const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+      
+      if (!demoPassword) {
+        console.error('SECURITY ERROR: VITE_DEMO_PASSWORD environment variable is not configured');
+      }
+      
+      if (email === demoEmail && password === demoPassword && demoPassword) {
         // Use mock authentication for demo
+        console.log('🔐 Demo login - using mock authentication');
         const { mockSignIn } = await import('@/lib/mockAuth');
         const mockUser = await mockSignIn(email, password);
         
         if (mockUser) {
           // Convert mock user to Supabase User format with demo-specific data
           const demoUser: User = {
-            id: 'demo-user-id',
+            id: '031dbc29-51fd-4135-9582-a9c5b63f7451', // Use the real demo user ID from database
             email: 'demo@auditready.com',
             aud: 'authenticated',
             created_at: new Date().toISOString(),
@@ -439,23 +443,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             role: 'authenticated'
           };
           
-          console.log('🛡️ SECURITY: Setting clean demo user:', demoUser);
+          console.log('✅ Demo user authenticated successfully (mock mode)');
           setUser(demoUser);
+          // isDemo is computed from user.email, no need to set it
+          setPlatformAdminState(false); // CRITICAL: Demo users are NEVER platform admin
+          
+          // Store demo user flag for AdminService
+          localStorage.setItem('demo_user', 'true');
+          
           await loadDemoData();
-          // Ensure loading is false so ProtectedRoute doesn't redirect
           setLoading(false);
           return {};
         }
       }
 
       // Handle platform admin with real Supabase authentication
-      if (email.toLowerCase() === 'payam.razifar@gmail.com' && password === 'knejs2015') {
+      const isPlatformAdminEmail = email.toLowerCase() === 'payam.razifar@gmail.com' || 
+                                   email.toLowerCase() === 'admin@auditready.com';
+      
+      if (isPlatformAdminEmail) {
         console.log('Platform admin login detected - attempting real Supabase auth');
         try {
-          // Use real Supabase authentication
+          // Use real Supabase authentication with the actual password provided
           const { data, error } = await supabase.auth.signInWithPassword({
             email: email.toLowerCase(),
-            password
+            password  // Use the actual password entered by the user
           });
 
           if (data.user && !error) {
@@ -468,11 +480,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return {};
           } else {
             console.log('Platform admin Supabase auth failed, error:', error?.message);
-            return { error: error?.message || 'Platform admin authentication failed' };
+            return { error: error?.message || 'Invalid login credentials' };
           }
         } catch (error) {
           console.error('Error in platform admin auth:', error);
-          return { error: 'Platform admin authentication failed' };
+          return { error: 'Authentication failed. Please check your credentials.' };
         }
       }
 
@@ -483,6 +495,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (error) {
+        // Handle leaked password protection error
+        if (error.message?.toLowerCase().includes('password') && 
+            (error.message?.toLowerCase().includes('weak') || 
+             error.message?.toLowerCase().includes('compromised') ||
+             error.message?.toLowerCase().includes('leaked') ||
+             error.message?.toLowerCase().includes('breached'))) {
+          console.warn('🔐 Security: Leaked password detected during sign-in');
+          return { 
+            error: 'Password security issue detected', 
+            passwordSecurity: { 
+              isWeak: true, 
+              reason: 'This password has been found in data breaches and cannot be used for security reasons. Please reset your password.' 
+            } 
+          };
+        }
+        
         return { error: error.message };
       }
 
@@ -516,6 +544,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserRole(null);
       setOrganizationUser(null);
       setPlatformAdminState(false);
+      // isDemo is computed from user.email, no need to set it
+      
+      // Clear demo user flag
+      localStorage.removeItem('demo_user');
     } catch (error) {
       console.error('Sign out error:', error);
     }

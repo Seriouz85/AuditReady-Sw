@@ -486,7 +486,8 @@ export function FrameworkSelectionInterface({
                           )}
                         </div>
                     </SelectItem>
-                  ))}
+                    );
+                  })}
                 </SelectContent>
               </Select>
               

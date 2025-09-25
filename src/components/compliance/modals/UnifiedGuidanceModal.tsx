@@ -32,49 +32,23 @@ export function UnifiedGuidanceModal({
   const [showFrameworkReferences, setShowFrameworkReferences] = useState(false);
   const [showOperationalExcellence, setShowOperationalExcellence] = useState(false);
 
-  // Enhanced guidance content with template fallback
+  // Use ONLY the actual guidance content - no more template fallback competition
   const enhancedGuidanceContent = useMemo(() => {
     const originalContent = getGuidanceContent();
     
-    // If we have substantial content from AI/database, use it
-    if (originalContent && originalContent.length > 200) {
+    console.log(`[UnifiedGuidanceModal] Content for ${selectedGuidanceCategory}:`, {
+      hasContent: !!originalContent,
+      contentLength: originalContent?.length || 0,
+      contentPreview: originalContent?.substring(0, 200) + '...'
+    });
+    
+    // Always use the actual guidance content from the service
+    if (originalContent && originalContent.trim().length > 0) {
       return originalContent;
     }
 
-    // If AI is unavailable or content is minimal, try templates
-    const template = GuidanceTemplateGenerator.getTemplate(selectedGuidanceCategory);
-    if (template) {
-      console.log(`[Template Fallback] Using template for: ${selectedGuidanceCategory}`);
-      
-      // Format template as guidance content
-      return `${template.sections.foundation}
-
-${template.sections.implementation}
-
-${template.sections.validation}
-
-${template.sections.resources}
-
-## 📝 Implementation Requirements:
-
-${template.subRequirements.map(req => req).join('\n\n')}`;
-    }
-
-    // Final fallback - generate minimal template
-    const fallbackTemplate = GuidanceTemplateGenerator.generateFallbackTemplate(selectedGuidanceCategory);
-    console.log(`[Fallback Template] Generated for: ${selectedGuidanceCategory}`);
-    
-    return `${fallbackTemplate.sections.foundation}
-
-${fallbackTemplate.sections.implementation}
-
-${fallbackTemplate.sections.validation}
-
-${fallbackTemplate.sections.resources}
-
-## 📝 Implementation Requirements:
-
-${fallbackTemplate.subRequirements.map(req => req).join('\n\n')}`;
+    // Only use minimal fallback if absolutely no content
+    return `Loading guidance for ${selectedGuidanceCategory}...`;
   }, [selectedGuidanceCategory, getGuidanceContent]);
 
   return (
@@ -88,7 +62,7 @@ ${fallbackTemplate.subRequirements.map(req => req).join('\n\n')}`;
               </div>
               <div>
                 <span className="text-gray-900 dark:text-white">
-                  {selectedGuidanceCategory.replace(/^\d+\. /, '')}
+                  {selectedGuidanceCategory}
                 </span>
                 <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mt-1">
                   Implementation Guidance
@@ -239,7 +213,8 @@ ${fallbackTemplate.subRequirements.map(req => req).join('\n\n')}`;
                 cleanLine.includes('ADVANCED CONTROLS') || 
                 cleanLine.includes('AUDIT-READY DOCUMENTATION') || 
                 cleanLine.includes('CONTINUOUS IMPROVEMENT')) && 
-                !cleanLine.match(/^[a-z]\)/i)) { // Don't match sub-requirements like "o) CONTINUOUS IMPROVEMENT"
+                !cleanLine.match(/^[a-z]{1,2}\)/i) && // Don't match sub-requirements like "o) CONTINUOUS IMPROVEMENT" or "ee) CONTINUOUS IMPROVEMENT"
+                !cleanLine.includes('GOVERNANCE')) { // Don't match requirement titles that contain CONTINUOUS IMPROVEMENT GOVERNANCE
               
               const colors: Record<string, string> = {
                 'FOUNDATIONAL CONTROLS': 'bg-blue-600 text-white',

@@ -61,6 +61,7 @@ export class AssessmentDataProcessor {
       metrics,
       requirementsBySection,
       requirementsByStatus,
+      requirementNotes: assessment.requirementNotes || {},
       attachments,
       config
     };
@@ -111,15 +112,17 @@ export class AssessmentDataProcessor {
   }
   
   /**
-   * Group requirements by section with proper multi-standard organization
+   * Group requirements by section with proper multi-standard organization and numerical sorting
    */
   private static groupRequirementsBySection(
     requirements: Requirement[], 
     standards: Standard[]
   ): Record<string, Requirement[]> {
+    let grouped: Record<string, Requirement[]>;
+    
     // For multi-standard assessments, organize by "Standard Name - Section"
     if (standards.length > 1) {
-      return requirements.reduce((acc, req) => {
+      grouped = requirements.reduce((acc, req) => {
         const standard = standards.find(s => s.id === req.standardId);
         const standardName = standard ? `${standard.name} ${standard.version}` : 'Unknown Standard';
         const section = req.section || this.extractSectionFromCode(req.code) || 'Other';
@@ -131,17 +134,126 @@ export class AssessmentDataProcessor {
         acc[sectionKey].push(req);
         return acc;
       }, {} as Record<string, Requirement[]>);
+    } else {
+      // For single standard, organize by section only
+      grouped = requirements.reduce((acc, req) => {
+        const section = req.section || this.extractSectionFromCode(req.code) || 'Other';
+        if (!acc[section]) {
+          acc[section] = [];
+        }
+        acc[section].push(req);
+        return acc;
+      }, {} as Record<string, Requirement[]>);
     }
     
-    // For single standard, organize by section only
-    return requirements.reduce((acc, req) => {
-      const section = req.section || this.extractSectionFromCode(req.code) || 'Other';
-      if (!acc[section]) {
-        acc[section] = [];
+    // Apply numerical sorting to each section using comprehensive patterns
+    // Trust database ordering for well-structured requirements, only sort when clearly needed
+    Object.keys(grouped).forEach(sectionKey => {
+      const reqs = grouped[sectionKey];
+      // Only apply custom sorting if the codes don't follow standard patterns that DB handles well
+      const hasComplexCodes = reqs.some(req => {
+        const code = req.control_id || req.code || '';
+        return code.includes('Article') || code.includes('Requirement') || !code.match(/^\d+\.?\d*\.?\d*$/);
+      });
+      
+      if (hasComplexCodes) {
+        grouped[sectionKey] = this.sortRequirementsNumerically(reqs);
       }
-      acc[section].push(req);
-      return acc;
-    }, {} as Record<string, Requirement[]>);
+      // Otherwise trust the database ordering (control_id ASC)
+    });
+    
+    return grouped;
+  }
+
+
+  /**
+   * Sort requirements using comprehensive numerical patterns for all frameworks
+   */
+  private static sortRequirementsNumerically(requirements: Requirement[]): Requirement[] {
+    const patterns = [
+      { name: 'Article', regex: /^Article\s+(\d+)$/i },                          // DORA: Article 1, Article 2...
+      { name: 'Requirement', regex: /^Requirement\s+(\d+)$/i },                 // Requirement 1, Requirement 2...
+      { name: 'Section_Deep', regex: /(\d+)\.(\d+)\.(\d+)\.(\d+)$/i },          // Deep: 1.2.3.4...
+      { name: 'ISO_Multi', regex: /([A-Z])\.(\d+)\.(\d+)\.(\d+)$/i },           // ISO: A.5.1.1, A.5.1.2...
+      { name: 'ISO_Standard', regex: /([A-Z])\.(\d+)\.(\d+)$/i },               // ISO: A.5.1, A.5.2... (handles prefixes)
+      { name: 'Control_Multi', regex: /(\d+)\.(\d+)\.(\d+)$/i },                // CIS: 1.1.1, 1.1.2...
+      { name: 'Control_Simple', regex: /(\d+)\.(\d+)$/i },                      // Common: 8.11, 9.1, 4.1, 4.2...
+      { name: 'Number_Suffix', regex: /^(\d+)([A-Z]?)$/i },                     // Numbers with optional suffix: 1A, 2B, 3...
+      { name: 'Letter_Number', regex: /^([A-Z])(\d+)$/i },                      // Format: A1, B2, C3...
+      { name: 'Number', regex: /^(\d+)$/i }                                     // Simple: 1, 2, 3...
+    ];
+
+    return requirements.sort((a, b) => {
+      const aCode = a.code?.trim() || '';
+      const bCode = b.code?.trim() || '';
+
+      if (!aCode || !bCode) return aCode.localeCompare(bCode);
+
+      // Try each pattern to find matches
+      for (const pattern of patterns) {
+        const aMatch = aCode.match(pattern.regex);
+        const bMatch = bCode.match(pattern.regex);
+
+        if (aMatch && bMatch) {
+          // Both match this pattern, use custom comparison
+          const result = this.compareMatches(pattern.name, aMatch, bMatch);
+          if (result !== 0) return result;
+        } else if (aMatch && !bMatch) {
+          return -1; // Structured codes come first
+        } else if (!aMatch && bMatch) {
+          return 1;  // Structured codes come first
+        }
+      }
+
+      // If no patterns match, fall back to string comparison
+      return aCode.localeCompare(bCode);
+    });
+  }
+
+  /**
+   * Compare two regex matches based on pattern type
+   */
+  private static compareMatches(patternName: string, aMatch: RegExpMatchArray, bMatch: RegExpMatchArray): number {
+    switch (patternName) {
+      case 'Article':
+      case 'Requirement':
+      case 'Number':
+        return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+
+      case 'Letter_Number':
+        const letterCompare = aMatch[1].localeCompare(bMatch[1]);
+        return letterCompare !== 0 ? letterCompare : parseInt(aMatch[2]) - parseInt(bMatch[2]);
+
+      case 'Number_Suffix':
+        const numCompare = parseInt(aMatch[1]) - parseInt(bMatch[1]);
+        return numCompare !== 0 ? numCompare : (aMatch[2] || '').localeCompare(bMatch[2] || '');
+
+      case 'Control_Simple':
+      case 'ISO_Standard':
+        // Always use numerical comparison, not string comparison
+        const level1Compare = parseInt(aMatch[1]) - parseInt(bMatch[1]);
+        if (level1Compare !== 0) return level1Compare;
+        return parseInt(aMatch[2]) - parseInt(bMatch[2]);
+
+      case 'Control_Multi':
+      case 'ISO_Multi':
+        // Always use numerical comparison for first level
+        const l1Compare = parseInt(aMatch[1]) - parseInt(bMatch[1]);
+        if (l1Compare !== 0) return l1Compare;
+        const l2Compare = parseInt(aMatch[2]) - parseInt(bMatch[2]);
+        if (l2Compare !== 0) return l2Compare;
+        return parseInt(aMatch[3]) - parseInt(bMatch[3]);
+
+      case 'Section_Deep':
+        for (let i = 1; i <= 4; i++) {
+          const levelCompare = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+          if (levelCompare !== 0) return levelCompare;
+        }
+        return 0;
+
+      default:
+        return 0;
+    }
   }
   
   /**

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -1217,7 +1218,14 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
                 <div 
                   className="p-4 overflow-y-auto max-h-96"
                   dangerouslySetInnerHTML={{ 
-                    __html: selectedTemplate?.html_body?.replace(/{{(\w+)}}/g, '<span style="background: #fef3c7; padding: 2px 4px; border-radius: 3px; font-weight: 500;">{{$1}}</span>') || '' 
+                    __html: DOMPurify.sanitize(
+                      selectedTemplate?.html_body?.replace(/{{(\w+)}}/g, '<span style="background: #fef3c7; padding: 2px 4px; border-radius: 3px; font-weight: 500;">{{$1}}</span>') || '',
+                      { 
+                        ALLOWED_TAGS: ['span', 'div', 'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+                        ALLOWED_ATTR: ['style', 'class'],
+                        KEEP_CONTENT: true
+                      }
+                    )
                   }}
                 />
               </div>

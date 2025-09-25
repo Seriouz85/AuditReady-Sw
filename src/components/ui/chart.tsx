@@ -65,7 +65,37 @@ const ChartContainer = React.forwardRef<
 })
 ChartContainer.displayName = "Chart"
 
+// CSS validation utility
+const sanitizeCSS = (css: string): string => {
+  // Remove potentially dangerous content
+  return css
+    .replace(/javascript:/gi, '')
+    .replace(/expression\s*\(/gi, '')
+    .replace(/url\s*\(\s*[^)]*\)/gi, '')
+    .replace(/@import/gi, '')
+    .replace(/<script/gi, '')
+    .replace(/onload/gi, '')
+    .replace(/onerror/gi, '');
+};
+
+const validateCSSColor = (color: string): boolean => {
+  // Validate CSS color format (hex, rgb, rgba, hsl, hsla, or CSS color names)
+  const colorRegex = /^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+(\s*,\s*(0(\.\d+)?|1(\.0+)?))?\s*\)|hsla?\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%(\s*,\s*(0(\.\d+)?|1(\.0+)?))?\s*\)|[a-zA-Z]+)$/;
+  return colorRegex.test(color.trim());
+};
+
+const validateCSSSelector = (selector: string): boolean => {
+  // Basic validation for CSS selector (allow only alphanumeric, -, _, and spaces)
+  return /^[a-zA-Z0-9\-_\s\[\]=]+$/.test(selector);
+};
+
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+  // Validate chart ID to prevent CSS injection
+  if (!validateCSSSelector(id)) {
+    console.warn('Invalid chart ID detected, skipping chart styles');
+    return null;
+  }
+
   const colorConfig = Object.entries(config).filter(
     ([_, config]) => config.theme || config.color
   )
@@ -74,25 +104,52 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  // Generate CSS with proper validation and sanitization
+  const cssContent = Object.entries(THEMES)
+    .map(([theme, prefix]) => {
+      // Validate theme prefix
+      if (!validateCSSSelector(prefix)) {
+        console.warn(`Invalid theme prefix detected: ${theme}`);
+        return '';
+      }
+
+      const colorRules = colorConfig
+        .map(([key, itemConfig]) => {
+          // Validate key name
+          if (!validateCSSSelector(key)) {
+            console.warn(`Invalid color key detected: ${key}`);
+            return null;
+          }
+
+          const color =
+            itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+            itemConfig.color;
+          
+          // Validate color value
+          if (!color || !validateCSSColor(color)) {
+            console.warn(`Invalid color value detected: ${color}`);
+            return null;
+          }
+
+          return `  --color-${key}: ${color};`;
+        })
+        .filter(Boolean)
+        .join("\n");
+
+      if (!colorRules) return '';
+
+      return `${prefix} [data-chart="${id}"] {\n${colorRules}\n}`;
+    })
+    .filter(Boolean)
+    .join("\n");
+
+  // Sanitize the final CSS content
+  const sanitizedCSS = sanitizeCSS(cssContent);
+
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
-${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
-  })
-  .join("\n")}
-}
-`
-          )
-          .join("\n"),
+        __html: sanitizedCSS,
       }}
     />
   )

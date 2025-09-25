@@ -32,6 +32,33 @@ export class EmailService {
     try {
       const recipients = Array.isArray(to) ? to : [to];
       
+      // In development mode, skip Edge Function and just log
+      if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+        console.log('📧 Demo mode: Email would be sent', {
+          to: recipients.map(r => r.email),
+          subject: template.subject,
+          from: this.fromEmail,
+          html_preview: template.htmlContent.substring(0, 200),
+          timestamp: new Date().toISOString()
+        });
+        
+        // Show the email details in console for debugging
+        console.log('📧 Full Email Details:', {
+          recipients: recipients,
+          subject: template.subject,
+          htmlContent: template.htmlContent,
+          textContent: template.textContent,
+          category: category
+        });
+        
+        return { 
+          success: true, 
+          messageId: `demo-${Date.now()}`,
+          error: 'Demo mode - email logged to console' 
+        };
+      }
+
+      // Production mode - use Edge Function
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           to: recipients,
@@ -95,13 +122,40 @@ export class EmailService {
       inviter_name: string;
       invitation_token: string;
       role_name: string;
+      template_id?: string;
     }
   ): Promise<{ success: boolean; error?: string }> {
     const inviteUrl = `${window.location.origin}/invite/${invitation.invitation_token}`;
     
+    // Use template service if template_id is provided
+    let htmlContent = '';
+    let textContent = '';
+    
+    if (invitation.template_id) {
+      try {
+        const { getTemplate } = await import('./EmailTemplates');
+        const template = getTemplate(invitation.template_id);
+        const templateData = {
+          email: invitation.email,
+          organizationName: invitation.organization_name,
+          roleName: invitation.role_name,
+          inviterName: invitation.inviter_name,
+          invitationToken: invitation.invitation_token,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        };
+        
+        htmlContent = template.generateHtml(templateData);
+        textContent = template.generateText(templateData);
+      } catch (error) {
+        console.warn('Failed to load template, using fallback:', error);
+        // Fall through to use legacy template
+      }
+    }
+    
+    // Create template object with dynamic or fallback content
     const template: EmailTemplate = {
       subject: `You've been invited to join ${invitation.organization_name} on AuditReady`,
-      htmlContent: `
+      htmlContent: htmlContent || `
         <!DOCTYPE html>
         <html>
         <head>
@@ -138,7 +192,7 @@ export class EmailService {
         </body>
         </html>
       `,
-      textContent: `
+      textContent: textContent || `
 You've been invited to join ${invitation.organization_name} on AuditReady
 
 Hi there,

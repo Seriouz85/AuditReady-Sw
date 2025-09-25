@@ -1,140 +1,263 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface EmailRecipient {
-  email: string;
-  name?: string;
-}
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 interface EmailRequest {
-  to: EmailRecipient[];
+  to: Array<{ email: string; name?: string }>;
   subject: string;
   html: string;
-  text?: string;
-  from?: {
+  text: string;
+  from: {
     email: string;
     name: string;
   };
   category?: string;
 }
 
-serve(async (req) => {
-  // Handle CORS
+// Resend API integration for production email sending
+async function sendWithResend(emailData: EmailRequest) {
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  
+  if (!RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY environment variable is not set');
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `${emailData.from.name} <${emailData.from.email}>`,
+      to: emailData.to.map(recipient => recipient.email),
+      subject: emailData.subject,
+      html: emailData.html,
+      text: emailData.text,
+      tags: emailData.category ? [{ name: 'category', value: emailData.category }] : undefined,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Resend API error: ${response.status} ${error}`);
+  }
+
+  return await response.json();
+}
+
+// SendGrid API integration as fallback
+async function sendWithSendGrid(emailData: EmailRequest) {
+  const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
+  
+  if (!SENDGRID_API_KEY) {
+    throw new Error('SENDGRID_API_KEY environment variable is not set');
+  }
+
+  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${SENDGRID_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: emailData.from,
+      personalizations: [{
+        to: emailData.to,
+        subject: emailData.subject,
+      }],
+      content: [
+        { type: 'text/html', value: emailData.html },
+        { type: 'text/plain', value: emailData.text }
+      ],
+      categories: emailData.category ? [emailData.category] : undefined,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`SendGrid API error: ${response.status} ${error}`);
+  }
+
+  return { messageId: `sendgrid-${Date.now()}` };
+}
+
+Deno.serve(async (req: Request) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
   }
 
   try {
-    const emailRequest: EmailRequest = await req.json()
+    const { to, subject, html, text, from, category }: EmailRequest = await req.json();
+
+    // Validate required fields
+    if (!to || !Array.isArray(to) || to.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Recipients (to) are required' }),
+        { 
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
+      );
+    }
+
+    if (!subject || !html) {
+      return new Response(
+        JSON.stringify({ error: 'Subject and HTML content are required' }),
+        { 
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
+      );
+    }
+
+    const isDevelopment = Deno.env.get('ENVIRONMENT') !== 'production';
+    const emailData: EmailRequest = { to, subject, html, text, from, category };
     
-    // Get Resend API key from environment
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-    console.log('🔑 RESEND_API_KEY available:', !!RESEND_API_KEY)
-    
-    if (!RESEND_API_KEY) {
-      // Fallback to demo mode if no API key
-      console.log('📧 Demo mode: Email would be sent', {
-        to: emailRequest.to.map(r => r.email),
-        subject: emailRequest.subject,
-        from: emailRequest.from?.email || 'noreply@auditready.com'
-      })
+    console.log('📧 Email Send Request:', {
+      to: to.map(recipient => recipient.email),
+      subject,
+      from: from.email,
+      category,
+      mode: isDevelopment ? 'development' : 'production',
+      html_preview: html.substring(0, 200) + '...',
+    });
+
+    // In development mode, just log and return success
+    if (isDevelopment) {
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          messageId: `dev-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          message: 'Email logged in development mode',
+          recipients: to.length,
+          details: {
+            subject,
+            recipients: to.map(r => r.email),
+            timestamp: new Date().toISOString()
+          }
+        }),
+        { 
+          status: 200,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
+      );
+    }
+
+    // Production mode - attempt to send actual email
+    let result;
+    let provider = 'none';
+
+    try {
+      // Try Resend first (recommended for Supabase projects)
+      if (Deno.env.get('RESEND_API_KEY')) {
+        result = await sendWithResend(emailData);
+        provider = 'resend';
+      } 
+      // Fallback to SendGrid
+      else if (Deno.env.get('SENDGRID_API_KEY')) {
+        result = await sendWithSendGrid(emailData);
+        provider = 'sendgrid';
+      }
+      // No email provider configured
+      else {
+        console.warn('⚠️ No email provider configured. Add RESEND_API_KEY or SENDGRID_API_KEY to environment variables.');
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'No email provider configured',
+            message: 'Please configure RESEND_API_KEY or SENDGRID_API_KEY in Edge Function secrets',
+            recipients: to.length
+          }),
+          { 
+            status: 503,
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+            }
+          }
+        );
+      }
+
+      console.log(`✅ Email sent successfully via ${provider}:`, {
+        messageId: result.id || result.messageId,
+        recipients: to.length,
+        subject
+      });
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          messageId: result.id || result.messageId || `${provider}-${Date.now()}`,
+          message: `Email sent successfully via ${provider}`,
+          provider,
+          recipients: to.length,
+          details: {
+            subject,
+            recipients: to.map(r => r.email),
+            timestamp: new Date().toISOString()
+          }
+        }),
+        { 
+          status: 200,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
+      );
+
+    } catch (emailError) {
+      console.error(`❌ Failed to send email via ${provider}:`, emailError);
       
       return new Response(
         JSON.stringify({ 
-          success: true,
-          demo: true,
-          messageId: `demo-${Date.now()}`,
-          message: 'Email logged in demo mode - no RESEND_API_KEY configured'
+          success: false,
+          error: `Email delivery failed via ${provider}`,
+          details: emailError.message,
+          provider,
+          recipients: to.length
         }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        { 
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          }
         }
-      )
+      );
     }
 
-    // Prepare Resend request (much simpler than SendGrid!)
-    const resendRequest = {
-      from: emailRequest.from?.email 
-        ? `${emailRequest.from.name || 'AuditReady'} <${emailRequest.from.email}>`
-        : `${Deno.env.get('DEFAULT_FROM_NAME') || 'AuditReady Platform'} <${Deno.env.get('DEFAULT_FROM_EMAIL') || 'noreply@auditready.com'}>`,
-      to: emailRequest.to.map(recipient => 
-        recipient.name 
-          ? `${recipient.name} <${recipient.email}>`
-          : recipient.email
-      ),
-      subject: emailRequest.subject,
-      html: emailRequest.html,
-      ...(emailRequest.text && { text: emailRequest.text }),
-      ...(emailRequest.category && { tags: [{ name: 'category', value: emailRequest.category }] })
-    }
-
-    // Send email via Resend
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(resendRequest),
-    })
-
-    const result = await response.json()
-
-    if (!response.ok) {
-      console.error('❌ Resend API error:', {
-        status: response.status,
-        statusText: response.statusText,
-        result,
-        request: { ...resendRequest, html: '[HTML_CONTENT]' } // Don't log full HTML
-      })
-      throw new Error(`Resend API error: ${response.status} - ${result.message || result.error || response.statusText}`)
-    }
-
-    console.log('✅ Email sent successfully via Resend:', result.id)
-
-    return new Response(
-      JSON.stringify({ 
-        success: true,
-        messageId: result.id,
-        message: 'Email sent successfully via Resend',
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
-    )
   } catch (error) {
-    console.error('Email send error:', error)
-    
-    // In development/demo mode, return success anyway
-    if (Deno.env.get('DEMO_MODE') === 'true') {
-      return new Response(
-        JSON.stringify({ 
-          success: true,
-          messageId: `demo-${Date.now()}`,
-          message: 'Email sent (demo mode)',
-          demo: true,
-        }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
-      )
-    }
+    console.error('Email service error:', error);
     
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        success: false,
+        error: 'Internal server error',
+        details: error.message 
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+      { 
+        status: 500,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
       }
-    )
+    );
   }
-})
+});

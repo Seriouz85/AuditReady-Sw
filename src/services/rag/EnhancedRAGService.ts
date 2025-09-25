@@ -94,12 +94,10 @@ export class EnhancedRAGService {
       // Step 2: Generate base guidance using RAG
       const ragResult = await RAGGenerationService.generateGuidance(
         {
-          id: `enhanced_${request.category.toLowerCase().replace(/\s+/g, '_')}`,
-          category: request.category,
+          letter: 'a',
           title: `${request.category} - Enhanced Implementation Guide`,
           description: `Comprehensive guidance for ${request.category} implementation`,
-          frameworks: Object.keys(request.frameworks).filter(key => request.frameworks[key as keyof typeof request.frameworks]),
-          status: 'active'
+          originalText: `Comprehensive guidance for ${request.category} implementation`
         },
         request.category,
         request.frameworks

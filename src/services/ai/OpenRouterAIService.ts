@@ -42,8 +42,14 @@ export class OpenRouterAIService {
   private config: OpenRouterConfig;
 
   private constructor() {
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    if (!apiKey) {
+      console.error('SECURITY ERROR: VITE_OPENROUTER_API_KEY environment variable is not configured');
+      throw new Error('OpenRouter API key is required but not configured in environment variables');
+    }
+    
     this.config = {
-      apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
+      apiKey: apiKey,
       model: 'deepseek/deepseek-chat-v3-0324:free',
       baseUrl: 'https://openrouter.ai/api/v1'
     };

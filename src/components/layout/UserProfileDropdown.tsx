@@ -182,7 +182,7 @@ export const UserProfileDropdown: React.FC = () => {
         
         <DropdownMenuSeparator />
         
-        {isPlatformAdmin && (
+        {isPlatformAdmin && user?.email?.toLowerCase() === 'payam.razifar@gmail.com' && (
           <>
             <DropdownMenuItem onClick={() => navigate('/admin')}>
               <Shield className="mr-2 h-4 w-4" />

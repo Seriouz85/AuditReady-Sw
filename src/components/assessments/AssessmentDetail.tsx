@@ -53,6 +53,7 @@ import { toast } from "@/utils/toast";
 import { useTranslation } from "@/lib/i18n";
 import { NewAssessmentReport } from "./NewAssessmentReport";
 import { useAssessmentData } from "@/hooks/useAssessmentData";
+import { SyncStatusIndicator, SyncStatusBanner } from "@/components/ui/sync-status";
 import "@/styles/assessment-export.css";
 import { RequirementCard } from "./RequirementCard";
 import { assessmentCompletionService, NotesTransferResult } from "@/services/assessments/AssessmentCompletionService";
@@ -106,6 +107,9 @@ export function AssessmentDetail({
     stats,
     updateRequirementStatus,
     updateAssessment,
+    syncStatus,
+    retryFailedSync,
+    hasPendingChanges,
   } = useAssessmentData(assessment);
   
   // Destructure stats for easier access
@@ -168,29 +172,44 @@ export function AssessmentDetail({
   Object.keys(groupedFilteredRequirements).forEach(standardId => {
     console.log(`🔄 SORTING STANDARD: ${standardId} with ${groupedFilteredRequirements[standardId]?.length} requirements`);
     
-    // Log the requirements before sorting for major frameworks
-    if (standardId === 'dora' || standardId === 'iso27001' || standardId === 'cisControls') {
-      console.log(`📋 ${standardId.toUpperCase()} REQUIREMENTS BEFORE SORTING:`, 
-        groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
-      );
-    }
+    // Log the requirements before sorting for all frameworks (debug)
+    console.log(`📋 STANDARD ${standardId.substring(0, 8)}... REQUIREMENTS BEFORE SORTING:`, 
+      groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
+    );
     
-    groupedFilteredRequirements[standardId]?.sort((a, b) => {
+    // Trust database ordering for simple numerical patterns (4.1, 4.2, etc.)
+    const needsCustomSort = groupedFilteredRequirements[standardId]?.some(req => {
+      const code = req.control_id || req.code || '';
+      return code.includes('Article') || code.includes('Requirement') || code.match(/[A-Z]\./);
+    });
+
+    if (needsCustomSort) {
+      groupedFilteredRequirements[standardId]?.sort((a, b) => {
       // First sort by section, then by control ID or name
       const sectionCompare = (a.section || '').localeCompare(b.section || '');
       if (sectionCompare !== 0) return sectionCompare;
       
       // UNIVERSAL numerical sorting for ALL frameworks
-      const aId = a.code || a.name || '';
-      const bId = b.code || b.name || '';
+      // Note: Using control_id (from DB) if available, fallback to code (from types), then name
+      const aId = a.control_id || a.code || a.name || '';
+      const bId = b.control_id || b.code || b.name || '';
       
-      // Universal patterns for numerical requirements
+      // Debug log the actual field values
+      console.log(`🔍 SORTING FIELDS - A: {control_id: "${a.control_id}", code: "${a.code}", name: "${a.name}"} -> using: "${aId}"`);
+      console.log(`🔍 SORTING FIELDS - B: {control_id: "${b.control_id}", code: "${b.code}", name: "${b.name}"} -> using: "${bId}"`);
+      
+      // Universal patterns for numerical requirements (order matters - most specific first)
       const patterns = [
-        { name: 'Article', regex: /^Article\s+(\d+)$/i },           // DORA: Article 1, Article 2...
-        { name: 'Control', regex: /^(\d+)\.(\d+)\.(\d+)$/i },       // CIS: 1.1.1, 1.1.2...
-        { name: 'Section', regex: /^([A-Z])\.(\d+)\.(\d+)$/i },     // ISO: A.5.1, A.5.2...
-        { name: 'Clause', regex: /^(\d+)\.(\d+)$/i },              // Generic: 4.1, 4.2...
-        { name: 'Number', regex: /^(\d+)$/i }                      // Simple: 1, 2, 3...
+        { name: 'Article', regex: /^Article\s+(\d+)$/i },                          // DORA: Article 1, Article 2...
+        { name: 'Requirement', regex: /^Requirement\s+(\d+)$/i },                 // Requirement 1, Requirement 2...
+        { name: 'Section_Deep', regex: /(\d+)\.(\d+)\.(\d+)\.(\d+)$/i },          // Deep: 1.2.3.4... (handles prefixes)
+        { name: 'ISO_Multi', regex: /([A-Z])\.(\d+)\.(\d+)\.(\d+)$/i },           // ISO: A.5.1.1, A.5.1.2... (handles prefixes)
+        { name: 'ISO_Standard', regex: /([A-Z])\.(\d+)\.(\d+)$/i },               // ISO: A.5.1, A.5.2... (handles prefixes)
+        { name: 'Control_Multi', regex: /(\d+)\.(\d+)\.(\d+)$/i },                // CIS: 1.1.1, 1.1.2... (handles prefixes)
+        { name: 'Control_Simple', regex: /(\d+)\.(\d+)$/i },                      // Common: 8.11, 9.1, 4.1, 4.2... (handles prefixes)
+        { name: 'Number_Suffix', regex: /^(\d+)([A-Z]?)$/i },                     // Numbers with optional suffix: 1A, 2B, 3...
+        { name: 'Letter_Number', regex: /^([A-Z])(\d+)$/i },                      // Format: A1, B2, C3...
+        { name: 'Number', regex: /^(\d+)$/i }                                     // Simple: 1, 2, 3...
       ];
       
       let aMatch = null, bMatch = null, patternUsed = null;
@@ -215,47 +234,78 @@ export function AssessmentDetail({
       
       if (aMatch && bMatch) {
         // Both match the same numerical pattern - sort numerically
-        if (patternUsed === 'Article') {
-          // Article X format
-          const result = parseInt(aMatch[1]) - parseInt(bMatch[1]);
-          console.log(`📊 ${patternUsed} SORT: ${aMatch[1]} vs ${bMatch[1]} = ${result}`);
-          return result;
-        } else if (patternUsed === 'Control') {
-          // Multi-level control format (1.1.1 vs 1.1.2)
-          for (let i = 1; i < aMatch.length; i++) {
-            const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
-            if (diff !== 0) return diff;
+        const result = (() => {
+          switch (patternUsed) {
+            case 'Article':
+            case 'Requirement':
+              // Simple word + number format
+              return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+              
+            case 'Section_Deep':
+            case 'Control_Multi':
+              // Multi-level numerical format (1.2.3.4 or 1.1.1)
+              for (let i = 1; i < aMatch.length; i++) {
+                const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+                if (diff !== 0) return diff;
+              }
+              return 0;
+              
+            case 'ISO_Multi':
+            case 'ISO_Standard':
+              // Letter.number.number format (A.5.1 vs A.5.2)
+              const letterDiff = aMatch[1].localeCompare(bMatch[1]);
+              if (letterDiff !== 0) return letterDiff;
+              for (let i = 2; i < aMatch.length; i++) {
+                const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+                if (diff !== 0) return diff;
+              }
+              return 0;
+              
+            case 'Control_Simple':
+              // Two-level numerical (8.11 vs 9.1)
+              for (let i = 1; i < aMatch.length; i++) {
+                const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
+                if (diff !== 0) return diff;
+              }
+              return 0;
+              
+            case 'Number_Suffix':
+              // Number with optional suffix (1A vs 2B)
+              const numDiff = parseInt(aMatch[1]) - parseInt(bMatch[1]);
+              if (numDiff !== 0) return numDiff;
+              return (aMatch[2] || '').localeCompare(bMatch[2] || '');
+              
+            case 'Letter_Number':
+              // Letter + Number format (A1 vs B2)
+              const letDiff = aMatch[1].localeCompare(bMatch[1]);
+              if (letDiff !== 0) return letDiff;
+              return parseInt(aMatch[2]) - parseInt(bMatch[2]);
+              
+            case 'Number':
+              // Simple numbers (1 vs 2)
+              return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+              
+            default:
+              return 0;
           }
-          return 0;
-        } else if (patternUsed === 'Section') {
-          // Letter.number.number format (A.5.1 vs A.5.2)
-          const letterDiff = aMatch[1].localeCompare(bMatch[1]);
-          if (letterDiff !== 0) return letterDiff;
-          for (let i = 2; i < aMatch.length; i++) {
-            const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
-            if (diff !== 0) return diff;
-          }
-          return 0;
-        } else if (patternUsed === 'Clause' || patternUsed === 'Number') {
-          // Simple numerical comparison
-          for (let i = 1; i < aMatch.length; i++) {
-            const diff = parseInt(aMatch[i]) - parseInt(bMatch[i]);
-            if (diff !== 0) return diff;
-          }
-          return 0;
-        }
+        })();
+        
+        console.log(`📊 ${patternUsed} SORT: "${aId}" vs "${bId}" = ${result}`);
+        return result;
       }
       
       // Fallback: Use standard numeric-aware sorting for all other cases
       return aId.localeCompare(bId, undefined, { numeric: true });
-    });
+      });
+    } else {
+      // Trust database ordering for simple numerical codes (like 4.1, 4.2, 5.1, 6.1.1)
+      console.log(`🎯 TRUSTING DATABASE ORDER for standard ${standardId.substring(0, 8)}...`);
+    }
     
     // Log the requirements after sorting for all frameworks (debug purposes)
-    if (standardId === 'dora' || standardId === 'iso27001' || standardId === 'cisControls') {
-      console.log(`✅ ${standardId.toUpperCase()} REQUIREMENTS AFTER SORTING:`, 
-        groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
-      );
-    }
+    console.log(`✅ STANDARD ${standardId.substring(0, 8)}... REQUIREMENTS AFTER SORTING:`, 
+      groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
+    );
   });
 
   // Debug logging to identify mixing issues
@@ -311,9 +361,14 @@ export function AssessmentDetail({
   };
   
   // Handle requirement status change
-  const handleRequirementStatusChange = (reqId: string, newStatus: RequirementStatus) => {
-    updateRequirementStatus(reqId, newStatus);
-    setHasChanges(true);
+  const handleRequirementStatusChange = async (reqId: string, newStatus: RequirementStatus) => {
+    try {
+      await updateRequirementStatus(reqId, newStatus);
+      setHasChanges(true);
+    } catch (error) {
+      console.error('Failed to update requirement status:', error);
+      // Error handling is done in the hook, just log here
+    }
   };
 
   // Handle requirement notes change
@@ -687,12 +742,21 @@ export function AssessmentDetail({
       
       {/* Assessment Header with consistent PageHeader pattern */}
       <motion.div variants={itemVariants}>
-        <PageHeader 
-          title={localAssessment.name}
-          description={selectedStandards.length === 1 
-            ? `${selectedStandards[0]?.name} ${selectedStandards[0]?.version}` 
-            : `Multi-standard Assessment (${selectedStandards.length} standards)`}
-        />
+        <div className="flex items-start justify-between gap-4">
+          <PageHeader 
+            title={localAssessment.name}
+            description={selectedStandards.length === 1 
+              ? `${selectedStandards[0]?.name} ${selectedStandards[0]?.version}` 
+              : `Multi-standard Assessment (${selectedStandards.length} standards)`}
+          />
+          
+          {/* Sync Status Indicator */}
+          <SyncStatusIndicator 
+            syncStatus={syncStatus}
+            onRetry={retryFailedSync}
+            className="mt-2"
+          />
+        </div>
         
         {/* Standards badges for multi-standard assessments */}
         {selectedStandards.length > 1 && (
@@ -711,6 +775,12 @@ export function AssessmentDetail({
             ))}
           </motion.div>
         )}
+
+        {/* Sync Status Banner for important notifications */}
+        <SyncStatusBanner 
+          syncStatus={syncStatus}
+          onRetry={retryFailedSync}
+        />
         
         {/* Status and Progress Summary - Simplified */}
         <motion.div 
@@ -878,7 +948,7 @@ export function AssessmentDetail({
                   {/* Header with counts and status */}
                   <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-medium">{t('assessment.requirements.count')} ({filteredRequirements.length}/{totalRequirements})</h3>
+                      <h3 className="text-sm font-medium">Requirements ({filteredRequirements.length}/{totalRequirements})</h3>
                       {isCompleted && (
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
                           <Lock size={12} className="mr-1" />

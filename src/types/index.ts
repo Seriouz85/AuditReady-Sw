@@ -38,6 +38,7 @@ export interface Requirement {
   standardId: string;
   section: string;
   code: string;
+  control_id?: string; // Database field for numerical sorting
   name: string;
   description: string;
   guidance?: string;

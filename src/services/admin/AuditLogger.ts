@@ -20,16 +20,18 @@ export class AuditLogger {
       // Get current user context
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Check if user is platform admin
-      const { data: adminData } = await supabase
-        .from('platform_administrators')
-        .select('id')
-        .eq('email', user?.email || '')
-        .single();
+      // Check if user is platform admin using the function
+      let isPlatformAdmin = false;
+      try {
+        const { data: adminCheck } = await supabase.rpc('is_platform_admin');
+        isPlatformAdmin = adminCheck || false;
+      } catch (error) {
+        console.warn('Could not check platform admin status:', error);
+      }
       
       const logEntry = {
-        actor_id: adminData?.id || user?.id || null,
-        actor_type: adminData ? 'platform_admin' : 'organization_user',
+        actor_id: user?.id || null,
+        actor_type: isPlatformAdmin ? 'platform_admin' : 'organization_user',
         actor_email: user?.email || null,
         action,
         resource_type: resourceType,
@@ -44,15 +46,56 @@ export class AuditLogger {
         session_id: data.session_id || null
       };
 
-      const { error } = await supabase
-        .from('enhanced_audit_logs')
-        .insert([logEntry]);
+      // In development mode, log to console instead of database if table doesn't exist
+      if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+        try {
+          const { error } = await supabase
+            .from('enhanced_audit_logs')
+            .insert([logEntry]);
 
-      if (error) {
-        console.error('Failed to log audit event:', error);
+          if (error) {
+            console.warn('Audit logging to database failed, logging to console instead:', error);
+            console.log('Audit Event (Console):', {
+              action,
+              table_name: resourceType,
+              record_id: resourceId,
+              actor_id: logEntry.actor_id,
+              details: logEntry.details
+            });
+          }
+        } catch (dbError) {
+          console.warn('Database audit logging unavailable, logging to console:', dbError);
+          console.log('Audit Event (Console):', {
+            action,
+            table_name: resourceType,
+            record_id: resourceId,
+            actor_id: logEntry.actor_id,
+            details: logEntry.details
+          });
+        }
+      } else {
+        // Production mode - throw error if audit logging fails
+        const { error } = await supabase
+          .from('enhanced_audit_logs')
+          .insert([logEntry]);
+
+        if (error) {
+          console.error('Failed to log audit event:', error);
+          throw new Error('Audit logging failed in production');
+        }
       }
     } catch (error) {
       console.error('Audit logging error:', error);
+      console.log('Audit Event (Fallback):', {
+        action,
+        table_name: resourceType,
+        record_id: resourceId,
+        timestamp: new Date().toISOString()
+      });
+      // In development mode, don't fail the operation
+      if (!(import.meta.env.DEV || window.location.hostname === 'localhost')) {
+        throw error;
+      }
     }
   }
 

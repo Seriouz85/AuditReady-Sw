@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Assessment, Requirement, RequirementStatus, Standard, StandardType } from '@/types';
 import { standards as allStandards } from '@/data/mockData';
 import { assessmentProgressService, AssessmentStats } from '@/services/assessments/AssessmentProgressService';
+import { databaseAssessmentService, DatabaseSyncResult, SyncStatus } from '@/services/assessments/DatabaseAssessmentService';
 import { StandardsService } from '@/services/standards/StandardsService';
-// import { supabase } from '@/lib/supabase'; // TODO: Implement database queries
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/utils/toast';
 
 // Remove duplicate interface as it's now imported from the service
 
@@ -16,9 +17,12 @@ interface UseAssessmentDataReturn {
   stats: AssessmentStats;
   activeStandardId: string | undefined;
   setActiveStandardId: (id: string | undefined) => void;
-  updateRequirementStatus: (reqId: string, newStatus: RequirementStatus) => void;
-  updateAssessment: (updates: Partial<Assessment>) => void;
+  updateRequirementStatus: (reqId: string, newStatus: RequirementStatus) => Promise<void>;
+  updateAssessment: (updates: Partial<Assessment>) => Promise<void>;
   groupRequirementsBySection: () => Record<string, Requirement[]>;
+  syncStatus: SyncStatus;
+  retryFailedSync: () => Promise<void>;
+  hasPendingChanges: boolean;
 }
 
 export function useAssessmentData(initialAssessment: Assessment): UseAssessmentDataReturn {
@@ -29,6 +33,14 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
   const [activeStandardId, setActiveStandardId] = useState<string | undefined>(
     initialAssessment.standardIds.length === 1 ? initialAssessment.standardIds[0] : undefined
   );
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>({
+    isSyncing: false,
+    lastSyncAt: null,
+    syncError: null,
+    hasPendingChanges: false,
+    isOnline: navigator.onLine
+  });
+  const [pendingOperations, setPendingOperations] = useState<Set<string>>(new Set());
   
   // Initialize requirements from database (for all accounts including demo in assessment flow)
   useEffect(() => {
@@ -113,43 +125,156 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
     return assessmentProgressService.calculateAssessmentStats(filteredRequirements);
   }, [filteredRequirements]);
   
-  // Update requirement status
-  const updateRequirementStatus = (reqId: string, newStatus: RequirementStatus) => {
+  // Update requirement status with database-first approach and proper error handling
+  const updateRequirementStatus = useCallback(async (reqId: string, newStatus: RequirementStatus) => {
+    const operationId = `${reqId}-${Date.now()}`;
+    
     try {
-      // Update the requirement status using the progress service
-      const updatedStats = assessmentProgressService.updateRequirementStatus(
+      // Add to pending operations
+      setPendingOperations(prev => new Set(prev).add(operationId));
+      setSyncStatus(prev => ({ ...prev, isSyncing: true, syncError: null }));
+
+      // Optimistically update local state first for immediate UI response
+      const previousRequirements = assessmentRequirements;
+      setAssessmentRequirements(prev => 
+        prev.map(req => req.id === reqId ? { ...req, status: newStatus } : req)
+      );
+      
+      // Calculate stats from the optimistically updated requirements
+      const optimisticRequirements = assessmentRequirements.map(req => 
+        req.id === reqId ? { ...req, status: newStatus } : req
+      );
+      const quickStats = assessmentProgressService.calculateAssessmentStats(optimisticRequirements);
+      
+      // Update assessment progress immediately
+      setAssessment(prev => ({
+        ...prev,
+        progress: quickStats.progress,
+        updatedAt: new Date().toISOString(),
+      }));
+
+      // Persist to database with proper error handling
+      const result: DatabaseSyncResult = await databaseAssessmentService.updateRequirementStatus(
         assessment.id, 
         reqId, 
         newStatus
       );
-      
-      // Update local requirements state
-      const updatedRequirements = assessmentRequirements.map(req => 
-        req.id === reqId ? { ...req, status: newStatus } : req
-      );
-      setAssessmentRequirements(updatedRequirements);
-      
-      // Update assessment with new progress
-      setAssessment(prev => ({
-        ...prev,
-        progress: updatedStats.progress,
-        updatedAt: new Date().toISOString(),
-      }));
+
+      if (result.success) {
+        // Success - update sync status
+        setSyncStatus(prev => ({
+          ...prev,
+          lastSyncAt: new Date(),
+          syncError: null
+        }));
+        
+        // Also update localStorage as backup (but database is primary)
+        assessmentProgressService.updateRequirementStatus(assessment.id, reqId, newStatus);
+        
+        toast.success('Requirement status updated', { duration: 2000 });
+      } else {
+        // Database update failed - revert optimistic changes
+        console.error('Database sync failed:', result.error);
+        
+        setAssessmentRequirements(previousRequirements);
+        setAssessment(prev => ({
+          ...prev,
+          progress: assessmentProgressService.calculateAssessmentStats(previousRequirements).progress,
+        }));
+
+        setSyncStatus(prev => ({
+          ...prev,
+          syncError: result.error || 'Failed to save changes',
+          hasPendingChanges: true
+        }));
+
+        if (result.error?.includes('Offline')) {
+          toast.warning('You are offline. Changes will be saved when connection is restored.');
+        } else {
+          toast.error(`Failed to save: ${result.error}. Click retry to try again.`);
+        }
+      }
       
     } catch (error) {
-      console.error('Error updating requirement status:', error);
-      // Could show a toast error here if needed
+      console.error('Unexpected error updating requirement status:', error);
+      
+      // Revert optimistic update on error
+      setAssessmentRequirements(prev => 
+        prev.map(req => req.id === reqId ? { ...req, status: req.status } : req)
+      );
+
+      setSyncStatus(prev => ({
+        ...prev,
+        syncError: 'Unexpected error occurred',
+        hasPendingChanges: true
+      }));
+
+      toast.error('Failed to update requirement status. Please try again.');
+    } finally {
+      // Remove from pending operations
+      setPendingOperations(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(operationId);
+        return newSet;
+      });
+      
+      setSyncStatus(prev => ({ 
+        ...prev, 
+        isSyncing: prev.isSyncing && pendingOperations.size > 1
+      }));
     }
-  };
+  }, [assessment.id, assessmentRequirements, pendingOperations.size]);
   
-  // Update assessment data
-  const updateAssessment = (updates: Partial<Assessment>) => {
-    setAssessment(prev => ({
-      ...prev,
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    }));
-  };
+  // Update assessment data with database persistence
+  const updateAssessment = useCallback(async (updates: Partial<Assessment>) => {
+    try {
+      setSyncStatus(prev => ({ ...prev, isSyncing: true, syncError: null }));
+
+      // Optimistically update local state
+      const previousAssessment = assessment;
+      setAssessment(prev => ({
+        ...prev,
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      }));
+
+      // Persist to database
+      const result = await databaseAssessmentService.updateAssessmentProgress(
+        assessment.id,
+        updates
+      );
+
+      if (result.success) {
+        setSyncStatus(prev => ({
+          ...prev,
+          lastSyncAt: new Date(),
+          syncError: null,
+          isSyncing: false
+        }));
+        toast.success('Assessment updated');
+      } else {
+        // Revert on failure
+        setAssessment(previousAssessment);
+        setSyncStatus(prev => ({
+          ...prev,
+          syncError: result.error || 'Failed to update assessment',
+          hasPendingChanges: true,
+          isSyncing: false
+        }));
+        toast.error(`Failed to update assessment: ${result.error}`);
+      }
+
+    } catch (error) {
+      console.error('Error updating assessment:', error);
+      setSyncStatus(prev => ({
+        ...prev,
+        syncError: 'Unexpected error occurred',
+        hasPendingChanges: true,
+        isSyncing: false
+      }));
+      toast.error('Failed to update assessment');
+    }
+  }, [assessment]);
   
   // Group requirements by section
   const groupRequirementsBySection = () => {
@@ -162,6 +287,52 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
       return acc;
     }, {} as Record<string, Requirement[]>);
   };
+
+  // Retry failed sync operations
+  const retryFailedSync = useCallback(async () => {
+    try {
+      setSyncStatus(prev => ({ ...prev, isSyncing: true, syncError: null }));
+      await databaseAssessmentService.processQueuedOperations();
+      setSyncStatus(prev => ({
+        ...prev,
+        syncError: null,
+        hasPendingChanges: false,
+        isSyncing: false
+      }));
+      toast.success('Sync retry completed');
+    } catch (error) {
+      console.error('Retry failed:', error);
+      setSyncStatus(prev => ({
+        ...prev,
+        syncError: 'Retry failed. Please try again.',
+        isSyncing: false
+      }));
+      toast.error('Retry failed. Please try again.');
+    }
+  }, []);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      setSyncStatus(prev => ({ ...prev, isOnline: true }));
+      // Auto-retry pending operations when back online
+      if (syncStatus.hasPendingChanges) {
+        retryFailedSync();
+      }
+    };
+
+    const handleOffline = () => {
+      setSyncStatus(prev => ({ ...prev, isOnline: false }));
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [retryFailedSync, syncStatus.hasPendingChanges]);
   
   return {
     assessment,
@@ -174,5 +345,8 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
     updateRequirementStatus,
     updateAssessment,
     groupRequirementsBySection,
+    syncStatus,
+    retryFailedSync,
+    hasPendingChanges: pendingOperations.size > 0 || syncStatus.hasPendingChanges,
   };
 } 

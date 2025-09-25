@@ -28,6 +28,9 @@ export interface UnifiedAssessmentData {
   requirementsBySection: Record<string, Requirement[]>;
   requirementsByStatus: Record<string, Requirement[]>;
   
+  // Requirement Notes (from assessment)
+  requirementNotes: Record<string, string>;
+  
   // Attachments (extracted from evidence)
   attachments: Array<{
     filename: string;

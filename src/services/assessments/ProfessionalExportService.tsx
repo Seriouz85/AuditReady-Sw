@@ -334,7 +334,7 @@ export class ProfessionalExportService {
    * Create professional Word document with proper multi-standard organization
    */
   private createProfessionalWordDocument(data: UnifiedAssessmentData): Document {
-    const { assessment, metrics, requirementsBySection, standards, attachments } = data;
+    const { assessment, metrics, requirementsBySection, requirementNotes, standards, attachments } = data;
     const reportDate = new Date().toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
@@ -755,7 +755,8 @@ export class ProfessionalExportService {
         ];
 
         // Notes row (if exists)
-        if (req.notes) {
+        const requirementNote = requirementNotes[req.id] || req.notes;
+        if (requirementNote) {
           reqRows.push(
             new TableRow({
               children: [
@@ -774,7 +775,7 @@ export class ProfessionalExportService {
                 new TableCell({
                   children: [new Paragraph({
                     children: [new TextRun({
-                      text: AssessmentDataProcessor.cleanTextForExport(req.notes),
+                      text: AssessmentDataProcessor.cleanTextForExport(requirementNote),
                       size: 12,
                       color: '475569',
                       font: 'Arial'

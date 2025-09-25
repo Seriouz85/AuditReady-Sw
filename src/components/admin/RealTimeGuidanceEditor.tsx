@@ -454,12 +454,10 @@ export function RealTimeGuidanceEditor({
       
       const result = await RAGGenerationService.generateGuidance(
         {
-          id: guidance.id,
-          category: guidance.category,
+          letter: 'a',
           title: guidance.title || guidance.category,
           description: enhancedPrompt,
-          frameworks: guidance.frameworks,
-          status: 'active'
+          originalText: enhancedPrompt
         },
         guidance.category,
         { iso27001: true, nist: true, gdpr: true }

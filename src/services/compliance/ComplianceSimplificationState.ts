@@ -69,12 +69,12 @@ interface ComplianceSimplificationState {
 
 // Initial state values - EXACT preservation from original useState defaults
 const initialState = {
-  selectedMapping: null,
+  selectedMapping: null as string | null,
   activeTab: 'overview',
   filterFramework: 'all',
   filterCategory: 'all',
   unifiedCategoryFilter: 'all',
-  selectedIndustrySector: null,
+  selectedIndustrySector: null as string | null,
   selectedFrameworks: {
     iso27001: true,
     iso27002: true,
@@ -117,7 +117,10 @@ export const useComplianceSimplificationStore = create<ComplianceSimplificationS
       // Update specific content in map
       updateGeneratedContent: (key, value) => {
         const currentContent = get().generatedContent;
-        const newContent = new Map(currentContent);
+        // Ensure we always have a proper Map
+        const newContent = currentContent instanceof Map 
+          ? new Map(currentContent) 
+          : new Map();
         newContent.set(key, value);
         set({ generatedContent: newContent });
       },
@@ -142,7 +145,14 @@ export const useComplianceSimplificationStore = create<ComplianceSimplificationS
       partialize: (state) => ({
         selectedFrameworks: state.selectedFrameworks,
         selectedIndustrySector: state.selectedIndustrySector
-      })
+      }),
+      // Ensure proper rehydration with fresh Map
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Always ensure generatedContent is a proper Map after rehydration
+          state.generatedContent = new Map<string, any[]>();
+        }
+      }
     }
   )
 );

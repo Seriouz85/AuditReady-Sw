@@ -38,3 +38,8 @@ Cargo.lock
 *.db
 *.db-shm
 *.db-wal
+
+# Swarm Database Files
+.swarm/memory.db
+.swarm/memory.db-shm
+.swarm/memory.db-wal

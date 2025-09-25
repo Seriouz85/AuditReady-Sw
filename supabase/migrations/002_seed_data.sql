@@ -1,3 +1,4 @@
 -- Initial seed data
--- Loads essential application data
-\ir ../seed.sql
+-- Essential application data
+
+-- Skip for now, will be handled in later migrations

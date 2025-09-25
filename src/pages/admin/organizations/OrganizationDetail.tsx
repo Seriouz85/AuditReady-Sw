@@ -23,8 +23,12 @@ import {
   CreditCard,
   Mail,
   Shield,
-  Activity
+  Activity,
+  Eye,
+  Send
 } from 'lucide-react';
+import { EmailPreviewModal } from '@/components/admin/EmailPreviewModal';
+import { InvitationSuccessModal } from '@/components/admin/InvitationSuccessModal';
 
 interface Organization {
   id: string;
@@ -61,6 +65,9 @@ export const OrganizationDetail: React.FC = () => {
   // Editing states
   const [isEditingOrganization, setIsEditingOrganization] = useState(false);
   const [isInvitingUser, setIsInvitingUser] = useState(false);
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [invitationCount, setInvitationCount] = useState(0);
   
   // Form states
   const [organizationForm, setOrganizationForm] = useState({
@@ -73,8 +80,11 @@ export const OrganizationDetail: React.FC = () => {
   
   const [inviteForm, setInviteForm] = useState({
     email: '',
-    role_id: ''
+    role_id: '',
+    template_id: 'professional'
   });
+  
+  const [selectedEmailForPreview, setSelectedEmailForPreview] = useState('');
 
   const [availableRoles, setAvailableRoles] = useState<any[]>([]);
 
@@ -116,19 +126,19 @@ export const OrganizationDetail: React.FC = () => {
         if (roles && roles.length > 0) {
           setAvailableRoles(roles);
         } else {
-          // Fallback to default roles if none in database
+          // Fallback to default roles if none in database - using proper UUIDs from database
           setAvailableRoles([
-            { id: 'org-admin', name: 'organization_admin', display_name: 'Organization Administrator' },
-            { id: 'compliance-manager', name: 'compliance_manager', display_name: 'Compliance Manager' },
-            { id: 'user', name: 'user', display_name: 'User' }
+            { id: '6cbb32e1-9da3-48aa-ab91-04d1105c8024', name: 'admin', display_name: 'Administrator' },
+            { id: '9b9f8544-be6e-4c1a-8e81-b75e8b598aba', name: 'manager', display_name: 'Manager' },
+            { id: 'f68236dd-08ec-4747-9e6c-bda143dcda63', name: 'viewer', display_name: 'Viewer' }
           ]);
         }
       } catch (roleError) {
         console.warn('Could not load roles from database, using defaults:', roleError);
         setAvailableRoles([
-          { id: 'org-admin', name: 'organization_admin', display_name: 'Organization Administrator' },
-          { id: 'compliance-manager', name: 'compliance_manager', display_name: 'Compliance Manager' },
-          { id: 'user', name: 'user', display_name: 'User' }
+          { id: '6cbb32e1-9da3-48aa-ab91-04d1105c8024', name: 'admin', display_name: 'Administrator' },
+          { id: '9b9f8544-be6e-4c1a-8e81-b75e8b598aba', name: 'manager', display_name: 'Manager' },
+          { id: 'f68236dd-08ec-4747-9e6c-bda143dcda63', name: 'viewer', display_name: 'Viewer' }
         ]);
       }
       
@@ -153,22 +163,65 @@ export const OrganizationDetail: React.FC = () => {
     }
   };
 
-  const handleInviteUser = async () => {
-    if (!id) return;
+  const handlePreviewInvitation = () => {
+    if (!inviteForm.email || !inviteForm.role_id) {
+      setError('Please fill in all required fields');
+      return;
+    }
+    // For preview, use the first email if multiple are provided
+    const firstEmail = inviteForm.email.split(',')[0].trim();
+    setSelectedEmailForPreview(firstEmail);
+    setShowEmailPreview(true);
+  };
+
+  const handleSendInvitation = async (closeDialog = true) => {
+    if (!id || !inviteForm.email || !inviteForm.role_id) return;
     
     try {
-      await adminService.inviteUser({
-        organization_id: id,
-        email: inviteForm.email,
-        role_id: inviteForm.role_id
-      });
+      setShowEmailPreview(false);
       
-      setInviteForm({ email: '', role_id: '' });
-      setIsInvitingUser(false);
+      // Split emails by comma and trim whitespace
+      const emails = inviteForm.email.split(',')
+        .map(email => email.trim())
+        .filter(email => email.length > 0);
+      
+      // Send invitations for each email
+      const promises = emails.map(email => 
+        adminService.inviteUser({
+          organization_id: id,
+          email: email,
+          role_id: inviteForm.role_id,
+          metadata: {
+            template_id: inviteForm.template_id
+          }
+        })
+      );
+      
+      const results = await Promise.allSettled(promises);
+      
+      // Check results
+      const succeeded = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
+      
+      if (succeeded > 0) {
+        setInvitationCount(succeeded);
+        setShowSuccessModal(true);
+      }
+      
+      if (failed > 0) {
+        setError(`Sent ${succeeded} invitations successfully. ${failed} failed.`);
+      } else {
+        setError(null);
+      }
+      
+      if (closeDialog) {
+        setInviteForm({ email: '', role_id: '', template_id: 'professional' });
+        setIsInvitingUser(false);
+      }
       await loadOrganizationData(); // Refresh data
     } catch (err) {
-      console.error('Error inviting user:', err);
-      setError('Failed to send invitation');
+      console.error('Error inviting users:', err);
+      setError('Failed to send invitations');
     }
   };
 
@@ -214,10 +267,9 @@ export const OrganizationDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Enhanced Header */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 shadow-2xl">
+    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+        {/* Organization Header */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6 shadow-xl">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-600/90"></div>
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
@@ -234,8 +286,8 @@ export const OrganizationDetail: React.FC = () => {
                   <Building className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold tracking-tight">{organization.name}</h1>
-                  <p className="text-blue-100 text-lg">
+                  <h1 className="text-3xl font-bold tracking-tight">{organization.name}</h1>
+                  <p className="text-blue-100 text-base">
                     {users.length} users • {organization.subscription_tier} plan
                   </p>
                 </div>
@@ -269,9 +321,8 @@ export const OrganizationDetail: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs defaultValue="overview" className="space-y-4 w-full">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users ({users.length})</TabsTrigger>
@@ -394,7 +445,7 @@ export const OrganizationDetail: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-4">
+        <TabsContent value="users" className="space-y-4 w-full max-w-full overflow-hidden">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Organization Users</h2>
@@ -407,20 +458,27 @@ export const OrganizationDetail: React.FC = () => {
                   Invite User
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent aria-describedby="invite-user-dialog-description" className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Invite New User</DialogTitle>
+                  <p id="invite-user-dialog-description" className="sr-only">
+                    Invite a new user to join this organization by entering their email address and selecting a role.
+                  </p>
                 </DialogHeader>
                 <div className="grid gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
+                    <Label htmlFor="email">Email Address(es)</Label>
+                    <Textarea
                       id="email"
-                      type="email"
-                      placeholder="user@example.com"
+                      placeholder="user@example.com, another@example.com"
                       value={inviteForm.email}
                       onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
+                      rows={3}
+                      className="resize-none"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Enter multiple emails separated by commas
+                    </p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="role">Role</Label>
@@ -438,9 +496,20 @@ export const OrganizationDetail: React.FC = () => {
                     </Select>
                   </div>
                   <div className="flex space-x-2">
-                    <Button onClick={handleInviteUser}>
-                      <Mail className="w-4 h-4 mr-2" />
-                      Send Invitation
+                    <Button 
+                      variant="outline" 
+                      onClick={handlePreviewInvitation}
+                      disabled={!inviteForm.email || !inviteForm.role_id}
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Preview
+                    </Button>
+                    <Button 
+                      onClick={() => handleSendInvitation(true)}
+                      disabled={!inviteForm.email || !inviteForm.role_id}
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Invitation{inviteForm.email.includes(',') ? 's' : ''}
                     </Button>
                     <Button variant="outline" onClick={() => setIsInvitingUser(false)}>
                       Cancel
@@ -466,9 +535,9 @@ export const OrganizationDetail: React.FC = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 w-full max-w-4xl">
               {users.map((user) => (
-                <Card key={user.id}>
+                <Card key={user.id} className="w-full">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
@@ -586,6 +655,32 @@ export const OrganizationDetail: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Email Preview Modal */}
+      <EmailPreviewModal
+        isOpen={showEmailPreview}
+        onClose={() => setShowEmailPreview(false)}
+        onSend={() => handleSendInvitation(false)}
+        invitationData={{
+          email: selectedEmailForPreview || inviteForm.email.split(',')[0].trim(),
+          organizationName: organization?.name || 'Organization',
+          roleName: availableRoles.find(role => role.id === inviteForm.role_id)?.display_name || 'User',
+          inviterName: 'Platform Administrator',
+          invitationToken: 'preview-token-will-be-generated',
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
+        }}
+      />
+      
+      {/* Invitation Success Modal */}
+      <InvitationSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        invitationData={{
+          email: inviteForm.email.includes(',') ? `${invitationCount} users` : inviteForm.email,
+          organizationName: organization?.name || 'Organization',
+          roleName: availableRoles.find(role => role.id === inviteForm.role_id)?.display_name || 'User',
+        }}
+      />
     </div>
   );
 };

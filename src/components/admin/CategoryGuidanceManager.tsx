@@ -432,12 +432,10 @@ export function CategoryGuidanceManager() {
       
       const result = await RAGGenerationService.generateGuidance(
         {
-          id: `temp_${Date.now()}`,
-          category: categoryName,
+          letter: 'a',
           title: `${categoryName} Implementation Guide`,
           description: `Comprehensive guidance for ${categoryName}`,
-          frameworks: ['ISO 27001', 'NIST CSF'],
-          status: 'active'
+          originalText: `Comprehensive guidance for ${categoryName}`
         },
         categoryName,
         { iso27001: true, nist: true }

@@ -1,0 +1,162 @@
+{
+  "config": {
+    "configFile": "/Users/payam/audit-readiness-hub/playwright.config.ts",
+    "rootDir": "/Users/payam/audit-readiness-hub/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "tests/reports/playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "tests/reports/test-results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-quality",
+        "name": "chromium-quality",
+        "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/quality-checker.spec.ts",
+          "**/console-monitor.spec.ts",
+          "**/admin-flows.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/quality-checker.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/quality-checker.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-standard",
+        "name": "chromium-standard",
+        "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
+        "testIgnore": [
+          "**/quality-checker.spec.ts",
+          "**/console-monitor.spec.ts",
+          "**/admin-flows.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/quality-checker.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.53.1",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/admin-flows.spec.ts: Missing semicolon. (158:7)\n\n  156 |   });\n  157 |\n> 158 |   async testUserInvitationFlow(page: Page) {\n      |        ^\n  159 |     console.log('\\n🎯 Testing User Invitation Flow...');\n  160 |     \n  161 |     try {",
+      "stack": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/admin-flows.spec.ts: Missing semicolon. (158:7)\n\n  156 |   });\n  157 |\n> 158 |   async testUserInvitationFlow(page: Page) {\n      |        ^\n  159 |     console.log('\\n🎯 Testing User Invitation Flow...');\n  160 |     \n  161 |     try {",
+      "location": {
+        "file": "/Users/payam/audit-readiness-hub/tests/e2e/admin-flows.spec.ts",
+        "line": 158,
+        "column": 7
+      },
+      "snippet": "\u001b[90m   at \u001b[39madmin-flows.spec.ts:158\n\n  156 |   });\n  157 |\n> 158 |   async testUserInvitationFlow(page: Page) {\n      |       ^\n  159 |     console.log('\\n🎯 Testing User Invitation Flow...');\n  160 |     \n  161 |     try {"
+    },
+    {
+      "message": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/console-monitor.spec.ts: Missing semicolon. (161:7)\n\n  159 |   }\n  160 |\n> 161 |   async performPageInteractions(page: Page) {\n      |        ^\n  162 |     try {\n  163 |       // Scroll to trigger lazy loading\n  164 |       await page.evaluate(() => {",
+      "stack": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/console-monitor.spec.ts: Missing semicolon. (161:7)\n\n  159 |   }\n  160 |\n> 161 |   async performPageInteractions(page: Page) {\n      |        ^\n  162 |     try {\n  163 |       // Scroll to trigger lazy loading\n  164 |       await page.evaluate(() => {",
+      "location": {
+        "file": "/Users/payam/audit-readiness-hub/tests/e2e/console-monitor.spec.ts",
+        "line": 161,
+        "column": 7
+      },
+      "snippet": "\u001b[90m   at \u001b[39mconsole-monitor.spec.ts:161\n\n  159 |   }\n  160 |\n> 161 |   async performPageInteractions(page: Page) {\n      |       ^\n  162 |     try {\n  163 |       // Scroll to trigger lazy loading\n  164 |       await page.evaluate(() => {"
+    },
+    {
+      "message": "Error: No tests found",
+      "stack": "Error: No tests found"
+    }
+  ],
+  "stats": {
+    "startTime": "2025-09-22T21:46:19.277Z",
+    "duration": 327.249,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

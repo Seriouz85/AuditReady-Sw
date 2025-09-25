@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GeneratedContent } from '@/services/compliance/DynamicContentGenerator';
 import { FrameworkSelection } from '@/services/compliance/FrameworkMappingResolver';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -159,13 +159,16 @@ export function ComplianceExportMenu({
     setIsExporting(true);
     
     try {
-      const wb = XLSX.utils.book_new();
+      // Create workbook with ExcelJS (secure replacement for xlsx)
+      const workbook = new ExcelJS.Workbook();
       
       const dataToExport = selectedCategory && data.has(selectedCategory) 
         ? [[selectedCategory, data.get(selectedCategory)!]] 
         : Array.from(data.entries());
       
       // Summary sheet
+      const summarySheet = workbook.addWorksheet('Summary');
+      
       const summaryData = [
         ['Compliance Requirements Export'],
         [''],
@@ -185,16 +188,23 @@ export function ComplianceExportMenu({
         ])
       ];
       
-      const summaryWS = XLSX.utils.aoa_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(wb, summaryWS, 'Summary');
+      summaryData.forEach(row => {
+        summarySheet.addRow(row);
+      });
       
       // Individual category sheets
       for (const [categoryName, content] of dataToExport) {
         if (content.unifiedRequirements.length === 0) continue;
         
-        const categoryData = [
-          ['Requirement ID', 'Title', 'Description', 'Frameworks', 'Priority', 'Priority Level', 'Sub-Requirements', 'References'],
-          ...content.unifiedRequirements.map(req => [
+        const sheetName = categoryName.substring(0, 31); // Excel sheet name limit
+        const categorySheet = workbook.addWorksheet(sheetName);
+        
+        // Add header row
+        categorySheet.addRow(['Requirement ID', 'Title', 'Description', 'Frameworks', 'Priority', 'Priority Level', 'Sub-Requirements', 'References']);
+        
+        // Add data rows
+        content.unifiedRequirements.forEach(req => {
+          categorySheet.addRow([
             req.id,
             req.title,
             req.description,
@@ -203,13 +213,11 @@ export function ComplianceExportMenu({
             req.priority >= 80 ? 'High' : req.priority >= 60 ? 'Medium' : 'Low',
             req.subRequirements.join(' | '),
             req.references.map(ref => `${ref.framework}: ${ref.codes.join(', ')}`).join(' | ')
-          ])
-        ];
-        
-        const ws = XLSX.utils.aoa_to_sheet(categoryData);
+          ]);
+        });
         
         // Set column widths
-        ws['!cols'] = [
+        categorySheet.columns = [
           { width: 15 }, // ID
           { width: 25 }, // Title
           { width: 50 }, // Description
@@ -219,12 +227,17 @@ export function ComplianceExportMenu({
           { width: 60 }, // Sub-Requirements
           { width: 40 }  // References
         ];
-        
-        const sheetName = categoryName.substring(0, 31); // Excel sheet name limit
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
       }
       
-      XLSX.writeFile(wb, generateFileName('xlsx', selectedCategory));
+      // Generate and download file securely using ExcelJS
+      const filename = generateFileName('xlsx', selectedCategory);
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
       setLastExport({ type: 'Excel', timestamp: new Date() });
       
     } catch (error) {

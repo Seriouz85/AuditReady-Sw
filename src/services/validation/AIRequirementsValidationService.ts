@@ -346,7 +346,11 @@ For each suggestion, provide:
 Generate suggestions now:`;
 
       // Use OpenRouter API instead of Gemini
-      const apiKey = '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';
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      if (!apiKey) {
+        console.error('OpenRouter API key not configured');
+        throw new Error('API key not configured');
+      }
       const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
       
       const response = await fetch(endpoint, {
@@ -531,7 +535,11 @@ clarity_score,completeness_score,framework_coverage_score
 Example: 0.75,0.82,0.68`;
 
       // Use OpenRouter API instead of Gemini
-      const apiKey = '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';
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      if (!apiKey) {
+        console.error('OpenRouter API key not configured');
+        throw new Error('API key not configured');
+      }
       const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
       
       const response = await fetch(endpoint, {

@@ -409,15 +409,7 @@ export class StandardsService {
       if (standardError) throw standardError;
 
       // Remove associated organization requirements
-      const { error: requirementsError } = await supabase
-        .from('organization_requirements')
-        .delete()
-        .eq('organization_id', organizationId)
-        .eq('requirement_id', `(SELECT id FROM requirements_library WHERE standard_id = '${standardId}')`);
-
-      // Note: The above query might not work with this syntax. Let's do it properly:
-      
-      // First get requirement IDs for this standard
+      // First get requirement IDs for this standard using parameterized query
       const { data: requirements } = await supabase
         .from('requirements_library')
         .select('id')
@@ -426,11 +418,16 @@ export class StandardsService {
       if (requirements && requirements.length > 0) {
         const requirementIds = requirements.map(req => req.id);
         
-        await supabase
+        const { error: requirementsError } = await supabase
           .from('organization_requirements')
           .delete()
           .eq('organization_id', organizationId)
           .in('requirement_id', requirementIds);
+          
+        if (requirementsError) {
+          console.warn('Error removing organization requirements:', requirementsError);
+          // Continue execution - this is not a critical failure
+        }
       }
 
       return { success: true };

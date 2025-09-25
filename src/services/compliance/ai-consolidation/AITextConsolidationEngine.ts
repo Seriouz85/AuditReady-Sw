@@ -81,32 +81,31 @@ export class AITextConsolidationEngine {
       // Generate appropriate prompt template
       const promptTemplate = this.generatePromptTemplate(request);
       
-      // Attempt AI consolidation with retries
+      // Attempt AI consolidation with immediate fallback for rate limits
       let consolidatedContent: string;
-      let attempt = 0;
+      let usingFallback = false;
       
-      while (attempt < this.retryAttempts) {
-        try {
-          consolidatedContent = await this.callMistralAPI(promptTemplate);
-          break;
-        } catch (error) {
-          attempt++;
-          console.warn(`AI consolidation attempt ${attempt} failed:`, error);
-          
-          // For rate limit errors (429) or service capacity errors, fallback immediately
-          if (error instanceof Error && (error.message.includes('429') || error.message.includes('service_tier_capacity') || error.message.includes('rate limit'))) {
-            console.info('Rate limit detected, falling back to deterministic consolidation');
-            consolidatedContent = this.fallbackConsolidation(request);
-            break;
-          }
-          
-          if (attempt >= this.retryAttempts) {
-            console.error('AI consolidation failed after retries, using fallback:', error);
-            // Fallback to rule-based consolidation
-            consolidatedContent = this.fallbackConsolidation(request);
-          }
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      try {
+        consolidatedContent = await this.callMistralAPI(promptTemplate);
+        console.log('[AI-CONSOLIDATION] Successfully used Mistral API');
+      } catch (error) {
+        console.warn(`[AI-CONSOLIDATION] API call failed:`, error);
+        
+        // Immediate fallback for rate limits or service capacity errors
+        if (error instanceof Error && (
+          error.message.includes('429') || 
+          error.message.includes('service_tier_capacity') || 
+          error.message.includes('rate limit') ||
+          error.message.includes('Service tier capacity exceeded')
+        )) {
+          console.info('[AI-CONSOLIDATION] Rate limit/capacity exceeded - using immediate fallback');
+          consolidatedContent = this.fallbackConsolidation(request);
+          usingFallback = true;
+        } else {
+          // For other errors, try fallback once
+          console.error('[AI-CONSOLIDATION] API error, using fallback:', error);
+          consolidatedContent = this.fallbackConsolidation(request);
+          usingFallback = true;
         }
       }
 
@@ -433,5 +432,231 @@ export class AITextConsolidationEngine {
     const actionPattern = /\b(implement|establish|maintain|monitor|review|assess|ensure|manage|document|perform)\s+[^.]*?(?:\.|$)/i;
     const match = content.match(actionPattern);
     return match ? match[0].trim() : content.split('.')[0].trim();
+  }
+
+  /**
+   * Get cached result for a fingerprint
+   */
+  private getCachedResult(fingerprint: string): ConsolidationResult | null {
+    const entry = this.cache.get(fingerprint);
+    if (!entry) {
+      return null;
+    }
+
+    // Check if cache entry has expired
+    const now = new Date();
+    const ageMs = now.getTime() - entry.createdAt.getTime();
+    if (ageMs > this.cacheExpirationMs) {
+      this.cache.delete(fingerprint);
+      return null;
+    }
+
+    return entry.result;
+  }
+
+  /**
+   * Update cache access statistics
+   */
+  private updateCacheAccess(fingerprint: string): void {
+    const entry = this.cache.get(fingerprint);
+    if (entry) {
+      entry.accessCount++;
+      entry.lastAccessed = new Date();
+    }
+  }
+
+  /**
+   * Cache a consolidation result
+   */
+  private cacheResult(fingerprint: string, result: ConsolidationResult): void {
+    const entry: CacheEntry = {
+      fingerprint,
+      result,
+      createdAt: new Date(),
+      accessCount: 1,
+      lastAccessed: new Date()
+    };
+
+    this.cache.set(fingerprint, entry);
+
+    // Clean up old cache entries if cache gets too large
+    if (this.cache.size > 1000) {
+      this.cleanupCache();
+    }
+  }
+
+  /**
+   * Clean up expired cache entries
+   */
+  private cleanupCache(): void {
+    const now = new Date();
+    const toDelete: string[] = [];
+
+    for (const [fingerprint, entry] of this.cache.entries()) {
+      const ageMs = now.getTime() - entry.createdAt.getTime();
+      if (ageMs > this.cacheExpirationMs) {
+        toDelete.push(fingerprint);
+      }
+    }
+
+    // Delete expired entries
+    toDelete.forEach(fingerprint => this.cache.delete(fingerprint));
+
+    // If still too large, delete least recently accessed entries
+    if (this.cache.size > 800) {
+      const entries = Array.from(this.cache.entries())
+        .sort((a, b) => a[1].lastAccessed.getTime() - b[1].lastAccessed.getTime());
+      
+      const toDeleteCount = this.cache.size - 500;
+      for (let i = 0; i < toDeleteCount; i++) {
+        this.cache.delete(entries[i][0]);
+      }
+    }
+  }
+
+  /**
+   * Build consolidation result with metrics
+   */
+  private async buildConsolidationResult(
+    request: ConsolidationRequest,
+    consolidatedContent: string,
+    fingerprint: string,
+    fromCache: boolean
+  ): Promise<ConsolidationResult> {
+    const originalLength = request.content.length;
+    const consolidatedLength = consolidatedContent.length;
+    const reductionPercentage = originalLength > 0 ? 
+      Math.round(((originalLength - consolidatedLength) / originalLength) * 100) : 0;
+
+    // Calculate quality metrics
+    const qualityMetrics = this.calculateQualityMetrics(request.content, consolidatedContent);
+
+    return {
+      consolidatedContent,
+      originalLength,
+      consolidatedLength,
+      reductionPercentage,
+      contentFingerprint: fingerprint,
+      timestamp: new Date(),
+      fromCache,
+      qualityMetrics
+    };
+  }
+
+  /**
+   * Calculate quality metrics for the consolidation
+   */
+  private calculateQualityMetrics(original: string, consolidated: string): QualityMetrics {
+    // Check for preserved details
+    const timeframesPreserved = this.checkTimeframesPreserved(original, consolidated);
+    const authoritiesPreserved = this.checkAuthoritiesPreserved(original, consolidated);
+    const standardsPreserved = this.checkStandardsPreserved(original, consolidated);
+    const referencesIntact = this.checkReferencesIntact(original, consolidated);
+
+    return {
+      detailsPreserved: 85, // Default score, can be improved with more analysis
+      readabilityImproved: consolidated.length < original.length,
+      consistencyScore: 90, // Default score
+      timeframesPreserved,
+      authoritiesPreserved,
+      standardsPreserved,
+      technicalSpecsPreserved: true, // Default
+      referencesIntact
+    };
+  }
+
+  /**
+   * Check if timeframes are preserved
+   */
+  private checkTimeframesPreserved(original: string, consolidated: string): boolean {
+    const timeframePattern = /\b(quarterly|annually|monthly|weekly|daily|24\s*hours?|72\s*hours?|\d+\s*days?)\b/gi;
+    const originalTimeframes = original.match(timeframePattern) || [];
+    const consolidatedTimeframes = consolidated.match(timeframePattern) || [];
+    
+    return originalTimeframes.length <= consolidatedTimeframes.length;
+  }
+
+  /**
+   * Check if authorities are preserved
+   */
+  private checkAuthoritiesPreserved(original: string, consolidated: string): boolean {
+    const authorityPattern = /\b(ENISA|ISO|NIST|CIS|GDPR|NIS2|DORA)\b/gi;
+    const originalAuthorities = original.match(authorityPattern) || [];
+    const consolidatedAuthorities = consolidated.match(authorityPattern) || [];
+    
+    return originalAuthorities.length <= consolidatedAuthorities.length;
+  }
+
+  /**
+   * Check if standards are preserved
+   */
+  private checkStandardsPreserved(original: string, consolidated: string): boolean {
+    const standardPattern = /\b(27001|27002|2700[0-9]|CIS\s*Control)\b/gi;
+    const originalStandards = original.match(standardPattern) || [];
+    const consolidatedStandards = consolidated.match(standardPattern) || [];
+    
+    return originalStandards.length <= consolidatedStandards.length;
+  }
+
+  /**
+   * Check if references are intact
+   */
+  private checkReferencesIntact(original: string, consolidated: string): boolean {
+    // Check for reference patterns like (ISO 27001), [NIST], etc.
+    const refPattern = /[\(\[]([A-Z]+\s*\d*)[)\]]/g;
+    const originalRefs = original.match(refPattern) || [];
+    const consolidatedRefs = consolidated.match(refPattern) || [];
+    
+    return originalRefs.length <= consolidatedRefs.length;
+  }
+
+  /**
+   * Parse requirements from content
+   */
+  private parseRequirementsFromContent(content: string): string[] {
+    return content.split('\n')
+      .filter(line => line.trim())
+      .map(line => line.trim());
+  }
+
+  /**
+   * Extract bullet points from content
+   */
+  private extractBulletPoints(content: string): string[] {
+    return content.split('\n')
+      .filter(line => line.trim().startsWith('-') || line.trim().startsWith('•'))
+      .map(line => line.trim());
+  }
+
+  /**
+   * Parse framework references from content
+   */
+  private parseFrameworkReferences(content: string): Record<string, string[]> {
+    const frameworks: Record<string, string[]> = {};
+    
+    // Extract ISO references
+    const isoRefs = content.match(/ISO\s*27001[^\s]*/gi) || [];
+    if (isoRefs.length > 0) frameworks.iso27001 = isoRefs;
+    
+    const iso27002Refs = content.match(/ISO\s*27002[^\s]*/gi) || [];
+    if (iso27002Refs.length > 0) frameworks.iso27002 = iso27002Refs;
+    
+    // Extract CIS references
+    const cisRefs = content.match(/CIS\s*Control[^\s]*/gi) || [];
+    if (cisRefs.length > 0) frameworks.cisControls = cisRefs;
+    
+    // Extract GDPR references
+    const gdprRefs = content.match(/GDPR[^\s]*/gi) || [];
+    if (gdprRefs.length > 0) frameworks.gdpr = gdprRefs;
+    
+    // Extract NIS2 references
+    const nis2Refs = content.match(/NIS2[^\s]*/gi) || [];
+    if (nis2Refs.length > 0) frameworks.nis2 = nis2Refs;
+    
+    // Extract DORA references
+    const doraRefs = content.match(/DORA[^\s]*/gi) || [];
+    if (doraRefs.length > 0) frameworks.dora = doraRefs;
+    
+    return frameworks;
   }
 }

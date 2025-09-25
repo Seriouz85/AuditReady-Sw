@@ -155,23 +155,11 @@ const FrameworkMappingTab: React.FC<FrameworkMappingTabProps> = ({
     const nonGdprGroups = filtered.filter(mapping => mapping.id !== '397d97f9-2452-4eb0-b367-024152a5d948');
     const gdprGroups = filtered.filter(mapping => mapping.id === '397d97f9-2452-4eb0-b367-024152a5d948');
     
-    // Number non-GDPR groups sequentially
-    const numberedNonGdpr = nonGdprGroups.map((mapping, index) => {
-      const number = String(index + 1).padStart(2, '0');
-      return {
-        ...mapping,
-        category: mapping.category.startsWith(number + '.') ? mapping.category : `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
-      };
-    });
+    // Use original category names without artificial numbering
+    const numberedNonGdpr = nonGdprGroups;
     
-    // Number GDPR groups to come after non-GDPR groups
-    const numberedGdpr = gdprGroups.map((mapping) => {
-      const number = String(nonGdprGroups.length + 1).padStart(2, '0');
-      return {
-        ...mapping,
-        category: `${number}. ${mapping.category.replace(/^\d+\.\s*/, '')}`
-      };
-    });
+    // Use original GDPR category names without artificial numbering
+    const numberedGdpr = gdprGroups;
     
     return [...numberedNonGdpr, ...numberedGdpr];
   }, [categoryMappings, frameworksSelected, frameworkFilter, categoryFilter]);

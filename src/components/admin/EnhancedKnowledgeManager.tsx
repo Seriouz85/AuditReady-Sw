@@ -518,12 +518,10 @@ export function EnhancedKnowledgeManager() {
       
       const result = await RAGGenerationService.generateGuidance(
         {
-          id: 'temp',
-          category,
+          letter: 'a',
           title: `${category} Implementation`,
           description: `Comprehensive ${category} guidance`,
-          frameworks: FRAMEWORKS,
-          status: 'active'
+          originalText: `Comprehensive ${category} guidance`
         },
         category,
         { iso27001: true, nist: true }

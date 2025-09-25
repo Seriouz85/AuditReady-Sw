@@ -118,7 +118,7 @@ export function useDashboardData() {
     };
 
     fetchDashboardData();
-  }, [organization?.id, user?.id]);
+  }, [organization?.id, isDemo]);
 
   return { stats, loading, error };
 }

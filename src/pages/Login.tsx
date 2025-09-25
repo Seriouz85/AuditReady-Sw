@@ -127,8 +127,10 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check rate limiting (bypass for platform admin)
-    if (isRateLimited && email.toLowerCase() !== 'payam.razifar@gmail.com') {
+    // Check rate limiting (bypass for platform admins)
+    const isPlatformAdminEmail = email.toLowerCase() === 'payam.razifar@gmail.com' || 
+                                 email.toLowerCase() === 'admin@auditready.com';
+    if (isRateLimited && !isPlatformAdminEmail) {
       setLoginError(`Too many failed attempts. Please try again in ${rateLimitTimeLeft} seconds.`);
       return;
     }
@@ -140,10 +142,18 @@ const Login = () => {
       const result = await signIn(email, password);
       
       if (result.error) {
-        setLoginError(result.error);
+        // Handle password security issues specifically
+        if (result.passwordSecurity?.isWeak) {
+          setLoginError(result.passwordSecurity.reason || 'Password security issue detected');
+          toast.error(`🔐 Security Alert: ${result.passwordSecurity.reason || 'Your password has security issues'}`);
+          // Optionally redirect to password reset
+          setShowForgotPassword(true);
+        } else {
+          setLoginError(result.error);
+        }
         
-        // Handle failed login attempt for rate limiting (skip for platform admin)
-        if (email.toLowerCase() !== 'payam.razifar@gmail.com') {
+        // Handle failed login attempt for rate limiting (skip for platform admins)
+        if (!isPlatformAdminEmail) {
           const newAttempts = loginAttempts + 1;
           setLoginAttempts(newAttempts);
           
@@ -171,7 +181,8 @@ const Login = () => {
       // Small delay to ensure auth state propagates before redirect
       setTimeout(() => {
         // Check if this is a platform admin
-        const isPlatformAdmin = email.toLowerCase() === 'payam.razifar@gmail.com';
+        const isPlatformAdmin = email.toLowerCase() === 'payam.razifar@gmail.com' || 
+                               email.toLowerCase() === 'admin@auditready.com';
         
         // Redirect based on user type and context
         if (isPlatformAdmin) {

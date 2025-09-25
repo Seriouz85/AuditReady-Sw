@@ -36,14 +36,31 @@ export class EnhancedUnifiedGuidanceService {
     selectedFrameworks: Record<string, boolean | string>,
     dynamicRequirements?: any // Actual requirements from compliance simplification mapping
   ): Promise<string> {
-    // ALWAYS use CleanGuidanceService for dynamic generation to eliminate hardcoded audit evidence bullets
-    // This ensures exact matching between unified requirements and unified guidance
-    const actualRequirements = dynamicRequirements?.auditReadyUnified?.subRequirements;
+    // CRITICAL FIX: Use the ACTUAL generated content passed from ComplianceSimplification
+    const actualGeneratedContent = dynamicRequirements?.actualGeneratedContent;
+    const frameworkMappings = dynamicRequirements?.frameworkMappings;
+    
+    console.log(`[EnhancedUnifiedGuidanceService] Using actual generated content for ${category}:`, {
+      hasActualContent: !!actualGeneratedContent,
+      actualContentLength: actualGeneratedContent?.length || 0,
+      hasFrameworkMappings: !!frameworkMappings
+    });
+    
+    // Pass the actual generated content to CleanGuidanceService
+    const contentToPass = actualGeneratedContent || dynamicRequirements?.auditReadyUnified?.subRequirements;
+    
+    console.log(`[EnhancedUnifiedGuidanceService] Passing to CleanGuidanceService for ${category}:`, {
+      contentType: typeof contentToPass,
+      isArray: Array.isArray(contentToPass),
+      length: contentToPass?.length || 0,
+      firstFewItems: Array.isArray(contentToPass) ? contentToPass.slice(0, 3) : 'Not array'
+    });
     
     const cleanGuidanceContent = await CleanGuidanceService.getCleanGuidance(
       category,
       selectedFrameworks,
-      actualRequirements
+      contentToPass,
+      frameworkMappings
     );
     
     return cleanGuidanceContent;

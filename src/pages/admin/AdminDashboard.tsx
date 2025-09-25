@@ -8,7 +8,7 @@ import { sentryService } from '@/services/monitoring/SentryService';
 import StripeDirectAPI from '@/services/stripe/StripeDirectAPI';
 import { enhancedStripeService as realTimeStripe } from '@/services/stripe/EnhancedStripeService';
 import { dynamicPricingService } from '@/services/stripe/DynamicPricingService';
-import { stripeAdminService, StripeProduct, StripePrice, StripeCoupon } from '@/services/stripe/StripeAdminService';
+import { stripeAdminService, StripeProduct as AdminStripeProduct, StripePrice as AdminStripePrice, StripeCoupon } from '@/services/stripe/StripeAdminService';
 import { ProductManagementModal } from '@/components/admin/stripe/ProductManagementModal';
 import { CouponManagementModal } from '@/components/admin/stripe/CouponManagementModal';
 import { DatabaseStatus } from '@/components/admin/DatabaseStatus';
@@ -23,6 +23,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
@@ -47,6 +48,7 @@ import {
   Plus,
   Edit,
   Trash2,
+  Power,
   RefreshCw,
   Download,
   Upload,
@@ -109,6 +111,8 @@ interface OrganizationSummary {
   assessmentCount: number;
   lastActivity: string;
   isActive: boolean;
+  industry?: string;
+  companySize?: string;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   revenue?: number;
@@ -122,29 +126,7 @@ interface StripeStats {
   connectionStatus: boolean;
 }
 
-interface StripeProduct {
-  id: string;
-  name: string;
-  description: string;
-  active: boolean;
-  default_price: string;
-  metadata: Record<string, string>;
-  created: number;
-  updated: number;
-}
-
-interface StripePrice {
-  id: string;
-  product: string;
-  unit_amount: number;
-  currency: string;
-  recurring: {
-    interval: string;
-    interval_count: number;
-  } | null;
-  active: boolean;
-  nickname: string;
-}
+// Using imported StripeProduct and StripePrice types from StripeAdminService
 
 // Load Stripe data function with timeout
 const loadStripeData = async () => {
@@ -208,8 +190,8 @@ export const AdminDashboard: React.FC = () => {
   const [organizations, setOrganizations] = useState<OrganizationSummary[]>([]);
   const [stripeStats, setStripeStats] = useState<StripeStats | null>(null);
   const [stripeCustomers, setStripeCustomers] = useState<any[]>([]);
-  const [stripeProducts, setStripeProducts] = useState<StripeProduct[]>([]);
-  const [stripePrices, setStripePrices] = useState<StripePrice[]>([]);
+  const [stripeProducts, setStripeProducts] = useState<AdminStripeProduct[]>([]);
+  const [stripePrices, setStripePrices] = useState<AdminStripePrice[]>([]);
   const [stripeCoupons, setStripeCoupons] = useState<StripeCoupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -222,6 +204,16 @@ export const AdminDashboard: React.FC = () => {
   const [createStandardModalOpen, setCreateStandardModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<StripeProduct | null>(null);
   const [selectedCoupon, setSelectedCoupon] = useState<StripeCoupon | null>(null);
+  
+  // Organization management states
+  const [orgSettingsOpen, setOrgSettingsOpen] = useState(false);
+  const [editingOrg, setEditingOrg] = useState<OrganizationSummary | null>(null);
+  const [orgForm, setOrgForm] = useState({
+    name: '',
+    subscription_tier: '',
+    industry: '',
+    company_size: ''
+  });
 
   useEffect(() => {
     const initializeAdmin = async () => {
@@ -332,7 +324,9 @@ export const AdminDashboard: React.FC = () => {
           userCount: o.organization_users?.length || 0,
           assessmentCount: 0, // Will implement when we have assessments
           lastActivity: o.updated_at,
-          isActive: true
+          isActive: o.is_active !== false, // Default to true if not specified
+          industry: o.industry,
+          companySize: o.company_size
         })));
       } else {
         setOrganizations([]);
@@ -411,19 +405,85 @@ export const AdminDashboard: React.FC = () => {
   const handleCreateOrganization = async () => {
     const name = prompt('Enter organization name:');
     if (!name) return;
+    
+    const industry = prompt('Enter industry (optional):') || '';
+    const companySize = prompt('Enter company size (1-10, 11-50, 51-200, 201-1000, 1000+):') || '';
 
     try {
       await adminService.createOrganization({
         name,
         slug: name.toLowerCase().replace(/\s+/g, '-'),
-        subscription_tier: 'starter'
+        subscription_tier: 'team',
+        industry,
+        company_size: companySize
       });
 
-      console.log('Organization created successfully');
+      toast.success('Organization created successfully');
       await loadDashboardData(); // Refresh data
     } catch (error) {
       console.error('Error creating organization:', error);
+      toast.error('Failed to create organization');
       setError('Failed to create organization');
+    }
+  };
+
+  const handleEditOrganization = (org: OrganizationSummary) => {
+    setEditingOrg(org);
+    setOrgForm({
+      name: org.name,
+      subscription_tier: org.tier,
+      industry: org.industry || '',
+      company_size: org.companySize || ''
+    });
+    setOrgSettingsOpen(true);
+  };
+
+  const handleSaveOrganization = async () => {
+    if (!editingOrg) return;
+
+    try {
+      await adminService.updateOrganization(editingOrg.id, {
+        name: orgForm.name,
+        subscription_tier: orgForm.subscription_tier,
+        industry: orgForm.industry,
+        company_size: orgForm.company_size
+      });
+      
+      toast.success('Organization updated successfully');
+      setOrgSettingsOpen(false);
+      setEditingOrg(null);
+      await loadDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error updating organization:', error);
+      toast.error('Failed to update organization');
+    }
+  };
+
+  const handleToggleOrganizationStatus = async (org: OrganizationSummary) => {
+    try {
+      await adminService.toggleOrganizationStatus(org.id, !org.isActive);
+      toast.success(`Organization ${!org.isActive ? 'activated' : 'deactivated'} successfully`);
+      await loadDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error toggling organization status:', error);
+      toast.error('Failed to change organization status');
+    }
+  };
+
+  const handleDeleteOrganization = async (org: OrganizationSummary) => {
+    const confirmed = confirm(
+      `Are you sure you want to delete "${org.name}"? This action cannot be undone and will remove all associated data.`
+    );
+    
+    if (!confirmed) return;
+
+    try {
+      await adminService.deleteOrganization(org.id);
+      toast.success('Organization deleted successfully');
+      await loadDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error deleting organization:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete organization');
     }
   };
 
@@ -1151,7 +1211,7 @@ export const AdminDashboard: React.FC = () => {
                                 <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                                   {org.name}
                                 </CardTitle>
-                                <CardDescription className="flex items-center space-x-3 mt-2">
+                                <div className="flex items-center space-x-3 mt-2">
                                   <Badge 
                                     variant={getTierBadgeVariant(org.tier)}
                                     className="px-3 py-1 font-medium"
@@ -1176,7 +1236,7 @@ export const AdminDashboard: React.FC = () => {
                                       Stripe Connected
                                     </Badge>
                                   )}
-                                </CardDescription>
+                                </div>
                               </div>
                             </div>
                             <div className="text-right space-y-1">
@@ -1243,7 +1303,7 @@ export const AdminDashboard: React.FC = () => {
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                onClick={() => setSelectedOrg(org)}
+                                onClick={() => handleEditOrganization(org)}
                                 className="border-gray-200 text-gray-700 hover:bg-gray-50"
                               >
                                 <Settings className="w-3 h-3 mr-1" />
@@ -1251,9 +1311,35 @@ export const AdminDashboard: React.FC = () => {
                               </Button>
                               
                               {/* More Actions */}
-                              <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50">
-                                <MoreHorizontal className="w-3 h-3" />
-                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50">
+                                    <MoreHorizontal className="w-3 h-3" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                  <DropdownMenuItem onClick={() => navigate(`/admin/organizations/${org.id}`)}>
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleEditOrganization(org)}>
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Edit Organization
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleToggleOrganizationStatus(org)}>
+                                    <Power className="w-4 h-4 mr-2" />
+                                    {org.isActive ? 'Deactivate' : 'Activate'}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem 
+                                    onClick={() => handleDeleteOrganization(org)}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete Organization
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </div>
                         </CardContent>
@@ -2150,6 +2236,91 @@ export const AdminDashboard: React.FC = () => {
         onClose={() => setCreateStandardModalOpen(false)}
         onStandardCreated={handleStandardCreated}
       />
+
+      {/* Organization Settings Modal */}
+      <Dialog open={orgSettingsOpen} onOpenChange={setOrgSettingsOpen}>
+        <DialogContent className="max-w-2xl" aria-describedby="org-settings-description">
+          <DialogHeader>
+            <DialogTitle>Edit Organization</DialogTitle>
+            <DialogDescription id="org-settings-description">
+              Update organization information and settings.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingOrg && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="org-name" className="text-right">
+                  Name
+                </Label>
+                <Input
+                  id="org-name"
+                  value={orgForm.name}
+                  onChange={(e) => setOrgForm(prev => ({ ...prev, name: e.target.value }))}
+                  className="col-span-3"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="org-tier" className="text-right">
+                  Subscription Tier
+                </Label>
+                <select
+                  id="org-tier"
+                  value={orgForm.subscription_tier}
+                  onChange={(e) => setOrgForm(prev => ({ ...prev, subscription_tier: e.target.value }))}
+                  className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                >
+                  <option value="starter">Starter</option>
+                  <option value="professional">Professional</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="org-industry" className="text-right">
+                  Industry
+                </Label>
+                <Input
+                  id="org-industry"
+                  value={orgForm.industry}
+                  onChange={(e) => setOrgForm(prev => ({ ...prev, industry: e.target.value }))}
+                  placeholder="e.g., Technology, Healthcare"
+                  className="col-span-3"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="org-size" className="text-right">
+                  Company Size
+                </Label>
+                <select
+                  id="org-size"
+                  value={orgForm.company_size}
+                  onChange={(e) => setOrgForm(prev => ({ ...prev, company_size: e.target.value }))}
+                  className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                >
+                  <option value="">Select size</option>
+                  <option value="1-10">1-10 employees</option>
+                  <option value="11-50">11-50 employees</option>
+                  <option value="51-200">51-200 employees</option>
+                  <option value="201-1000">201-1000 employees</option>
+                  <option value="1000+">1000+ employees</option>
+                </select>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOrgSettingsOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveOrganization}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
