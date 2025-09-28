@@ -1,4 +1,4 @@
-import { TrendingUp, Calendar, Clock, Settings2, Lock } from "lucide-react";
+import { TrendingUp, Calendar, Clock, Settings2, Lock, AlertCircle } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";

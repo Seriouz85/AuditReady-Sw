@@ -345,7 +345,7 @@ export const MediaSelector: React.FC<MediaSelectorProps> = ({
                   position: 'relative',
                 }}
               >
-                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                {rowVirtualizer.getVirtualItems().map((virtualRow: any) => {
                   const startIndex = virtualRow.index * (viewMode === 'grid' ? 4 : 1);
                   const endIndex = Math.min(startIndex + (viewMode === 'grid' ? 4 : 1), filteredMedia.length);
                   const items = filteredMedia.slice(startIndex, endIndex);

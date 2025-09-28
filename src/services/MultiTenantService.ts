@@ -5,6 +5,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { AssessmentData, DocumentData, ActivityMetadata } from '@/types/auth';
 
 export interface OrganizationContext {
   organizationId: string;
@@ -18,7 +19,7 @@ export interface QueryOptions {
   limit?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 export interface PaginatedResult<T> {
@@ -255,12 +256,12 @@ export class AssessmentService extends MultiTenantService {
     return this.executeQuery('assessments', options);
   }
 
-  async createAssessment(data: any) {
+  async createAssessment(data: AssessmentData) {
     this.requirePermission('create_assessments');
     return this.createRecord('assessments', data);
   }
 
-  async updateAssessment(id: string, data: any) {
+  async updateAssessment(id: string, data: Partial<AssessmentData>) {
     this.requirePermission('edit_assessments');
     return this.updateRecord('assessments', id, data);
   }
@@ -330,12 +331,12 @@ export class DocumentService extends MultiTenantService {
     return this.executeQuery('document_library', options);
   }
 
-  async createDocument(data: any) {
+  async createDocument(data: DocumentData) {
     this.requirePermission('create_documents');
     return this.createRecord('document_library', data);
   }
 
-  async updateDocument(id: string, data: any) {
+  async updateDocument(id: string, data: Partial<DocumentData>) {
     this.requirePermission('edit_documents');
     return this.updateRecord('document_library', id, data);
   }
@@ -481,7 +482,7 @@ export class ActivityLogService extends MultiTenantService {
     entityId: string,
     entityName?: string,
     description?: string,
-    metadata?: any
+    metadata?: ActivityMetadata
   ) {
     const context = this.getContext();
 

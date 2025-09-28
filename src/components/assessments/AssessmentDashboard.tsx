@@ -71,12 +71,6 @@ export const AssessmentDashboard: React.FC = () => {
 
   const assessmentService = EnhancedAssessmentService.getInstance();
 
-  useEffect(() => {
-    if (organization) {
-      loadDashboardData();
-    }
-  }, [organization, selectedTimeRange, loadDashboardData]);
-
   const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
@@ -100,6 +94,12 @@ export const AssessmentDashboard: React.FC = () => {
       setLoading(false);
     }
   }, [organization, selectedTimeRange]);
+
+  useEffect(() => {
+    if (organization) {
+      loadDashboardData();
+    }
+  }, [organization, selectedTimeRange, loadDashboardData]);
 
   const loadDemoData = () => {
     // Demo metrics

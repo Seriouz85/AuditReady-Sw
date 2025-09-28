@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { 
   MessageSquare, UserPlus, FileUp, CheckCircle, 
   Clock, Users, Filter, RefreshCw, Star,
-  Assignment, Eye, Edit, Upload, Send
+  ClipboardList, Eye, Edit, Upload, Send
 } from 'lucide-react';
 
 interface ActivityFeedProps {
@@ -161,7 +161,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         
         {showFilters && (
           <div className="flex flex-wrap gap-2 mt-4">
-            <Select value={timeFilter} onValueChange={setTimeFilter}>
+            <Select value={timeFilter} onValueChange={(value) => setTimeFilter(value as 'all' | 'today' | 'week' | 'month')}>
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Time" />
               </SelectTrigger>

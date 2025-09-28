@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { SupabaseFunctionResponse } from '@/types/auth';
 
 export interface StripeProduct {
   id: string;
@@ -58,6 +59,10 @@ export interface StripePromotionCode {
   times_redeemed: number;
   created: number;
   metadata: Record<string, string>;
+  restrictions?: {
+    minimum_amount?: number;
+    minimum_amount_currency?: string;
+  };
 }
 
 export interface StripeCustomer {
@@ -180,7 +185,7 @@ class StripeAdminService {
         body: { action: 'list_products' }
       });
       
-      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as SupabaseFunctionResponse<{ products: StripeProduct[] }>;
       
       if (error) {
         console.log('⚠️ StripeAdminService: Edge Function error, using mock data:', error);
@@ -272,7 +277,7 @@ class StripeAdminService {
         body: { action: 'list_prices', productId }
       });
       
-      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as SupabaseFunctionResponse<{ products: StripeProduct[] }>;
       
       if (error) {
         console.log('⚠️ StripeAdminService: Edge Function error fetching prices, using mock data:', error);
@@ -374,7 +379,7 @@ class StripeAdminService {
         body: { action: 'list_coupons' }
       });
       
-      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as SupabaseFunctionResponse<{ products: StripeProduct[] }>;
       
       if (error) {
         console.log('⚠️ StripeAdminService: Coupons Edge Function error, using mock data:', error);
@@ -674,7 +679,7 @@ class StripeAdminService {
         body: { action: 'get_analytics' }
       });
       
-      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as SupabaseFunctionResponse<{ products: StripeProduct[] }>;
       
       if (error) {
         console.log('⚠️ StripeAdminService: Analytics Edge Function error, using zero data:', error);

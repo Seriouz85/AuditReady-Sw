@@ -41,6 +41,15 @@ export function OverviewTabContent({
   maxComplianceMapping,
   onTabChange 
 }: OverviewTabContentProps) {
+  // Convert SelectedFrameworks to Record<string, boolean> for PentagonVisualization
+  const convertedFrameworks: Record<string, boolean> = {
+    iso27001: selectedFrameworks.iso27001,
+    iso27002: selectedFrameworks.iso27002,
+    cisControls: Boolean(selectedFrameworks.cisControls),
+    gdpr: selectedFrameworks.gdpr,
+    nis2: selectedFrameworks.nis2,
+    dora: selectedFrameworks.dora
+  };
   
   return (
     <div className="space-y-6">
@@ -106,8 +115,8 @@ export function OverviewTabContent({
         </CardHeader>
         <CardContent className="p-5">
           <PentagonVisualization 
-            selectedFrameworks={selectedFrameworks}
-            complianceData={maxComplianceMapping}
+            selectedFrameworks={convertedFrameworks}
+            mappingData={maxComplianceMapping || []}
           />
         </CardContent>
       </Card>
@@ -181,7 +190,7 @@ export function OverviewTabContent({
           </CardTitle>
         </CardHeader>
         <CardContent className="p-5">
-          <GettingStartedCard onTabChange={onTabChange} />
+          <GettingStartedCard />
         </CardContent>
       </Card>
     </div>

@@ -48,6 +48,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { format, parseISO, differenceInDays, differenceInHours } from 'date-fns';
+import { formatFileSize } from '@/services/utils/UnifiedUtilityService';
 
 interface BackupPoint {
   id: string;
@@ -509,13 +510,6 @@ export function EnhancedBackupRestore({ organizationId }: EnhancedBackupRestoreP
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const getTimeAgo = (timestamp: string) => {
     const date = parseISO(timestamp);

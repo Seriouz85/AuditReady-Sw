@@ -64,6 +64,15 @@ const syncStatusConfig = {
     badgeVariant: 'outline' as const,
     description: 'No synchronization configured',
   },
+  syncing: {
+    icon: RefreshCw,
+    label: 'Syncing',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    badgeVariant: 'secondary' as const,
+    description: 'Synchronization is currently in progress',
+  },
 };
 
 const sizeConfig = {

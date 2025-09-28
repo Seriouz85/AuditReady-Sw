@@ -32,6 +32,7 @@ import {
   Target,
   Award,
   ChevronRight,
+  X,
   ChevronDown,
   GripVertical,
   CheckCircle,

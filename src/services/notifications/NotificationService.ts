@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { EventCallback, NotificationData, CreateNotificationParams } from '@/types/auth';
 
 export interface Notification {
   id: string;
@@ -7,7 +8,7 @@ export interface Notification {
   type: 'mention' | 'assignment' | 'comment' | 'status_change' | 'deadline' | 'system' | 'collaboration';
   title: string;
   message: string;
-  data: Record<string, any>;
+  data: NotificationData;
   is_read: boolean;
   is_archived: boolean;
   priority: 'low' | 'medium' | 'high' | 'urgent';
@@ -94,7 +95,7 @@ export interface NotificationStats {
 
 class NotificationService {
   private static instance: NotificationService;
-  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
+  private eventListeners: Map<string, EventCallback[]> = new Map();
 
   public static getInstance(): NotificationService {
     if (!NotificationService.instance) {
@@ -292,13 +293,13 @@ class NotificationService {
         id: `notif-${Date.now()}`,
         user_id: params.userId,
         organization_id: params.organizationId,
-        type: params.type as any,
+        type: params.type,
         title: params.title,
         message: params.message,
         data: params.data || {},
         is_read: false,
         is_archived: false,
-        priority: (params.priority as any) || 'medium',
+        priority: params.priority || 'medium',
         action_url: params.actionUrl,
         expires_at: params.expiresAt,
         created_at: new Date().toISOString()
@@ -629,14 +630,14 @@ class NotificationService {
   }
 
   // Event system
-  public on(event: string, callback: (...args: any[]) => void): void {
+  public on(event: string, callback: EventCallback): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
     this.eventListeners.get(event)!.push(callback);
   }
 
-  public off(event: string, callback: (...args: any[]) => void): void {
+  public off(event: string, callback: EventCallback): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);
@@ -646,7 +647,7 @@ class NotificationService {
     }
   }
 
-  private emit(event: string, data?: any): void {
+  private emit(event: string, data?: unknown): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.forEach(callback => callback(data));

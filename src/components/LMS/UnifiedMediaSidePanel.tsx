@@ -26,7 +26,7 @@ import {
   Sparkles,
   Shield,
   ExternalLink,
-  Refresh
+  RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { formatFileSize } from '@/services/utils/UnifiedUtilityService';
 import { unifiedMediaLibraryService, MediaItem, SearchOptions } from '@/services/lms/UnifiedMediaLibraryService';
 import { mediaLibraryService } from '@/services/lms/MediaLibraryService';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,6 +46,7 @@ interface MediaFile {
   filename: string;
   originalName: string;
   mimeType: string;
+  type?: 'image' | 'video' | 'audio' | 'document';
   size: number;
   url: string;
   category: string;
@@ -212,7 +214,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
       if (isDemo) {
         setLocalFiles(demoFiles);
       } else if (organization) {
-        const mediaFiles = await mediaLibraryService.getFiles(organization.id);
+        const mediaFiles = await mediaLibraryService.getMediaLibrary();
         setLocalFiles(mediaFiles);
       }
     } catch (error) {
@@ -257,14 +259,13 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
       const url = await mediaLibraryService.uploadFile(file, selectedCategory);
       
       if (url) {
-        await mediaLibraryService.saveFileMetadata({
-          filename: file.name,
-          originalName: file.name,
+        await mediaLibraryService.createMediaRecord({
+          name: file.name,
+          type: mediaLibraryService.getFileType(file.type),
           mimeType: file.type,
           size: file.size,
           url,
-          category: selectedCategory,
-          organizationId: organization.id
+          description: `Uploaded to ${selectedCategory} category`
         });
         
         toast.success('File uploaded successfully');
@@ -285,13 +286,6 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
     return <FileText className="h-5 w-5 text-gray-500" />;
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -338,6 +332,9 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
     const mimeType = 'mimeType' in item ? item.mimeType : `${item.type}/*`;
     const size = 'size' in item ? item.size : item.fileSize;
     const description = 'description' in item ? item.description : item.description;
+    const fileType = item.type || (mimeType.startsWith('image/') ? 'image' : 
+                      mimeType.startsWith('video/') ? 'video' : 
+                      mimeType.startsWith('audio/') ? 'audio' : 'document');
 
     return (
       <div
@@ -359,7 +356,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
       >
         {/* Thumbnail */}
         <div className="aspect-video bg-gray-100 relative overflow-hidden">
-          {thumbnail || (item.type === 'image' || mimeType.startsWith('image/')) ? (
+          {thumbnail || (fileType === 'image' || mimeType.startsWith('image/')) ? (
             <img 
               src={thumbnail || item.url} 
               alt={originalName}
@@ -371,7 +368,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
             </div>
           )}
           
-          {(item.type === 'video' || mimeType.startsWith('video/')) && (
+          {(fileType === 'video' || mimeType.startsWith('video/')) && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
               <Play className="h-8 w-8 text-white" />
             </div>
@@ -474,7 +471,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
         }}
       >
         <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
-          {thumbnail || (item.type === 'image' || mimeType.startsWith('image/')) ? (
+          {thumbnail || (fileType === 'image' || mimeType.startsWith('image/')) ? (
             <img 
               src={thumbnail || item.url} 
               alt={originalName}

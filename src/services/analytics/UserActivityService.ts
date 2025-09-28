@@ -526,7 +526,7 @@ class UserActivityService {
   async getUserSessions(
     userId: string,
     organizationId: string,
-    _timeRange: 'day' | 'week' | 'month' = 'week'
+    _timeRange: 'day' | 'week' | 'month' | 'year' = 'week'
   ): Promise<UserSession[]> {
     try {
       // In production, query actual sessions

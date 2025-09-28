@@ -1,0 +1,211 @@
+{
+  "timestamp": "2025-09-28T10:06:07.695Z",
+  "tests": [
+    {
+      "name": "CSP Nonce Generation",
+      "passed": true,
+      "details": "Cryptographically secure nonce generation implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.697Z"
+    },
+    {
+      "name": "CSP Strict Directives",
+      "passed": true,
+      "details": "Strict CSP directives configured",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.697Z"
+    },
+    {
+      "name": "CSP Clickjacking Protection",
+      "passed": true,
+      "details": "Clickjacking protection enabled",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.697Z"
+    },
+    {
+      "name": "Demo Account Isolation",
+      "passed": true,
+      "details": "Demo account properly isolated with security checks",
+      "severity": "critical",
+      "timestamp": "2025-09-28T10:06:07.697Z"
+    },
+    {
+      "name": "Permission Validation",
+      "passed": true,
+      "details": "Permission validation system implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.697Z"
+    },
+    {
+      "name": "Platform Admin Security",
+      "passed": true,
+      "details": "Platform admin access properly restricted",
+      "severity": "critical",
+      "timestamp": "2025-09-28T10:06:07.698Z"
+    },
+    {
+      "name": "Schema Validation",
+      "passed": true,
+      "details": "Zod schema validation implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.698Z"
+    },
+    {
+      "name": "XSS Protection",
+      "passed": true,
+      "details": "XSS protection implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.698Z"
+    },
+    {
+      "name": "SQL Injection Protection",
+      "passed": true,
+      "details": "SQL injection protection implemented",
+      "severity": "critical",
+      "timestamp": "2025-09-28T10:06:07.698Z"
+    },
+    {
+      "name": "Adaptive Rate Limiting",
+      "passed": false,
+      "details": "Basic rate limiting only",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.699Z"
+    },
+    {
+      "name": "Attack Detection",
+      "passed": true,
+      "details": "Attack detection implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.699Z"
+    },
+    {
+      "name": "IP-based Rate Limiting",
+      "passed": true,
+      "details": "IP-based rate limiting implemented",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.699Z"
+    },
+    {
+      "name": "AES-GCM Encryption",
+      "passed": true,
+      "details": "AES-GCM encryption implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.699Z"
+    },
+    {
+      "name": "Key Rotation",
+      "passed": true,
+      "details": "Key rotation implemented",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.699Z"
+    },
+    {
+      "name": "Secure Key Generation",
+      "passed": true,
+      "details": "Cryptographically secure key generation",
+      "severity": "critical",
+      "timestamp": "2025-09-28T10:06:07.699Z"
+    },
+    {
+      "name": "CSRF Double-Submit Pattern",
+      "passed": true,
+      "details": "Double-submit CSRF protection implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "CSRF Origin Validation",
+      "passed": true,
+      "details": "Origin validation implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "CSRF Token Expiration",
+      "passed": false,
+      "details": "CSRF tokens may not expire",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "Comprehensive Security Headers",
+      "passed": true,
+      "details": "Comprehensive security headers implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "HSTS Header",
+      "passed": true,
+      "details": "HSTS header implemented",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "Permissions Policy",
+      "passed": true,
+      "details": "Permissions policy implemented",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "MFA Components",
+      "passed": true,
+      "details": "4 MFA components found",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "TOTP Implementation",
+      "passed": false,
+      "details": "TOTP implementation missing",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "MFA Backup Codes",
+      "passed": false,
+      "details": "Backup codes missing",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "Comprehensive Audit Logging",
+      "passed": true,
+      "details": "Comprehensive audit logging implemented",
+      "severity": "high",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "Log Retention",
+      "passed": true,
+      "details": "Log retention implemented",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "Security Event Classification",
+      "passed": true,
+      "details": "Security event classification implemented",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.700Z"
+    },
+    {
+      "name": "Row Level Security",
+      "passed": true,
+      "details": "RLS policies implemented",
+      "severity": "critical",
+      "timestamp": "2025-09-28T10:06:07.712Z"
+    },
+    {
+      "name": "Security Migrations",
+      "passed": true,
+      "details": "Security-specific migrations found",
+      "severity": "medium",
+      "timestamp": "2025-09-28T10:06:07.713Z"
+    }
+  ],
+  "overallScore": 86,
+  "criticalFailures": 0,
+  "warnings": 0
+}

@@ -6,14 +6,16 @@
 import { 
   SmartSemanticAnalyzer,
   RequirementHarmonizer,
-  IntelligentDeduplicationEngine,
-  EnhancedCleanUnifiedRequirementsGenerator,
-  ComplianceAbstractionService,
-  AbstractionConfigurationService,
   createDefaultSemanticAnalyzer,
   createDefaultHarmonizer,
   createDefaultDeduplicationEngine
 } from './index';
+
+import { IntelligentDeduplicationEngine } from './IntelligentDeduplicationEngine';
+import { EnhancedCleanUnifiedRequirementsGenerator } from './EnhancedCleanUnifiedRequirementsGenerator';
+import { ComplianceAbstractionService } from './ComplianceAbstractionService';
+import { AbstractionConfigurationService } from './AbstractionConfigurationService';
+import type { ComplianceEntity } from './types';
 
 import type {
   ProcessedRequirement,
@@ -28,6 +30,7 @@ const TEST_REQUIREMENTS = {
   iso27001: [
     {
       id: 'ISO27001-5.1.1',
+      code: 'A.5.1.1',
       title: 'Information Security Policies',
       description: 'An information security policy shall be defined, approved by management, published and communicated to employees and relevant external parties.',
       category: 'Policy and Organization',
@@ -36,6 +39,7 @@ const TEST_REQUIREMENTS = {
     },
     {
       id: 'ISO27001-6.1.1',
+      code: 'A.6.1.1',
       title: 'Information Security Responsibilities',
       description: 'All information security responsibilities shall be defined and allocated.',
       category: 'Organization',
@@ -44,6 +48,7 @@ const TEST_REQUIREMENTS = {
     },
     {
       id: 'ISO27001-8.2.1',
+      code: 'A.8.2.1',
       title: 'Classification of Information',
       description: 'Information shall be classified in terms of legal requirements, value, criticality and sensitivity to unauthorized disclosure or modification.',
       category: 'Asset Management',
@@ -54,6 +59,7 @@ const TEST_REQUIREMENTS = {
   nis2: [
     {
       id: 'NIS2-Art21.1',
+      code: 'Art.21.1',
       title: 'Cybersecurity Risk Management',
       description: 'Essential and important entities shall take appropriate and proportionate technical, operational and organizational measures to manage the risks posed to the security of network and information systems.',
       category: 'Risk Management',
@@ -62,6 +68,7 @@ const TEST_REQUIREMENTS = {
     },
     {
       id: 'NIS2-Art21.2a',
+      code: 'Art.21.2a',
       title: 'Policies on Cybersecurity Risk Analysis',
       description: 'Entities shall implement policies on cybersecurity risk analysis and information system security.',
       category: 'Policy',
@@ -70,6 +77,7 @@ const TEST_REQUIREMENTS = {
     },
     {
       id: 'NIS2-Art21.2f',
+      code: 'Art.21.2f',
       title: 'Data Classification and Handling',
       description: 'Basic cyber hygiene practices and cybersecurity training, including policies and procedures regarding the use of data classification systems.',
       category: 'Data Management',
@@ -80,6 +88,7 @@ const TEST_REQUIREMENTS = {
   cis: [
     {
       id: 'CIS-1.1',
+      code: '1.1',
       title: 'Establish and Maintain Asset Inventory',
       description: 'Establish and maintain an accurate and up-to-date inventory of all technology assets with the potential to store or process data.',
       category: 'Asset Management',
@@ -88,6 +97,7 @@ const TEST_REQUIREMENTS = {
     },
     {
       id: 'CIS-2.1',
+      code: '2.1',
       title: 'Establish and Maintain Software Inventory',
       description: 'Establish and maintain an accurate and up-to-date inventory of all authorized software that is installed or executed on the enterprise systems.',
       category: 'Asset Management',
@@ -96,6 +106,7 @@ const TEST_REQUIREMENTS = {
     },
     {
       id: 'CIS-3.1',
+      code: '3.1',
       title: 'Establish and Maintain Data Classification Schema',
       description: 'Establish and maintain a data classification schema based on the level of data sensitivity and use.',
       category: 'Data Management',
@@ -168,20 +179,20 @@ export class ComprehensiveTestSuite {
         `Analyzed ${result.processed_requirements.length} requirements`,
         {
           processed: result.processed_requirements.length,
-          clusters: result.semantic_clusters?.length || 0,
-          similarities: result.similarity_matches?.length || 0
+          clusters: result.clusters?.length || 0,
+          similarities: result.similarity_matrix?.length || 0
         },
         duration
       );
 
       // Test semantic clustering
-      if (result.semantic_clusters && result.semantic_clusters.length > 0) {
+      if (result.clusters && result.clusters.length > 0) {
         this.logTest(
           'SmartSemanticAnalyzer',
           'Semantic Clustering',
           'PASS',
-          `Generated ${result.semantic_clusters.length} semantic clusters`,
-          { clusters: result.semantic_clusters.length }
+          `Generated ${result.clusters.length} semantic clusters`,
+          { clusters: result.clusters.length }
         );
       } else {
         this.logTest(
@@ -193,12 +204,12 @@ export class ComprehensiveTestSuite {
       }
 
       // Test similarity matching
-      if (result.similarity_matches && result.similarity_matches.length > 0) {
+      if (result.similarity_matrix && result.similarity_matrix.length > 0) {
         this.logTest(
           'SmartSemanticAnalyzer',
           'Similarity Matching',
           'PASS',
-          `Found ${result.similarity_matches.length} similarity matches`
+          `Found ${result.similarity_matrix.length} similarity matches`
         );
       } else {
         this.logTest(
@@ -236,28 +247,71 @@ export class ComprehensiveTestSuite {
       // Mock clusters for testing - harmonizeRequirements expects clusters and processed requirements
       const mockClusters = [
         {
-          id: 'cluster_1',
-          center: policyRequirements[0],
-          members: policyRequirements,
-          coherence_score: 0.85,
-          theme: 'Security Policies'
+          cluster_id: 'cluster_1',
+          size: policyRequirements.length,
+          centroid: {
+            id: 'processed_0',
+            framework: policyRequirements[0].framework,
+            original_text: policyRequirements[0].description,
+            normalized_text: policyRequirements[0].description.toLowerCase(),
+            entities: [] as ComplianceEntity[],
+            structure: {
+              main_clause: policyRequirements[0].description,
+              sub_clauses: [] as string[],
+              conditions: [] as string[],
+              exceptions: [] as string[],
+              references: [] as string[],
+              action_verbs: [] as string[],
+              domain_context: policyRequirements[0].category || ''
+            },
+            metadata: {
+              category: policyRequirements[0].category || '',
+              domain: 'security',
+              criticality: 'HIGH' as const,
+              complexity: 0.5,
+              word_count: policyRequirements[0].description.split(' ').length,
+              readability_score: 0.7,
+              technical_terms: [] as string[],
+              extracted_at: new Date()
+            },
+            vector: new Array(100).fill(0).map(() => Math.random()),
+            keywords: ['policy', 'security'],
+            hash: 'test_hash_0'
+          },
+          members: policyRequirements.map(req => req.id),
+          quality_score: 0.85,
+          dominant_concepts: ['security', 'policy']
         }
       ];
 
       const processedRequirements = policyRequirements.map((req, index) => ({
-        ...req,
-        processed_id: `processed_${index}`,
-        semantic_vector: new Array(100).fill(0).map(() => Math.random()),
+        id: req.id,
+        framework: req.framework,
+        original_text: req.description,
+        normalized_text: req.description.toLowerCase(),
+        entities: [] as ComplianceEntity[],
         structure: {
-          clauses: [req.description],
-          requirements: [req.description],
-          context: req.category
+          main_clause: req.description,
+          sub_clauses: [] as string[],
+          conditions: [] as string[],
+          exceptions: [] as string[],
+          references: [] as string[],
+          action_verbs: [] as string[],
+          domain_context: req.category || ''
         },
         metadata: {
-          complexity_score: 0.5,
-          specificity_level: 0.7,
-          framework_confidence: 0.9
-        }
+          category: req.category || '',
+          domain: 'security',
+          criticality: 'HIGH' as const,
+          complexity: 0.5,
+          word_count: req.description.split(' ').length,
+          readability_score: 0.7,
+          technical_terms: [] as string[],
+          extracted_at: new Date()
+        },
+        vector: new Array(100).fill(0).map(() => Math.random()),
+        keywords: ['policy', 'security'],
+        hash: `hash_${index}`
       }));
 
       const result = await harmonizer.harmonizeRequirements(mockClusters, processedRequirements);
@@ -276,19 +330,19 @@ export class ComprehensiveTestSuite {
         {
           input: policyRequirements.length,
           output: result.harmonized_requirements.length,
-          conflicts: result.conflicts_resolved?.length || 0,
-          quality_score: result.quality_assessment?.overall_score || 0
+          conflicts: result.failed_harmonizations?.length || 0,
+          quality_score: result.quality_assessment?.overall_quality_score || 0
         },
         duration
       );
 
       // Test conflict resolution
-      if (result.conflicts_resolved && result.conflicts_resolved.length > 0) {
+      if (result.failed_harmonizations && result.failed_harmonizations.length > 0) {
         this.logTest(
           'RequirementHarmonizer',
           'Conflict Resolution',
-          'PASS',
-          `Resolved ${result.conflicts_resolved.length} conflicts`
+          'WARNING',
+          `Found ${result.failed_harmonizations.length} failed harmonizations`
         );
       } else {
         this.logTest(
@@ -301,7 +355,7 @@ export class ComprehensiveTestSuite {
 
       // Test quality assessment
       if (result.quality_assessment) {
-        const qualityScore = result.quality_assessment.overall_score || 0;
+        const qualityScore = result.quality_assessment.overall_quality_score || 0;
         const status = qualityScore >= 0.8 ? 'PASS' : qualityScore >= 0.6 ? 'WARNING' : 'FAIL';
         this.logTest(
           'RequirementHarmonizer',
@@ -344,7 +398,7 @@ export class ComprehensiveTestSuite {
           'IntelligentDeduplicationEngine',
           'Engine Creation',
           'FAIL',
-          `Failed to create engine: ${importError.message}`
+          `Failed to create engine: ${importError instanceof Error ? importError.message : 'Unknown error'}`
         );
         return;
       }
@@ -353,6 +407,7 @@ export class ComprehensiveTestSuite {
       const requirementsWithDuplicates = [
         {
           id: 'REQ-1',
+          code: 'REQ-1',
           title: 'Asset Management Policy',
           description: 'Establish and maintain an inventory of organizational assets.',
           category: 'Asset Management',
@@ -361,6 +416,7 @@ export class ComprehensiveTestSuite {
         },
         {
           id: 'REQ-2',
+          code: 'REQ-2',
           title: 'Asset Inventory Management',
           description: 'Maintain an accurate and up-to-date inventory of all organizational assets.',
           category: 'Asset Management',
@@ -369,6 +425,7 @@ export class ComprehensiveTestSuite {
         },
         {
           id: 'REQ-3',
+          code: 'REQ-3',
           title: 'Unique Requirement',
           description: 'This requirement has completely different content and should not be deduplicated.',
           category: 'Access Control',
@@ -443,18 +500,21 @@ export class ComprehensiveTestSuite {
       ];
 
       const result = await EnhancedCleanUnifiedRequirementsGenerator.generateForCategory('Risk Management', testRequirements, {
-        enable_abstraction: true,
-        abstraction_mode: 'smart',
-        preserve_compliance: true,
-        quality_thresholds: {
-          min_compliance_preservation: 0.95,
-          max_complexity_increase: 1.3,
-          min_clarity_score: 0.7
+        featureFlags: {
+          enableAbstraction: true,
+          enableProgressReporting: true,
+          enableQualityAssurance: true,
+          enableCaching: true
+        },
+        compatibility: {
+          preserveOriginalFormat: true,
+          includeDebugInfo: false,
+          enableLegacyFallback: true
         }
       });
       const duration = Date.now() - startTime;
 
-      if (!result || !result.unified_requirements) {
+      if (!result || (!result.enhanced && !result.original)) {
         this.logTest('EnhancedGenerator', 'Smart Abstraction', 'FAIL', 'No generation result returned');
         return;
       }
@@ -463,20 +523,24 @@ export class ComprehensiveTestSuite {
         'EnhancedGenerator',
         'Smart Abstraction',
         'PASS',
-        `Generated ${result.unified_requirements.length} unified requirements from ${testRequirements.length} inputs`,
+        `Generated unified requirements from ${testRequirements.length} inputs - using ${result.enhanced ? 'enhanced' : 'original'} result`,
         {
           input: testRequirements.length,
-          output: result.unified_requirements.length,
-          abstraction_applied: result.abstraction_applied || false,
-          quality_score: result.quality_metrics?.overall_score || 0
+          output: result.enhanced ? 1 : 1, // Always generates one unified requirement
+          abstraction_applied: result.abstraction.applied,
+          quality_score: result.abstraction.qualityScore
         },
         duration
       );
 
       // Test fallback mechanism
       const fallbackResult = await EnhancedCleanUnifiedRequirementsGenerator.generateForCategory('Risk Management', testRequirements, {
-        enable_abstraction: false,
-        abstraction_mode: 'conservative'
+        featureFlags: {
+          enableAbstraction: false,
+          enableProgressReporting: false,
+          enableQualityAssurance: true,
+          enableCaching: false
+        }
       });
 
       if (fallbackResult) {
@@ -524,21 +588,24 @@ export class ComprehensiveTestSuite {
       };
       const config = {};
       const options = {
-        mode: 'smart' as const,
+        mode: 'MODERATE' as const,
+        frameworks: ['ISO 27001', 'NIS2'],
         enableProgressTracking: true,
         enableCaching: true,
+        enableAuditTrail: true,
+        performanceOptimizations: true,
         fallbackStrategy: 'GRACEFUL' as const,
         qualityThresholds: {
           minimum: 0.7,
-          compliance_preservation: 0.95,
-          complexity_limit: 1.3
+          target: 0.8,
+          excellent: 0.9
         }
       };
 
       const result = await service.processSingleCategory(category, config, options);
       const duration = Date.now() - startTime;
 
-      if (!result || !result.unified_requirements) {
+      if (!result || (!result.enhanced && !result.original)) {
         this.logTest('ComplianceAbstractionService', 'Full Workflow', 'FAIL', 'No workflow result returned');
         return;
       }
@@ -547,23 +614,23 @@ export class ComprehensiveTestSuite {
         'ComplianceAbstractionService',
         'Full Workflow',
         'PASS',
-        `Processed workflow with ${result.unified_requirements.length} final requirements`,
+        `Processed workflow with ${result.enhanced ? 'enhanced' : 'original'} result`,
         {
           input: testRequirements.length,
-          output: result.unified_requirements.length,
-          abstraction_applied: result.abstraction_applied || false,
-          quality_score: result.quality_metrics?.overall_score || 0
+          output: result.enhanced ? 1 : 1,
+          abstraction_applied: result.abstraction.applied,
+          quality_score: result.abstraction.qualityScore
         },
         duration
       );
 
       // Test quality metrics
-      if (result.quality_metrics) {
+      if (result.abstraction.qualityScore !== undefined) {
         this.logTest(
           'ComplianceAbstractionService',
           'Quality Metrics',
           'PASS',
-          `Quality metrics available with score ${result.quality_metrics.overall_score || 0}`
+          `Quality metrics available with score ${result.abstraction.qualityScore}`
         );
       } else {
         this.logTest(
@@ -591,8 +658,8 @@ export class ComprehensiveTestSuite {
     try {
       const service = new AbstractionConfigurationService();
 
-      // Test configuration for smart mode
-      const defaultConfig = await service.getConfigForMode('smart');
+      // Test configuration for MODERATE mode
+      const defaultConfig = await service.getConfigForMode('MODERATE');
       
       if (defaultConfig) {
         this.logTest(
@@ -601,9 +668,9 @@ export class ComprehensiveTestSuite {
           'PASS',
           'Successfully retrieved default configuration',
           {
-            has_semantic_analysis: !!defaultConfig.semantic_analysis,
-            has_harmonization: !!defaultConfig.harmonization,
-            has_deduplication: !!defaultConfig.deduplication
+            mode: defaultConfig.mode,
+            has_deduplication: !!defaultConfig.deduplication,
+            has_analysis: !!defaultConfig.analysis
           }
         );
       } else {
@@ -634,7 +701,7 @@ export class ComprehensiveTestSuite {
         }
       };
 
-      const validationResult = await service.getConfigForMode('custom');
+      const validationResult = await service.getConfigForMode('AGGRESSIVE');
       
       if (validationResult) {
         this.logTest(

@@ -35,6 +35,10 @@ export interface DiagramTemplate {
   tags: string[];
   complexity: 'Simple' | 'Intermediate' | 'Advanced';
   isPremium?: boolean;
+  popularity?: number;
+  rating?: number;
+  downloads?: number;
+  createdAt?: string;
 }
 
 export interface AIConversation {
@@ -137,6 +141,7 @@ export interface DiagramState {
   setTheme: (theme: DiagramTheme) => void;
   togglePanel: (panel: 'leftPanel' | 'rightPanel' | 'bottomPanel') => void;
   setShowGrid: (show: boolean) => void;
+  setShowMinimap: (show: boolean) => void;
   setSnapToGrid: (snap: boolean) => void;
   setGridSize: (size: number) => void;
   
@@ -413,6 +418,10 @@ export const useDiagramStore = create<DiagramState>()(
       
       setShowGrid: (show) => {
         set({ showGrid: show });
+      },
+      
+      setShowMinimap: (show) => {
+        set({ showMinimap: show });
       },
       
       setSnapToGrid: (snap) => {

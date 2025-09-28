@@ -30,20 +30,20 @@ export class MockSupplierAssessmentService {
       const newCampaign: SupplierAssessmentCampaign = {
         id: newCampaignId,
         organization_id: 'demo-org',
-        supplier_id: request.supplierId,
+        supplier_id: request.supplier_id,
         name: request.name,
         description: request.description,
         status: 'draft',
-        due_date: request.dueDate,
+        due_date: request.due_date,
         created_by: 'demo-user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         risk_score: 0,
         risk_level: 'unknown',
-        allow_delegation: request.settings.allowDelegation,
-        require_evidence: request.settings.requireEvidence,
-        send_reminders: request.settings.sendReminders,
-        reminder_frequency_days: request.settings.reminderFrequencyDays
+        allow_delegation: request.settings.allow_delegation,
+        require_evidence: request.settings.require_evidence,
+        send_reminders: request.settings.send_reminders,
+        reminder_frequency_days: request.settings.reminder_frequency_days
       };
       
       // Add to mock data (in-memory only)
@@ -109,9 +109,9 @@ export class MockSupplierAssessmentService {
         const newUser: SupplierExternalUser = {
           id: `ext-user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           supplier_id: 'demo-supplier', // Will be filled from campaign
-          campaign_id: request.campaignId,
+          campaign_id: request.campaign_id,
           email: contact.email,
-          full_name: contact.fullName,
+          full_name: contact.full_name,
           title: contact.title,
           phone: contact.phone,
           role: contact.role,
@@ -139,11 +139,11 @@ export class MockSupplierAssessmentService {
       
       // Find user by email and invite token
       let user = supplierExternalUsers.find(u => 
-        u.email === request.email && u.invite_token === request.inviteToken
+        u.email === request.email && u.invite_token === request.invite_token
       );
       
       // If not found, create a demo user for testing
-      if (!user && request.email === 'demo@example.com' && request.inviteToken === 'demo-token') {
+      if (!user && request.email === 'demo@example.com' && request.invite_token === 'demo-token') {
         user = {
           id: 'demo-ext-user',
           supplier_id: 'supplier-1',

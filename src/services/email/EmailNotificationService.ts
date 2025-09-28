@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { EmailQueueItem } from '@/types/auth';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -76,7 +77,7 @@ export interface TemplateVariable {
   description: string;
   type: 'string' | 'number' | 'date' | 'boolean' | 'object';
   required: boolean;
-  example?: any;
+  example?: string | number | boolean | Record<string, unknown>;
 }
 
 export interface EmailAnalytics {
@@ -691,7 +692,7 @@ export class EmailNotificationService {
     }
   }
 
-  private async handleRetry(queueItem: any, error: string): Promise<void> {
+  private async handleRetry(queueItem: EmailQueueItem, error: string): Promise<void> {
     const maxRetries = queueItem.email_notifications.max_retries;
     const newAttempts = queueItem.attempts + 1;
 

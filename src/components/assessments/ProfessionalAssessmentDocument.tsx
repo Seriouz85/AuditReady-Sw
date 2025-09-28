@@ -1,6 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { UnifiedAssessmentData } from './UnifiedAssessmentTemplate';
+import { formatDate } from '@/services/utils/UnifiedUtilityService';
 
 // Use built-in fonts instead of registering custom fonts to avoid format errors
 // @react-pdf/renderer supports: Helvetica, Times-Roman, Courier
@@ -342,13 +343,6 @@ export const ProfessionalAssessmentDocument: React.FC<ProfessionalAssessmentDocu
     }
   };
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   return (
     <Document title={assessment.name} author="AuditReady Security Platform">

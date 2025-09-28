@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -40,7 +42,9 @@
         "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium-quality",
         "name": "chromium-quality",
         "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
@@ -56,7 +60,9 @@
         "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
@@ -70,7 +76,9 @@
         "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
@@ -84,7 +92,9 @@
         "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium-standard",
         "name": "chromium-standard",
         "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
@@ -102,7 +112,9 @@
         "outputDir": "/Users/payam/audit-readiness-hub/tests/screenshots",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
         "testDir": "/Users/payam/audit-readiness-hub/tests/e2e",
@@ -124,39 +136,115 @@
       "reuseExistingServer": true
     }
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/admin-flows.spec.ts: Missing semicolon. (158:7)\n\n  156 |   });\n  157 |\n> 158 |   async testUserInvitationFlow(page: Page) {\n      |        ^\n  159 |     console.log('\\n🎯 Testing User Invitation Flow...');\n  160 |     \n  161 |     try {",
-      "stack": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/admin-flows.spec.ts: Missing semicolon. (158:7)\n\n  156 |   });\n  157 |\n> 158 |   async testUserInvitationFlow(page: Page) {\n      |        ^\n  159 |     console.log('\\n🎯 Testing User Invitation Flow...');\n  160 |     \n  161 |     try {",
-      "location": {
-        "file": "/Users/payam/audit-readiness-hub/tests/e2e/admin-flows.spec.ts",
-        "line": 158,
-        "column": 7
-      },
-      "snippet": "\u001b[90m   at \u001b[39madmin-flows.spec.ts:158\n\n  156 |   });\n  157 |\n> 158 |   async testUserInvitationFlow(page: Page) {\n      |       ^\n  159 |     console.log('\\n🎯 Testing User Invitation Flow...');\n  160 |     \n  161 |     try {"
-    },
-    {
-      "message": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/console-monitor.spec.ts: Missing semicolon. (161:7)\n\n  159 |   }\n  160 |\n> 161 |   async performPageInteractions(page: Page) {\n      |        ^\n  162 |     try {\n  163 |       // Scroll to trigger lazy loading\n  164 |       await page.evaluate(() => {",
-      "stack": "SyntaxError: /Users/payam/audit-readiness-hub/tests/e2e/console-monitor.spec.ts: Missing semicolon. (161:7)\n\n  159 |   }\n  160 |\n> 161 |   async performPageInteractions(page: Page) {\n      |        ^\n  162 |     try {\n  163 |       // Scroll to trigger lazy loading\n  164 |       await page.evaluate(() => {",
-      "location": {
-        "file": "/Users/payam/audit-readiness-hub/tests/e2e/console-monitor.spec.ts",
-        "line": 161,
-        "column": 7
-      },
-      "snippet": "\u001b[90m   at \u001b[39mconsole-monitor.spec.ts:161\n\n  159 |   }\n  160 |\n> 161 |   async performPageInteractions(page: Page) {\n      |       ^\n  162 |     try {\n  163 |       // Scroll to trigger lazy loading\n  164 |       await page.evaluate(() => {"
-    },
-    {
-      "message": "Error: No tests found",
-      "stack": "Error: No tests found"
+      "title": "demo-validation.spec.ts",
+      "file": "demo-validation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Demo Validation Suite - Board Requirements",
+          "file": "demo-validation.spec.ts",
+          "line": 108,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete demo validation flow",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-standard",
+                  "projectName": "chromium-standard",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8273,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator(':root')\nExpected string: \u001b[32m\"http://localhost:3000/\u001b[7mdashboard\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3000/\u001b[7mapp\u001b[27m\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator(':root')\u001b[22m\n\u001b[2m    5 × locator resolved to <html lang=\"en\" class=\"light\">…</html>\u001b[22m\n\u001b[2m      - unexpected value \"http://localhost:3000/login\"\u001b[22m\n\u001b[2m    4 × locator resolved to <html lang=\"en\" class=\"light\">…</html>\u001b[22m\n\u001b[2m      - unexpected value \"http://localhost:3000/app\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator(':root')\nExpected string: \u001b[32m\"http://localhost:3000/\u001b[7mdashboard\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3000/\u001b[7mapp\u001b[27m\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator(':root')\u001b[22m\n\u001b[2m    5 × locator resolved to <html lang=\"en\" class=\"light\">…</html>\u001b[22m\n\u001b[2m      - unexpected value \"http://localhost:3000/login\"\u001b[22m\n\u001b[2m    4 × locator resolved to <html lang=\"en\" class=\"light\">…</html>\u001b[22m\n\u001b[2m      - unexpected value \"http://localhost:3000/app\"\u001b[22m\n\n    at DemoValidator.validateDemoLogin (/Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts:31:29)\n    at /Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts:113:5",
+                        "location": {
+                          "file": "/Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts",
+                          "column": 29,
+                          "line": 31
+                        },
+                        "snippet": "  29 |     \n  30 |     // Verify successful login\n> 31 |     await expect(this.page).toHaveURL('/dashboard');\n     |                             ^\n  32 |     \n  33 |     // Verify user is recognized\n  34 |     const userIndicator = this.page.locator('[data-testid=\"user-email\"], .user-email, .profile-email');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts",
+                            "column": 29,
+                            "line": 31
+                          },
+                          "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator(':root')\nExpected string: \u001b[32m\"http://localhost:3000/\u001b[7mdashboard\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3000/\u001b[7mapp\u001b[27m\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator(':root')\u001b[22m\n\u001b[2m    5 × locator resolved to <html lang=\"en\" class=\"light\">…</html>\u001b[22m\n\u001b[2m      - unexpected value \"http://localhost:3000/login\"\u001b[22m\n\u001b[2m    4 × locator resolved to <html lang=\"en\" class=\"light\">…</html>\u001b[22m\n\u001b[2m      - unexpected value \"http://localhost:3000/app\"\u001b[22m\n\n\n  29 |     \n  30 |     // Verify successful login\n> 31 |     await expect(this.page).toHaveURL('/dashboard');\n     |                             ^\n  32 |     \n  33 |     // Verify user is recognized\n  34 |     const userIndicator = this.page.locator('[data-testid=\"user-email\"], .user-email, .profile-email');\n    at DemoValidator.validateDemoLogin (/Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts:31:29)\n    at /Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts:113:5"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing demo login functionality...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-28T08:37:44.540Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/payam/audit-readiness-hub/tests/screenshots/demo-validation-Demo-Valid-541d3-mplete-demo-validation-flow-chromium-standard/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/payam/audit-readiness-hub/tests/screenshots/demo-validation-Demo-Valid-541d3-mplete-demo-validation-flow-chromium-standard/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/payam/audit-readiness-hub/tests/screenshots/demo-validation-Demo-Valid-541d3-mplete-demo-validation-flow-chromium-standard/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/payam/audit-readiness-hub/tests/screenshots/demo-validation-Demo-Valid-541d3-mplete-demo-validation-flow-chromium-standard/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/payam/audit-readiness-hub/tests/e2e/demo-validation.spec.ts",
+                        "column": 29,
+                        "line": 31
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f3dfb5397ea355278103-8b199f31b4b20f5dd1f8",
+              "file": "demo-validation.spec.ts",
+              "line": 109,
+              "column": 3
+            }
+          ]
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2025-09-22T21:46:19.277Z",
-    "duration": 327.249,
+    "startTime": "2025-09-28T08:37:44.056Z",
+    "duration": 9757.132,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

@@ -134,8 +134,7 @@ export const CreateStandardModal: React.FC<CreateStandardModalProps> = ({
         version: formData.version,
         type: formData.type,
         description: formData.description,
-        category: formData.category,
-        officialSourceUrl: formData.officialSourceUrl
+        official_url: formData.officialSourceUrl
       });
 
       // If there are requirements, create them
@@ -143,14 +142,12 @@ export const CreateStandardModal: React.FC<CreateStandardModalProps> = ({
         for (const requirement of formData.requirements) {
           if (requirement.requirementCode && requirement.title && requirement.description) {
             await adminService.createRequirement({
-              standardId: standard.id,
-              requirementCode: requirement.requirementCode,
+              standard_id: standard.id,
+              control_id: requirement.requirementCode,
               title: requirement.title,
-              officialDescription: requirement.description,
-              implementationGuidance: requirement.implementationGuidance,
-              section: requirement.section,
-              priority: requirement.priority,
-              tags: requirement.tags
+              description: requirement.description,
+              category: requirement.section,
+              priority: requirement.priority
             });
           }
         }

@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { requirements } from '@/data/mockData';
 // Note: Requirements are now loaded from database - this script may need updating
-// import { requirements } from '@/data/mockData'; // Removed - requirements array is now empty
 
 // Map mock standard IDs to actual Supabase standard IDs
 const standardIdMap: Record<string, string> = {

@@ -21,7 +21,7 @@ import {
   Calendar, Clock, CheckCircle, AlertCircle, XCircle, Info,
   Plus, Search, Filter, Grid3X3, Palette, Sparkles, Crown,
   Zap, TrendingUp, BarChart3, PieChart, LineChart, Activity,
-  Settings, Gear, Tool, Wrench, Hammer, Clipboard, FileText,
+  Settings, Wrench, Hammer, Clipboard, FileText,
   Image, Video, Music, Download, Upload, Share2, Link,
   Mail, Phone, Globe, Home, Car, Plane, Ship, Truck
 } from 'lucide-react';

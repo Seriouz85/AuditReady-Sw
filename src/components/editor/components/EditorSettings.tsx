@@ -134,7 +134,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ isOpen, onClose, curren
     showMinimap, 
     setShowMinimap,
     currentTheme,
-    setCurrentTheme
+    setTheme
   } = useDiagramStore();
 
   // Update setting and track changes

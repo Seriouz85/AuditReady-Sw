@@ -12,7 +12,8 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { SelectedFrameworks, ComplianceMappingData } from '@/utils/FrameworkUtilities';
+import type { SelectedFrameworks } from '@/utils/FrameworkUtilities';
+import type { ComplianceMappingData } from '@/services/compliance/ComplianceUnificationService';
 
 // Type declaration for jsPDF with autoTable
 declare module 'jspdf' {

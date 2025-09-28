@@ -324,7 +324,20 @@ export const organizations = [];
 // Mock Users
 // Users are now loaded from the database via UsersService  
 // Demo account uses the same users from database as regular accounts
-export const users = [];
+export const users = [
+  {
+    id: 'demo-user-123',
+    email: 'demo@auditready.com',
+    name: 'Demo User',
+    role: 'viewer',
+    organization_id: '1',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+    is_active: true,
+    avatar_url: null,
+    last_login: new Date().toISOString()
+  }
+];
 
 // Mock Compliance Stats
 export const complianceStats: ComplianceStats = {

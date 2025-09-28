@@ -1,0 +1,236 @@
+{
+  "timestamp": "2025-09-28T10:04:46.441Z",
+  "version": "1.0.0",
+  "owasp": {
+    "A01: Broken Access Control": {
+      "category": "A01: Broken Access Control",
+      "score": 100,
+      "findings": [
+        {
+          "check": "RBAC Implementation",
+          "status": "PASS",
+          "details": "RBAC guards implemented"
+        },
+        {
+          "check": "Permission Guards",
+          "status": "PASS",
+          "details": "Permission guards implemented"
+        },
+        {
+          "check": "Authentication Context",
+          "status": "PASS",
+          "details": "Authentication context implemented"
+        }
+      ],
+      "status": "COMPLIANT"
+    },
+    "A02: Cryptographic Failures": {
+      "category": "A02: Cryptographic Failures",
+      "score": 100,
+      "findings": [
+        {
+          "check": "Data Encryption Implementation",
+          "status": "PASS",
+          "details": "Data encryption service implemented"
+        },
+        {
+          "check": "HTTPS Configuration",
+          "status": "PASS",
+          "details": "HTTPS configuration detected"
+        },
+        {
+          "check": "Environment Variable Protection",
+          "status": "PASS",
+          "details": "Environment variables protected in .gitignore"
+        }
+      ],
+      "status": "COMPLIANT"
+    },
+    "A03: Injection": {
+      "category": "A03: Injection",
+      "score": 100,
+      "findings": [
+        {
+          "check": "XSS Protection Implementation",
+          "status": "PASS",
+          "details": "XSS protection implemented"
+        },
+        {
+          "check": "Input Validation",
+          "status": "PASS",
+          "details": "Input validation implemented"
+        },
+        {
+          "check": "SQL Injection Protection (RLS)",
+          "status": "PASS",
+          "details": "Row Level Security implemented"
+        }
+      ],
+      "status": "COMPLIANT"
+    },
+    "A04: Insecure Design": {
+      "category": "A04: Insecure Design",
+      "score": 100,
+      "findings": [
+        {
+          "check": "Security Middleware",
+          "status": "PASS",
+          "details": "Security middleware implemented"
+        },
+        {
+          "check": "Security Service Architecture",
+          "status": "PASS",
+          "details": "Security service implemented"
+        },
+        {
+          "check": "Security Testing Framework",
+          "status": "PASS",
+          "details": "Security testing framework implemented"
+        }
+      ],
+      "status": "COMPLIANT"
+    },
+    "A05: Security Misconfiguration": {
+      "category": "A05: Security Misconfiguration",
+      "score": 100,
+      "findings": [
+        {
+          "check": "Content Security Policy",
+          "status": "PASS",
+          "details": "CSP implementation found"
+        },
+        {
+          "check": "Security Headers",
+          "status": "PASS",
+          "details": "Security headers implemented"
+        },
+        {
+          "check": "CSRF Protection",
+          "status": "PASS",
+          "details": "CSRF protection implemented"
+        }
+      ],
+      "status": "COMPLIANT"
+    },
+    "A06: Vulnerable and Outdated Components": {
+      "category": "A06: Vulnerable and Outdated Components",
+      "score": 67,
+      "findings": [
+        {
+          "check": "Security Audit Script",
+          "status": "WARN",
+          "details": "Consider adding npm audit script"
+        },
+        {
+          "check": "Known Vulnerable Packages",
+          "status": "PASS",
+          "details": "No obviously vulnerable packages detected"
+        },
+        {
+          "check": "Dependency Lock File",
+          "status": "PASS",
+          "details": "Dependency lock file present"
+        }
+      ],
+      "status": "PARTIAL"
+    },
+    "A07: Identification and Authentication Failures": {
+      "category": "A07: Identification and Authentication Failures",
+      "score": 100,
+      "findings": [
+        {
+          "check": "Rate Limiting Implementation",
+          "status": "PASS",
+          "details": "Rate limiting implemented"
+        },
+        {
+          "check": "Multi-Factor Authentication",
+          "status": "PASS",
+          "details": "MFA components implemented"
+        },
+        {
+          "check": "Authentication Context Security",
+          "status": "PASS",
+          "details": "Authentication context has security checks"
+        }
+      ],
+      "status": "COMPLIANT"
+    },
+    "A08: Software and Data Integrity Failures": {
+      "category": "A08: Software and Data Integrity Failures",
+      "score": 67,
+      "findings": [
+        {
+          "check": "CI/CD Security",
+          "status": "PASS",
+          "details": "GitHub workflows configured"
+        },
+        {
+          "check": "Package Integrity",
+          "status": "PASS",
+          "details": "Package lock file ensures integrity"
+        },
+        {
+          "check": "Code Quality Checks",
+          "status": "WARN",
+          "details": "No pre-commit hooks detected"
+        }
+      ],
+      "status": "PARTIAL"
+    },
+    "A09: Security Logging and Monitoring Failures": {
+      "category": "A09: Security Logging and Monitoring Failures",
+      "score": 67,
+      "findings": [
+        {
+          "check": "Security Event Logging",
+          "status": "PASS",
+          "details": "Security event logging implemented"
+        },
+        {
+          "check": "Error Monitoring",
+          "status": "WARN",
+          "details": "No error monitoring detected"
+        },
+        {
+          "check": "Database Audit Trail",
+          "status": "PASS",
+          "details": "Database audit tables detected"
+        }
+      ],
+      "status": "PARTIAL"
+    },
+    "A10: Server-Side Request Forgery": {
+      "category": "A10: Server-Side Request Forgery",
+      "score": 100,
+      "findings": [
+        {
+          "check": "URL Validation",
+          "status": "PASS",
+          "details": "URL validation implemented"
+        },
+        {
+          "check": "Network Security Controls",
+          "status": "PASS",
+          "details": "Network security controls present"
+        },
+        {
+          "check": "API Security Layer",
+          "status": "PASS",
+          "details": "API security layer present"
+        }
+      ],
+      "status": "COMPLIANT"
+    }
+  },
+  "vulnerabilities": [],
+  "recommendations": [
+    "Update dependencies to latest secure versions",
+    "Consider implementing additional MFA methods",
+    "Enhance API security documentation",
+    "Implement comprehensive integration tests for security",
+    "Consider adding security scanning to CI/CD pipeline"
+  ],
+  "overallScore": 90,
+  "status": "MOSTLY_COMPLIANT"
+}

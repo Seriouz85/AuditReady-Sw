@@ -6,6 +6,8 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/stores/authStore';
+import { useOrganizationStore } from '@/stores/organizationStore';
 import ReactFlow, {
   Node,
   Edge,
@@ -61,7 +63,7 @@ import EditorSettings from './components/EditorSettings';
 import ColorPalettePopup from './components/ColorPalettePopup';
 import { NodePropertiesPanel } from './NodePropertiesPanel';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
-// import { BackgroundColorPicker } from './BackgroundColorPicker'; // TODO: Implement background picker
+import { BackgroundColorPicker } from './BackgroundColorPicker';
 import SmartNodeTypes from './nodes/SmartNodeTypes';
 import { customEdgeTypes } from './edges/CustomEdges';
 import LoadDiagramModal from './components/LoadDiagramModal';
@@ -96,7 +98,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showEdgePropertiesPanel, setShowEdgePropertiesPanel] = useState(false);
-  // const [showBackgroundPicker, setShowBackgroundPicker] = useState(false); // TODO: Implement background picker
+  const [showBackgroundPicker, setShowBackgroundPicker] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -277,8 +279,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
         version: '1.0',
         nodeCount: nodes.length,
         edgeCount: edges.length,
-        createdBy: 'current-user', // TODO: Get from auth context
-        organizationId: 'current-org', // TODO: Get from auth context
+        createdBy: useAuthStore.getState().user?.email || 'system',
+        organizationId: useOrganizationStore.getState().currentOrganization?.id || 'default',
         isPublic: true, // Shared with organization
         tags: ['process-flow', 'ar-editor']
       };
@@ -287,7 +289,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
       const orgDiagrams = JSON.parse(localStorage.getItem('org-shared-diagrams') || '[]');
       
       // Check if updating existing diagram
-      const existingIndex = orgDiagrams.findIndex(d => d.projectName === diagramData.projectName);
+      const existingIndex = orgDiagrams.findIndex((d: any) => d.projectName === diagramData.projectName);
       if (existingIndex >= 0) {
         orgDiagrams[existingIndex] = { ...orgDiagrams[existingIndex], ...diagramData, updatedAt: new Date().toISOString() };
       } else {
@@ -523,7 +525,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   }, [setNodes, setEdges, storeSetNodes, storeSetEdges, clearSelection]);
 
 
-  // Collaborate mode handler - TODO: Implement collaboration features
+  // Collaborate mode handler - shows invitation modal for real-time collaboration
   const handleCollaborateMode = useCallback(() => {
     setSelectedMode('collaborate');
     setShowCollaborationModal(true);

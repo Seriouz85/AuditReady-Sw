@@ -346,9 +346,9 @@ export const LMSLayout: React.FC<LMSLayoutProps> = ({ children }) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-9 px-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.avatar} />
+                      <AvatarImage src={user?.user_metadata?.avatar_url} />
                       <AvatarFallback>
-                        {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                        {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -356,7 +356,7 @@ export const LMSLayout: React.FC<LMSLayoutProps> = ({ children }) => {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.name || 'User'}</p>
+                      <p className="text-sm font-medium leading-none">{user?.user_metadata?.full_name || 'User'}</p>
                       <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                     </div>
                   </DropdownMenuLabel>

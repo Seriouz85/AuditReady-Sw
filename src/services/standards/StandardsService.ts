@@ -2,6 +2,9 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Standard } from '@/types';
 import { TagInitializationService } from '@/services/initialization/TagInitializationService';
+import { unifiedApiClient } from '@/lib/api/UnifiedApiClient';
+import { createQueryBuilder } from '@/lib/api/SupabaseQueryBuilder';
+import { ApiResponse } from '@/lib/api/types';
 
 export interface OrganizationStandard {
   id: string;
@@ -34,55 +37,51 @@ export class StandardsService {
 
   // Get all available standards from the library (admin-managed)
   async getAvailableStandards(): Promise<Standard[]> {
-    try {
-      console.log('Getting available standards from library');
-      // Check cache first for performance
-      const now = Date.now();
-      if (StandardsService.standardsCache && 
-          now - StandardsService.standardsCache.timestamp < StandardsService.CACHE_DURATION) {
-        console.log('Returning cached standards data');
-        return StandardsService.standardsCache.data;
-      }
+    console.log('Getting available standards from library');
+    
+    // Check cache first for performance
+    const now = Date.now();
+    if (StandardsService.standardsCache && 
+        now - StandardsService.standardsCache.timestamp < StandardsService.CACHE_DURATION) {
+      console.log('Returning cached standards data');
+      return StandardsService.standardsCache.data;
+    }
 
-      console.log('Fetching fresh standards data from database');
-      
-      // Use existing supabase client for public data
-      const { data, error } = await supabase
-        .from('standards_library')
-        .select('id, name, version, type, description, created_at, updated_at')
-        .eq('is_active', true)
-        .order('created_at', { ascending: true }); // Newly added standards appear at bottom
+    console.log('Fetching fresh standards data from database');
+    
+    // Use unified API client for standardized error handling
+    const response = await createQueryBuilder<Standard>('standards_library')
+      .select('id, name, version, type, description, created_at, updated_at')
+      .eq('is_active', true)
+      .order('created_at', { ascending: true })
+      .execute();
 
-      console.log('Standards library query result:', { data, error });
+    console.log('Standards library query result:', response);
 
-      if (error) {
-        console.error('Database query failed, falling back to mock data:', error);
-        throw error;
-      }
-
-      const standards = data?.map(std => ({
-        id: std.id,
-        name: std.name,
-        version: std.version,
-        type: std.type as any,
-        description: std.description || '',
-        category: 'General', // Default category since column doesn't exist
-        requirements: [], // Will be populated separately
-        createdAt: std.created_at,
-        updatedAt: std.updated_at
-      })) || [];
-
-      // Cache the results for future use
-      StandardsService.standardsCache = {
-        data: standards,
-        timestamp: now
-      };
-
-      return standards;
-    } catch (error) {
-      console.error('Error fetching available standards:', error);
+    if (!response.success) {
+      console.error('Database query failed:', response.error);
       return [];
     }
+
+    const standards = response.data?.map(std => ({
+      id: std.id,
+      name: std.name,
+      version: std.version,
+      type: std.type as any,
+      description: std.description || '',
+      category: 'General', // Default category since column doesn't exist
+      requirements: [], // Will be populated separately
+      createdAt: std.created_at,
+      updatedAt: std.updated_at
+    })) || [];
+
+    // Cache the results for future use
+    StandardsService.standardsCache = {
+      data: standards,
+      timestamp: now
+    };
+
+    return standards;
   }
 
   // Clear cache method for when standards are updated

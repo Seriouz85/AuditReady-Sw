@@ -5,6 +5,8 @@
  * against standard-krav with framework-specific recommendations using OpenRouter AI
  */
 
+import { ValidatedRequirement, ValidationAnalysis } from '@/types/auth';
+
 export interface StandardRequirement {
   id: string;
   framework: string; // ISO 27001, NIS2, GDPR, etc.
@@ -294,9 +296,9 @@ export class AIRequirementsValidationService {
    * 🤖 Generate AI-powered suggestions using Gemini AI
    */
   private static async generateAISuggestions(
-    requirement: any,
+    requirement: ValidatedRequirement,
     mappedStandards: StandardRequirement[],
-    analysis: any
+    analysis: ValidationAnalysis
   ): Promise<RequirementSuggestion[]> {
     try {
       const combinedText = requirement.description ? 
@@ -400,7 +402,7 @@ Generate suggestions now:`;
    */
   private static parseAIResponseToSuggestions(
     aiResponse: string, 
-    requirement: any, 
+    requirement: ValidatedRequirement, 
     currentText: string
   ): RequirementSuggestion[] {
     const suggestions: RequirementSuggestion[] = [];
@@ -607,9 +609,9 @@ Example: 0.75,0.82,0.68`;
    * 🔄 Fallback rule-based suggestions when AI fails  
    */
   private static generateRuleBasedSuggestions(
-    requirement: any,
+    requirement: ValidatedRequirement,
     mappedStandards: StandardRequirement[],
-    analysis: any
+    analysis: ValidationAnalysis
   ): RequirementSuggestion[] {
     const suggestions: RequirementSuggestion[] = [];
     const combinedText = requirement.description ? 

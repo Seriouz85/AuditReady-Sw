@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Assessment, Standard } from "@/types";
 import { useTranslation } from "@/lib/i18n";
+import { formatDate } from '@/services/utils/UnifiedUtilityService';
 
 interface ExtendedAssessment extends Assessment {
   standardNames?: string[];
@@ -66,13 +67,6 @@ export const AssessmentCard: React.FC<AssessmentCardProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const getStandardNames = () => {
     return assessment.standardIds.map(id => {
@@ -185,7 +179,7 @@ export const AssessmentCard: React.FC<AssessmentCardProps> = ({
             
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              <span>{formatDate(assessment.startDate)}</span>
+              <span>{formatDate(assessment.startDate, 'PP')}</span>
             </div>
           </div>
           

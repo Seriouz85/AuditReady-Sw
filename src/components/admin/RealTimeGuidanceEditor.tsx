@@ -49,7 +49,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { RAGGenerationService } from '@/services/rag/RAGGenerationService';
-import { RequirementValidationService, type ValidationResult } from '@/services/rag/RequirementValidationService';
+import { RequirementValidationService, type ValidationResult, type ValidationCheck } from '@/services/rag/RequirementValidationService';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -338,12 +338,16 @@ export function RealTimeGuidanceEditor({
 
       if (data) {
         setValidationHistory(data.map(item => ({
-          score: item.validation_score,
-          checks: item.validation_checks,
-          recommendations: item.recommendations,
-          confidence: item.confidence,
-          isValid: item.is_valid,
-          metadata: item.metadata
+          score: item.validation_score as number || 0,
+          checks: item.validation_checks as ValidationCheck[] || [],
+          recommendations: item.recommendations as string[] || [],
+          confidence: item.confidence as number || 0,
+          isValid: item.is_valid as boolean || false,
+          metadata: item.metadata as { processingTime: number; validatedAt: string; validator: string } || {
+            processingTime: 0,
+            validatedAt: new Date().toISOString(),
+            validator: 'system'
+          }
         })));
       }
     } catch (error) {

@@ -417,7 +417,7 @@ export const BeautifulShapeNode = ({ data, selected }: any) => {
       }
     };
     
-    return configs[shapeType] || configs['rectangle'];
+    return (configs as any)[shapeType] || configs['rectangle'];
   };
   
   const config = getShapeConfig(nodeType || shape);

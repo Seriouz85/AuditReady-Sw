@@ -42,6 +42,7 @@ import { supabase } from '@/lib/supabase';
 import { complianceCacheService } from '@/services/compliance/ComplianceCacheService';
 import { EnhancedUnifiedRequirementsGenerator } from '../services/compliance/EnhancedUnifiedRequirementsGenerator';
 import { EnhancedUnifiedGuidanceService } from '../services/compliance/EnhancedUnifiedGuidanceService';
+import { ComplianceSimplificationBusinessLogic } from '@/services/compliance/ComplianceSimplificationBusinessLogic';
 
 // Mock missing services to prevent TypeScript errors
 const ProfessionalGuidanceService = {
@@ -128,77 +129,18 @@ export default function ComplianceSimplification() {
   // Get dynamic framework counts from database
   const { data: frameworkCounts, isLoading: isLoadingCounts } = useFrameworkCounts();
   
-  // Initialize generator
-  const enhancedGenerator = new EnhancedUnifiedRequirementsGenerator();
-  
-  // Helper function to get framework badges for a mapping
+  // Helper function to get framework badges for a mapping - using extracted service
   const getFrameworkBadges = (mapping: any) => {
-    const badges: { name: string; color: string; variant: 'default' | 'secondary' | 'outline' }[] = [];
-    
-    if (selectedFrameworks.iso27001 && mapping.frameworks?.iso27001?.length > 0) {
-      badges.push({ name: 'ISO 27001', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', variant: 'default' });
-    }
-    if (selectedFrameworks.iso27002 && mapping.frameworks?.iso27002?.length > 0) {
-      badges.push({ name: 'ISO 27002', color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30', variant: 'default' });
-    }
-    if (selectedFrameworks.cisControls && mapping.frameworks?.cisControls?.length > 0) {
-      badges.push({ name: `CIS ${selectedFrameworks.cisControls.toUpperCase()}`, color: 'bg-green-500/20 text-green-300 border-green-500/30', variant: 'default' });
-    }
-    if (selectedFrameworks.gdpr && mapping.frameworks?.gdpr?.length > 0) {
-      badges.push({ name: 'GDPR', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', variant: 'default' });
-    }
-    if (selectedFrameworks.nis2 && mapping.frameworks?.nis2?.length > 0) {
-      badges.push({ name: 'NIS2', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', variant: 'default' });
-    }
-    if (selectedFrameworks.dora && mapping.frameworks?.dora?.length > 0) {
-      badges.push({ name: 'DORA', color: 'bg-red-500/20 text-red-300 border-red-500/30', variant: 'default' });
-    }
-    
-    return badges;
+    return ComplianceSimplificationBusinessLogic.getFrameworkBadges(mapping, selectedFrameworks);
   };
 
-  // Function to generate dynamic content for a category using proper template system
+  // Function to generate dynamic content for a category - using extracted service
   const generateDynamicContentForCategory = async (categoryName: string): Promise<any[]> => {
-    const startTime = Date.now();
-    try {
-      console.log('[DYNAMIC-CONTENT] Generating content for:', categoryName);
-      
-      // Find the mapping for this category
-      const currentMapping = filteredUnifiedMappings.find(m => 
-        m.category === categoryName || 
-        m.category.replace(/^\d+\. /, '') === categoryName ||
-        m.category.toLowerCase().includes(categoryName.toLowerCase()) ||
-        categoryName.toLowerCase().includes(m.category.toLowerCase().replace(/^\d+\. /, ''))
-      );
-
-      if (!currentMapping) {
-        console.warn('[NO MAPPING] No mapping found for category:', categoryName);
-        return [];
-      }
-
-      console.log('[MAPPING FOUND]', currentMapping.category, '-> Processing with template system...');
-
-      // Use the template system via bridge to generate proper content
-      const { UnifiedRequirementsBridge } = await import('@/services/compliance/UnifiedRequirementsBridge');
-      
-      const templateContent = await UnifiedRequirementsBridge.generateUnifiedRequirementsForCategory(
-        currentMapping,
-        selectedFrameworks
-      );
-
-      if (templateContent && templateContent.length > 0) {
-        console.log('[DYNAMIC-CONTENT] Generated', templateContent.length, 'sections for', categoryName, 'in', Date.now() - startTime, 'ms');
-        console.log('[DYNAMIC-CONTENT] First section preview:', templateContent[0].substring(0, 100) + '...');
-        return templateContent;
-      } else {
-        console.warn('[DYNAMIC-CONTENT] No template content generated for:', categoryName);
-        return [];
-      }
-
-    } catch (error) {
-      console.error('[DYNAMIC-CONTENT] Error generating template content for', categoryName, ':', error);
-      return [];
-    }
+    return ComplianceSimplificationBusinessLogic.generateDynamicContentForCategory(
+      categoryName,
+      filteredUnifiedMappings,
+      selectedFrameworks
+    );
   };
 
   // PRESERVE ALL EXISTING LOGIC - just use hooks instead of useState
@@ -210,41 +152,11 @@ export default function ComplianceSimplification() {
   
   useEffect(() => {
     const generateFallbackData = async () => {
-      if (!originalMappingData || originalMappingData.length === 0) {
-        console.log('🚨 DATABASE EMPTY - Generating fallback mapping data from CleanUnifiedRequirementsEngine');
-        
-        try {
-          const frameworkIds = FrameworkIdMapper.getFallbackFrameworkIds(selectedFrameworks);
-          const result = await cleanUnifiedRequirementsEngine.generateUnifiedRequirements('demo-org', frameworkIds);
-          
-          // Convert CleanUnifiedRequirementsEngine categories to mappingData format
-          const fallbackMappings = result.categories.map((category, index) => ({
-            id: category.name.toLowerCase().replace(/\s+/g, '-'),
-            category: category.name,
-            frameworks: {
-              iso27001: frameworkIds.includes('iso27001') ? [{ code: 'A.1', title: category.name, description: category.description }] : [],
-              iso27002: frameworkIds.includes('iso27002') ? [{ code: 'B.1', title: category.name, description: category.description }] : [],
-              cisControls: frameworkIds.includes('cisControls') ? [{ code: 'C.1', title: category.name, description: category.description }] : [],
-              gdpr: frameworkIds.includes('gdpr') ? [{ code: 'G.1', title: category.name, description: category.description }] : [],
-              nis2: frameworkIds.includes('nis2') ? [{ code: 'N.1', title: category.name, description: category.description }] : [],
-              dora: frameworkIds.includes('dora') ? [{ code: 'D.1', title: category.name, description: category.description }] : []
-            },
-            auditReadyUnified: {
-              description: category.description,
-              subRequirements: category.consolidatedContent.split('\n\n').filter(s => s.trim())
-            }
-          }));
-          
-          console.log('✅ Generated', fallbackMappings.length, 'fallback mappings');
-          setMappingData(fallbackMappings);
-        } catch (error) {
-          console.error('❌ Error generating fallback data:', error);
-          setMappingData([]);
-        }
-      } else {
-        console.log('✅ Using original database mapping data:', originalMappingData.length, 'items');
-        setMappingData(originalMappingData);
-      }
+      const result = await ComplianceSimplificationBusinessLogic.generateFallbackData(
+        originalMappingData,
+        selectedFrameworks
+      );
+      setMappingData(result);
     };
     
     generateFallbackData();
@@ -263,217 +175,36 @@ export default function ComplianceSimplification() {
   const { data: maxComplianceMapping } = useComplianceMappingData(allFrameworksSelection);
   const { data: industrySectors } = useIndustrySectors();
 
-  // Filter mappings based on selected frameworks
+  // Filter mappings based on selected frameworks - using extracted service
   const filteredMappings = useMemo(() => {
-    if (!mappingData || mappingData.length === 0) {
-      console.log('[FILTER] No mapping data available');
-      return [];
-    }
-
-    console.log('[FILTER] Original mapping data length:', mappingData.length);
-    console.log('[FILTER] Selected frameworks:', selectedFrameworks);
-
-    const filtered = mappingData.filter((mapping: any) => {
-      // Basic mapping validation
-      if (!mapping.frameworks) {
-        console.log('[FILTER] No frameworks in mapping:', mapping.id);
-        return false;
-      }
-
-      // Check for at least one selected framework with requirements
-      const hasSelectedFramework = (
-        (selectedFrameworks.iso27001 && mapping.frameworks.iso27001?.length > 0) ||
-        (selectedFrameworks.iso27002 && mapping.frameworks.iso27002?.length > 0) ||
-        (selectedFrameworks.cisControls && mapping.frameworks.cisControls?.length > 0) ||
-        (selectedFrameworks.gdpr && mapping.frameworks.gdpr?.length > 0) ||
-        (selectedFrameworks.nis2 && mapping.frameworks.nis2?.length > 0) ||
-        (selectedFrameworks.dora && mapping.frameworks.dora?.length > 0)
-      );
-
-      if (!hasSelectedFramework) {
-        return false;
-      }
-
-      // Apply additional filters
-      const matchesFrameworkFilter = filterFramework === 'all' || 
-        (filterFramework === 'iso27001' && mapping.frameworks.iso27001?.length > 0) ||
-        (filterFramework === 'iso27002' && mapping.frameworks.iso27002?.length > 0) ||
-        (filterFramework === 'cisControls' && mapping.frameworks.cisControls?.length > 0) ||
-        (filterFramework === 'gdpr' && mapping.frameworks.gdpr?.length > 0) ||
-        (filterFramework === 'nis2' && mapping.frameworks.nis2?.length > 0) ||
-        (filterFramework === 'dora' && mapping.frameworks.dora?.length > 0);
-
-      const matchesCategoryFilter = filterCategory === 'all' || 
-        mapping.category.toLowerCase().includes(filterCategory.toLowerCase());
-
-      return matchesFrameworkFilter && matchesCategoryFilter;
-    });
-
-    console.log('[FILTER] Filtered mappings length:', filtered.length);
-    return filtered;
+    return ComplianceSimplificationBusinessLogic.filterMappings(
+      mappingData,
+      selectedFrameworks,
+      filterFramework,
+      filterCategory
+    );
   }, [mappingData, selectedFrameworks, filterFramework, filterCategory]);
 
-  // Create filtered unified mappings for the unified tab
+  // Create filtered unified mappings for the unified tab - using extracted service
   const filteredUnifiedMappings = useMemo(() => {
-    return filteredMappings.filter((mapping: any) => {
-      // Show only mappings that have auditReadyUnified content
-      return mapping.auditReadyUnified && 
-             (mapping.auditReadyUnified.subRequirements?.length > 0 || 
-              mapping.auditReadyUnified.description);
-    });
+    return ComplianceSimplificationBusinessLogic.filterUnifiedMappings(filteredMappings);
   }, [filteredMappings]);
 
   console.log('[UNIFIED] Filtered unified mappings:', filteredUnifiedMappings.length);
 
-  // Calculate MAXIMUM statistics for overview (ALL frameworks selected)
+  // Calculate MAXIMUM statistics for overview - using extracted service
   const maximumOverviewStats = useMemo(() => {
-    if (!maxComplianceMapping || maxComplianceMapping.length === 0) {
-      return {
-        maxRequirements: 310, // Actual maximum from database
-        unifiedGroups: 21,
-        reduction: 289,
-        reductionPercentage: '93.2',
-        efficiencyRatio: 15
-      };
-    }
-    
-    // Calculate with ALL frameworks selected
-    const allFrameworksData = maxComplianceMapping || [];
-    
-    // Filter to ensure we have all groups (including GDPR)
-    const processedData = allFrameworksData.filter(mapping => {
-      const hasAnyFramework = 
-        (mapping.frameworks?.['iso27001']?.length || 0) > 0 ||
-        (mapping.frameworks?.['iso27002']?.length || 0) > 0 ||
-        (mapping.frameworks?.['cisControls']?.length || 0) > 0 ||
-        (mapping.frameworks?.['gdpr']?.length || 0) > 0 ||
-        (mapping.frameworks?.['nis2']?.length || 0) > 0 ||
-        (mapping.frameworks?.['dora']?.length || 0) > 0;
-      return hasAnyFramework;
-    });
-    
-    // Calculate total requirements across ALL frameworks
-    const totalRequirements = processedData.reduce((total, mapping) => {
-      const iso27001Count = mapping.frameworks?.['iso27001']?.length || 0;
-      const iso27002Count = mapping.frameworks?.['iso27002']?.length || 0;
-      const cisControlsCount = mapping.frameworks?.['cisControls']?.length || 0;
-      const gdprCount = mapping.frameworks?.['gdpr']?.length || 0;
-      const nis2Count = mapping.frameworks?.['nis2']?.length || 0;
-      const doraCount = mapping.frameworks?.['dora']?.length || 0;
-      
-      return total + iso27001Count + iso27002Count + cisControlsCount + gdprCount + nis2Count + doraCount;
-    }, 0);
-    
-    const unifiedGroups = processedData.length;
-    const reduction = totalRequirements - unifiedGroups;
-    const reductionPercentage = totalRequirements > 0 ? ((reduction / totalRequirements) * 100).toFixed(1) : '0.0';
-    const efficiencyRatio = unifiedGroups > 0 ? Math.round(totalRequirements / unifiedGroups) : 0;
-    
-    return {
-      maxRequirements: totalRequirements,
-      unifiedGroups,
-      reduction,
-      reductionPercentage,
-      efficiencyRatio
-    };
+    return ComplianceSimplificationBusinessLogic.calculateMaximumOverviewStats(maxComplianceMapping || []);
   }, [maxComplianceMapping]);
 
-  // Function to build guidance content from unified requirements - PRESERVE EXACT LOGIC
-  const buildGuidanceFromUnifiedRequirements = async (
-    category: string
-  ): Promise<string> => {
-    try {
-      console.log(`[Unified Guidance Debug] Building guidance for: ${category}`);
-      
-      if (!category || typeof category !== 'string') {
-        console.warn(`[Unified Guidance Debug] Empty category name provided`);
-        return '';
-      }
-
-      const categoryMapping = filteredUnifiedMappings.find(m => m.category === category);
-      if (!categoryMapping) {
-        console.warn(`[Unified Guidance Debug] No category mapping found for: "${category}"`);
-        return '';
-      }
-
-      // DEBUG: Check both data sources to see where the difference is
-      const rawUnifiedRequirements = categoryMapping.auditReadyUnified?.subRequirements || [];
-      const generatedContentForCategory = generatedContent.get(category) || [];
-      
-      console.log(`[DEBUG] Data source comparison for ${category}:`, {
-        'rawUnifiedRequirements.length': rawUnifiedRequirements.length,
-        'generatedContent.length': generatedContentForCategory.length,
-        'rawFirst': rawUnifiedRequirements[0]?.substring(0, 50) + '...',
-        'generatedFirst': generatedContentForCategory[0]?.substring(0, 50) + '...',
-        'rawAll': rawUnifiedRequirements.map((item, i) => `${i}: ${item?.substring(0, 30)}...`),
-        'generatedAll': generatedContentForCategory.map((item, i) => `${i}: ${item?.substring(0, 30)}...`)
-      });
-      
-      // Use the data source that has MORE items (the one unified requirements tab actually uses)
-      const actualRequirements = generatedContentForCategory.length > rawUnifiedRequirements.length 
-        ? generatedContentForCategory 
-        : rawUnifiedRequirements;
-
-      // Create mapping with the data source that has MORE items (same as unified requirements tab)
-      const enhancedMapping = {
-        ...categoryMapping,
-        actualGeneratedContent: actualRequirements,
-        // Include the actual framework mappings for references
-        frameworkMappings: {
-          iso27001: categoryMapping.frameworks?.iso27001 || [],
-          iso27002: categoryMapping.frameworks?.iso27002 || [],
-          cisControls: categoryMapping.frameworks?.cisControls || [],
-          gdpr: categoryMapping.frameworks?.gdpr || [],
-          nis2: categoryMapping.frameworks?.nis2 || [],
-          dora: categoryMapping.frameworks?.dora || []
-        }
-      };
-
-      // Use the original enhanced guidance service but keep references working
-      try {
-        console.log(`[Unified Guidance Debug] Using EnhancedUnifiedGuidanceService with actual generated content for: ${category}`);
-        
-        // Pass the actual generated content to the service
-        const guidanceContent = await EnhancedUnifiedGuidanceService.getEnhancedGuidance(
-          category,
-          selectedFrameworks as unknown as Record<string, string | boolean>,
-          enhancedMapping
-        );
-
-        if (guidanceContent) {
-          console.log(`[Unified Guidance Debug] Successfully generated guidance for ${category}, length: ${guidanceContent.length}`);
-          return guidanceContent;
-        }
-      } catch (error) {
-        console.error(`[Unified Guidance Debug] Error generating guidance for ${category}:`, error);
-      }
-
-      // Fallback: If we have actual requirements, use them directly
-      if (actualRequirements && actualRequirements.length > 0) {
-        console.log(`[Unified Guidance Debug] Using fallback with actual requirements for ${category}`);
-        return actualRequirements.join('\n\n');
-      }
-
-      // Final fallback to basic requirements if everything else fails
-      if (!categoryMapping.auditReadyUnified?.subRequirements?.length) {
-        console.warn(`[Unified Guidance Debug] No unified requirements found for: ${category}`, categoryMapping);
-        return '';
-      }
-
-      console.log(`[Unified Guidance Debug] Building guidance for: ${category}`, {
-        hasMapping: !!categoryMapping,
-        subRequirementsCount: categoryMapping.auditReadyUnified?.subRequirements?.length || 0
-      });
-
-      // Return basic guidance based on requirements
-      return categoryMapping.auditReadyUnified.subRequirements
-        .map((req: any) => `${req.title}: ${req.description}`)
-        .join('\n\n');
-
-    } catch (error) {
-      console.error(`[Unified Guidance Debug] Error in buildGuidanceFromUnifiedRequirements:`, error);
-      return '';
-    }
+  // Function to build guidance content from unified requirements - using extracted service
+  const buildGuidanceFromUnifiedRequirements = async (category: string): Promise<string> => {
+    return ComplianceSimplificationBusinessLogic.buildGuidanceFromUnifiedRequirements(
+      category,
+      filteredUnifiedMappings,
+      selectedFrameworks,
+      generatedContent
+    );
   };
 
   // Export functions using the extracted service
@@ -503,138 +234,19 @@ export default function ComplianceSimplification() {
     }
   };
 
-  // Generate unified requirements function with category-level AI restructuring
+  // Generate unified requirements function - using extracted service
   const generateUnifiedRequirements = async () => {
-    try {
-      console.log('🚀 [GENERATE] Starting unified requirements generation with AI restructuring...');
-      setIsGenerating(true);
-      setShowGeneration(false); // Hide old animation
-      
-      // Force invalidate React Query cache to ensure fresh data including unified categories
-      queryClient.invalidateQueries({ queryKey: ['compliance-mapping-data'] });
-      queryClient.invalidateQueries({ queryKey: ['unified-categories'] });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'compliance-mapping-data' });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'unified-categories' });
-      
-      // Also clear internal compliance cache
-      complianceCacheService.clear('all');
-      
-      // Force clear any guidance content cache
-      complianceCacheService.clear('memory');
-      
-      // Force refetch compliance data to get updated categories
-      await refetchComplianceData();
-      
-      // Initialize progressive animation with categories
-      const categoryProgressList: CategoryProgress[] = filteredMappings.map(mapping => ({
-        name: mapping.category || 'Unknown Category',
-        status: 'pending',
-        progress: 0,
-        processingTimeMs: 0,
-        reductionPercentage: 0,
-        qualityScore: 0
-      }));
-      
-      // DISABLE restructuring animation - no more waiting!
-      setRestructuringCategories([]);
-      setShowRestructuringProgress(false);
-      
-      // DISABLE AI processing - use instant generation
-      const bridgeOptions = {
-        enableAIConsolidation: false, // DISABLED - no more slow processing
-        aiConsolidationOptions: {
-          targetReduction: 0, // No processing needed
-          qualityThreshold: 0,
-          preserveAllDetails: true,
-          useCache: false // No caching for instant results
-        },
-        featureFlags: {
-          enableSmartAbstraction: false,
-          enableQualityAssurance: false, // No quality checks needed
-          enableTraceabilityMatrix: true,
-          enableFallback: true,
-          enableAIConsolidation: false // DISABLED completely
-        },
-        progressCallback: (progress: { category: string; status: string; progress: number }) => {
-          setRestructuringCategories(prev => 
-            prev.map(cat => 
-              cat.name === progress.category 
-                ? { 
-                    ...cat, 
-                    status: progress.status as any, 
-                    progress: progress.progress 
-                  }
-                : cat
-            )
-          );
-        }
-      };
-      
-      // Generate using the enhanced template system with AI restructuring
-      const { UnifiedRequirementsBridge } = await import('@/services/compliance/UnifiedRequirementsBridge');
-      
-      console.log('⚡ [INSTANT] Generating all content instantly - NO MORE WAITING!');
-      
-      // INSTANT processing - generate all content at once
-      const resultMap = new Map<string, string[]>();
-      
-      // Process all categories in parallel - INSTANT results
-      const allContent = await Promise.all(
-        filteredMappings.map(async (mapping) => {
-          const categoryName = mapping.category?.replace(/^\d+\.\s*/, '') || 'Unknown';
-          try {
-            const categoryContent = await UnifiedRequirementsBridge.generateUnifiedRequirementsForCategory(
-              mapping,
-              selectedFrameworks,
-              bridgeOptions
-            );
-            console.log(`✅ [INSTANT] Generated ${categoryName}: ${categoryContent.length} items`);
-            return { categoryName, categoryContent, success: true };
-          } catch (error) {
-            console.error(`❌ [INSTANT] Error processing ${categoryName}:`, error);
-            return { categoryName, categoryContent: [`Error generating content for ${categoryName}`], success: false };
-          }
-        })
-      );
-      
-      // Set all content at once
-      allContent.forEach(({ categoryName, categoryContent }) => {
-        resultMap.set(categoryName, categoryContent);
-      });
-      
-      console.log(`🎉 [INSTANT] Generated all ${resultMap.size} categories INSTANTLY!`);
-
-      if (resultMap.size > 0) {
-        console.log('🎉 [GENERATE] All categories processed, updating content...');
-        
-        // Update the generated content with new template-based content
-        setGeneratedContent(resultMap);
-        
-        // Stay on current tab (mapping) to show the results instead of switching to unified
-        console.log('✅ [GENERATE] Generation completed, staying on current tab');
-      }
-      
-    } catch (error) {
-      console.error('❌ [GENERATE] Error generating unified requirements:', error);
-      
-      // Update all categories to error state
-      setRestructuringCategories(prev => 
-        prev.map(cat => ({ 
-          ...cat, 
-          status: 'error', 
-          progress: 0,
-          errorMessage: 'Generation failed'
-        }))
-      );
-      
-    } finally {
-      setIsGenerating(false);
-      
-      // Hide restructuring progress after completion
-      setTimeout(() => {
-        setShowRestructuringProgress(false);
-      }, 3000);
-    }
+    await ComplianceSimplificationBusinessLogic.generateUnifiedRequirements(
+      filteredMappings,
+      selectedFrameworks,
+      setIsGenerating,
+      setShowGeneration,
+      setGeneratedContent,
+      setRestructuringCategories,
+      setShowRestructuringProgress,
+      queryClient,
+      refetchComplianceData
+    );
   };
 
   // AI Environment validation

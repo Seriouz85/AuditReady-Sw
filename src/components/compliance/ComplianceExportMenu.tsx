@@ -107,16 +107,16 @@ export function ComplianceExportMenu({
         // Category header
         doc.setFontSize(16);
         doc.setTextColor(0, 100, 150);
-        doc.text(categoryName, margin, yPos);
+        doc.text(String(categoryName), margin, yPos);
         yPos += 10;
         
         // Requirements table
-        if (content.unifiedRequirements.length > 0) {
-          const tableData = content.unifiedRequirements.map(req => [
+        if (typeof content === 'object' && content.unifiedRequirements && content.unifiedRequirements.length > 0) {
+          const tableData = content.unifiedRequirements.map((req: any) => [
             req.title,
             req.frameworks.join(', '),
             req.priority >= 80 ? 'High' : req.priority >= 60 ? 'Medium' : 'Low',
-            req.description.substring(0, 200) + (req.description.length > 200 ? '...' : '')
+            String(req.description).substring(0, 200) + (String(req.description).length > 200 ? '...' : '')
           ]);
           
           autoTable(doc, {
@@ -175,17 +175,20 @@ export function ComplianceExportMenu({
         ['Generated:', new Date().toLocaleDateString()],
         ['Frameworks:', getSelectedFrameworkNames().join(', ')],
         ['Categories:', dataToExport.length.toString()],
-        ['Total Requirements:', dataToExport.reduce((sum, [, content]) => sum + content.unifiedRequirements.length, 0).toString()],
+        ['Total Requirements:', dataToExport.reduce((sum, [, content]) => sum + (typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements.length : 0), 0).toString()],
         [''],
         ['Category Summary:'],
         ['Category', 'Requirements', 'High Priority', 'Medium Priority', 'Low Priority'],
-        ...dataToExport.map(([categoryName, content]) => [
-          categoryName,
-          content.unifiedRequirements.length,
-          content.unifiedRequirements.filter(req => req.priority >= 80).length,
-          content.unifiedRequirements.filter(req => req.priority >= 60 && req.priority < 80).length,
-          content.unifiedRequirements.filter(req => req.priority < 60).length
-        ])
+        ...dataToExport.map(([categoryName, content]) => {
+          const requirements = typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements : [];
+          return [
+            categoryName,
+            requirements.length,
+            requirements.filter((req: any) => req.priority >= 80).length,
+            requirements.filter((req: any) => req.priority >= 60 && req.priority < 80).length,
+            requirements.filter((req: any) => req.priority < 60).length
+          ];
+        })
       ];
       
       summaryData.forEach(row => {
@@ -194,16 +197,17 @@ export function ComplianceExportMenu({
       
       // Individual category sheets
       for (const [categoryName, content] of dataToExport) {
-        if (content.unifiedRequirements.length === 0) continue;
+        const requirements = typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements : [];
+        if (requirements.length === 0) continue;
         
-        const sheetName = categoryName.substring(0, 31); // Excel sheet name limit
+        const sheetName = String(categoryName).substring(0, 31); // Excel sheet name limit
         const categorySheet = workbook.addWorksheet(sheetName);
         
         // Add header row
         categorySheet.addRow(['Requirement ID', 'Title', 'Description', 'Frameworks', 'Priority', 'Priority Level', 'Sub-Requirements', 'References']);
         
         // Add data rows
-        content.unifiedRequirements.forEach(req => {
+        requirements.forEach((req: any) => {
           categorySheet.addRow([
             req.id,
             req.title,
@@ -212,7 +216,7 @@ export function ComplianceExportMenu({
             req.priority,
             req.priority >= 80 ? 'High' : req.priority >= 60 ? 'Medium' : 'Low',
             req.subRequirements.join(' | '),
-            req.references.map(ref => `${ref.framework}: ${ref.codes.join(', ')}`).join(' | ')
+            (req.references || []).map((ref: any) => `${ref.framework}: ${(ref.codes || []).join(', ')}`).join(' | ')
           ]);
         });
         
@@ -266,16 +270,19 @@ export function ComplianceExportMenu({
         '',
         '| Category | Requirements | High Priority | Medium Priority | Low Priority |',
         '|----------|-------------|---------------|-----------------|--------------|',
-        ...dataToExport.map(([categoryName, content]) => 
-          `| ${categoryName} | ${content.unifiedRequirements.length} | ${content.unifiedRequirements.filter(req => req.priority >= 80).length} | ${content.unifiedRequirements.filter(req => req.priority >= 60 && req.priority < 80).length} | ${content.unifiedRequirements.filter(req => req.priority < 60).length} |`
-        ),
+        ...dataToExport.map(([categoryName, content]) => {
+          const requirements = typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements : [];
+          return `| ${categoryName} | ${requirements.length} | ${requirements.filter((req: any) => req.priority >= 80).length} | ${requirements.filter((req: any) => req.priority >= 60 && req.priority < 80).length} | ${requirements.filter((req: any) => req.priority < 60).length} |`;
+        }),
         '',
         '## Requirements Details',
         '',
-        ...dataToExport.flatMap(([categoryName, content]) => [
+        ...dataToExport.flatMap(([categoryName, content]) => {
+          const requirements = typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements : [];
+          return [
           `### ${categoryName}`,
           '',
-          ...content.unifiedRequirements.map(req => [
+          ...requirements.map((req: any) => [
             `#### ${req.title}`,
             '',
             `**Frameworks:** ${req.frameworks.join(', ')}`,
@@ -284,21 +291,22 @@ export function ComplianceExportMenu({
             `**Description:**`,
             req.description,
             '',
-            ...(req.subRequirements.length > 0 ? [
+            ...((req.subRequirements || []).length > 0 ? [
               '**Implementation Details:**',
-              ...req.subRequirements.map(sub => `- ${sub}`),
+              ...(req.subRequirements || []).map((sub: any) => `- ${sub}`),
               ''
             ] : []),
-            ...(req.references.length > 0 ? [
+            ...((req.references || []).length > 0 ? [
               '**Framework References:**',
-              ...req.references.map(ref => `- **${ref.framework}:** ${ref.codes.join(', ')}`),
+              ...(req.references || []).map((ref: any) => `- **${ref.framework}:** ${(ref.codes || []).join(', ')}`),
               ''
             ] : []),
             '---',
             ''
           ]).flat(),
           ''
-        ])
+        ];
+        })
       ].join('\n');
       
       const blob = new Blob([content], { type: 'text/markdown' });
@@ -322,9 +330,12 @@ export function ComplianceExportMenu({
 
   const getTotalRequirements = () => {
     if (selectedCategory && data.has(selectedCategory)) {
-      return data.get(selectedCategory)!.unifiedRequirements.length;
+      const content = data.get(selectedCategory)!;
+      return typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements.length : 0;
     }
-    return Array.from(data.values()).reduce((sum, content) => sum + content.unifiedRequirements.length, 0);
+    return Array.from(data.values()).reduce((sum, content) => {
+      return sum + (typeof content === 'object' && content.unifiedRequirements ? content.unifiedRequirements.length : 0);
+    }, 0);
   };
 
   const hasData = data.size > 0 && getTotalRequirements() > 0;

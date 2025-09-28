@@ -33,6 +33,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { formatFileSize } from '@/services/utils/UnifiedUtilityService';
 import { mediaLibraryService } from '@/services/lms/MediaLibraryService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrganization } from '@/hooks/useOrganization';
@@ -206,7 +207,7 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
       if (isDemo) {
         setFiles(demoFiles);
       } else if (organization) {
-        const mediaFiles = await mediaLibraryService.getFiles(organization.id);
+        const mediaFiles = await mediaLibraryService.getMediaLibrary();
         setFiles(mediaFiles);
       }
     } catch (error) {
@@ -226,14 +227,13 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
       const url = await mediaLibraryService.uploadFile(file, selectedCategory);
       
       if (url) {
-        await mediaLibraryService.saveFileMetadata({
-          filename: file.name,
-          originalName: file.name,
+        await mediaLibraryService.createMediaRecord({
+          name: file.name,
+          type: mediaLibraryService.getFileType(file.type),
           mimeType: file.type,
           size: file.size,
           url,
-          category: selectedCategory,
-          organizationId: organization.id
+          description: `Uploaded to ${selectedCategory} category`
         });
         
         toast.success('File uploaded successfully');
@@ -254,13 +254,6 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
     return <FileText className="h-5 w-5 text-gray-500" />;
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

@@ -62,7 +62,7 @@ export const GlassPanel = forwardRef<HTMLDivElement, GlassPanelProps>(({
     WebkitBackdropFilter: MermaidDesignTokens.backdropBlur[blur], // Safari support
     border: border ? `1px solid ${MermaidDesignTokens.colors.glass.border}` : 'none',
     borderRadius: MermaidDesignTokens.borderRadius[borderRadius],
-    padding: MermaidDesignTokens.spacing[padding],
+    padding: (MermaidDesignTokens.spacing as any)[padding],
     boxShadow: getBoxShadow(),
     position: 'relative',
     overflow: 'hidden',

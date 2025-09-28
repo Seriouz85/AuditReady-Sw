@@ -406,14 +406,9 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
                                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                                     <div className="flex-1">
                                       <div className="text-sm text-gray-900 dark:text-white font-medium">
-                                        {req.text || req.title || req}
+                                        {req}
                                       </div>
-                                      {req.description && (
-                                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                          {req.description}
-                                        </div>
-                                      )}
-                                      {req.isEnhanced && (
+                                      {req.includes('NIS2') && (
                                         <div className="flex items-center space-x-1 mt-2">
                                           <Factory className="w-3 h-3 text-green-600" />
                                           <span className="text-xs text-green-600 font-medium">Sector-specific enhancement</span>

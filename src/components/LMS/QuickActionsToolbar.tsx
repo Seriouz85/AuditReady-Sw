@@ -12,7 +12,7 @@ import {
   Undo, 
   Redo, 
   Copy, 
-  Paste, 
+  ClipboardPaste, 
   Settings, 
   Download, 
   Upload,

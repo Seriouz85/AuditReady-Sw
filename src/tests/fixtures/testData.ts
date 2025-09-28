@@ -405,3 +405,9 @@ export const testRisks = {
     updated_at: '2024-01-25T00:00:00Z',
   },
 };
+
+// Direct exports for test compatibility
+export const mockUser = testUsers.adminUser;
+export const mockOrganization = testOrganizations.testOrg;
+export const mockAssessments = testAssessments;
+export const mockRisks = testRisks;

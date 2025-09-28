@@ -8,7 +8,9 @@
  */
 
 // Main orchestrator service
-export { AIGuidanceOrchestrator, aiGuidanceOrchestrator } from './AIGuidanceOrchestrator';
+import { AIGuidanceOrchestrator, aiGuidanceOrchestrator } from './AIGuidanceOrchestrator';
+import { GeminiContentGenerator, geminiContentGenerator } from './GeminiContentGenerator';
+export { AIGuidanceOrchestrator, aiGuidanceOrchestrator };
 export type { 
   GuidanceGenerationRequest,
   UserContext,
@@ -97,11 +99,11 @@ export const CONTENT_TYPES = [
  * Initialize AI services for an organization
  */
 export async function initializeAIServices(organizationId?: string): Promise<{
-  orchestrator: AIGuidanceOrchestrator;
+  orchestrator: typeof aiGuidanceOrchestrator;
   systemHealth: any;
   migrationStatus?: any;
 }> {
-  const orchestrator = AIGuidanceOrchestrator.getInstance();
+  const orchestrator = aiGuidanceOrchestrator;
   
   // Check system health
   const systemHealth = await orchestrator.getSystemHealth();
@@ -140,8 +142,8 @@ export async function getAIServicesStatus(): Promise<{
   };
 }> {
   try {
-    const orchestrator = AIGuidanceOrchestrator.getInstance();
-    const geminiGenerator = GeminiContentGenerator.getInstance();
+    const orchestrator = aiGuidanceOrchestrator;
+    const geminiGenerator = geminiContentGenerator;
     
     const [systemHealth, geminiConfig] = await Promise.all([
       orchestrator.getSystemHealth(),

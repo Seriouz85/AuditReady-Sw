@@ -1,5 +1,6 @@
 import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { AuditLogger } from './AuditLogger';
+import { Standard } from '@/types';
 
 export interface StandardCreateData {
   name: string;
@@ -454,7 +455,7 @@ export class AdminService {
     }
   }
 
-  async createStandard(data: StandardCreateData) {
+  async createStandard(data: StandardCreateData): Promise<Standard> {
     const { data: standard, error } = await supabase
       .from('standards_library')
       .insert([data])

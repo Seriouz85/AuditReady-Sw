@@ -48,6 +48,8 @@ interface Gap {
   description: string;
   recommendation: string;
   impact: string;
+  framework?: string;
+  frameworkLabel?: string;
 }
 
 interface Recommendation {

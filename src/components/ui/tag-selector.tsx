@@ -33,6 +33,7 @@ interface TagSelectorProps {
   onChange: (tags: string[]) => void;
   className?: string;
   showLabels?: boolean;
+  placeholder?: string;
 }
 
 export function TagSelector({
@@ -40,6 +41,7 @@ export function TagSelector({
   onChange,
   className,
   showLabels = true,
+  placeholder = "Search categories...",
 }: TagSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [unifiedCategories, setUnifiedCategories] = React.useState<UnifiedCategory[]>([]);
@@ -228,7 +230,7 @@ export function TagSelector({
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0" align="start">
           <Command>
-            <CommandInput placeholder="Search categories..." />
+            <CommandInput placeholder={placeholder} />
             <CommandList>
               <CommandEmpty>No categories found.</CommandEmpty>
               <CommandGroup>

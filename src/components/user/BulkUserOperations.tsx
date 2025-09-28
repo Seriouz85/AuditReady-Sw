@@ -20,7 +20,7 @@ import {
   BulkInviteParams,
   ImportValidationResult,
 } from '@/services/user/BulkUserOperationsService';
-// import { RBACService } from '@/services/rbac/RBACService'; // TODO: Fix import path
+import { RBACService } from '@/services/rbac/RBACService';
 import { organizationHierarchyService } from '@/services/organization/OrganizationHierarchyService';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -68,7 +68,7 @@ export const BulkUserOperations: React.FC<BulkUserOperationsProps> = ({
 
     try {
       const [rolesData, departmentsData, teamsData] = await Promise.all([
-        Promise.resolve([]), // RBACService.getInstance().getRoles(organization.id), // TODO: Fix service
+        RBACService.getInstance().getRoles(organization.id),
         organizationHierarchyService.getDepartments(organization.id),
         organizationHierarchyService.getTeams(organization.id)
       ]);

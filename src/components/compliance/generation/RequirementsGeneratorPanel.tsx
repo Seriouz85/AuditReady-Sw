@@ -91,7 +91,7 @@ export function useRequirementsGenerator(props: RequirementsGeneratorPanelProps)
         // Enhanced generator for regular categories
         try {
           const generator = new EnhancedUnifiedRequirementsGenerator();
-          const result = await generator.generateUnifiedRequirements(selectedFrameworkArray, categoryName);
+          const result = await generator.generateUnifiedRequirements(categoryName, selectedFrameworkArray);
           
           if (result && Array.isArray(result) && result.length > 0) {
             formattedRequirements = result.map((req: any) => {

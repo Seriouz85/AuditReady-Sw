@@ -3,7 +3,15 @@
  * Export all core components for enterprise compliance management
  */
 
-// Core Engine
+// Import classes and types for internal use in the integrator class
+import { AITextConsolidationEngine } from './AITextConsolidationEngine';
+import { DeterministicAIValidator } from './DeterministicAIValidator';
+import { FrameworkOverlapCalculator } from './FrameworkOverlapCalculator';
+import type { ConsolidationRequest, ConsolidationResult } from './AITextConsolidationEngine';
+import type { ValidationRequest, ValidationResult } from './DeterministicAIValidator';
+import type { FrameworkOverlapRequest, OverlapResult } from './FrameworkOverlapCalculator';
+
+// Core Engine - Re-export for external consumption
 export { AITextConsolidationEngine } from './AITextConsolidationEngine';
 export type {
   ConsolidationRequest,
@@ -11,7 +19,7 @@ export type {
   QualityMetrics
 } from './AITextConsolidationEngine';
 
-// Validation System
+// Validation System - Re-export for external consumption
 export { DeterministicAIValidator } from './DeterministicAIValidator';
 export type {
   ValidationRequest,
@@ -24,7 +32,7 @@ export type {
   ValidationIssue
 } from './DeterministicAIValidator';
 
-// Framework Analysis
+// Framework Analysis - Re-export for external consumption
 export { FrameworkOverlapCalculator } from './FrameworkOverlapCalculator';
 export type {
   FrameworkOverlapRequest,
@@ -35,7 +43,8 @@ export type {
   CategoryOverlap,
   UniqueRequirementAnalysis,
   CoverageAnalysis,
-  WhatIfComparison
+  WhatIfComparison,
+  RequirementData
 } from './FrameworkOverlapCalculator';
 
 // Prompt Templates
@@ -111,7 +120,6 @@ export class AIConsolidationIntegrator {
    */
   getSystemStats() {
     return {
-      cache: this.engine.getCacheStats(),
       version: '1.0.0',
       capabilities: [
         'AI Text Consolidation',
@@ -126,32 +134,13 @@ export class AIConsolidationIntegrator {
 
   /**
    * Clear all caches
+   * Note: Individual engines manage their own caches internally
    */
   clearCaches(): void {
-    this.engine.clearCache();
+    // Engines manage their own caches internally
+    // This is a placeholder for potential future cache management
+    console.log('Cache clearing requested - engines manage caches internally');
   }
 }
 
-// Re-export types for convenience
-export type {
-  ConsolidationPromptConfig,
-  PromptTemplate
-} from './AIPromptTemplates';
-
-export type {
-  ConsolidationRequest,
-  ConsolidationResult,
-  QualityMetrics
-} from './AITextConsolidationEngine';
-
-export type {
-  ValidationRequest,
-  ValidationResult,
-  TraceabilityMatrix
-} from './DeterministicAIValidator';
-
-export type {
-  FrameworkOverlapRequest,
-  OverlapResult,
-  HeatmapData
-} from './FrameworkOverlapCalculator';
+// All types already exported above - no need to re-export

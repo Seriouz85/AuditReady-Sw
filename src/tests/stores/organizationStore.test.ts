@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useOrganizationStore } from '@/stores/organizationStore';
-import { mockOrganization, mockUser } from '../fixtures/testData';
+import { testOrganizations, testUsers, mockOrganization, mockUser } from '../fixtures/testData';
 import { apiClient } from '@/lib/api/client';
 
 // Mock the API client
@@ -15,8 +15,7 @@ describe('organizationStore', () => {
     useOrganizationStore.setState({
       currentOrganization: null,
       organizations: [],
-      isLoading: false,
-      error: null
+      isLoading: false
     });
 
     // Clear all mocks
@@ -30,7 +29,6 @@ describe('organizationStore', () => {
       expect(result.current.currentOrganization).toBeNull();
       expect(result.current.organizations).toEqual([]);
       expect(result.current.isLoading).toBe(false);
-      expect(result.current.error).toBeNull();
     });
   });
 

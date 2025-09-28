@@ -17,7 +17,6 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const EmailVerification = lazy(() => import("./pages/EmailVerification"));
 const PricingAssessment = lazy(() => import("./pages/PricingAssessment"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-// const EnhancedOnboarding = lazy(() => import("./pages/EnhancedOnboarding"));
 const EnhancedOnboardingFlow = lazy(() => import("./pages/EnhancedOnboardingFlow"));
 const GuidedStandardImport = lazy(() => import("./pages/GuidedStandardImport"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
@@ -81,9 +80,9 @@ import { ThemeProvider } from "./providers/ThemeProvider";
 import { ZoomProvider } from "@/components/ui/zoom-toggle";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { GlobalErrorBoundary, ErrorRecoveryProvider } from "./components/error";
 import { AdminLoadingSpinner } from "./components/AdminLoadingSpinner";
-import { LoadingSpinner } from "./components/LoadingSpinner";
+import { PageLoading } from "./components/loading/LoadingStates";
 import { isDocsSubdomain } from "./utils/subdomainRouter";
 
 const queryClient = new QueryClient();
@@ -104,135 +103,138 @@ const App = () => {
   if (isDocsSubdomain()) {
     // If we're on docs subdomain, render Documentation directly
     return (
-      <ErrorBoundary context="app-root">
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <ZoomProvider>
-              <LanguageProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter basename={basename}>
-                    <Routes>
-                      <Route path="*" element={
-                        <Suspense fallback={<LoadingSpinner text="Loading documentation..." />}>
-                          <Documentation />
-                        </Suspense>
-                      } />
-                    </Routes>
-                  </BrowserRouter>
-                </TooltipProvider>
-              </LanguageProvider>
-            </ZoomProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
+      <GlobalErrorBoundary>
+        <ErrorRecoveryProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <ZoomProvider>
+                <LanguageProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter basename={basename}>
+                      <Routes>
+                        <Route path="*" element={
+                          <Suspense fallback={<PageLoading title="Loading documentation..." />}>
+                            <Documentation />
+                          </Suspense>
+                        } />
+                      </Routes>
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </LanguageProvider>
+              </ZoomProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </ErrorRecoveryProvider>
+      </GlobalErrorBoundary>
     );
   }
 
   // Regular app routing
   return (
-  <ErrorBoundary context="app-root">
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <ZoomProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter 
-                  basename={basename}
-                  future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true
-                  }}
-                >
-                <ScrollToTop />
+  <GlobalErrorBoundary>
+    <ErrorRecoveryProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <ZoomProvider>
+            <LanguageProvider>
+              <AuthProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter 
+                    basename={basename}
+                    future={{
+                      v7_startTransition: true,
+                      v7_relativeSplatPath: true
+                    }}
+                  >
+                  <ScrollToTop />
                 <Routes>
                   {/* Public pages */}
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/pricing" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading pricing..." />}>
+                    <Suspense fallback={<PageLoading title="Loading pricing..." />}>
                       <PricingAssessment />
                     </Suspense>
                   } />
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/reset-password" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <ResetPassword />
                     </Suspense>
                   } />
                   <Route path="/email-verification" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <EmailVerification />
                     </Suspense>
                   } />
                   <Route path="/invite/:token" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading invitation..." />}>
+                    <Suspense fallback={<PageLoading title="Loading invitation..." />}>
                       <AcceptInvitation />
                     </Suspense>
                   } />
                   <Route path="/about" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <About />
                     </Suspense>
                   } />
                   <Route path="/documentation" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading documentation..." />}>
+                    <Suspense fallback={<PageLoading title="Loading documentation..." />}>
                       <Documentation />
                     </Suspense>
                   } />
                   <Route path="/features" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading features..." />}>
+                    <Suspense fallback={<PageLoading title="Loading features..." />}>
                       <Features />
                     </Suspense>
                   } />
                   <Route path="/roadmap" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading roadmap..." />}>
+                    <Suspense fallback={<PageLoading title="Loading roadmap..." />}>
                       <Roadmap />
                     </Suspense>
                   } />
                   <Route path="/compliance-simplification" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <ComplianceSimplification />
                     </Suspense>
                   } />
                   <Route path="/privacy" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <Privacy />
                     </Suspense>
                   } />
                   <Route path="/terms" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <Terms />
                     </Suspense>
                   } />
                   <Route path="/security" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <Security />
                     </Suspense>
                   } />
                   <Route path="/cookies" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                    <Suspense fallback={<PageLoading title="Loading..." />}>
                       <Cookies />
                     </Suspense>
                   } />
                   <Route path="/onboarding" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading onboarding..." />}>
+                    <Suspense fallback={<PageLoading title="Loading onboarding..." />}>
                       <PublicOnboarding />
                     </Suspense>
                   } />
                   <Route path="/auth/callback/entra" element={<EntraCallbackPage />} />
                   <Route path="/auth/accept-invitation" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading auth callback..." />}>
+                    <Suspense fallback={<PageLoading title="Loading auth callback..." />}>
                       <AuthCallback />
                     </Suspense>
                   } />
                   {/* Supplier Portal - External access (no authentication required) */}
                   <Route path="/supplier-portal" element={
-                    <Suspense fallback={<LoadingSpinner text="Loading supplier portal..." />}>
+                    <Suspense fallback={<PageLoading title="Loading supplier portal..." />}>
                       <SupplierPortal />
                     </Suspense>
                   } />
@@ -243,7 +245,7 @@ const App = () => {
                     path="/onboarding-auth" 
                     element={
                       <ProtectedRoute>
-                        <Suspense fallback={<LoadingSpinner text="Loading onboarding..." />}>
+                        <Suspense fallback={<PageLoading title="Loading onboarding..." />}>
                           <EnhancedOnboardingFlow />
                         </Suspense>
                       </ProtectedRoute>
@@ -253,7 +255,7 @@ const App = () => {
                     path="/onboarding-legacy" 
                     element={
                       <ProtectedRoute>
-                        <Suspense fallback={<LoadingSpinner text="Loading onboarding..." />}>
+                        <Suspense fallback={<PageLoading title="Loading onboarding..." />}>
                           <Onboarding />
                         </Suspense>
                       </ProtectedRoute>
@@ -263,7 +265,7 @@ const App = () => {
                     path="/guided-import" 
                     element={
                       <ProtectedRoute>
-                        <Suspense fallback={<LoadingSpinner text="Loading import wizard..." />}>
+                        <Suspense fallback={<PageLoading title="Loading import wizard..." />}>
                           <GuidedStandardImport />
                         </Suspense>
                       </ProtectedRoute>
@@ -283,7 +285,7 @@ const App = () => {
                     path="/editor" 
                     element={
                       <ProtectedRoute requireOrganization={false}>
-                        <Suspense fallback={<LoadingSpinner text="Loading editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading editor..." />}>
                           <GraphicalEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -295,7 +297,7 @@ const App = () => {
                     path="/ar-editor-showcase" 
                     element={
                       <ProtectedRoute requireOrganization={false}>
-                        <Suspense fallback={<LoadingSpinner text="Loading Enterprise AR Editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading Enterprise AR Editor..." />}>
                           <AREditorShowcase />
                         </Suspense>
                       </ProtectedRoute>
@@ -307,7 +309,7 @@ const App = () => {
                     path="/lms-old" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading LMS..." />}>
+                        <Suspense fallback={<PageLoading title="Loading LMS..." />}>
                           <LMS />
                         </Suspense>
                       </ProtectedRoute>
@@ -317,7 +319,7 @@ const App = () => {
                     path="/lms" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading LMS..." />}>
+                        <Suspense fallback={<PageLoading title="Loading LMS..." />}>
                           <TrenningLMS />
                         </Suspense>
                       </ProtectedRoute>
@@ -327,7 +329,7 @@ const App = () => {
                     path="/lms/admin" 
                     element={
                       <ProtectedRoute requiredPermission="admin_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading LMS Admin..." />}>
+                        <Suspense fallback={<PageLoading title="Loading LMS Admin..." />}>
                           <LMSAdmin />
                         </Suspense>
                       </ProtectedRoute>
@@ -337,7 +339,7 @@ const App = () => {
                     path="/lms/create/learning-path" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading..." />}>
+                        <Suspense fallback={<PageLoading title="Loading..." />}>
                           <CreateLearningPath />
                         </Suspense>
                       </ProtectedRoute>
@@ -347,7 +349,7 @@ const App = () => {
                     path="/lms/learning-path/create" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading learning path builder..." />}>
+                        <Suspense fallback={<PageLoading title="Loading learning path builder..." />}>
                           <LearningPathBuilder />
                         </Suspense>
                       </ProtectedRoute>
@@ -357,7 +359,7 @@ const App = () => {
                     path="/lms/learning-path/edit/:pathId" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading learning path builder..." />}>
+                        <Suspense fallback={<PageLoading title="Loading learning path builder..." />}>
                           <LearningPathBuilder />
                         </Suspense>
                       </ProtectedRoute>
@@ -367,7 +369,7 @@ const App = () => {
                     path="/lms/learning-path/:pathId" 
                     element={
                       <ProtectedRoute requiredPermission="view_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading learning path..." />}>
+                        <Suspense fallback={<PageLoading title="Loading learning path..." />}>
                           <LearningPathBuilder />
                         </Suspense>
                       </ProtectedRoute>
@@ -377,7 +379,7 @@ const App = () => {
                     path="/lms/create/content" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading content creator..." />}>
+                        <Suspense fallback={<PageLoading title="Loading content creator..." />}>
                           <ContentCreator />
                         </Suspense>
                       </ProtectedRoute>
@@ -387,7 +389,7 @@ const App = () => {
                     path="/lms/create/course-builder" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading course builder..." />}>
+                        <Suspense fallback={<PageLoading title="Loading course builder..." />}>
                           <CourseBuilder />
                         </Suspense>
                       </ProtectedRoute>
@@ -397,7 +399,7 @@ const App = () => {
                     path="/lms/course-preview/:courseId" 
                     element={
                       <ProtectedRoute requiredPermission="view_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading course preview..." />}>
+                        <Suspense fallback={<PageLoading title="Loading course preview..." />}>
                           <CoursePreview />
                         </Suspense>
                       </ProtectedRoute>
@@ -407,7 +409,7 @@ const App = () => {
                     path="/lms/create/learning-path-builder" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading learning path builder..." />}>
+                        <Suspense fallback={<PageLoading title="Loading learning path builder..." />}>
                           <LearningPathBuilder />
                         </Suspense>
                       </ProtectedRoute>
@@ -417,7 +419,7 @@ const App = () => {
                     path="/lms/create/page-editor" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading page editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading page editor..." />}>
                           <PageEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -427,7 +429,7 @@ const App = () => {
                     path="/lms/create/quiz-editor" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading quiz editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading quiz editor..." />}>
                           <QuizEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -437,7 +439,7 @@ const App = () => {
                     path="/lms/create/assignment-editor" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading assignment editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading assignment editor..." />}>
                           <AssignmentEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -447,7 +449,7 @@ const App = () => {
                     path="/lms/page/create" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading page editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading page editor..." />}>
                           <PageEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -457,7 +459,7 @@ const App = () => {
                     path="/lms/page/edit/:pageId" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading page editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading page editor..." />}>
                           <PageEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -467,7 +469,7 @@ const App = () => {
                     path="/lms/page/:pageId" 
                     element={
                       <ProtectedRoute requiredPermission="view_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading page..." />}>
+                        <Suspense fallback={<PageLoading title="Loading page..." />}>
                           <PageEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -477,7 +479,7 @@ const App = () => {
                     path="/lms/assignment/create" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading assignment editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading assignment editor..." />}>
                           <AssignmentEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -487,7 +489,7 @@ const App = () => {
                     path="/lms/assignment/edit/:assignmentId" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading assignment editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading assignment editor..." />}>
                           <AssignmentEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -497,7 +499,7 @@ const App = () => {
                     path="/lms/assignment/:assignmentId" 
                     element={
                       <ProtectedRoute requiredPermission="view_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading assignment..." />}>
+                        <Suspense fallback={<PageLoading title="Loading assignment..." />}>
                           <AssignmentEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -507,7 +509,7 @@ const App = () => {
                     path="/lms/courses/edit" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading course editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading course editor..." />}>
                           <EditCourse />
                         </Suspense>
                       </ProtectedRoute>
@@ -517,7 +519,7 @@ const App = () => {
                     path="/lms/library" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading course library..." />}>
+                        <Suspense fallback={<PageLoading title="Loading course library..." />}>
                           <CourseLibrary />
                         </Suspense>
                       </ProtectedRoute>
@@ -527,7 +529,7 @@ const App = () => {
                     path="/lms/quizzes/create" 
                     element={
                       <ProtectedRoute requiredPermission="create_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading quiz editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading quiz editor..." />}>
                           <QuizEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -537,7 +539,7 @@ const App = () => {
                     path="/lms/quizzes/edit/:id" 
                     element={
                       <ProtectedRoute requiredPermission="edit_lms_content">
-                        <Suspense fallback={<LoadingSpinner text="Loading quiz editor..." />}>
+                        <Suspense fallback={<PageLoading title="Loading quiz editor..." />}>
                           <QuizEditor />
                         </Suspense>
                       </ProtectedRoute>
@@ -547,7 +549,7 @@ const App = () => {
                     path="/lms/reports" 
                     element={
                       <ProtectedRoute requiredPermission="view_lms_reports">
-                        <Suspense fallback={<LoadingSpinner text="Loading reports..." />}>
+                        <Suspense fallback={<PageLoading title="Loading reports..." />}>
                           <Reports />
                         </Suspense>
                       </ProtectedRoute>
@@ -557,7 +559,7 @@ const App = () => {
                     path="/lms/course/:courseId" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading course details..." />}>
+                        <Suspense fallback={<PageLoading title="Loading course details..." />}>
                           <CourseDetail />
                         </Suspense>
                       </ProtectedRoute>
@@ -567,7 +569,7 @@ const App = () => {
                     path="/lms/viewer/:courseId" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading course viewer..." />}>
+                        <Suspense fallback={<PageLoading title="Loading course viewer..." />}>
                           <CourseViewer />
                         </Suspense>
                       </ProtectedRoute>
@@ -577,7 +579,7 @@ const App = () => {
                     path="/lms/phishing-simulation-manager" 
                     element={
                       <ProtectedRoute requiredPermission="admin_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading phishing simulation manager..." />}>
+                        <Suspense fallback={<PageLoading title="Loading phishing simulation manager..." />}>
                           <PhishingSimulationManager />
                         </Suspense>
                       </ProtectedRoute>
@@ -587,7 +589,7 @@ const App = () => {
                     path="/lms/media-library" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading media library..." />}>
+                        <Suspense fallback={<PageLoading title="Loading media library..." />}>
                           <MediaLibrary />
                         </Suspense>
                       </ProtectedRoute>
@@ -597,7 +599,7 @@ const App = () => {
                     path="/lms/analytics" 
                     element={
                       <ProtectedRoute requiredPermission="access_lms">
-                        <Suspense fallback={<LoadingSpinner text="Loading analytics..." />}>
+                        <Suspense fallback={<PageLoading title="Loading analytics..." />}>
                           <LMSAnalytics />
                         </Suspense>
                       </ProtectedRoute>
@@ -755,7 +757,8 @@ const App = () => {
       </ZoomProvider>
     </ThemeProvider>
   </QueryClientProvider>
-  </ErrorBoundary>
+  </ErrorRecoveryProvider>
+  </GlobalErrorBoundary>
   );
 };
 

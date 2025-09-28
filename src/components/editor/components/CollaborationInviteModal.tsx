@@ -76,7 +76,8 @@ const CollaborationInviteModal: React.FC<CollaborationInviteModalProps> = ({
     console.log('Message:', inviteMessage);
     console.log('Access level:', accessLevel);
     
-    // TODO: Implement actual invitation sending
+    // Simulate invitation sending - replace with real API call
+    console.log('Collaboration invites sent successfully');
     onClose();
   };
 

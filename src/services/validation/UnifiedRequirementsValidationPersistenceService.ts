@@ -11,6 +11,7 @@ import type {
   UnifiedRequirementAnalysis, 
   CategoryValidationResult 
 } from './AIRequirementsValidationService';
+import { RollbackData, DiagnosticData } from '@/types/auth';
 
 // Database schema interfaces matching the migration
 export interface ValidationSession {
@@ -154,7 +155,7 @@ export interface RequirementChangeHistory {
   
   // Rollback
   can_rollback: boolean;
-  rollback_data?: any;
+  rollback_data?: RollbackData;
   
   created_at: string;
 }
@@ -188,7 +189,7 @@ export interface SessionMetrics {
   // Diagnostics
   errors_encountered: number;
   warnings_generated: number;
-  diagnostic_data?: any;
+  diagnostic_data?: DiagnosticData;
   
   created_at: string;
   updated_at: string;

@@ -54,9 +54,9 @@ export class RequirementExtractionDebugger {
         console.log('Standard:', firstReq.standard_name);
         console.log('Control ID:', firstReq.control_id);
         console.log('Title:', firstReq.title);
-        console.log('Description length:', firstReq.description?.length || 0);
+        console.log('Description length:', typeof firstReq.description === 'string' ? firstReq.description.length : 0);
         console.log('First 200 chars of description:', 
-          firstReq.description?.substring(0, 200) + '...' || 'No description');
+          (typeof firstReq.description === 'string' ? firstReq.description.substring(0, 200) + '...' : 'No description'));
         
         // Check for technical details in description
         const hasFileExtensions = /\.\w{2,4}\b/g.test(firstReq.description || '');

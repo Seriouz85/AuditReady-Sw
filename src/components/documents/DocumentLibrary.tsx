@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getAccessLevelLabels, getAccessLevelColor } from '@/utils/accessLevels';
 import { useAuth } from '@/contexts/AuthContext';
 import { azurePurviewService, ClassificationLabel, SensitiveDataDetection } from '@/services/classification/AzurePurviewService';
+import { formatFileSize } from '@/services/utils/UnifiedUtilityService';
 
 interface DocumentLibraryProps {
   organizationId: string;
@@ -244,13 +245,6 @@ export function DocumentLibrary({ organizationId }: DocumentLibraryProps) {
 
   const accessLevelLabels = getAccessLevelLabels();
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const getFileType = (filename: string) => {
     const ext = filename.split('.').pop()?.toLowerCase();

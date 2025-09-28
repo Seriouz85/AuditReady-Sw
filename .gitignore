@@ -24,6 +24,14 @@ Cargo.lock
 *.tmp
 *~
 
+# Environment variables (CRITICAL SECURITY)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -43,3 +51,10 @@ Cargo.lock
 .swarm/memory.db
 .swarm/memory.db-shm
 .swarm/memory.db-wal
+.swarm/
+*.db
+.env
+.env.local
+.env.*.local
+node_modules/
+.DS_Store

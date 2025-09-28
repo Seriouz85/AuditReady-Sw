@@ -106,6 +106,7 @@ export const AIGenerationOverlay: React.FC<AIGenerationOverlayProps> = ({
                   top: '50%',
                   left: '50%',
                   transformOrigin: '0 0',
+                  transform: `translate(-50%, -50%) translateY(-60px) rotate(${i * 60}deg)`
                 }}
                 animate={{
                   rotate: [0, 360],
@@ -118,7 +119,6 @@ export const AIGenerationOverlay: React.FC<AIGenerationOverlayProps> = ({
                   delay: i * 0.4,
                   ease: "easeInOut"
                 }}
-                transform={`translate(-50%, -50%) translateY(-60px) rotate(${i * 60}deg)`}
               >
                 <Sparkles className="w-3 h-3" />
               </motion.div>

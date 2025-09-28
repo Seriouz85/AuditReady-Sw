@@ -19,8 +19,9 @@ import {
 type StatusVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'primary';
 
 interface StatusBadgeProps {
-  variant: StatusVariant;
-  children: React.ReactNode;
+  variant?: StatusVariant;
+  status?: string;
+  children?: React.ReactNode;
   icon?: LucideIcon | boolean;
   className?: string;
 }
@@ -35,22 +36,40 @@ const defaultIcons: Record<StatusVariant, LucideIcon> = {
   primary: Info,
 };
 
+// Map requirement status to status variant
+const statusToVariant: Record<string, StatusVariant> = {
+  'fulfilled': 'success',
+  'partially-fulfilled': 'warning',
+  'partially_fulfilled': 'warning',
+  'not-fulfilled': 'danger',
+  'not_fulfilled': 'danger',
+  'not-applicable': 'neutral',
+  'not_applicable': 'neutral',
+};
+
 export function StatusBadge({ 
   variant, 
+  status,
   children, 
   icon = true, 
   className 
 }: StatusBadgeProps) {
+  // Determine the effective variant
+  const effectiveVariant = variant || (status ? statusToVariant[status] || 'neutral' : 'neutral');
+  
+  // Use status as children if no children provided
+  const effectiveChildren = children || status;
+  
   const IconComponent = typeof icon === 'boolean' 
-    ? (icon ? defaultIcons[variant] : null)
+    ? (icon ? defaultIcons[effectiveVariant] : null)
     : icon;
 
   return (
-    <span className={cn(getStatusBadgeClasses(variant), className)}>
+    <span className={cn(getStatusBadgeClasses(effectiveVariant), className)}>
       {IconComponent && (
         <IconComponent className={cn(getIconClasses('xs'), "mr-1")} />
       )}
-      {children}
+      {effectiveChildren}
     </span>
   );
 }

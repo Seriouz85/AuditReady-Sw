@@ -75,6 +75,13 @@ const PublicOnboarding = () => {
     }
   });
 
+  const handleComplete = () => {
+    // Store the completed onboarding data
+    localStorage.setItem('onboardingData', JSON.stringify(onboardingData));
+    // Move to final step or recommendations
+    setCurrentStep(5); // Assuming step 5 is the final recommendations step
+  };
+
   const getRecommendedPlan = (): 'free' | 'team' | 'business' | 'enterprise' => {
     const { organizationInfo, teamSetup, goals } = onboardingData;
     

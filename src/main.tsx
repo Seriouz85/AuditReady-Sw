@@ -4,13 +4,18 @@ import './index.css';
 import './styles/react-flow-export.css';
 import './styles/reactflow-edge-label-export-fix.css';
 import App from './App';
-import { sentryService } from '@/services/monitoring/SentryService';
+import { initializeSentry } from '@/lib/monitoring/initializeSentry';
 import { OptimizedDemoDataService } from '@/services/demo/OptimizedDemoDataService';
 
-// Initialize Sentry monitoring
-sentryService.initialize().then((initialized) => {
+// Initialize enhanced Sentry monitoring and error reporting
+initializeSentry({
+  enableUserFeedback: true,
+  enablePerformanceMonitoring: true,
+  sampleRate: 1.0,
+  tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0
+}).then((initialized) => {
   if (initialized) {
-    console.log('🔍 Monitoring enabled');
+    console.log('🔍 Enhanced monitoring and error recovery system enabled');
   } else {
     console.log('🔍 Monitoring disabled (development mode)');
   }

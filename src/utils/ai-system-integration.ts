@@ -43,11 +43,10 @@ export class AISystemIntegration {
   }): Promise<ContentWorkflowResult> {
     const startTime = Date.now();
     const workflowId = `workflow_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
+    let content = options.content;
 
     try {
       console.log(`[Integration] Starting content workflow ${workflowId}`);
-
-      let content = options.content;
       let scrapingResult: any = null;
 
       // Step 1: Web scraping (if URL provided)

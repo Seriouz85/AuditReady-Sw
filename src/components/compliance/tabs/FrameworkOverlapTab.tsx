@@ -47,9 +47,10 @@ export function FrameworkOverlapTab({ selectedFrameworks, filteredMappings }: Fr
                   <div className="text-3xl font-bold text-blue-600">
                     {filteredMappings.reduce((total, mapping) => {
                       const frameworkCount = Object.entries(mapping.frameworks).filter(([key, value]) => {
-                        if (key === 'gdpr' || key === 'nis2') return value && value.length > 0;
-                        if (key === 'cisControls') return value.length > 0;
-                        return value.length > 0;
+                        const arrayValue = Array.isArray(value) ? value : [];
+                        if (key === 'gdpr' || key === 'nis2') return value && arrayValue.length > 0;
+                        if (key === 'cisControls') return arrayValue.length > 0;
+                        return arrayValue.length > 0;
                       }).length;
                       return total + (frameworkCount > 1 ? 1 : 0);
                     }, 0)}
@@ -61,12 +62,19 @@ export function FrameworkOverlapTab({ selectedFrameworks, filteredMappings }: Fr
                     {(() => {
                       const overlapRate = filteredMappings.reduce((total, mapping) => {
                         const activeFrameworks = Object.entries(mapping.frameworks).filter(([key, value]) => {
-                          if (key === 'gdpr' || key === 'nis2') return value && value.length > 0;
-                          if (key === 'cisControls') return value.length > 0;
-                          return value.length > 0;
+                          const arrayValue = Array.isArray(value) ? value : [];
+                          if (key === 'gdpr' || key === 'nis2') return value && arrayValue.length > 0;
+                          if (key === 'cisControls') return arrayValue.length > 0;
+                          return arrayValue.length > 0;
                         });
-                        const maxReqs = activeFrameworks.length > 0 ? Math.max(...activeFrameworks.map(([_, reqs]) => reqs.length)) : 0;
-                        const totalReqs = activeFrameworks.reduce((sum, [_, reqs]) => sum + reqs.length, 0);
+                        const maxReqs = activeFrameworks.length > 0 ? Math.max(...activeFrameworks.map(([_, reqs]) => {
+                          const arrayReqs = Array.isArray(reqs) ? reqs : [];
+                          return arrayReqs.length;
+                        })) : 0;
+                        const totalReqs = activeFrameworks.reduce((sum, [_, reqs]) => {
+                          const arrayReqs = Array.isArray(reqs) ? reqs : [];
+                          return sum + arrayReqs.length;
+                        }, 0);
                         return total + (totalReqs > 0 ? ((totalReqs - maxReqs) / totalReqs) * 100 : 0);
                       }, 0);
                       return Math.round(overlapRate / Math.max(filteredMappings.length, 1));

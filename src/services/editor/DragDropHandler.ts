@@ -3,6 +3,8 @@
  * Manages visual drag-and-drop interactions for diagram elements
  */
 
+import { EventCallback, DragOptions, DraggableSVGElement } from '@/types/auth';
+
 export interface DragState {
   isDragging: boolean;
   element: SVGElement | null;
@@ -34,7 +36,7 @@ export class DragDropHandler {
     gridSize: 20
   };
   private dropZones: Map<string, DropZone> = new Map();
-  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
+  private eventListeners: Map<string, EventCallback[]> = new Map();
   private ghostElement: HTMLElement | null = null;
 
   private constructor() {
@@ -82,7 +84,7 @@ export class DragDropHandler {
     element.addEventListener('touchstart', handleTouchStart);
 
     // Store cleanup function
-    (element as any).__dragCleanup = () => {
+    (element as DraggableSVGElement).__dragCleanup = () => {
       element.removeEventListener('mousedown', handleMouseDown);
       element.removeEventListener('touchstart', handleTouchStart);
     };
@@ -103,9 +105,10 @@ export class DragDropHandler {
     element.style.cursor = '';
     element.removeAttribute('data-draggable');
 
-    if ((element as any).__dragCleanup) {
-      (element as any).__dragCleanup();
-      delete (element as any).__dragCleanup;
+    const draggableElement = element as DraggableSVGElement;
+    if (draggableElement.__dragCleanup) {
+      draggableElement.__dragCleanup();
+      delete draggableElement.__dragCleanup;
     }
   }
 
@@ -126,7 +129,7 @@ export class DragDropHandler {
   /**
    * Start dragging an element with enhanced options
    */
-  private startDrag(element: SVGElement, event: MouseEvent, options?: any): void {
+  private startDrag(element: SVGElement, event: MouseEvent, options?: DragOptions): void {
     const rect = element.getBoundingClientRect();
     const elementId = element.getAttribute('data-element-id') || null;
 
@@ -373,7 +376,7 @@ export class DragDropHandler {
   /**
    * Add event listener
    */
-  public on(event: string, callback: (...args: any[]) => void): void {
+  public on(event: string, callback: EventCallback): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -383,7 +386,7 @@ export class DragDropHandler {
   /**
    * Remove event listener
    */
-  public off(event: string, callback: (...args: any[]) => void): void {
+  public off(event: string, callback: EventCallback): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);
@@ -396,7 +399,7 @@ export class DragDropHandler {
   /**
    * Emit event
    */
-  private emit(event: string, data: any): void {
+  private emit(event: string, data: unknown): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.forEach(callback => callback(data));

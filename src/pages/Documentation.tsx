@@ -20,6 +20,7 @@ import {
   Home,
   CheckCircle,
   AlertCircle,
+  AlertTriangle,
   TrendingUp,
   Lock,
   Brain,

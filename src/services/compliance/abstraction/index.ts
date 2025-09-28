@@ -6,7 +6,8 @@
 // Main analyzer and harmonizer
 import { SmartSemanticAnalyzer } from './SmartSemanticAnalyzer';
 import { RequirementHarmonizer } from './RequirementHarmonizer';
-export { SmartSemanticAnalyzer, RequirementHarmonizer };
+import { IntelligentDeduplicationEngine } from './IntelligentDeduplicationEngine';
+export { SmartSemanticAnalyzer, RequirementHarmonizer, IntelligentDeduplicationEngine };
 export type { SmartAnalysisOptions, AnalysisResult, AnalysisSummary } from './SmartSemanticAnalyzer';
 export type { 
   HarmonizationConfig, 

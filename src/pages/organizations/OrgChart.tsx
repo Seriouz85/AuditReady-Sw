@@ -35,7 +35,26 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { OrgNode, OrgChartInstance } from '@/lib/org-chart/OrgChartTypes';
+// Import removed - using local interfaces for D3 org chart (deprecated)
+interface OrgNode {
+  id: string;
+  parentId?: string | null;
+  name: string;
+  role?: string;
+  email?: string;
+  data?: any;
+}
+
+interface OrgChartInstance {
+  container: (element: any) => OrgChartInstance;
+  data: (data: any) => OrgChartInstance;
+  nodeHeight: (fn: () => number) => OrgChartInstance;
+  nodeWidth: (fn: () => number) => OrgChartInstance;
+  childrenMargin: (fn: () => number) => OrgChartInstance;
+  compactMarginBetween: (fn: () => number) => OrgChartInstance;
+  render: () => OrgChartInstance;
+  [key: string]: any;
+}
 import '@/styles/org-chart-minimal.css';
 
 // This is a workaround for TypeScript - we'll use the actual library at runtime
@@ -209,8 +228,9 @@ const OrgChart: React.FC<OrgChartProps> = ({
           } else if (window.d3 && window.d3.OrgChart) {
             OrgChartClass = window.d3.OrgChart;
           } else {
-            // Try to load from the org-chart package at runtime
-            OrgChartClass = require('d3-org-chart');
+            // D3-org-chart library removed - this component is deprecated
+            console.warn('D3-org-chart library not available. Use UnifiedOrganizationalChart instead.');
+            return;
           }
         }
         

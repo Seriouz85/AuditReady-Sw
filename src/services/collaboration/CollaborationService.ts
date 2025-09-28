@@ -705,6 +705,34 @@ export class CollaborationService {
   }
 
   /**
+   * Update user presence for a resource
+   */
+  public updatePresence(resourceType: string, resourceId: string, activity: string): void {
+    if (!this.currentUser) return;
+
+    try {
+      // In production, this would update the presence in real-time database
+      console.log(`🟢 Updating presence for user ${this.currentUser.name}: ${activity} on ${resourceType}:${resourceId}`);
+      
+      // Update current user activity
+      this.currentUser.current_activity = activity;
+      
+      // Emit presence update event
+      this.emit('presence-updated', {
+        user_id: this.currentUser.id,
+        user_name: this.currentUser.name,
+        resource_type: resourceType,
+        resource_id: resourceId,
+        current_activity: activity,
+        last_seen: new Date().toISOString(),
+        is_online: true
+      });
+    } catch (error) {
+      console.error('Error updating presence:', error);
+    }
+  }
+
+  /**
    * Get presence information for a resource
    */
   public async getResourcePresence(resourceType: string, resourceId: string): Promise<PresenceInfo[]> {

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { useAuthStore } from './authStore';
 import { 
   EnhancedApplication, 
   ApplicationStats, 
@@ -189,7 +190,7 @@ export const useApplicationStore = create<ApplicationState>()(
                 applicationId,
                 status: 'not-fulfilled',
                 isAutoAnswered: false,
-                lastModifiedBy: 'current-user', // TODO: Get from auth store
+                lastModifiedBy: useAuthStore.getState().user?.email || 'system',
                 lastModifiedAt: new Date().toISOString(),
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
@@ -300,11 +301,11 @@ export const useApplicationStore = create<ApplicationState>()(
         set({ isSyncing: true, error: null });
         
         try {
-          // TODO: Implement actual Azure sync logic
-          console.log(`Triggering sync for application ${applicationId}`);
+          // Azure sync simulation - replace with real Azure API when available
+          console.log(`Initiating Azure sync for application ${applicationId}`);
           
-          // Simulate sync delay
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          // Simulate realistic sync process
+          await new Promise(resolve => setTimeout(resolve, 1500));
           
           // Update sync metadata
           get().updateApplication(applicationId, {

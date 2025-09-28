@@ -55,12 +55,10 @@ export const generateDynamicContentForCategory = async (
       return [`No requirements mapping found for ${categoryName}. Please ensure frameworks are selected and mapped properly.`];
     }
     
-    // Use the clean unified generator
-    const cleanGenerator = new CleanUnifiedRequirementsGenerator();
-    const unifiedRequirements = await cleanGenerator.generateForCategory(
+    // Use the clean unified generator (static method)
+    const unifiedRequirements = await CleanUnifiedRequirementsGenerator.generateForCategory(
       categoryName,
-      selectedFrameworks,
-      categoryMapping
+      selectedFrameworks
     );
     
     console.log(`✅ [CLEAN-GEN] Generated ${unifiedRequirements.length} unified requirements for ${categoryName}`);

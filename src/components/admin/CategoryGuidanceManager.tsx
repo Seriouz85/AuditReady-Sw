@@ -704,7 +704,7 @@ export function CategoryGuidanceManager() {
               </SelectContent>
             </Select>
             
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'priority' | 'quality' | 'completion' | 'updated')}>
               <SelectTrigger className="w-full lg:w-48">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>

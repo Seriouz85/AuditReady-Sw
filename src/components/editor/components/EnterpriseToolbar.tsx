@@ -24,15 +24,15 @@ import {
 } from '@/components/ui/tooltip';
 
 import {
-  Play, Pause, RotateCcw, RotateRight, Save, Download, Upload, Share2,
+  Play, Pause, RotateCcw, RotateCw, Save, Download, Upload, Share2,
   Zap, Target, Eye, Users, Settings, Palette, Layout, Layers,
   ZoomIn, ZoomOut, Maximize2, Minimize2, Grid, Move, Copy,
-  Undo, Redo, AlignCenter, AlignLeft, AlignRight, DistributeHorizontally,
+  Undo, Redo, AlignCenter, AlignLeft, AlignRight,
   ChevronDown, Sparkles, Crown, Award, Star, Heart, Bookmark,
   FileText, Image, Video, Link, Mail, Calendar, Clock,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Plus, Minus,
   MousePointer, Hand, Square, Circle, Triangle, Diamond,
-  Type, Brush, Eraser, Eyedropper, Ruler, Crop, Trash2
+  Type, Brush, Eraser, Ruler, Crop, Trash2
 } from 'lucide-react';
 
 import { useDiagramStore } from '../../../stores/diagramStore';

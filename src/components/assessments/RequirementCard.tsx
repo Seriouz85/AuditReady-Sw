@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { formatTimestamp } from '@/services/utils/UnifiedUtilityService';
 
 interface RequirementNote {
   id: string;
@@ -84,16 +85,6 @@ export function RequirementCard({
     }
   };
 
-  const formatDate = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
 
   return (
     <Card className={cn("shadow-sm", fullWidth && "w-full")}>
@@ -183,7 +174,7 @@ export function RequirementCard({
                           </span>
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {formatDate(note.timestamp)}
+                            {formatTimestamp(note.timestamp)}
                           </span>
                         </div>
                         <p className="text-sm">{note.text}</p>
@@ -256,7 +247,7 @@ export function RequirementCard({
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {formatDate(note.timestamp)}
+                      {formatTimestamp(note.timestamp)}
                     </span>
                   </div>
                   <p className="text-sm">{note.text}</p>

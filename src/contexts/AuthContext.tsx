@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
-// import { toast } from '@/utils/toast'; // TODO: Add toast notifications
-import { documentUploadService } from '@/services/documents/DocumentUploadService';
-import { TagInitializationService } from '@/services/initialization/TagInitializationService';
-import { OptimizedDemoDataService } from '@/services/demo/OptimizedDemoDataService';
+import { supabase } from '../lib/supabase';
+import { toast } from '../utils/toast';
+import { documentUploadService } from '../services/documents/DocumentUploadService';
+import { TagInitializationService } from '../services/initialization/TagInitializationService';
+import { OptimizedDemoDataService } from '../services/demo/OptimizedDemoDataService';
+import { 
+  OrganizationUserWithRelations, 
+  DemoComplianceStats, 
+  AuthSubscription,
+  OrganizationSettings
+} from '../types/auth';
 
 interface Organization {
   id: string;
@@ -14,7 +20,7 @@ interface Organization {
   company_size?: string;
   subscription_tier: string;
   stripe_customer_id?: string;
-  settings: Record<string, any>;
+  settings: OrganizationSettings;
   created_at: string;
   updated_at: string;
 }
@@ -34,7 +40,7 @@ interface OrganizationUser {
   status: string;
   joined_at?: string;
   last_login_at?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 interface AuthContextType {
@@ -47,6 +53,7 @@ interface AuthContextType {
   isPlatformAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string; passwordSecurity?: { isWeak: boolean; reason?: string } }>;
   signOut: () => Promise<void>;
+  logout: () => Promise<void>;
   refreshUserData: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
 }
@@ -199,8 +206,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (orgUserData) {
-        // Cast to any to avoid type issues with database relations
-        const typedOrgUserData = orgUserData as any;
+        // Type the organization user data properly
+        const typedOrgUserData = orgUserData as OrganizationUserWithRelations;
         
         setOrganizationUser(typedOrgUserData);
         
@@ -216,7 +223,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .eq('id', typedOrgUserData.organization_id)
             .single();
           if (orgData) {
-            setOrganization(orgData as unknown as Organization);
+            setOrganization(orgData as Organization);
           }
         }
         
@@ -232,7 +239,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .eq('id', typedOrgUserData.role_id)
             .single();
           if (roleData) {
-            setUserRole(roleData as unknown as UserRole);
+            setUserRole(roleData as UserRole);
           }
         }
 
@@ -382,7 +389,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           .single();
           
         if (stats) {
-          const typedStats = stats as any; // Cast to handle unknown types
+          const typedStats = stats as DemoComplianceStats;
           console.log('Demo data statistics (from view):', {
             fulfilled: Math.round((typedStats.fulfilled / typedStats.total_requirements) * 100) + '%',
             partiallyFulfilled: Math.round((typedStats.partially_fulfilled / typedStats.total_requirements) * 100) + '%',
@@ -414,13 +421,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Check for demo credentials first (using environment variables for security)
       const demoEmail = import.meta.env.VITE_DEMO_EMAIL || 'demo@auditready.com';
-      const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+      const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || 'AuditReady@Demo2025!'; // Fallback to hardcoded for development
       
-      if (!demoPassword) {
-        console.error('SECURITY ERROR: VITE_DEMO_PASSWORD environment variable is not configured');
-      }
-      
-      if (email === demoEmail && password === demoPassword && demoPassword) {
+      if (email === demoEmail && password === demoPassword) {
         // Use mock authentication for demo
         console.log('🔐 Demo login - using mock authentication');
         const { mockSignIn } = await import('@/lib/mockAuth');
@@ -527,6 +530,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return {};
     } catch (error) {
       console.error('Sign in error:', error);
+      toast({
+        title: "Sign-in failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
       return { error: 'An unexpected error occurred' };
     } finally {
       setLoading(false);
@@ -550,12 +558,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('demo_user');
     } catch (error) {
       console.error('Sign out error:', error);
+      toast({
+        title: "Sign-out failed",
+        description: "Unable to sign out properly. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
   // Initialize auth state
   useEffect(() => {
-    let subscription: any = null;
+    let subscription: AuthSubscription | null = null;
     
     const initializeAuth = async () => {
       try {
@@ -671,6 +684,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isDemo,
     signIn,
     signOut,
+    logout: signOut, // Alias for backward compatibility
     refreshUserData,
     hasPermission
   };

@@ -15,7 +15,7 @@ import { TagSelector } from '@/components/ui/tag-selector';
 import { toast } from '@/utils/toast';
 import { 
   Plus, Trash2, Save, Eye, Settings, Users, 
-  FileTemplate, Workflow, Shield, BarChart3,
+  FileText, Workflow, Shield, BarChart3,
   AlertTriangle, CheckCircle, Info
 } from 'lucide-react';
 import { AssessmentTemplate, EnhancedAssessmentService } from '@/services/assessments/EnhancedAssessmentService';
@@ -280,7 +280,7 @@ export const AssessmentTemplateBuilder: React.FC<AssessmentTemplateBuilderProps>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileTemplate className="h-5 w-5" />
+            <FileText className="h-5 w-5" />
             {template ? 'Edit Assessment Template' : 'Create Assessment Template'}
           </DialogTitle>
           <DialogDescription>
@@ -316,7 +316,7 @@ export const AssessmentTemplateBuilder: React.FC<AssessmentTemplateBuilderProps>
                     <Label htmlFor="tags">Tags</Label>
                     <TagSelector
                       selectedTags={templateData.tags || []}
-                      onTagsChange={(tags) => setTemplateData({ ...templateData, tags })}
+                      onChange={(tags: string[]) => setTemplateData({ ...templateData, tags })}
                       placeholder="Add tags..."
                     />
                   </div>

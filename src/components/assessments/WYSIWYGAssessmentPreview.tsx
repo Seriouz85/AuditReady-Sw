@@ -1,5 +1,6 @@
 import React from 'react';
 import { UnifiedAssessmentData } from './UnifiedAssessmentTemplate';
+import { formatDate } from '@/services/utils/UnifiedUtilityService';
 
 interface WYSIWYGAssessmentPreviewProps {
   data: UnifiedAssessmentData;
@@ -59,13 +60,6 @@ export const WYSIWYGAssessmentPreview: React.FC<WYSIWYGAssessmentPreviewProps> =
     }
   };
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   return (
     <div className={`wysiwyg-assessment-preview bg-white font-inter text-slate-800 ${className}`}>

@@ -76,7 +76,7 @@ interface TemplateFormData {
   name: string;
   subject: string;
   html_body: string;
-  text_body: string;
+  text_body?: string;
   category: EmailCategory;
   priority: EmailPriority;
   variables: TemplateVariable[];
@@ -174,22 +174,34 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
   const loadNotifications = async () => {
     try {
       // For now, use mock data since RLS policies need setup
-      const mockNotifications = [
+      const mockNotifications: EmailNotification[] = [
         {
           id: '1',
           recipient_email: 'demo@auditready.com',
           subject: 'Assessment Reminder - Due Tomorrow',
-          status: 'sent',
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          email_templates: { name: 'Assessment Reminder' }
+          html_body: '<p>Your assessment is due tomorrow. Please complete it.</p>',
+          status: 'sent' as any,
+          priority: 'medium' as EmailPriority,
+          scheduled_for: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          retry_count: 0,
+          max_retries: 3,
+          template_data: {},
+          metadata: {},
+          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
         },
         {
           id: '2', 
           recipient_email: 'admin@example.com',
           subject: 'NIS2 Compliance Alert',
-          status: 'delivered',
-          created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          email_templates: { name: 'Compliance Alert' }
+          html_body: '<p>NIS2 compliance requires immediate attention.</p>',
+          status: 'delivered' as any,
+          priority: 'high' as EmailPriority,
+          scheduled_for: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+          retry_count: 0,
+          max_retries: 3,
+          template_data: {},
+          metadata: {},
+          created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
         }
       ];
 
@@ -199,7 +211,7 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
       const activity = mockNotifications.slice(0, 4).map(notif => ({
         type: notif.status,
         count: 1,
-        template: notif.email_templates?.name || 'Custom Email',
+        template: 'Email Template',
         time: new Date(notif.created_at).toLocaleString(),
         recipient: notif.recipient_email
       }));
@@ -1182,7 +1194,7 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
               <div className="space-y-2">
                 <Label>Category & Priority</Label>
                 <div className="flex gap-2">
-                  <Badge variant={selectedTemplate?.category === 'critical' ? 'destructive' : 'secondary'}>
+                  <Badge variant={selectedTemplate?.category === 'system' ? 'destructive' : 'secondary'}>
                     {selectedTemplate?.category}
                   </Badge>
                   <Badge variant={selectedTemplate?.priority === 'critical' ? 'destructive' : 'outline'}>

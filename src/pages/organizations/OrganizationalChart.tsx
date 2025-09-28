@@ -19,17 +19,29 @@ import {
   Filter,
   AlertCircle
 } from 'lucide-react';
-import { OrgChart, OrgNode } from '@/lib/org-chart/d3-org-chart';
+import UnifiedOrganizationalChart, { OrgNodeData } from '@/components/charts/UnifiedOrganizationalChart';
+// import { OrgChart, OrgNode } from '@/lib/org-chart/d3-org-chart';
+
+// Define OrgNode interface locally since we're replacing D3 implementation
+interface OrgNode {
+  id: string;
+  parentId?: string | null;
+  name: string;
+  role?: string;
+  email?: string;
+  data?: {
+    name: string;
+    role: string;
+    email?: string;
+    avatar?: string;
+    department?: string;
+  };
+  [key: string]: any;
+}
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/use-toast';
 
-// Define additional methods that might be available on OrgChart
-interface OrgChartEnhancements {
-  setZoom?(scale: number): void;
-  fit?(): void;
-  zoomIn?(): void;
-  zoomOut?(): void;
-}
+// Note: OrgChartEnhancements interface removed as we're using ReactFlow now
 
 interface OrgNodeExtended extends OrgNode {
   _expanded?: boolean;
@@ -49,359 +61,58 @@ interface OrgChartComponentProps {
   debug?: boolean;
 }
 
-// Helper function to create a fresh OrgChart with provided data
-const createOrgChart = (containerElement: HTMLDivElement, data: OrgNode[]) => {
-  if (!containerElement) return null;
-  
-  console.log('Creating new OrgChart instance with data', data);
-  
-  try {
-    // Clear the container first to avoid duplicate charts
-    containerElement.innerHTML = '';
-
-    // Create a new chart
-    const chart = new OrgChart()
-      .container(containerElement)
-      .data(data)
-      .nodeWidth(() => 240)
-      .nodeHeight(() => 120)
-      .compact(false)
-      .layout('top')
-      .childrenMargin(() => 50)
-      .siblingsMargin(() => 25)
-      .neighbourMargin(() => 20);
-    
-    return chart;
-  } catch (error) {
-    console.error('Error creating OrgChart:', error);
-    return null;
-  }
+// Convert OrgNode to OrgNodeData format
+const convertToOrgNodeData = (nodes: OrgNode[]): OrgNodeData[] => {
+  return nodes.map(node => ({
+    id: node.id,
+    parentId: node.parentId,
+    name: node.name || '',
+    role: node.role || '',
+    email: node.email || '',
+    department: node.data?.department || '',
+    avatar: node.data?.avatar || '',
+    ...node.data
+  }));
 };
 
-// OrgChart component wrapper
+// Note: createOrgChart function removed as we're using ReactFlow-based UnifiedOrganizationalChart now
+
+// ReactFlow-based OrgChart component wrapper
 const OrgChartComponent: React.FC<OrgChartComponentProps> = ({ data, onNodeClick, className, debug = false }) => {
-  const chartRef = useRef<(OrgChart & OrgChartEnhancements) | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [chartError, setChartError] = useState<string | null>(null);
+  // Convert OrgNode data to OrgNodeData format
+  const convertedData = useMemo(() => convertToOrgNodeData(data), [data]);
   
-  // Debug logging
-  useEffect(() => {
-    console.log("OrgChart data changed:", data);
-  }, [data]);
-
-  // Complete chart rebuild for each update - more reliable
-  useEffect(() => {
-    if (!data || data.length === 0 || !containerRef.current) {
-      console.log("Missing data or container:", { 
-        hasData: Boolean(data), 
-        dataLength: data?.length, 
-        hasContainer: Boolean(containerRef.current) 
-      });
-      return;
+  // Handle node click with proper conversion
+  const handleNodeClick = useCallback((nodeData: OrgNodeData) => {
+    if (onNodeClick) {
+      // Convert back to OrgNodeExtended format for compatibility
+      const orgNodeExtended: OrgNodeExtended = {
+        id: nodeData.id,
+        parentId: nodeData.parentId,
+        name: nodeData.name,
+        role: nodeData.role,
+        email: nodeData.email,
+        data: {
+          name: nodeData.name,
+          role: nodeData.role,
+          email: nodeData.email,
+          avatar: nodeData.avatar,
+          department: nodeData.department
+        },
+        _expanded: nodeData._expanded
+      };
+      onNodeClick(orgNodeExtended);
     }
-    
-    setIsLoading(true);
-    setChartError(null);
-    
-    try {
-      // Clear the container first and add organizational-chart-component class
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
-        containerRef.current.classList.add('organizational-chart-component');
-      }
-      
-      // Create a new chart instance
-      const chart = createOrgChart(containerRef.current, data);
-      
-      if (!chart) {
-        setChartError("Failed to create organization chart");
-        setIsLoading(false);
-        return;
-      }
-      
-      // Configure additional behavior
-      chart
-      .onNodeClick((d: OrgNodeExtended) => {
-          console.log("Node clicked:", d);
-        // Auto-zoom to the clicked node
-        chart.setExpanded(d.id, !d._expanded);
-        chart.setCentered(d.id);
-        chart.update(d);
-        
-        if (onNodeClick) onNodeClick(d);
-      })
-      .nodeContent((node: OrgNodeExtended) => {
-          // Enhanced node card with Tailwind-inspired design
-          const hasAvatar = node.data?.avatar || false;
-          const department = node.data?.department || '';
-          const nodeContent = `
-            <div class="transition-all duration-200 rounded-xl bg-white dark:bg-slate-800 shadow-lg hover:shadow-xl border border-slate-200 dark:border-slate-700 w-full h-full overflow-hidden group">
-              <div class="p-4 flex flex-col h-full">
-                <div class="flex items-center gap-3 mb-2">
-                  ${hasAvatar 
-                    ? `<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-700">
-                        <img src="${node.data?.avatar}" alt="${node.data?.name || node.name}" class="w-full h-full object-cover" />
-                      </div>`
-                    : `<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                        <span class="text-blue-600 dark:text-blue-300 font-medium text-lg">${(node.data?.name || node.name || 'U').charAt(0)}</span>
-                      </div>`
-                  }
-                  <div>
-                    <div class="font-semibold text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      ${node.data?.name || node.name || 'Unnamed'}
-                    </div>
-                    <div class="text-sm text-slate-600 dark:text-slate-300">
-                      ${node.data?.role || node.role || 'No role'}
-                    </div>
-                  </div>
-                </div>
-                ${department ? `<div class="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full self-start mb-2">${department}</div>` : ''}
-                ${(node.data?.email || node.email) 
-                  ? `<div class="mt-auto text-xs text-slate-500 dark:text-slate-400 truncate">${node.data?.email || node.email}</div>` 
-                  : ''
-                }
-              </div>
-          </div>
-        `;
-          if (debug) console.log(`Generated node content for: ${node.name}`);
-          return nodeContent;
-      });
-
-      // Store the chart reference
-      chartRef.current = chart as OrgChart & OrgChartEnhancements;
-      
-      // Render the chart
-      console.log("Rendering chart...");
-      
-      try {
-    chart.render();
-        
-        // Use a timeout for rendering completion
-        setTimeout(() => {
-          console.log("Chart rendered via timeout");
-          setIsLoading(false);
-        }, 1000);
-      } catch (renderError) {
-        console.error("Error rendering chart:", renderError);
-        setChartError("Error rendering chart. Please try again.");
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Error initializing chart:", error);
-      setChartError("Error creating chart. Please try again.");
-      setIsLoading(false);
-    }
-
-    return () => {
-      try {
-        if (chartRef.current) {
-          console.log("Cleaning up chart");
-          chartRef.current.clear();
-          chartRef.current = null;
-        }
-      } catch (error) {
-        console.error("Error clearing chart:", error);
-      }
-    };
-  }, [data, onNodeClick, debug]);
-
-  // Manual refresh handler
-  const handleRefresh = useCallback(() => {
-    if (!containerRef.current || !data) return;
-    
-    setIsLoading(true);
-    setChartError(null);
-    
-    try {
-      const chart = createOrgChart(containerRef.current, data);
-      
-      if (!chart) {
-        setChartError("Failed to refresh organization chart");
-        setIsLoading(false);
-        return;
-      }
-      
-      chartRef.current = chart as OrgChart & OrgChartEnhancements;
-      chart.render();
-      
-      setTimeout(() => {
-        setIsLoading(false);
-        toast({
-          title: "Chart refreshed",
-          description: "Organization chart has been refreshed successfully",
-        });
-      }, 1000);
-    } catch (error) {
-      console.error("Error refreshing chart:", error);
-      setChartError("Error refreshing chart. Please try again.");
-      setIsLoading(false);
-    }
-  }, [data]);
-
-  // Zoom controls with fallbacks for missing methods
-  const handleZoomIn = useCallback(() => {
-    if (!chartRef.current) return;
-    
-    try {
-      // Try to use zoomIn if available
-      if (chartRef.current.zoomIn && typeof chartRef.current.zoomIn === 'function') {
-        console.log("Using native zoomIn");
-        chartRef.current.zoomIn();
-        setZoomLevel(prev => Math.min(prev + 0.25, 2.5));
-        return;
-      }
-      
-      // Try to use setZoom if available
-      if (chartRef.current.setZoom && typeof chartRef.current.setZoom === 'function') {
-        const newZoom = Math.min(zoomLevel + 0.25, 2.5);
-        console.log("Using setZoom:", newZoom);
-        chartRef.current.setZoom(newZoom);
-        setZoomLevel(newZoom);
-        return;
-      }
-      
-      console.log("Zoom methods not available, using state only");
-      setZoomLevel(prev => Math.min(prev + 0.25, 2.5));
-    } catch (error) {
-      console.error("Error zooming in:", error);
-      // Just update the state anyway
-      setZoomLevel(prev => Math.min(prev + 0.25, 2.5));
-    }
-  }, [zoomLevel]);
-
-  const handleZoomOut = useCallback(() => {
-    if (!chartRef.current) return;
-    
-    try {
-      // Try to use zoomOut if available
-      if (chartRef.current.zoomOut && typeof chartRef.current.zoomOut === 'function') {
-        console.log("Using native zoomOut");
-        chartRef.current.zoomOut();
-        setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
-        return;
-      }
-      
-      // Try to use setZoom if available
-      if (chartRef.current.setZoom && typeof chartRef.current.setZoom === 'function') {
-        const newZoom = Math.max(zoomLevel - 0.25, 0.5);
-        console.log("Using setZoom:", newZoom);
-        chartRef.current.setZoom(newZoom);
-        setZoomLevel(newZoom);
-        return;
-      }
-      
-      console.log("Zoom methods not available, using state only");
-      setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
-    } catch (error) {
-      console.error("Error zooming out:", error);
-      // Just update the state anyway
-      setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
-    }
-  }, [zoomLevel]);
-
-  const handleReset = useCallback(() => {
-    if (!chartRef.current) return;
-    
-    setZoomLevel(1);
-    
-    try {
-      // Try to use fit if available
-      if (chartRef.current.fit && typeof chartRef.current.fit === 'function') {
-        console.log("Using fit method");
-        // First reset zoom if possible
-        if (chartRef.current.setZoom && typeof chartRef.current.setZoom === 'function') {
-          chartRef.current.setZoom(1);
-        }
-        chartRef.current.fit();
-        return;
-      }
-      
-      // If fit is not available but setZoom is
-      if (chartRef.current.setZoom && typeof chartRef.current.setZoom === 'function') {
-        console.log("Using setZoom(1) for reset");
-        chartRef.current.setZoom(1);
-        return;
-      }
-      
-      console.log("Reset methods not available, using refresh");
-      handleRefresh();
-    } catch (error) {
-      console.error("Error resetting view:", error);
-      // If all else fails, refresh
-      handleRefresh();
-    }
-  }, [handleRefresh]);
+  }, [onNodeClick]);
 
   return (
-    <div className={`relative flex flex-col h-full ${className || ''}`}>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-900/80 z-10">
-          <div className="flex flex-col items-center gap-2">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-            <span className="text-sm text-slate-600 dark:text-slate-300">Loading chart...</span>
-          </div>
-        </div>
-      )}
-      
-      {chartError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-slate-900/90 z-10">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg max-w-md text-center">
-            <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Chart Error</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-4">{chartError}</p>
-            <Button onClick={handleRefresh}>
-              <RefreshCw className="h-4 w-4 mr-2" /> Try Again
-            </Button>
-          </div>
-        </div>
-      )}
-      
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm rounded-lg p-1.5 shadow-md border border-slate-200 dark:border-slate-700">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleZoomIn} 
-          className="h-8 w-8 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-        <div className="px-2 text-xs font-medium text-slate-600 dark:text-slate-300 min-w-10 text-center">
-          {Math.round(zoomLevel * 100)}%
-        </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleZoomOut}
-          className="h-8 w-8 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleReset}
-          className="h-8 w-8 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 ml-1"
-        >
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      <div 
-        ref={containerRef} 
-        className="flex-1 w-full h-full transition-opacity duration-300 bg-transparent overflow-hidden organizational-chart-component" 
-        style={{ opacity: isLoading ? 0.3 : 1 }}
-      >
-        {debug && !isLoading && data.length === 0 && (
-          <div className="h-full w-full flex items-center justify-center text-slate-400">
-            <div className="text-center">
-              <AlertCircle className="h-10 w-10 mx-auto mb-2" />
-              <p>No data to display</p>
-            </div>
-          </div>
-        )}
-      </div>
+    <div className={`h-full w-full ${className || ''}`}>
+      <UnifiedOrganizationalChart
+        data={convertedData}
+        onNodeClick={handleNodeClick}
+        debug={debug}
+        className="organizational-chart-component"
+      />
     </div>
   );
 };

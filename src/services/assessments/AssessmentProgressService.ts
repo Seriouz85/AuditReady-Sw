@@ -1,5 +1,6 @@
-import { Assessment, Requirement, RequirementStatus } from '@/types';
-import { supabase } from '@/lib/supabase';
+import { Assessment, Requirement, RequirementStatus } from '../../types';
+import { supabase } from '../../lib/supabase';
+import { requirements as allRequirements } from '../../data/mockData';
 
 // Storage keys for persistence
 const ASSESSMENT_PROGRESS_KEY = 'assessment_progress_data';
@@ -191,21 +192,21 @@ export class AssessmentProgressService {
   /**
    * Update requirement status and recalculate progress
    */
-  public updateRequirementStatus(
+  public async updateRequirementStatus(
     assessmentId: string, 
     requirementId: string, 
     newStatus: RequirementStatus
-  ): AssessmentStats {
+  ): Promise<AssessmentStats> {
     // Store the requirement status
     this.storeRequirementStatus(assessmentId, requirementId, newStatus);
     
     // Get the assessment and recalculate stats
-    const assessment = this.getAssessmentFromStorage(assessmentId);
+    const assessment = await this.getAssessmentFromStorage(assessmentId);
     if (!assessment) {
       throw new Error(`Assessment ${assessmentId} not found`);
     }
     
-    const requirements = this.getRequirementsWithStoredStatuses(assessment);
+    const requirements = await this.getRequirementsWithStoredStatusesAsync(assessment);
     const stats = this.calculateAssessmentStats(requirements);
     
     // Store the updated progress
@@ -324,10 +325,10 @@ export class AssessmentProgressService {
   /**
    * Get assessment from storage service
    */
-  private getAssessmentFromStorage(assessmentId: string): Assessment | null {
+  private async getAssessmentFromStorage(assessmentId: string): Promise<Assessment | null> {
     try {
-      // Import storage service to avoid circular dependencies
-      const { assessmentStorageService } = require('./AssessmentStorageService');
+      // Use dynamic import to avoid circular dependencies
+      const { assessmentStorageService } = await import('./AssessmentStorageService');
       return assessmentStorageService.getAssessment(assessmentId);
     } catch (error) {
       console.error('Error getting assessment from storage:', error);

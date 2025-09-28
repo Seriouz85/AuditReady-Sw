@@ -10,7 +10,7 @@ import type {
   SupplierExternalUser,
   SupplierRequirementResponse,
   SupplierRiskFactor,
-  EmailTemplate
+  SupplierEmailTemplate as EmailTemplate
 } from '@/types/supplier-assessment';
 
 export interface CreateCampaignRequest {

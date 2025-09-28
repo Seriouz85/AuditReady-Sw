@@ -203,7 +203,7 @@ export const UserActivityDashboard: React.FC<UserActivityDashboardProps> = ({
               User Activity Analytics
             </CardTitle>
             <div className="flex items-center gap-2">
-              <Select value={timeRange} onValueChange={setTimeRange}>
+              <Select value={timeRange} onValueChange={(value) => setTimeRange(value as 'day' | 'week' | 'month' | 'year')}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>

@@ -44,7 +44,9 @@ export const MermaidDesignTokens = {
       lightBlue: '#3b82f6',
       darkBlue: '#1d4ed8',
       success: '#10b981',
-      warning: '#f59e0b'
+      warning: '#f59e0b',
+      green: '#10b981',
+      purple: '#8b5cf6'
     },
 
     // Glass Surface Colors - Clean White Glass

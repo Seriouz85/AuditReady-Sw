@@ -1,0 +1,417 @@
+name: Comprehensive Testing Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18'
+  CACHE_VERSION: v1
+
+jobs:
+  # Lint and Code Quality
+  lint-and-quality:
+    name: 🔍 Lint & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Prettier check
+        run: npx prettier --check "src/**/*.{ts,tsx,js,jsx}"
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+  # Unit and Integration Tests
+  unit-integration-tests:
+    name: 🧪 Unit & Integration Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-group: [services, components, integration, utilities]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests - ${{ matrix.test-group }}
+        run: |
+          case "${{ matrix.test-group }}" in
+            services)
+              npm run test -- src/services/**/*.test.{ts,tsx}
+              ;;
+            components)
+              npm run test -- src/components/**/*.test.{tsx,ts}
+              ;;
+            integration)
+              npm run test -- src/__tests__/integration/**/*.test.{ts,tsx}
+              ;;
+            utilities)
+              npm run test -- src/utils/**/*.test.{ts,tsx} src/lib/**/*.test.{ts,tsx}
+              ;;
+          esac
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.test-group }}
+          path: |
+            coverage/
+            test-results.xml
+          retention-days: 7
+
+  # Coverage Analysis
+  coverage-analysis:
+    name: 📊 Coverage Analysis
+    runs-on: ubuntu-latest
+    needs: [unit-integration-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Run coverage validation
+        run: node scripts/test-coverage-validator.js
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage/
+          retention-days: 30
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = './coverage/coverage-report.md';
+            
+            if (fs.existsSync(path)) {
+              const coverage = fs.readFileSync(path, 'utf8');
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '## 📊 Test Coverage Report\n\n' + coverage
+              });
+            }
+
+  # End-to-End Tests
+  e2e-tests:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+        test-suite: [core-workflows, admin-functions, error-handling, accessibility]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install ${{ matrix.browser }} --with-deps
+
+      - name: Start application
+        run: |
+          npm run build
+          npm run preview &
+          npx wait-on http://localhost:4173
+
+      - name: Run E2E tests - ${{ matrix.test-suite }}
+        run: |
+          case "${{ matrix.test-suite }}" in
+            core-workflows)
+              npx playwright test tests/e2e/demo-validation.spec.ts --project=${{ matrix.browser }}
+              ;;
+            admin-functions)
+              npx playwright test tests/e2e/admin-flows.spec.ts --project=${{ matrix.browser }}
+              ;;
+            error-handling)
+              npx playwright test tests/e2e/comprehensive-testing-suite.spec.ts -g "Error Handling" --project=${{ matrix.browser }}
+              ;;
+            accessibility)
+              npx playwright test tests/e2e/comprehensive-testing-suite.spec.ts -g "Accessibility" --project=${{ matrix.browser }}
+              ;;
+          esac
+
+      - name: Upload E2E artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-${{ matrix.browser }}-${{ matrix.test-suite }}
+          path: |
+            tests/screenshots/
+            tests/reports/
+            test-results/
+          retention-days: 7
+
+  # Performance Tests
+  performance-tests:
+    name: ⚡ Performance Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun
+
+      - name: Run bundle analysis
+        run: |
+          npm run build -- --analyze
+          npx bundlesize
+
+      - name: Upload performance artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: |
+            lighthouse-reports/
+            dist/stats.html
+          retention-days: 7
+
+  # Security Tests
+  security-tests:
+    name: 🔒 Security Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium
+
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          languages: javascript
+
+  # Visual Regression Tests
+  visual-regression:
+    name: 👁️ Visual Regression
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Start application
+        run: |
+          npm run build
+          npm run preview &
+          npx wait-on http://localhost:4173
+
+      - name: Run visual regression tests
+        run: npx playwright test tests/visual/ --project=visual-chrome
+
+      - name: Upload visual diff artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-regression-diffs
+          path: tests/visual/screenshots/
+          retention-days: 7
+
+  # Test Results Summary
+  test-summary:
+    name: 📋 Test Summary
+    runs-on: ubuntu-latest
+    needs: [lint-and-quality, unit-integration-tests, coverage-analysis, e2e-tests, performance-tests, security-tests]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate test summary
+        run: |
+          echo "# 🧪 Test Results Summary" > test-summary.md
+          echo "" >> test-summary.md
+          echo "## Status Overview" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Check job statuses
+          echo "| Test Category | Status |" >> test-summary.md
+          echo "|---------------|--------|" >> test-summary.md
+          echo "| Lint & Quality | ${{ needs.lint-and-quality.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> test-summary.md
+          echo "| Unit & Integration | ${{ needs.unit-integration-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> test-summary.md
+          echo "| Coverage Analysis | ${{ needs.coverage-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> test-summary.md
+          echo "| E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> test-summary.md
+          echo "| Performance | ${{ needs.performance-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> test-summary.md
+          echo "| Security | ${{ needs.security-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Add coverage report if available
+          if [ -f "coverage-report/coverage-report.md" ]; then
+            echo "## Coverage Details" >> test-summary.md
+            cat coverage-report/coverage-report.md >> test-summary.md
+          fi
+
+      - name: Comment test summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('test-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+      - name: Upload test summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary
+          path: test-summary.md
+          retention-days: 30
+
+  # Deployment Gate
+  deployment-gate:
+    name: 🚪 Deployment Gate
+    runs-on: ubuntu-latest
+    needs: [lint-and-quality, unit-integration-tests, coverage-analysis, e2e-tests, performance-tests, security-tests]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Check all tests passed
+        run: |
+          if [[ "${{ needs.lint-and-quality.result }}" != "success" ]]; then
+            echo "❌ Lint and quality checks failed"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.unit-integration-tests.result }}" != "success" ]]; then
+            echo "❌ Unit and integration tests failed"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.coverage-analysis.result }}" != "success" ]]; then
+            echo "❌ Coverage analysis failed"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.e2e-tests.result }}" != "success" ]]; then
+            echo "❌ E2E tests failed"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.performance-tests.result }}" != "success" ]]; then
+            echo "❌ Performance tests failed"
+            exit 1
+          fi
+          
+          if [[ "${{ needs.security-tests.result }}" != "success" ]]; then
+            echo "❌ Security tests failed"
+            exit 1
+          fi
+          
+          echo "✅ All tests passed! Ready for deployment."
+
+      - name: Trigger deployment
+        if: success()
+        run: |
+          echo "🚀 Triggering deployment workflow..."
+          # Add deployment trigger logic here

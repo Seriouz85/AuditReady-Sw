@@ -2,6 +2,12 @@
  * TypeScript types for the Supplier Assessment System
  */
 
+// Import commonly used types from main types file
+import type { Supplier, Standard, Requirement } from './index';
+
+// Re-export the imported types for external consumers
+export type { Supplier, Standard, Requirement };
+
 export interface SupplierAssessmentCampaign {
   id: string;
   organization_id: string;
@@ -378,9 +384,6 @@ export interface SupplierAssessmentForm {
   };
 }
 
-// Export commonly used from main types
-export type { Supplier, Standard, Requirement } from '@/types';
-
 // Utility Types
 export type CampaignStatus = SupplierAssessmentCampaign['status'];
 export type FulfillmentLevel = SupplierRequirementResponse['fulfillment_level'];
@@ -388,3 +391,39 @@ export type RiskLevel = SupplierAssessmentCampaign['risk_level'];
 export type UserRole = SupplierExternalUser['role'];
 export type TemplateType = SupplierEmailTemplate['template_type'];
 export type NotificationStatus = SupplierNotification['delivery_status'];
+
+// Additional service types
+export interface SupplierAssessmentService {
+  createCampaign(request: CreateCampaignRequest): Promise<SupplierAssessmentCampaign>;
+  inviteSuppliers(request: InviteSupplierRequest): Promise<void>;
+  authenticateSupplier(request: SupplierLoginRequest): Promise<ExternalPortalSession>;
+  saveResponse(request: SupplierResponseRequest): Promise<SupplierRequirementResponse>;
+  delegateRequirements(request: DelegateRequirementsRequest): Promise<SupplierDelegation>;
+  getCampaign(campaignId: string): Promise<SupplierAssessmentCampaign>;
+  getSupplierProgress(campaignId: string, userId: string): Promise<SupplierComplianceMetrics>;
+}
+
+// Additional request types for service compatibility
+export interface SupplierInviteRequest extends InviteSupplierRequest {}
+export interface AuthenticateSupplierRequest extends SupplierLoginRequest {}
+export interface SaveResponseRequest extends SupplierResponseRequest {}
+
+// Compliance gap analysis type
+export interface ComplianceGapAnalysis {
+  campaign_id: string;
+  total_requirements: number;
+  fulfilled_requirements: number;
+  gaps: {
+    requirement_id: string;
+    requirement_name: string;
+    current_status: FulfillmentLevel;
+    risk_level: 'low' | 'medium' | 'high' | 'critical';
+    recommendations: string[];
+  }[];
+  overall_compliance_score: number;
+  risk_summary: {
+    total_gaps: number;
+    high_risk_gaps: number;
+    critical_risk_gaps: number;
+  };
+}

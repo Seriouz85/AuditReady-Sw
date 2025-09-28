@@ -21,7 +21,7 @@ import {
   Save,
   X,
   Link as LinkIcon,
-  LinkOff,
+  Link2Off,
   Table,
   Code,
   Heading1,

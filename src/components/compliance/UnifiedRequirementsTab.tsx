@@ -110,6 +110,10 @@ interface UnifiedRequirementsTabProps {
   setShowUnifiedGuidance: (value: boolean) => void;
   showGeneration?: boolean;
   isGenerating?: boolean;
+  filteredUnifiedMappings: any[];
+  restructuringCategories?: any[];
+  generateDynamicContentForCategory: (categoryName: string) => Promise<any[]>;
+  generatedContent: any;
 }
 
 export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
@@ -199,7 +203,7 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
   // Helper function to get restructuring status for a category
   const getCategoryStatus = (categoryName: string) => {
     const cleanCategoryName = categoryName.replace(/^\d+\.\s*/, '');
-    return restructuringCategories.find(cat => 
+    return restructuringCategories.find((cat: any) => 
       cat.name === categoryName || 
       cat.name === cleanCategoryName ||
       cat.name.replace(/^\d+\.\s*/, '') === cleanCategoryName
@@ -233,11 +237,11 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
       console.log('[CONTENT OBJECT] No template content available, using fallback generated content');
       
       if (generatedContent && typeof generatedContent.forEach === 'function') {
-        generatedContent.forEach((value, key) => {
+        generatedContent.forEach((value: any, key: any) => {
           obj[key] = Array.isArray(value) ? value : [];
         });
       } else if (generatedContent && typeof generatedContent === 'object') {
-        Object.entries(generatedContent).forEach(([key, value]) => {
+        Object.entries(generatedContent).forEach(([key, value]: [string, any]) => {
           obj[key] = Array.isArray(value) ? value : [];
         });
       }
@@ -340,7 +344,7 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
               </div>
               <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
                 <div className="text-2xl font-bold text-purple-600">
-                  {(filteredUnifiedMappings || []).reduce((total, group) => {
+                  {(filteredUnifiedMappings || []).reduce((total: any, group: any) => {
                     return total + (group.auditReadyUnified?.subRequirements?.length || 0);
                   }, 0)}
                 </div>
@@ -366,7 +370,7 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {(filteredUnifiedMappings || []).map((mapping) => (
+                {(filteredUnifiedMappings || []).map((mapping: any) => (
                   <SelectItem key={mapping.id} value={mapping.id}>
                     {mapping.category}
                   </SelectItem>
@@ -396,10 +400,10 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
               }
               
               // Use existing unified mappings
-              return filteredUnifiedMappings.filter(mapping => 
+              return filteredUnifiedMappings.filter((mapping: any) => 
                 unifiedCategoryFilter === 'all' || mapping.id === unifiedCategoryFilter
-              ).map((mapping, index) => ({ mapping, isCleanGenerated: false, index }));
-            })().map(({ mapping, isCleanGenerated, index }) => (
+              ).map((mapping: any, index: any) => ({ mapping, isCleanGenerated: false, index }));
+            })().map(({ mapping, isCleanGenerated, index }: { mapping: any; isCleanGenerated: any; index: any }) => (
               <motion.div
                 key={mapping.id}
                 id={`unified-${mapping.id}`}
@@ -529,6 +533,8 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
                                          mapping.category?.toLowerCase().includes('governance');
                       
                       console.log('[SECTION CHECK] Category:', mapping.category, 'Is Governance:', isGovernance);
+                      
+                      let groupedSubReqs: Record<string, string[]>;
                       
                       if (isGovernance) {
                         // PROPER organization for Governance & Leadership:
@@ -817,7 +823,7 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
                         </Badge>
                       </h5>
                       <div className="space-y-3">
-                        {mapping.industrySpecific.map((req, i) => (
+                        {mapping.industrySpecific.map((req: any, i: any) => (
                           <div key={i} className="bg-white dark:bg-gray-800 rounded-md p-3 border border-green-200/50 dark:border-green-700/50">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-2">
@@ -838,7 +844,7 @@ export const UnifiedRequirementsTab: React.FC<UnifiedRequirementsTabProps> = ({
                               {req.title}
                             </h6>
                             <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                              {req.description.split('•').filter(item => item.trim()).map((item, j) => (
+                              {req.description.split('•').filter((item: any) => item.trim()).map((item: any, j: any) => (
                                 <div key={j} className="flex items-start space-x-2 mb-1">
                                   <ArrowRight className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />
                                   <span>{item.trim()}</span>

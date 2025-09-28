@@ -53,6 +53,7 @@ import type {
   ComplianceGapAnalysis,
   SupplierRiskDashboard
 } from '@/types/supplier-assessment';
+import { mockSupplierAssessmentService } from '@/services/supplier-assessment/MockSupplierAssessmentService';
 
 interface EnhancedSupplierReviewProps {
   supplier: Supplier;
@@ -1205,9 +1206,9 @@ const EnhancedSupplierReview: React.FC<EnhancedSupplierReviewProps> = ({
                               <h5 className="font-medium mb-3">Top Priority Gaps</h5>
                               <div className="space-y-2">
                                 {gapAnalysis.gap_details
-                                  .sort((a, b) => b.risk_impact - a.risk_impact)
+                                  .sort((a: any, b: any) => b.risk_impact - a.risk_impact)
                                   .slice(0, 5)
-                                  .map((gap, index) => (
+                                  .map((gap: any, index: any) => (
                                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                                       <div>
                                         <p className="font-medium text-sm">{gap.requirement_name}</p>

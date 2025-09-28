@@ -8,7 +8,7 @@ export function ComplianceOverviewTab({
   maximumOverviewStats = {
     maxRequirements: 0,
     unifiedGroups: 0,
-    reductionPercentage: 0,
+    reductionPercentage: "0",
     reduction: 0,
     efficiencyRatio: 0
   },

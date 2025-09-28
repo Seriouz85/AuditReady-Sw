@@ -295,8 +295,8 @@ export const ConversationalAI: React.FC<ConversationalAIProps> = ({
     console.log('Quick Start - Generated nodes:', nodes.length);
     console.log('Quick Start - Generated edges:', edges.length);
     console.log('Quick Start - Generated edges details:', edges);
-    console.log('Quick Start - Node IDs:', nodes.map(n => n.id));
-    console.log('Quick Start - Edge connections:', edges.map(e => `${e.source} -> ${e.target} (${e.sourceHandle} to ${e.targetHandle})`));
+    console.log('Quick Start - Node IDs:', nodes.map((n: any) => n.id));
+    console.log('Quick Start - Edge connections:', edges.map((e: any) => `${e.source} -> ${e.target} (${e.sourceHandle} to ${e.targetHandle})`));
     console.log('Quick Start - Calling onReactFlowGenerate with:', { nodes, edges });
     
     // Add system message

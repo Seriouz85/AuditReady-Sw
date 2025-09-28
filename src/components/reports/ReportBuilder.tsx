@@ -660,13 +660,40 @@ export const ReportBuilder: React.FC = () => {
   };
 
   const saveReport = async () => {
-    // TODO: Implement save functionality
-    console.log('Saving report:', reportConfig);
+    // Save report configuration to browser storage
+    try {
+      const reportData = {
+        ...reportConfig,
+        savedAt: new Date().toISOString(),
+        id: Date.now().toString()
+      };
+      localStorage.setItem(`report_${reportData.id}`, JSON.stringify(reportData));
+      console.log('Report saved successfully:', reportData.id);
+    } catch (error) {
+      console.error('Failed to save report:', error);
+    }
   };
 
   const exportReport = async () => {
-    // TODO: Implement export functionality
-    console.log('Exporting report:', reportConfig);
+    // Export report as JSON file
+    try {
+      const reportData = {
+        ...reportConfig,
+        exportedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${reportConfig.name || 'report'}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      console.log('Report exported successfully');
+    } catch (error) {
+      console.error('Failed to export report:', error);
+    }
   };
 
   if (previewMode) {

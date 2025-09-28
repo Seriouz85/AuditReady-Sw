@@ -30,7 +30,7 @@ import {
   BarChart3, PieChart, Network, Workflow, Database, Shield,
   Plus, Eye, Download, Share2, Bookmark, Heart, Copy,
   AlertCircle, Info, HelpCircle, ExternalLink, ChevronDown,
-  Magic, Cpu, Activity, Layers, Grid, Box, Circle, Diamond
+  Cpu, Activity, Layers, Grid, Box, Circle, Diamond
 } from 'lucide-react';
 
 import { useDiagramStore } from '../../../stores/diagramStore';

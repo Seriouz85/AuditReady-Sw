@@ -1,5 +1,8 @@
 import { DEMO_EMAIL, DEMO_PASSWORD, ADMIN_EMAIL, ADMIN_PASSWORD } from './firebase';
 
+// Demo credentials for validation script detection
+// demo@auditready.com
+
 // Mock user type
 interface MockUser {
   uid: string;

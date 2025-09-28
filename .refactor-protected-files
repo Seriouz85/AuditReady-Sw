@@ -1,0 +1,34 @@
+# ⚠️ PROTECTED FILES - NEVER DELETE OR MODIFY WITHOUT EXPLICIT PERMISSION ⚠️
+# These files are CRITICAL for demo/marketing functionality
+# Board requirement: Demo must ALWAYS work for sales presentations
+
+# 🔒 DEMO AUTHENTICATION - NEVER BREAK
+src/lib/mockAuth.ts                    # Demo authentication handler
+src/data/mockData.ts                   # 2000+ lines of demo data - PRESERVE COMPLETELY
+
+# 🎯 DEMO-SPECIFIC COMPONENTS
+src/components/applications/DemoIntegration.tsx
+
+# 📧 FILES CONTAINING demo@auditready.com LOGIC
+src/contexts/AuthContext.tsx           # Contains demo login logic
+src/pages/Login.tsx                    # Demo login entry point
+src/lib/supabase.ts                   # Demo auth bypass
+
+# 🔧 MOCK SERVICES FOR DEMO
+src/services/supplier-assessment/MockSupplierAssessmentService.ts
+
+# ✅ VALIDATION REQUIREMENTS:
+# 1. demo@auditready.com login MUST work after EVERY change
+# 2. All mockData.ts content MUST remain functional
+# 3. Demo user can access ALL features
+# 4. UI must be pixel-perfect - NO visual changes
+# 5. Zero console errors when using demo account
+
+# 🚨 ROLLBACK TRIGGERS:
+# - Demo login fails
+# - Mock data not loading
+# - Any demo feature broken
+# - UI visual regression detected
+
+# 📋 TESTING COMMAND:
+# npm run test:demo:validate
