@@ -218,4 +218,4 @@ export default defineConfig(({ mode }) => ({
       'import.meta.env.VITE_COMMIT_SHA': JSON.stringify(versionInfo.commitSha),
       'import.meta.env.VITE_BRANCH': JSON.stringify(versionInfo.branch),
     },
-}));
+  }));
