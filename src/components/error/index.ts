@@ -4,7 +4,6 @@
  */
 
 // Main Error Boundaries
-export { ErrorBoundary, withErrorBoundary, useErrorHandler } from './ErrorBoundary';
 export { ApiErrorBoundary, withApiErrorBoundary, useApiErrorHandler } from './ApiErrorBoundary';
 export { GlobalErrorBoundary } from './GlobalErrorBoundary';
 export { 
@@ -134,7 +133,7 @@ export const withGlobalErrorHandling = <P extends object>(
   Component: React.ComponentType<P>,
   context: string = 'unknown'
 ) => {
-  return withErrorBoundary(Component, context);
+  return withApiErrorBoundary(Component, context);
 };
 
 export const withFeatureErrorHandling = <P extends object>(
