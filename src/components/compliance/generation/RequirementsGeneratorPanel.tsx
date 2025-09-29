@@ -40,11 +40,13 @@ export interface RequirementsGeneratorPanelProps {
   setShowGeneration: (show: boolean) => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export interface RequirementsGeneratorService {
   generateDynamicContentForCategory: (categoryName: string) => Promise<any[]>;
   handleGenerate: () => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useRequirementsGenerator(props: RequirementsGeneratorPanelProps): RequirementsGeneratorService {
   const {
     selectedFrameworks,

@@ -174,9 +174,9 @@ export function ApprovalWorkflowManager() {
   // Load data
   useEffect(() => {
     loadAllData();
-  }, []);
+  }, [loadAllData]);
 
-  const loadAllData = async () => {
+  const loadAllData = useCallback(async () => {
     setLoading(true);
     try {
       await Promise.all([
@@ -191,7 +191,7 @@ export function ApprovalWorkflowManager() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const loadApprovalItems = async () => {
     // Mock approval items with comprehensive data

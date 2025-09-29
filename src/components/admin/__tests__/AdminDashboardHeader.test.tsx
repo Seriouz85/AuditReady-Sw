@@ -7,10 +7,10 @@ describe('AdminDashboardHeader', () => {
   const mockStats = {
     totalUsers: 1250,
     totalOrganizations: 89,
-    totalRevenue: 45230.50,
-    activeSubscriptions: 67,
-    monthlyGrowth: 12.5,
-    systemHealth: 98.7
+    totalStandards: 156,
+    totalRequirements: 4523,
+    activeAssessments: 234,
+    recentUpdates: 45
   };
 
   const mockStripeStats = {
@@ -34,8 +34,9 @@ describe('AdminDashboardHeader', () => {
     stripeStats: mockStripeStats,
     authUser: mockAuthUser,
     loading: false,
-    onRefresh: vi.fn(),
-    onLogout: vi.fn()
+    onRefresh: vi.fn().mockResolvedValue(undefined),
+    onLogout: vi.fn(),
+    signOut: vi.fn()
   };
 
   beforeEach(() => {
@@ -170,10 +171,10 @@ describe('AdminDashboardHeader', () => {
       const zeroStats = {
         totalUsers: 0,
         totalOrganizations: 0,
-        totalRevenue: 0,
-        activeSubscriptions: 0,
-        monthlyGrowth: 0,
-        systemHealth: 0
+        totalStandards: 0,
+        totalRequirements: 0,
+        activeAssessments: 0,
+        recentUpdates: 0
       };
       
       render(<AdminDashboardHeader {...mockProps} stats={zeroStats} />);

@@ -837,7 +837,7 @@ export class ComplianceExportService {
         doc.setTextColor(...textColor);
         doc.setFontSize(8); // Even smaller font to prevent bleeding
         doc.setFont('helvetica', 'bold');
-        const cleanTitle = title.replace(/[✅💡🎯]/g, '').trim(); // Remove special chars
+        const cleanTitle = title.replace(/[✅💡🎯]/gu, '').trim(); // Remove special chars
         doc.text(cleanTitle, x + 2, sectionY + 6); // Move up slightly
         
         // Items with proper text wrapping and spacing

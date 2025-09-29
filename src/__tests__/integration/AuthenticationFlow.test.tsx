@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@/test-utils';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -30,7 +31,7 @@ vi.mock('@/lib/supabase', () => ({
 }));
 
 // Import components after mocking
-import { App } from '@/App';
+import App from '@/App';
 import { useAuth } from '@/contexts/AuthContext';
 
 describe('Authentication Flow Integration Tests', () => {

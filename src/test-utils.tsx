@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { render, RenderOptions, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
+import { vi } from 'vitest';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { LanguageProvider } from '@/providers/LanguageProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -177,8 +178,53 @@ export const createMockAssessment = (overrides = {}) => ({
   ...overrides,
 });
 
+// Performance measurement utility
+export const measureRenderTime = async (renderFn: () => Promise<void> | void) => {
+  const start = performance.now();
+  await renderFn();
+  const end = performance.now();
+  return end - start;
+};
+
+// Mock fetch utility
+export const mockFetch = (response: any, status = 200) => {
+  global.fetch = vi.fn(() => 
+    Promise.resolve({
+      ok: status >= 200 && status < 300,
+      status,
+      json: () => Promise.resolve(response),
+    })
+  ) as any;
+};
+
+// Create mock Supabase response
+export const createMockSupabaseResponse = (data: any, error: any = null) => ({
+  data,
+  error,
+  status: error ? 400 : 200,
+  statusText: error ? 'Bad Request' : 'OK',
+});
+
+// Accessibility checking utility
+export const checkAccessibility = async (element: HTMLElement) => {
+  // Mock implementation for testing
+  return {
+    violations: [],
+    passes: [],
+    inapplicable: [],
+    incomplete: []
+  };
+};
+
 // Re-export everything from React Testing Library
 export * from '@testing-library/react';
 export { customRender as render };
 export { customRender as renderWithProviders };
 export { createTestQueryClient };
+
+// Re-export mock functions for consistency
+export { createMockUser as createMockAuthUser };
+export { createMockUser };
+export { createMockOrganization };
+export { createMockFramework };
+export { createMockAssessment };

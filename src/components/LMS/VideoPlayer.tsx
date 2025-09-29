@@ -285,7 +285,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [volume, isPlaying, togglePlay]);
+  }, [volume, isPlaying, togglePlay, skip, toggleMute]);
 
   // Mouse movement detection for control visibility
   useEffect(() => {

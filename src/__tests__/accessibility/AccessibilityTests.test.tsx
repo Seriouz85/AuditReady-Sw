@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@/test-utils';
 import { checkAccessibility } from '@/test-utils';
@@ -13,8 +14,8 @@ vi.mock('axe-core', () => ({
 }));
 
 // Import components after mocking
-import { App } from '@/App';
-import { ComplianceSimplification } from '@/pages/ComplianceSimplification';
+import App from '@/App';
+import ComplianceSimplification from '@/pages/ComplianceSimplification';
 import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 
 describe('Accessibility Tests', () => {
@@ -647,6 +648,7 @@ describe('Accessibility Tests', () => {
             
             return () => document.removeEventListener('keydown', handleTabKey);
           }
+          return () => {};
         }, [isOpen]);
         
         if (!isOpen) return null;

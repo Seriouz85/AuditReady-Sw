@@ -23,7 +23,8 @@ export const AdminDashboardHeader: React.FC<AdminDashboardHeaderExtendedProps> =
   authUser,
   loading,
   onRefresh,
-  onLogout
+  onLogout,
+  signOut
 }) => {
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 shadow-2xl">

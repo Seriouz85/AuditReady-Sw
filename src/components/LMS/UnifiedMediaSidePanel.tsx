@@ -190,7 +190,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
         searchOnlineMedia();
       }
     }
-  }, [isOpen, organization, activeTab]);
+  }, [isOpen, organization, activeTab, loadLocalFiles, searchOnlineMedia, searchTerm]);
 
   useEffect(() => {
     if (activeTab === 'online') {
@@ -205,9 +205,9 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
         setHasLoadedPopularMedia(true);
       }
     }
-  }, [searchTerm, activeTab, hasLoadedPopularMedia, onlineMedia.length]);
+  }, [searchTerm, activeTab, hasLoadedPopularMedia, onlineMedia.length, searchOnlineMedia]);
 
-  const loadLocalFiles = async () => {
+  const loadLocalFiles = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -223,9 +223,9 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [isDemo, organization, demoFiles]);
 
-  const searchOnlineMedia = async () => {
+  const searchOnlineMedia = useCallback(async () => {
     if (!searchTerm.trim()) {
       setOnlineMedia([]);
       return;
@@ -248,7 +248,7 @@ export const UnifiedMediaSidePanel: React.FC<UnifiedMediaSidePanelProps> = ({
     } finally {
       setSearchLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

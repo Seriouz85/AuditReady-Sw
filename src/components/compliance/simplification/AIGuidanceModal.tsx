@@ -194,7 +194,7 @@ export const AIGuidanceModal: React.FC<AIGuidanceModalProps> = ({
             }
 
             // Handle deeply indented requirement items (individual requirements under subcategories)
-            if (line.match(/^    [A-Z0-9.\-]+:/)) {
+            if (line.match(/^ {4}[A-Z0-9.\-]+:/)) {
               const requirementText = line.trim();
               const [code, title] = requirementText.split(': ');
               return (

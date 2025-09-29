@@ -216,7 +216,7 @@ export const EnhancedMediaBrowserPanel: React.FC<EnhancedMediaBrowserPanelProps>
     } finally {
       setLoading(false);
     }
-  }, [isDemo, organization]);
+  }, [isDemo, organization, demoFiles]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

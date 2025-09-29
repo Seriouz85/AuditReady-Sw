@@ -110,8 +110,8 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   // Hooks
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
-  const { } = useAccessibility();
-  const { } = useReactFlow();
+  useAccessibility();
+  useReactFlow();
   const { handleNodeDrag } = useNodeAlignment(nodes);
   
   // Store
@@ -624,20 +624,7 @@ const EnterpriseAREditor: React.FC<EnterpriseAREditorProps> = ({
   const handleShare = useCallback(() => {
     console.log('🔗 Share clicked - Opening collaboration modal');
     setShowCollaborationModal(true);
-    
-    // Legacy share functionality as fallback
-    const shareUrl = `${window.location.origin}/shared-diagram/${Date.now()}`;
-    if (navigator.share && false) { // Disabled in favor of collaboration modal
-      navigator.share({
-        title: projectName || 'Untitled Diagram',
-        text: projectDescription || 'Check out my diagram!',
-        url: shareUrl
-      });
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      console.log('📋 Share URL copied to clipboard');
-    }
-  }, [projectName, projectDescription]);
+  }, []);
 
   // Beautiful Node Types
   const nodeTypes = useMemo(() => SmartNodeTypes, []);

@@ -58,7 +58,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack
 
   useEffect(() => {
     loadQuiz();
-  }, [quizId]);
+  }, [quizId, loadQuiz]);
 
   useEffect(() => {
     // Timer for time-limited quizzes
@@ -76,9 +76,9 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack
 
       return () => clearInterval(timer);
     }
-  }, [quiz?.timeLimit, quizState.timeRemaining, quizState.submitted]);
+  }, [quiz?.timeLimit, quizState.timeRemaining, quizState.submitted, submitQuiz]);
 
-  const loadQuiz = async () => {
+  const loadQuiz = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -119,7 +119,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack
     } finally {
       setLoading(false);
     }
-  };
+  }, [quizId, user]);
 
   const handleAnswerChange = (questionId: string, answer: any) => {
     setQuizState(prev => ({
@@ -149,7 +149,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack
     }
   };
 
-  const submitQuiz = async () => {
+  const submitQuiz = useCallback(async () => {
     if (!user || !quiz) return;
 
     try {
@@ -183,7 +183,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quizId, onComplete, onBack
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [user, quiz, quizState.startTime, quizState.answers, quizId, onComplete]);
 
   const retakeQuiz = () => {
     setQuizState({

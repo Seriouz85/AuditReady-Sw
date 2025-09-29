@@ -209,20 +209,11 @@ export const usePerformanceOptimization = () => {
   }, [getVisibleNodes, virtualizationConfig.chunkSize]);
 
   // Progressive loading for better perceived performance
-  const useProgressiveLoading = useCallback((totalItems: number, batchSize: number = 10) => {
-    const [loadedCount, setLoadedCount] = useState(batchSize);
-    
-    useEffect(() => {
-      if (loadedCount < totalItems) {
-        const timer = setTimeout(() => {
-          setLoadedCount(prev => Math.min(prev + batchSize, totalItems));
-        }, 16); // ~60fps
-        
-        return () => clearTimeout(timer);
-      }
-    }, [loadedCount, totalItems, batchSize]);
-    
-    return loadedCount;
+  const createProgressiveLoader = useCallback((totalItems: number, batchSize: number = 10) => {
+    return {
+      initialCount: Math.min(batchSize, totalItems),
+      loadMore: () => Math.min(batchSize, totalItems)
+    };
   }, []);
 
   // Performance monitoring
@@ -342,57 +333,45 @@ export const usePerformanceOptimization = () => {
     };
   }, [nodes.length, edges.length, getCacheStats]);
 
-  // Web Workers for heavy computations
-  const useWebWorker = useCallback((workerScript: string) => {
-    const [worker, setWorker] = useState<Worker | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
-
-    useEffect(() => {
-      try {
-        const workerInstance = new Worker(workerScript);
-        setWorker(workerInstance);
-
-        workerInstance.onerror = (err) => {
-          setError(new Error(err.message));
-          setIsLoading(false);
-        };
-
-        return () => {
-          workerInstance.terminate();
-        };
-      } catch (err) {
-        setError(err as Error);
-      }
-    }, [workerScript]);
-
-    const postMessage = useCallback((data: any) => {
-      if (worker) {
-        setIsLoading(true);
-        setError(null);
-        
-        return new Promise((resolve, reject) => {
-          const handleMessage = (e: MessageEvent) => {
-            setIsLoading(false);
-            worker.removeEventListener('message', handleMessage);
-            resolve(e.data);
-          };
-          
-          const handleError = (err: ErrorEvent) => {
-            setIsLoading(false);
-            worker.removeEventListener('error', handleError);
-            reject(new Error(err.message));
-          };
-          
-          worker.addEventListener('message', handleMessage);
-          worker.addEventListener('error', handleError);
-          worker.postMessage(data);
-        });
-      }
-      return Promise.reject(new Error('Worker not available'));
-    }, [worker]);
-
-    return { worker, postMessage, isLoading, error };
+  // Web Worker factory for heavy computations
+  const createWebWorker = useCallback((workerScript: string) => {
+    try {
+      const workerInstance = new Worker(workerScript);
+      
+      return {
+        worker: workerInstance,
+        postMessage: (data: any) => {
+          return new Promise((resolve, reject) => {
+            const handleMessage = (e: MessageEvent) => {
+              workerInstance.removeEventListener('message', handleMessage);
+              workerInstance.removeEventListener('error', handleError);
+              resolve(e.data);
+            };
+            
+            const handleError = (err: ErrorEvent) => {
+              workerInstance.removeEventListener('message', handleMessage);
+              workerInstance.removeEventListener('error', handleError);
+              reject(new Error(err.message));
+            };
+            
+            workerInstance.addEventListener('message', handleMessage);
+            workerInstance.addEventListener('error', handleError);
+            workerInstance.postMessage(data);
+          });
+        },
+        terminate: () => workerInstance.terminate(),
+        isReady: true,
+        error: null
+      };
+    } catch (err) {
+      return {
+        worker: null,
+        postMessage: () => Promise.reject(new Error('Worker not available')),
+        terminate: () => {},
+        isReady: false,
+        error: err as Error
+      };
+    }
   }, []);
 
   // Viewport update handler

@@ -196,7 +196,7 @@ export class EnhancedXSSProtection {
 
     // Additional text-based sanitization
     return sanitized
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove control characters
+      .replace(/[\p{Cc}]/gu, '') // Remove control characters
       .replace(/[\uFEFF\uFFFE\uFFFF]/g, '') // Remove BOM and other special chars
       .trim();
   }

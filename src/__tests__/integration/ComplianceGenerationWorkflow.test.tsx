@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@/test-utils';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -35,9 +36,11 @@ vi.mock('@/contexts/AuthContext', () => ({
 vi.mock('@/services/compliance/ComplianceSimplificationBusinessLogic', () => ({
   ComplianceSimplificationBusinessLogic: {
     generateUnifiedRequirements: vi.fn(),
-    generateGuidance: vi.fn(),
+    buildGuidanceFromUnifiedRequirements: vi.fn(),
     filterMappings: vi.fn(),
-    calculateStats: vi.fn()
+    calculateMaximumOverviewStats: vi.fn(),
+    generateFallbackData: vi.fn(),
+    generateDynamicContentForCategory: vi.fn()
   }
 }));
 
@@ -48,7 +51,7 @@ vi.mock('@/services/ai/GeminiContentGenerator', () => ({
   }
 }));
 
-import { ComplianceSimplification } from '@/pages/ComplianceSimplification';
+import ComplianceSimplification from '@/pages/ComplianceSimplification';
 import { ComplianceSimplificationBusinessLogic } from '@/services/compliance/ComplianceSimplificationBusinessLogic';
 
 describe('Compliance Generation Workflow Integration Tests', () => {
@@ -120,7 +123,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
 
     // Setup mock implementations
     (ComplianceSimplificationBusinessLogic.filterMappings as any).mockReturnValue(mockMappingData);
-    (ComplianceSimplificationBusinessLogic.calculateStats as any).mockReturnValue({
+    (ComplianceSimplificationBusinessLogic.calculateMaximumOverviewStats as any).mockReturnValue({
       totalCategories: 2,
       totalRequirements: 3,
       frameworkCounts: {
@@ -132,7 +135,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
       }
     });
     (ComplianceSimplificationBusinessLogic.generateUnifiedRequirements as any).mockResolvedValue(mockUnifiedRequirements);
-    (ComplianceSimplificationBusinessLogic.generateGuidance as any).mockResolvedValue([]);
+    (ComplianceSimplificationBusinessLogic.buildGuidanceFromUnifiedRequirements as any).mockResolvedValue([]);
 
     vi.clearAllMocks();
   });
@@ -193,7 +196,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
         fireEvent.click(gdprToggle);
 
         await waitFor(() => {
-          expect(ComplianceSimplificationBusinessLogic.calculateStats).toHaveBeenCalled();
+          expect(ComplianceSimplificationBusinessLogic.calculateMaximumOverviewStats).toHaveBeenCalled();
         });
       }
     });
@@ -201,7 +204,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
     it('should show appropriate messaging when no frameworks are selected', async () => {
       // Mock empty results
       (ComplianceSimplificationBusinessLogic.filterMappings as any).mockReturnValue([]);
-      (ComplianceSimplificationBusinessLogic.calculateStats as any).mockReturnValue({
+      (ComplianceSimplificationBusinessLogic.calculateMaximumOverviewStats as any).mockReturnValue({
         totalCategories: 0,
         totalRequirements: 0,
         frameworkCounts: {}
@@ -243,7 +246,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
     });
 
     it('should show progress indicator during generation', async () => {
-      let progressCallback: Function;
+      let progressCallback: (progress: { category: string; progress: number; stage: string }) => void;
       
       (ComplianceSimplificationBusinessLogic.generateUnifiedRequirements as any).mockImplementation(
         (...args: any[]) => {
@@ -408,7 +411,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
     it('should allow exporting requirements to PDF', async () => {
       // Mock PDF export
       const mockPDFExport = vi.fn().mockResolvedValue({ success: true });
-      global.jsPDF = vi.fn().mockImplementation(() => ({
+      (global as any).jsPDF = vi.fn().mockImplementation(() => ({
         text: vi.fn(),
         save: vi.fn(),
         addPage: vi.fn(),
@@ -437,7 +440,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
 
           // Should trigger PDF generation
           await waitFor(() => {
-            expect(global.jsPDF).toHaveBeenCalled();
+            expect((global as any).jsPDF).toHaveBeenCalled();
           });
         }
       }
@@ -445,7 +448,7 @@ describe('Compliance Generation Workflow Integration Tests', () => {
 
     it('should handle export errors gracefully', async () => {
       // Mock export failure
-      global.jsPDF = vi.fn().mockImplementation(() => {
+      (global as any).jsPDF = vi.fn().mockImplementation(() => {
         throw new Error('PDF generation failed');
       });
 

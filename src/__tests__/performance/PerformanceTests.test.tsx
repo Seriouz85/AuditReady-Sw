@@ -1,19 +1,20 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, waitFor, act } from '@/test-utils';
+import { render, screen, waitFor, act, fireEvent } from '@/test-utils';
 import { measureRenderTime, checkAccessibility } from '@/test-utils';
 
 // Mock performance APIs
 vi.mock('web-vitals', () => ({
-  getCLS: vi.fn((callback) => callback({ value: 0.05 })),
-  getFID: vi.fn((callback) => callback({ value: 20 })),
-  getFCP: vi.fn((callback) => callback({ value: 1200 })),
-  getLCP: vi.fn((callback) => callback({ value: 1800 })),
-  getTTFB: vi.fn((callback) => callback({ value: 400 })),
+  onCLS: vi.fn((callback) => callback({ value: 0.05 })),
+  onFID: vi.fn((callback) => callback({ value: 20 })),
+  onFCP: vi.fn((callback) => callback({ value: 1200 })),
+  onLCP: vi.fn((callback) => callback({ value: 1800 })),
+  onTTFB: vi.fn((callback) => callback({ value: 400 })),
 }));
 
 // Import components after mocking
-import { App } from '@/App';
-import { ComplianceSimplification } from '@/pages/ComplianceSimplification';
+import App from '@/App';
+import ComplianceSimplification from '@/pages/ComplianceSimplification';
 import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 
 describe('Performance Tests', () => {
@@ -77,7 +78,7 @@ describe('Performance Tests', () => {
     });
 
     it('should meet Core Web Vitals thresholds', async () => {
-      const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
+      const { onCLS, onFID, onFCP, onLCP, onTTFB } = await import('web-vitals');
 
       render(<App />);
 
@@ -86,11 +87,11 @@ describe('Performance Tests', () => {
       });
 
       // Check that web vitals are measured
-      expect(getCLS).toHaveBeenCalled();
-      expect(getFID).toHaveBeenCalled();
-      expect(getFCP).toHaveBeenCalled();
-      expect(getLCP).toHaveBeenCalled();
-      expect(getTTFB).toHaveBeenCalled();
+      expect(onCLS).toHaveBeenCalled();
+      expect(onFID).toHaveBeenCalled();
+      expect(onFCP).toHaveBeenCalled();
+      expect(onLCP).toHaveBeenCalled();
+      expect(onTTFB).toHaveBeenCalled();
     });
   });
 
@@ -308,7 +309,7 @@ describe('Performance Tests', () => {
         const [data, setData] = React.useState(null);
         
         React.useEffect(() => {
-          mockApiCall().then(response => setData(response.data));
+          mockApiCall().then((response: any) => setData(response.data));
         }, []);
         
         return <div data-testid="api-data">{data}</div>;

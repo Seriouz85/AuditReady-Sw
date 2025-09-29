@@ -85,6 +85,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 };
 
 // Higher-order component for easier route protection
+// eslint-disable-next-line react-refresh/only-export-components
 export const withAuth = (
   Component: React.ComponentType<any>,
   requiredPermission?: string,

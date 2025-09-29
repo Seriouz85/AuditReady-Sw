@@ -61,39 +61,43 @@ class PuterAIService {
     if (this.isInitialized) return;
     if (this.initPromise) return this.initPromise;
 
-    this.initPromise = new Promise(async (resolve) => {
-      // Check if puter is already loaded
-      if (typeof window.puter !== 'undefined') {
-        try {
-          // Try to authenticate with Puter.js
-          console.log('🔐 Attempting to authenticate with Puter.js...');
-          
-          // Check if we need to sign in
-          if (!window.puter.auth?.isSignedIn()) {
-            console.log('🚪 Not signed in, attempting anonymous access...');
-            
-            // Try to sign in anonymously or with a temporary session
-            try {
-              await window.puter.auth.signIn();
-              console.log('✅ Puter.js authentication successful');
-            } catch (authError) {
-              console.warn('⚠️ Puter.js authentication failed, trying without auth:', authError);
-            }
-          }
-          
-          this.isInitialized = true;
-          console.log('✅ Puter.js is ready for unlimited AI calls');
-          resolve();
-          return;
-        } catch (error) {
-          console.error('❌ Puter.js initialization error:', error);
-          this.isInitialized = true; // Continue anyway
-          resolve();
-          return;
-        }
-      }
+    this.initPromise = new Promise((resolve) => {
+      this.performInitialization().then(() => resolve()).catch(() => resolve());
+    });
+  }
 
-      // Wait for puter to be available
+  private async performInitialization(): Promise<void> {
+    // Check if puter is already loaded
+    if (typeof window.puter !== 'undefined') {
+      try {
+        // Try to authenticate with Puter.js
+        console.log('🔐 Attempting to authenticate with Puter.js...');
+        
+        // Check if we need to sign in
+        if (!window.puter.auth?.isSignedIn()) {
+          console.log('🚪 Not signed in, attempting anonymous access...');
+          
+          // Try to sign in anonymously or with a temporary session
+          try {
+            await window.puter.auth.signIn();
+            console.log('✅ Puter.js authentication successful');
+          } catch (authError) {
+            console.warn('⚠️ Puter.js authentication failed, trying without auth:', authError);
+          }
+        }
+        
+        this.isInitialized = true;
+        console.log('✅ Puter.js is ready for unlimited AI calls');
+        return;
+      } catch (error) {
+        console.error('❌ Puter.js initialization error:', error);
+        this.isInitialized = true; // Continue anyway
+        return;
+      }
+    }
+
+    // Wait for puter to be available
+    return new Promise<void>((resolve) => {
       const checkInterval = setInterval(async () => {
         if (typeof window.puter !== 'undefined') {
           clearInterval(checkInterval);
@@ -127,8 +131,6 @@ class PuterAIService {
         resolve(); // Resolve anyway to prevent hanging
       }, 10000);
     });
-
-    return this.initPromise;
   }
 
   async analyzeRequirement(

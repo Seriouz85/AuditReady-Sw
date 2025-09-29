@@ -193,7 +193,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
       const store = window[storage];
       let size = 0;
       for (const key in store) {
-        if (store.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(store, key)) {
           size += store[key].length + key.length;
         }
       }
