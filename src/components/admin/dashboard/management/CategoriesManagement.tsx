@@ -65,12 +65,53 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
       }
 
       console.log('✅ Loaded categories:', data?.length || 0);
+
+      // Check for gaps in sort_order and fix if needed
+      if (data && data.length > 0) {
+        const sortOrders = data.map(c => c.sort_order).sort((a, b) => a - b);
+        let hasGaps = false;
+        for (let i = 0; i < sortOrders.length; i++) {
+          if (sortOrders[i] !== i + 1) {
+            hasGaps = true;
+            break;
+          }
+        }
+
+        if (hasGaps) {
+          console.log('⚠️ Found gaps in sort_order, fixing...');
+          await fixSortOrderGaps(data);
+          return; // Reload after fixing
+        }
+      }
+
       setCategories(data || []);
     } catch (error) {
       console.error('❌ Exception loading categories:', error);
       toast.error('Failed to load categories');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fixSortOrderGaps = async (categories: Category[]) => {
+    try {
+      // Renumber all categories to have consecutive sort_order
+      const updates = categories.map((cat, index) =>
+        supabase
+          .from('unified_compliance_categories')
+          .update({ sort_order: index + 1 })
+          .eq('id', cat.id)
+      );
+
+      await Promise.all(updates);
+      console.log('✅ Fixed sort_order gaps');
+      toast.success('Category numbering fixed');
+
+      // Reload categories
+      loadCategories();
+    } catch (error) {
+      console.error('❌ Error fixing sort_order gaps:', error);
+      toast.error('Failed to fix category numbering');
     }
   };
 
@@ -159,7 +200,10 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
     }
   };
 
-  const handleMoveUp = async (category: Category) => {
+  const handleMoveUp = async (category: Category, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const index = categories.findIndex(c => c.id === category.id);
     if (index <= 0) return;
 
@@ -184,7 +228,10 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
     }
   };
 
-  const handleMoveDown = async (category: Category) => {
+  const handleMoveDown = async (category: Category, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const index = categories.findIndex(c => c.id === category.id);
     if (index >= categories.length - 1) return;
 
@@ -251,6 +298,15 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fixSortOrderGaps(categories)}
+            disabled={loading || categories.length === 0}
+            title="Fix any gaps in category numbering"
+          >
+            Fix Numbering
+          </Button>
           <Button onClick={handleCreate} className="bg-gradient-to-r from-blue-600 to-purple-600">
             <Plus className="w-4 h-4 mr-2" />
             Add Category
@@ -306,18 +362,20 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
                 <div className="flex items-center space-x-4 flex-1">
                   <div className="flex flex-col space-y-1">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleMoveUp(category)}
+                      onClick={(e) => handleMoveUp(category, e)}
                       disabled={index === 0}
                       className="h-6 w-6 p-0"
                     >
                       <ArrowUp className="h-3 w-3" />
                     </Button>
                     <Button
+                      type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleMoveDown(category)}
+                      onClick={(e) => handleMoveDown(category, e)}
                       disabled={index === filteredCategories.length - 1}
                       className="h-6 w-6 p-0"
                     >
