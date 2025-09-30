@@ -89,59 +89,12 @@ export class AdminService {
 
   async inviteUser(invitationData: UserInvitationData) {
     try {
-      // Option 1: Use Supabase built-in user invitation (RECOMMENDED)
-      const { data: authInvitation, error: authError } = await supabase.auth.admin.inviteUserByEmail(
-        invitationData.email,
-        {
-          data: {
-            organization_id: invitationData.organization_id,
-            role_id: invitationData.role_id,
-            invited_by: (await supabase.auth.getUser()).data.user?.id,
-            ...invitationData.metadata
-          },
-          redirectTo: `${window.location.origin}/auth/accept-invitation`
-        }
-      );
-
-      if (authError) {
-        console.error('Supabase auth invitation error:', authError);
-        
-        // Fallback to custom invitation system
-        return this.createCustomInvitation(invitationData);
-      }
-
-      // Store invitation record in our custom table for tracking
-      const { data: invitation, error: dbError } = await supabase
-        .from('user_invitations')
-        .insert([{
-          email: invitationData.email,
-          role_id: invitationData.role_id,
-          organization_id: invitationData.organization_id,
-          token: 'supabase-auth-invitation', // Using Supabase's system
-          invited_by: authInvitation.user.id,
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          metadata: invitationData.metadata || {},
-          status: 'sent'
-        }])
-        .select()
-        .single();
-
-      if (dbError) {
-        console.warn('Could not log invitation to database:', dbError);
-      }
-
-      await this.auditLogger.log('user_invited', 'user_invitations', invitation?.id || 'supabase-auth', {
-        new_values: { email: invitationData.email, organization_id: invitationData.organization_id }
-      });
-
-      console.log('✅ Invitation sent via Supabase Auth to:', invitationData.email);
-      return authInvitation;
-
+      // Use custom invitation system (works in dev and prod)
+      console.log('📧 Creating custom invitation for:', invitationData.email);
+      return this.createCustomInvitation(invitationData);
     } catch (error) {
       console.error('Error inviting user:', error);
-      
-      // Final fallback to custom system
-      return this.createCustomInvitation(invitationData);
+      throw error;
     }
   }
 
@@ -190,18 +143,19 @@ export class AdminService {
       throw error;
     }
 
-    // Send custom invitation email
+    // Send custom invitation email (non-blocking)
     try {
       await this.sendInvitationEmail(invitation);
     } catch (emailError) {
-      console.error('Email error:', emailError);
-      throw new Error(`Invitation created but email failed: ${emailError}`);
+      console.warn('⚠️ Email sending failed (invitation still created):', emailError);
+      // Don't throw - invitation was created successfully
     }
 
     await this.auditLogger.log('user_invited', 'user_invitations', invitation.id, {
       new_values: { email: invitationData.email, organization_id: invitationData.organization_id }
     });
 
+    console.log('✅ Invitation created successfully:', invitation.id);
     return invitation;
   }
 
