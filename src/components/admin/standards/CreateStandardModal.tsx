@@ -29,8 +29,8 @@ import {
 
 interface CreateStandardModalProps {
   open: boolean;
-  onClose: () => void;
-  onStandardCreated: () => void;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 interface Requirement {
@@ -56,8 +56,8 @@ interface StandardFormData {
 
 export const CreateStandardModal: React.FC<CreateStandardModalProps> = ({
   open,
-  onClose,
-  onStandardCreated
+  onOpenChange,
+  onSuccess
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -154,8 +154,8 @@ export const CreateStandardModal: React.FC<CreateStandardModalProps> = ({
       }
 
       toast.success(`Standard "${formData.name}" created successfully with ${formData.requirements.length} requirements`);
-      onStandardCreated();
-      onClose();
+      onSuccess();
+      onOpenChange(false);
       
       // Reset form
       setFormData({
@@ -193,7 +193,7 @@ export const CreateStandardModal: React.FC<CreateStandardModalProps> = ({
   ).length;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center">
@@ -499,7 +499,7 @@ export const CreateStandardModal: React.FC<CreateStandardModalProps> = ({
           </div>
           
           <div className="flex items-center space-x-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             {currentStep === 1 ? (
