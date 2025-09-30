@@ -1,4 +1,5 @@
 // Analytics and monitoring utilities
+import * as React from 'react';
 
 interface AnalyticsEvent {
   event: string;
