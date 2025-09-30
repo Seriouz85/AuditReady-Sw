@@ -204,6 +204,12 @@
       "esbuild": ">=0.24.3",
       "path-to-regexp": ">=6.3.0",
       "undici": ">=5.29.0"
-    }
+    },
+    "glob": ">=10.0.0",
+    "rimraf": ">=5.0.0",
+    "inflight": "npm:@isaacs/lru-cache@^2.0.0",
+    "fstream": false,
+    "path-match": false,
+    "lodash.isequal": false
   }
 }
