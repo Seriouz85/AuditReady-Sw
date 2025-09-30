@@ -29,6 +29,7 @@ interface Category {
   sort_order: number;
   created_at?: string;
   updated_at?: string;
+  usage_count?: number;
 }
 
 interface CategoriesManagementProps {
@@ -82,9 +83,30 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
           await fixSortOrderGaps(data);
           return; // Reload after fixing
         }
-      }
 
-      setCategories(data || []);
+        // Fetch usage counts for each category
+        const categoriesWithCounts = await Promise.all(
+          data.map(async (category) => {
+            const { data: requirements, error: countError } = await supabase
+              .from('unified_requirements')
+              .select('id', { count: 'exact', head: true })
+              .eq('category_id', category.id);
+
+            if (countError) {
+              console.error('Error fetching usage count for category:', category.name, countError);
+            }
+
+            return {
+              ...category,
+              usage_count: requirements?.length || 0
+            };
+          })
+        );
+
+        setCategories(categoriesWithCounts);
+      } else {
+        setCategories([]);
+      }
     } catch (error) {
       console.error('❌ Exception loading categories:', error);
       toast.error('Failed to load categories');
@@ -128,9 +150,9 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
     setFormData({
-      name: category.name,
-      description: category.description,
-      icon: category.icon
+      name: category.name || '',
+      description: category.description || '',
+      icon: category.icon || 'Shield'
     });
     setIsDialogOpen(true);
   };
@@ -181,17 +203,39 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
   };
 
   const handleDelete = async (category: Category) => {
-    if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
-      return;
-    }
-
+    // First check if category is being used
     try {
+      const { data: requirements, error: checkError } = await supabase
+        .from('unified_requirements')
+        .select('id', { count: 'exact', head: true })
+        .eq('category_id', category.id);
+
+      if (checkError) {
+        console.error('Error checking category usage:', checkError);
+      }
+
+      const usageCount = requirements?.length || 0;
+
+      if (usageCount > 0) {
+        toast.error(`Cannot delete: This category is used by ${usageCount} requirement(s). Remove those references first.`);
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
+        return;
+      }
+
       const { error } = await supabase
         .from('unified_compliance_categories')
         .delete()
         .eq('id', category.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting category:', error);
+        toast.error(`Failed to delete category: ${error.message}`);
+        return;
+      }
+
       toast.success('Category deleted successfully');
       loadCategories();
     } catch (error) {
@@ -387,7 +431,14 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
                   </Badge>
                   <Shield className="h-5 w-5 text-blue-600" />
                   <div className="flex-1">
-                    <h3 className="font-semibold">{category.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{category.name}</h3>
+                      {category.usage_count !== undefined && category.usage_count > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          {category.usage_count} requirement{category.usage_count !== 1 ? 's' : ''}
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">{category.description}</p>
                   </div>
                 </div>
@@ -404,6 +455,8 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
                     size="sm"
                     onClick={() => handleDelete(category)}
                     className="text-red-600 hover:text-red-700"
+                    disabled={category.usage_count !== undefined && category.usage_count > 0}
+                    title={category.usage_count && category.usage_count > 0 ? `Cannot delete: Used by ${category.usage_count} requirement(s)` : 'Delete category'}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
