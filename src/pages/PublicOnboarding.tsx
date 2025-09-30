@@ -166,20 +166,12 @@ const PublicOnboarding = () => {
 
   const industries = [
     { value: "technology", label: "Technology" },
-    { value: "finance", label: "Financial Services" },
+    { value: "finance", label: "Finance" },
     { value: "healthcare", label: "Healthcare" },
     { value: "manufacturing", label: "Manufacturing" },
     { value: "retail", label: "Retail" },
-    { value: "education", label: "Education" },
     { value: "government", label: "Government" },
     { value: "consulting", label: "Consulting" },
-    { value: "real_estate", label: "Real Estate" },
-    { value: "legal", label: "Legal Services" },
-    { value: "insurance", label: "Insurance" },
-    { value: "energy", label: "Energy & Utilities" },
-    { value: "transportation", label: "Transportation" },
-    { value: "telecommunications", label: "Telecommunications" },
-    { value: "non_profit", label: "Non-Profit" },
     { value: "other", label: "Other" }
   ];
 
@@ -216,9 +208,9 @@ const PublicOnboarding = () => {
                     className="grid grid-cols-1 gap-1"
                   >
                     {organizationSizes.map((size) => (
-                      <Label 
+                      <Label
                         key={size.value}
-                        className="flex items-center space-x-2 p-1.5 border rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600"
+                        className="flex items-center space-x-2 p-2 border-2 rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600"
                       >
                         <RadioGroupItem value={size.value} className="h-4 w-4" />
                         <span className="text-sm">{size.label}</span>
@@ -264,12 +256,12 @@ const PublicOnboarding = () => {
                     className="grid grid-cols-1 gap-1"
                   >
                     {industries.map((industry) => (
-                      <Label 
+                      <Label
                         key={industry.value}
-                        className="flex items-center space-x-2 p-1.5 border rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600"
+                        className="flex items-center space-x-2 p-2 border-2 rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600"
                       >
-                        <RadioGroupItem value={industry.value} className="h-3 w-3" />
-                        <span className="text-xs">{industry.label}</span>
+                        <RadioGroupItem value={industry.value} className="h-4 w-4" />
+                        <span className="text-sm">{industry.label}</span>
                       </Label>
                     ))}
                   </RadioGroup>
@@ -324,17 +316,17 @@ const PublicOnboarding = () => {
                 <div>
                   <Label className="text-base font-medium mb-2 block">Compliance frameworks</Label>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Select all that apply</p>
-                  <div className="grid grid-cols-1 gap-1.5">
+                  <div className="grid grid-cols-1 gap-1">
                     {frameworks.map((framework) => (
-                      <Label 
+                      <Label
                         key={framework.value}
-                        className="flex items-center space-x-2 p-2 border rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600"
+                        className="flex items-center space-x-2 p-2 border-2 rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600"
                       >
-                        <Checkbox 
+                        <Checkbox
                           checked={onboardingData.organizationInfo.complianceFrameworks.includes(framework.value)}
                           onCheckedChange={(checked) => {
                             const current = onboardingData.organizationInfo.complianceFrameworks;
-                            const updated = checked 
+                            const updated = checked
                               ? [...current, framework.value]
                               : current.filter(f => f !== framework.value);
                             updateData('organizationInfo', { complianceFrameworks: updated });
@@ -425,10 +417,10 @@ const PublicOnboarding = () => {
         const allPlans = [
           {
             id: "free",
-            name: "Free", 
+            name: "Free",
             price: "Free",
-            description: "Perfect for small teams getting started",
-            features: ["Full feature access (demo)", "Demo workflows & data", "Community support", "Basic compliance templates", "Standard reporting", "Getting started guide"],
+            description: "Perfect for getting started",
+            features: ["Up to 3 assessments", "Basic compliance tracking", "1 team member", "Community support", "Essential reports", "AI Assistant (Basic)"],
             recommended: recommendedPlan === 'free',
             popular: false
           },
@@ -437,28 +429,28 @@ const PublicOnboarding = () => {
             name: "Team",
             price: "€499",
             period: "/month",
-            description: "Perfect for small to medium teams",
-            features: ["Up to 50 team members", "Multi-framework compliance", "Team collaboration tools", "Automated assignments", "Basic reporting", "Email support"],
+            description: "For growing teams",
+            features: ["Up to 25 assessments", "Multi-framework support", "Up to 10 team members", "Priority email support", "Advanced analytics", "AI Assistant (Advanced)", "Document generation"],
             recommended: recommendedPlan === 'team',
-            popular: true
+            popular: false
           },
           {
-            id: "business", 
+            id: "business",
             name: "Business",
             price: "€699",
-            period: "/month", 
-            description: "Perfect for growing business teams",
-            features: ["Everything in Team", "Up to 250 team members", "AuditReady Risk Management", "Learning Management System", "Advanced reporting", "Custom templates", "Priority support"],
+            period: "/month",
+            description: "For established organizations",
+            features: ["Unlimited assessments", "All frameworks included", "Up to 50 team members", "Priority phone & email support", "Custom integrations", "Risk Management", "Learning Management System", "Azure Purview integration"],
             recommended: recommendedPlan === 'business',
-            popular: false
+            popular: true
           },
           {
             id: "enterprise",
             name: "Enterprise",
             price: "€999",
             period: "/month",
-            description: "Perfect for large enterprise teams", 
-            features: ["Everything in Business", "Unlimited team members", "Phishing Simulation Tool", "AuditReady AI Editor", "Advanced threat detection", "White-label solutions", "Dedicated account manager", "24/7 phone support & SLA"],
+            description: "For large enterprises",
+            features: ["Unlimited everything", "Dedicated account manager", "Unlimited team members", "24/7 premium support", "White-label options", "Advanced admin controls", "Enterprise API access", "SLA guarantees"],
             recommended: recommendedPlan === 'enterprise',
             popular: false
           }

@@ -16,7 +16,6 @@ import SignUp from "./pages/SignUp";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const EmailVerification = lazy(() => import("./pages/EmailVerification"));
 const PricingAssessment = lazy(() => import("./pages/PricingAssessment"));
-const Onboarding = lazy(() => import("./pages/Onboarding"));
 const EnhancedOnboardingFlow = lazy(() => import("./pages/EnhancedOnboardingFlow"));
 const GuidedStandardImport = lazy(() => import("./pages/GuidedStandardImport"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
@@ -70,8 +69,6 @@ const OrganizationDetail = lazy(() => import("./pages/admin/organizations/Organi
 const UserManagement = lazy(() => import("./pages/admin/users/UserManagement").then(m => ({ default: m.UserManagement })));
 const SystemSettings = lazy(() => import("./pages/admin/system/SystemSettings").then(m => ({ default: m.SystemSettings })));
 const ComplianceManagement = lazy(() => import("./pages/admin/compliance/ComplianceManagement"));
-const UnifiedGuidanceValidationDashboard = lazy(() => import("./pages/admin/UnifiedGuidanceValidationDashboard"));
-const UnifiedRequirementsValidationDashboard = lazy(() => import("./pages/admin/UnifiedRequirementsValidationDashboard"));
 import EntraCallbackPage from "./pages/auth/EntraCallbackPage";
 import { ScrollToTop } from "./components/ScrollToTop";
 
@@ -247,16 +244,6 @@ const App = () => {
                       <ProtectedRoute>
                         <Suspense fallback={<PageLoading title="Loading onboarding..." />}>
                           <EnhancedOnboardingFlow />
-                        </Suspense>
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/onboarding-legacy" 
-                    element={
-                      <ProtectedRoute>
-                        <Suspense fallback={<PageLoading title="Loading onboarding..." />}>
-                          <Onboarding />
                         </Suspense>
                       </ProtectedRoute>
                     } 
@@ -663,36 +650,6 @@ const App = () => {
                       <ProtectedRoute requiredPermission="platform_admin">
                         <Suspense fallback={<AdminLoadingSpinner />}>
                           <ComplianceManagement />
-                        </Suspense>
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/admin/unified-requirements-validation" 
-                    element={
-                      <ProtectedRoute requiredPermission="platform_admin">
-                        <Suspense fallback={<AdminLoadingSpinner />}>
-                          <UnifiedRequirementsValidationDashboard />
-                        </Suspense>
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/admin/semantic-mapping" 
-                    element={
-                      <ProtectedRoute requiredPermission="platform_admin">
-                        <Suspense fallback={<AdminLoadingSpinner />}>
-                          <UnifiedGuidanceValidationDashboard />
-                        </Suspense>
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/admin/unified-guidance-validation" 
-                    element={
-                      <ProtectedRoute requiredPermission="platform_admin">
-                        <Suspense fallback={<AdminLoadingSpinner />}>
-                          <UnifiedGuidanceValidationDashboard />
                         </Suspense>
                       </ProtectedRoute>
                     } 
