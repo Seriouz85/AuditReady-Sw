@@ -9,7 +9,7 @@ export { MermaidRenderer } from './MermaidRenderer';
 export { MermaidParser } from './MermaidParser';
 export { MermaidThemeManager } from './MermaidThemeManager';
 export { MermaidExporter } from './MermaidExporter';
-export { MermaidFabricBridge } from './MermaidFabricBridge';
+// export { MermaidFabricBridge } from './MermaidFabricBridge'; // Disabled to prevent circular dependencies
 
 // Type definitions
 export type {
@@ -36,14 +36,14 @@ import { MermaidService } from './MermaidService';
 import { MermaidRenderer } from './MermaidRenderer';
 import { MermaidThemeManager } from './MermaidThemeManager';
 import { MermaidExporter } from './MermaidExporter';
-import { MermaidFabricBridge } from './MermaidFabricBridge';
+// import { MermaidFabricBridge } from './MermaidFabricBridge'; // Disabled to prevent circular dependencies
 import { MermaidConfig } from './types/mermaid-config';
 
 export const createMermaidService = () => MermaidService.getInstance();
 export const createMermaidRenderer = () => new MermaidRenderer();
 export const createMermaidThemeManager = () => MermaidThemeManager.getInstance();
 export const createMermaidExporter = () => MermaidExporter.getInstance();
-export const createMermaidFabricBridge = () => new MermaidFabricBridge();
+// export const createMermaidFabricBridge = () => new MermaidFabricBridge(); // Disabled to prevent circular dependencies
 
 // Quick setup function
 export const setupMermaid = async (config?: Partial<MermaidConfig>) => {
