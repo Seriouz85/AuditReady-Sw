@@ -84,11 +84,11 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
           return; // Reload after fixing
         }
 
-        // Fetch usage counts for each category
+        // Fetch usage counts for each category from requirements_library
         const categoriesWithCounts = await Promise.all(
           data.map(async (category) => {
             const { data: requirements, error: countError } = await supabase
-              .from('unified_requirements')
+              .from('requirements_library')
               .select('id', { count: 'exact', head: true })
               .eq('category_id', category.id);
 
@@ -203,10 +203,10 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
   };
 
   const handleDelete = async (category: Category) => {
-    // First check if category is being used
+    // First check if category is being used in requirements_library
     try {
       const { data: requirements, error: checkError } = await supabase
-        .from('unified_requirements')
+        .from('requirements_library')
         .select('id', { count: 'exact', head: true })
         .eq('category_id', category.id);
 
@@ -217,7 +217,7 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
       const usageCount = requirements?.length || 0;
 
       if (usageCount > 0) {
-        toast.error(`Cannot delete: This category is used by ${usageCount} requirement(s). Remove those references first.`);
+        toast.error(`Cannot delete: This category is used by ${usageCount} requirement(s) in the library. Remove those references first.`);
         return;
       }
 
