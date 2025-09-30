@@ -68,6 +68,7 @@ export const OrganizationDetail: React.FC = () => {
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [invitationCount, setInvitationCount] = useState(0);
+  const [lastInvitation, setLastInvitation] = useState<any>(null);
   
   // Form states
   const [organizationForm, setOrganizationForm] = useState({
@@ -198,13 +199,18 @@ export const OrganizationDetail: React.FC = () => {
       );
       
       const results = await Promise.allSettled(promises);
-      
+
       // Check results
       const succeeded = results.filter(r => r.status === 'fulfilled').length;
       const failed = results.filter(r => r.status === 'rejected').length;
-      
+
       if (succeeded > 0) {
         setInvitationCount(succeeded);
+        // Save the first successful invitation for display
+        const firstSuccess = results.find(r => r.status === 'fulfilled');
+        if (firstSuccess && firstSuccess.status === 'fulfilled') {
+          setLastInvitation(firstSuccess.value);
+        }
         setShowSuccessModal(true);
       }
       
@@ -676,9 +682,11 @@ export const OrganizationDetail: React.FC = () => {
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         invitationData={{
-          email: inviteForm.email.includes(',') ? `${invitationCount} users` : inviteForm.email,
+          email: inviteForm.email.includes(',') ? `${invitationCount} users` : (lastInvitation?.email || inviteForm.email),
           organizationName: organization?.name || 'Organization',
           roleName: availableRoles.find(role => role.id === inviteForm.role_id)?.display_name || 'User',
+          invitationToken: lastInvitation?.token,
+          expiresAt: lastInvitation?.expires_at,
         }}
       />
     </div>
