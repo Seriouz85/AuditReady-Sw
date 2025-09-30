@@ -207,7 +207,7 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
     try {
       const { data: requirements, error: checkError } = await supabase
         .from('requirements_library')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'exact' })
         .eq('category_id', category.id);
 
       if (checkError) {
@@ -217,14 +217,34 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
       const usageCount = requirements?.length || 0;
 
       if (usageCount > 0) {
-        toast.error(`Cannot delete: This category is used by ${usageCount} requirement(s) in the library. Remove those references first.`);
-        return;
+        // Ask user if they want to remove category from requirements first
+        const confirmMessage = `This category is used by ${usageCount} requirement(s).\n\nOptions:\n1. Click OK to remove this category from those requirements and then delete it\n2. Click Cancel to keep the category`;
+
+        if (!confirm(confirmMessage)) {
+          return;
+        }
+
+        // Remove category_id from all requirements using this category
+        console.log(`Removing category reference from ${usageCount} requirements...`);
+        const { error: updateError } = await supabase
+          .from('requirements_library')
+          .update({ category_id: null })
+          .eq('category_id', category.id);
+
+        if (updateError) {
+          console.error('Error removing category from requirements:', updateError);
+          toast.error('Failed to remove category from requirements');
+          return;
+        }
+
+        console.log(`✅ Removed category from ${usageCount} requirements`);
+      } else {
+        if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
+          return;
+        }
       }
 
-      if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
-        return;
-      }
-
+      // Now delete the category
       const { error } = await supabase
         .from('unified_compliance_categories')
         .delete()
@@ -236,7 +256,9 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
         return;
       }
 
-      toast.success('Category deleted successfully');
+      toast.success(usageCount > 0
+        ? `Category deleted and removed from ${usageCount} requirement(s)`
+        : 'Category deleted successfully');
       loadCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -455,8 +477,9 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
                     size="sm"
                     onClick={() => handleDelete(category)}
                     className="text-red-600 hover:text-red-700"
-                    disabled={category.usage_count !== undefined && category.usage_count > 0}
-                    title={category.usage_count && category.usage_count > 0 ? `Cannot delete: Used by ${category.usage_count} requirement(s)` : 'Delete category'}
+                    title={category.usage_count && category.usage_count > 0
+                      ? `Delete category (will remove from ${category.usage_count} requirement(s))`
+                      : 'Delete category'}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
