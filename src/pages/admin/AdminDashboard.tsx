@@ -94,9 +94,12 @@ export const AdminDashboard: React.FC = () => {
       }
 
       try {
+        console.log('🔄 AdminDashboard: Calling adminService.getStandards(true)...');
         standardsData = await adminService.getStandards(true);
+        console.log('✅ AdminDashboard: Received standards data:', standardsData?.length || 0, 'records');
+        console.log('📋 Raw standards data:', standardsData);
       } catch (error) {
-        console.error('Error loading standards:', error);
+        console.error('❌ Error loading standards:', error);
         standardsData = [];
       }
 
@@ -118,7 +121,9 @@ export const AdminDashboard: React.FC = () => {
       setStats(stats);
 
       // Process standards data (CRITICAL TRANSFORMATION)
+      console.log('🔄 Processing standards data...');
       if (standardsData && standardsData.length > 0) {
+        console.log('✅ Found', standardsData.length, 'standards to process');
         const processedStandards = standardsData.map((s: any) => ({
           id: s.id,
           name: s.name,
@@ -128,8 +133,11 @@ export const AdminDashboard: React.FC = () => {
           organizationCount: 0,
           lastUpdated: s.updated_at || s.created_at
         }));
+        console.log('📋 Processed standards:', processedStandards);
         setStandards(processedStandards);
+        console.log('✅ Standards state updated');
       } else {
+        console.warn('⚠️ No standards data to process, setting empty array');
         setStandards([]);
       }
 

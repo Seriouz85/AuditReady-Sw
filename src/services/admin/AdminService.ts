@@ -67,8 +67,8 @@ export class AdminService {
     const tables = [
       'organizations',
       'organization_users',
-      'standards',
-      'requirements',
+      'standards_library',
+      'requirements_library',
       'assessments',
       'audit_logs',
       'platform_administrators'
@@ -405,30 +405,35 @@ export class AdminService {
 
   async getStandards(includeRequirementCount = true) {
     try {
+      console.log('🔍 AdminService.getStandards() called');
       const accessMap = await this.getTableAccessMap();
-      
-      if (!accessMap['standards']) {
+      console.log('📊 Table access map:', accessMap);
+
+      if (!accessMap['standards_library']) {
+        console.warn('⚠️ standards table not accessible in access map');
         return [];
       }
-      
+
+      console.log('✅ standards table is accessible, fetching data...');
       const { data: standards, error } = await supabase
-        .from('standards')
+        .from('standards_library')
         .select('*')
         .order('name');
 
       if (error) {
-        console.error('Error fetching standards:', error);
+        console.error('❌ Error fetching standards:', error);
         return [];
       }
 
-      console.log('Standards fetched successfully:', standards?.length || 0, 'records');
+      console.log('✅ Standards fetched successfully:', standards?.length || 0, 'records');
+      console.log('📋 Standards data:', standards);
       
       if (includeRequirementCount && standards) {
         const standardsWithCounts = await Promise.all(
           standards.map(async (standard) => {
             try {
               const { count } = await supabase
-                .from('requirements')
+                .from('requirements_library')
                 .select('id', { count: 'exact', head: true })
                 .eq('standard_id', standard.id);
 
@@ -457,7 +462,7 @@ export class AdminService {
 
   async createStandard(data: StandardCreateData): Promise<Standard> {
     const { data: standard, error } = await supabase
-      .from('standards')
+      .from('standards_library')
       .insert([data])
       .select()
       .single();
@@ -473,13 +478,13 @@ export class AdminService {
 
   async updateStandard(id: string, data: Partial<StandardCreateData>) {
     const { data: oldStandard } = await supabase
-      .from('standards')
+      .from('standards_library')
       .select('*')
       .eq('id', id)
       .single();
 
     const { data: standard, error } = await supabase
-      .from('standards')
+      .from('standards_library')
       .update(data)
       .eq('id', id)
       .select()
@@ -497,13 +502,13 @@ export class AdminService {
 
   async deleteStandard(id: string) {
     const { data: standard } = await supabase
-      .from('standards')
+      .from('standards_library')
       .select('*')
       .eq('id', id)
       .single();
 
     const { error } = await supabase
-      .from('standards')
+      .from('standards_library')
       .delete()
       .eq('id', id);
 
@@ -522,12 +527,12 @@ export class AdminService {
     try {
       const accessMap = await this.getTableAccessMap();
       
-      if (!accessMap['requirements']) {
+      if (!accessMap['requirements_library']) {
         return [];
       }
       
       let query = supabase
-        .from('requirements')
+        .from('requirements_library')
         .select(`
           *,
           standards(name, version)
@@ -555,7 +560,7 @@ export class AdminService {
 
   async createRequirement(data: RequirementCreateData) {
     const { data: requirement, error } = await supabase
-      .from('requirements')
+      .from('requirements_library')
       .insert([data])
       .select()
       .single();
@@ -571,13 +576,13 @@ export class AdminService {
 
   async updateRequirement(id: string, data: Partial<RequirementCreateData>) {
     const { data: oldRequirement } = await supabase
-      .from('requirements')
+      .from('requirements_library')
       .select('*')
       .eq('id', id)
       .single();
 
     const { data: requirement, error } = await supabase
-      .from('requirements')
+      .from('requirements_library')
       .update(data)
       .eq('id', id)
       .select()
@@ -595,13 +600,13 @@ export class AdminService {
 
   async deleteRequirement(id: string) {
     const { data: requirement } = await supabase
-      .from('requirements')
+      .from('requirements_library')
       .select('*')
       .eq('id', id)
       .single();
 
     const { error } = await supabase
-      .from('requirements')
+      .from('requirements_library')
       .delete()
       .eq('id', id);
 
@@ -640,18 +645,18 @@ export class AdminService {
       
       // Get standards count
       let totalStandards = 0;
-      if (accessMap['standards']) {
+      if (accessMap['standards_library']) {
         const { count: standardsCount } = await supabase
-          .from('standards')
+          .from('standards_library')
           .select('*', { count: 'exact', head: true });
         totalStandards = standardsCount || 0;
       }
       
       // Get requirements count
       let totalRequirements = 0;
-      if (accessMap['requirements']) {
+      if (accessMap['requirements_library']) {
         const { count: reqCount } = await supabase
-          .from('requirements')
+          .from('requirements_library')
           .select('*', { count: 'exact', head: true });
         totalRequirements = reqCount || 0;
       }
