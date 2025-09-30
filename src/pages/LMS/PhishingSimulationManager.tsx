@@ -14,12 +14,12 @@ import {
   Plus
 } from 'lucide-react';
 
-// Import extracted components
-import { CampaignManager } from '@/components/lms/phishing/simulation/CampaignManager';
-import { TemplateManager } from '@/components/lms/phishing/simulation/TemplateManager';
-import { TargetingConfig } from '@/components/lms/phishing/config/TargetingConfig';
-import { PhishingSettings } from '@/components/lms/phishing/config/PhishingSettings';
-import { PhishingAnalytics } from '@/components/lms/phishing/reports/PhishingAnalytics';
+// Import extracted components - FIX: Use uppercase LMS for case-sensitive Linux
+import { CampaignManager } from '@/components/LMS/phishing/simulation/CampaignManager';
+import { TemplateManager } from '@/components/LMS/phishing/simulation/TemplateManager';
+import { TargetingConfig } from '@/components/LMS/phishing/config/TargetingConfig';
+import { PhishingSettings } from '@/components/LMS/phishing/config/PhishingSettings';
+import { PhishingAnalytics } from '@/components/LMS/phishing/reports/PhishingAnalytics';
 
 // Import types and sample data
 import { 
@@ -31,7 +31,7 @@ import {
   sampleCampaigns,
   sampleUsers,
   sampleGroups
-} from '@/components/lms/phishing/types';
+} from '@/components/LMS/phishing/types';
 
 const PhishingSimulationManager: React.FC = () => {
   const navigate = useNavigate();
