@@ -18,7 +18,7 @@ import { CreateStandardModal } from '@/components/admin/standards/CreateStandard
 import { AdminDashboardHeader } from '@/components/admin/dashboard/AdminDashboardHeader';
 import { StatsWidget } from '@/components/admin/dashboard/widgets/StatsWidget';
 import { StandardsManagement } from '@/components/admin/dashboard/management/StandardsManagement';
-import { ComplianceManagement } from '@/components/admin/dashboard/management/ComplianceManagement';
+import { CategoriesManagement } from '@/components/admin/dashboard/management/CategoriesManagement';
 import { OrganizationsManagement } from '@/components/admin/dashboard/management/OrganizationsManagement';
 import { UsersManagement } from '@/components/admin/dashboard/management/UsersManagement';
 import { ProductsManagement } from '@/components/admin/dashboard/management/ProductsManagement';
@@ -387,7 +387,7 @@ export const AdminDashboard: React.FC = () => {
                 Standards
               </TabsTrigger>
               <TabsTrigger value="compliance" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                Compliance
+                Categories
               </TabsTrigger>
               <TabsTrigger value="organizations" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
                 Organizations
@@ -419,7 +419,7 @@ export const AdminDashboard: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="compliance">
-              <ComplianceManagement loading={loading} />
+              <CategoriesManagement loading={loading} />
             </TabsContent>
 
             <TabsContent value="organizations">

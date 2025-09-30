@@ -207,18 +207,14 @@ export class AdminService {
 
   private async sendInvitationEmail(invitation: any) {
     try {
-      // In development/demo mode, skip actual email sending
-      if (import.meta.env.DEV || window.location.hostname === 'localhost') {
-        console.log('📧 Demo mode: Invitation email would be sent to:', invitation.email);
-        console.log('📧 Invitation details:', {
-          email: invitation.email,
-          organization_id: invitation.organization_id,
-          role_id: invitation.role_id,
-          invitation_token: invitation.token,
-          expires_at: invitation.expires_at
-        });
-        return;
-      }
+      console.log('📧 Sending invitation email to:', invitation.email);
+      console.log('📧 Invitation details:', {
+        email: invitation.email,
+        organization_id: invitation.organization_id,
+        role_id: invitation.role_id,
+        invitation_token: invitation.token,
+        expires_at: invitation.expires_at
+      });
 
       // Import email service dynamically to avoid circular dependencies
       const { emailService } = await import('../email/EmailService');
@@ -266,13 +262,10 @@ export class AdminService {
       
       console.log('✅ Invitation email sent successfully to:', invitation.email);
     } catch (error) {
-      console.error('Error in sendInvitationEmail:', error);
-      // In development mode, continue despite email errors
-      if (import.meta.env.DEV || window.location.hostname === 'localhost') {
-        console.warn('Demo mode: Continuing despite email service error');
-        return;
-      }
-      throw error;
+      console.error('❌ Error sending invitation email:', error);
+      // Email failure should not block the invitation - user can still be invited manually
+      console.warn('⚠️ Email service error - invitation created but email not sent');
+      // Don't throw - invitation was still created in database
     }
   }
 
@@ -535,7 +528,7 @@ export class AdminService {
         .from('requirements_library')
         .select(`
           *,
-          standards(name, version)
+          standards_library(name, version)
         `)
         .order('control_id');
 
