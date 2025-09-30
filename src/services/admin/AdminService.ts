@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { AuditLogger } from './AuditLogger';
 import { Standard } from '@/types';
 
@@ -48,7 +48,7 @@ export class AdminService {
   // Test database connection and table existence
   private async testTableExists(tableName: string): Promise<boolean> {
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from(tableName)
         .select('*')
         .limit(1);
@@ -66,9 +66,9 @@ export class AdminService {
     
     const tables = [
       'organizations',
-      'organization_users', 
-      'standards_library',
-      'requirements_library',
+      'organization_users',
+      'standards',
+      'requirements',
       'assessments',
       'audit_logs',
       'platform_administrators'
@@ -289,7 +289,7 @@ export class AdminService {
       }
       
       // Use admin client for platform admin access
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await supabase
         .from('organizations')
         .select(`
           *,
@@ -407,12 +407,12 @@ export class AdminService {
     try {
       const accessMap = await this.getTableAccessMap();
       
-      if (!accessMap['standards_library']) {
+      if (!accessMap['standards']) {
         return [];
       }
       
-      const { data: standards, error } = await supabaseAdmin
-        .from('standards_library')
+      const { data: standards, error } = await supabase
+        .from('standards')
         .select('*')
         .order('name');
 
@@ -428,7 +428,7 @@ export class AdminService {
           standards.map(async (standard) => {
             try {
               const { count } = await supabase
-                .from('requirements_library')
+                .from('requirements')
                 .select('id', { count: 'exact', head: true })
                 .eq('standard_id', standard.id);
 
@@ -457,14 +457,14 @@ export class AdminService {
 
   async createStandard(data: StandardCreateData): Promise<Standard> {
     const { data: standard, error } = await supabase
-      .from('standards_library')
+      .from('standards')
       .insert([data])
       .select()
       .single();
 
     if (error) throw error;
 
-    await this.auditLogger.log('standard_created', 'standards_library', standard.id, {
+    await this.auditLogger.log('standard_created', 'standards', standard.id, {
       new_values: data
     });
 
@@ -473,13 +473,13 @@ export class AdminService {
 
   async updateStandard(id: string, data: Partial<StandardCreateData>) {
     const { data: oldStandard } = await supabase
-      .from('standards_library')
+      .from('standards')
       .select('*')
       .eq('id', id)
       .single();
 
     const { data: standard, error } = await supabase
-      .from('standards_library')
+      .from('standards')
       .update(data)
       .eq('id', id)
       .select()
@@ -487,7 +487,7 @@ export class AdminService {
 
     if (error) throw error;
 
-    await this.auditLogger.log('standard_updated', 'standards_library', id, {
+    await this.auditLogger.log('standard_updated', 'standards', id, {
       old_values: oldStandard,
       new_values: data
     });
@@ -497,19 +497,19 @@ export class AdminService {
 
   async deleteStandard(id: string) {
     const { data: standard } = await supabase
-      .from('standards_library')
+      .from('standards')
       .select('*')
       .eq('id', id)
       .single();
 
     const { error } = await supabase
-      .from('standards_library')
+      .from('standards')
       .delete()
       .eq('id', id);
 
     if (error) throw error;
 
-    await this.auditLogger.log('standard_deleted', 'standards_library', id, {
+    await this.auditLogger.log('standard_deleted', 'standards', id, {
       old_values: standard
     });
   }
@@ -522,15 +522,15 @@ export class AdminService {
     try {
       const accessMap = await this.getTableAccessMap();
       
-      if (!accessMap['requirements_library']) {
+      if (!accessMap['requirements']) {
         return [];
       }
       
-      let query = supabaseAdmin
-        .from('requirements_library')
+      let query = supabase
+        .from('requirements')
         .select(`
           *,
-          standards_library(name, version)
+          standards(name, version)
         `)
         .order('control_id');
 
@@ -555,14 +555,14 @@ export class AdminService {
 
   async createRequirement(data: RequirementCreateData) {
     const { data: requirement, error } = await supabase
-      .from('requirements_library')
+      .from('requirements')
       .insert([data])
       .select()
       .single();
 
     if (error) throw error;
 
-    await this.auditLogger.log('requirement_created', 'requirements_library', requirement.id, {
+    await this.auditLogger.log('requirement_created', 'requirements', requirement.id, {
       new_values: data
     });
 
@@ -571,13 +571,13 @@ export class AdminService {
 
   async updateRequirement(id: string, data: Partial<RequirementCreateData>) {
     const { data: oldRequirement } = await supabase
-      .from('requirements_library')
+      .from('requirements')
       .select('*')
       .eq('id', id)
       .single();
 
     const { data: requirement, error } = await supabase
-      .from('requirements_library')
+      .from('requirements')
       .update(data)
       .eq('id', id)
       .select()
@@ -585,7 +585,7 @@ export class AdminService {
 
     if (error) throw error;
 
-    await this.auditLogger.log('requirement_updated', 'requirements_library', id, {
+    await this.auditLogger.log('requirement_updated', 'requirements', id, {
       old_values: oldRequirement,
       new_values: data
     });
@@ -595,19 +595,19 @@ export class AdminService {
 
   async deleteRequirement(id: string) {
     const { data: requirement } = await supabase
-      .from('requirements_library')
+      .from('requirements')
       .select('*')
       .eq('id', id)
       .single();
 
     const { error } = await supabase
-      .from('requirements_library')
+      .from('requirements')
       .delete()
       .eq('id', id);
 
     if (error) throw error;
 
-    await this.auditLogger.log('requirement_deleted', 'requirements_library', id, {
+    await this.auditLogger.log('requirement_deleted', 'requirements', id, {
       old_values: requirement
     });
   }
@@ -623,7 +623,7 @@ export class AdminService {
       // Get organizations count
       let totalOrganizations = 0;
       if (accessMap['organizations']) {
-        const { count: orgCount } = await supabaseAdmin
+        const { count: orgCount } = await supabase
           .from('organizations')
           .select('*', { count: 'exact', head: true });
         totalOrganizations = orgCount || 0;
@@ -632,7 +632,7 @@ export class AdminService {
       // Get users count
       let totalUsers = 0;
       if (accessMap['organization_users']) {
-        const { count: userCount } = await supabaseAdmin
+        const { count: userCount } = await supabase
           .from('organization_users')
           .select('*', { count: 'exact', head: true });
         totalUsers = userCount || 0;
@@ -640,18 +640,18 @@ export class AdminService {
       
       // Get standards count
       let totalStandards = 0;
-      if (accessMap['standards_library']) {
-        const { count: standardsCount } = await supabaseAdmin
-          .from('standards_library')
+      if (accessMap['standards']) {
+        const { count: standardsCount } = await supabase
+          .from('standards')
           .select('*', { count: 'exact', head: true });
         totalStandards = standardsCount || 0;
       }
       
       // Get requirements count
       let totalRequirements = 0;
-      if (accessMap['requirements_library']) {
-        const { count: reqCount } = await supabaseAdmin
-          .from('requirements_library')
+      if (accessMap['requirements']) {
+        const { count: reqCount } = await supabase
+          .from('requirements')
           .select('*', { count: 'exact', head: true });
         totalRequirements = reqCount || 0;
       }
@@ -659,7 +659,7 @@ export class AdminService {
       // Get active assessments count
       let activeAssessments = 0;
       if (accessMap['assessments']) {
-        const { count: assessmentCount } = await supabaseAdmin
+        const { count: assessmentCount } = await supabase
           .from('assessments')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'in_progress');
@@ -672,7 +672,7 @@ export class AdminService {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
       if (accessMap['audit_logs']) {
-        const { count: updateCount } = await supabaseAdmin
+        const { count: updateCount } = await supabase
           .from('audit_logs')
           .select('*', { count: 'exact', head: true })
           .gte('created_at', sevenDaysAgo.toISOString());

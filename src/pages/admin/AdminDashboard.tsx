@@ -27,7 +27,7 @@ import { AiMappingManagement } from '@/components/admin/dashboard/management/AiM
 import { SystemManagement } from '@/components/admin/dashboard/management/SystemManagement';
 
 // Shared Types and Utilities
-import { loadDashboardData, loadStripeData } from '@/components/admin/dashboard/shared/AdminUtilities';
+import { loadStripeData } from '@/components/admin/dashboard/shared/AdminUtilities';
 import type { 
   PlatformStats, 
   StandardSummary, 
@@ -78,20 +78,87 @@ export const AdminDashboard: React.FC = () => {
     company_size: ''
   });
 
-  // Load dashboard data
+  // Load dashboard data - RESTORED FROM WORKING VERSION
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const data = await loadDashboardData();
-      
-      setStats(data.stats);
-      setStandards(data.standards);
-      setOrganizations(data.organizations);
-      setStripeStats(data.stripeStats);
-      setStripeCustomers(data.stripeCustomers);
-      setStripeProducts(data.stripeProducts);
-      setStripePrices(data.stripePrices);
-      setStripeCoupons(data.stripeCoupons);
+
+      // Load data individually with detailed error logging (ORIGINAL WORKING APPROACH)
+      let stats, standardsData, orgsData, stripeData;
+
+      try {
+        stats = await adminService.getPlatformStatistics();
+      } catch (error) {
+        console.error('Error loading stats:', error);
+        stats = { totalOrganizations: 0, totalUsers: 0, totalStandards: 0, totalRequirements: 0, activeAssessments: 0, recentUpdates: 0 };
+      }
+
+      try {
+        standardsData = await adminService.getStandards(true);
+      } catch (error) {
+        console.error('Error loading standards:', error);
+        standardsData = [];
+      }
+
+      try {
+        orgsData = await adminService.getOrganizations();
+      } catch (error) {
+        console.error('Error loading organizations:', error);
+        orgsData = [];
+      }
+
+      try {
+        stripeData = await loadStripeData();
+      } catch (error) {
+        console.error('Error loading Stripe data:', error);
+        stripeData = null;
+      }
+
+      // Set statistics
+      setStats(stats);
+
+      // Process standards data (CRITICAL TRANSFORMATION)
+      if (standardsData && standardsData.length > 0) {
+        const processedStandards = standardsData.map((s: any) => ({
+          id: s.id,
+          name: s.name,
+          version: s.version,
+          type: s.type,
+          requirementCount: s.requirementCount || 0,
+          organizationCount: 0,
+          lastUpdated: s.updated_at || s.created_at
+        }));
+        setStandards(processedStandards);
+      } else {
+        setStandards([]);
+      }
+
+      // Process organizations data (CRITICAL TRANSFORMATION)
+      if (orgsData && orgsData.length > 0) {
+        setOrganizations(orgsData.map((o: any) => ({
+          id: o.id,
+          name: o.name,
+          tier: o.subscription_tier || 'free',
+          userCount: o.organization_users?.length || 0,
+          assessmentCount: 0,
+          lastActivity: o.updated_at,
+          isActive: true,
+          stripeCustomerId: o.stripe_customer_id,
+          industry: o.industry,
+          companySize: o.company_size
+        })));
+      } else {
+        setOrganizations([]);
+      }
+
+      // Set Stripe data
+      if (stripeData) {
+        setStripeStats(stripeData.stats);
+        setStripeCustomers(stripeData.customers || []);
+        setStripeProducts(stripeData.products || []);
+        setStripePrices(stripeData.prices || []);
+        setStripeCoupons(stripeData.coupons || []);
+      }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
       setError('Failed to load dashboard data');
