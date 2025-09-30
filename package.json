@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:github": "GITHUB_PAGES=true vite build --mode github",
-    "build:vercel": "vite build --mode vercel",
+    "build:vercel": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -205,5 +205,12 @@
       "path-to-regexp": ">=6.3.0",
       "undici": ">=5.29.0"
     }
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.52.3",
+    "@rollup/rollup-linux-arm64-gnu": "^4.52.3",
+    "@rollup/rollup-darwin-x64": "^4.52.3",
+    "@rollup/rollup-darwin-arm64": "^4.52.3",
+    "@rollup/rollup-win32-x64-msvc": "^4.52.3"
   }
 }
