@@ -809,6 +809,56 @@ export class AdminService {
       throw error;
     }
   }
+
+  async getAllUsers() {
+    try {
+      // Get all users from Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+
+      if (authError) {
+        console.error('Error fetching users from auth:', authError);
+        throw authError;
+      }
+
+      const users = authData?.users || [];
+
+      // Return users in a format compatible with the UI
+      return users.map(user => ({
+        id: user.id,
+        email: user.email || '',
+        created_at: user.created_at,
+        last_sign_in_at: user.last_sign_in_at,
+        email_confirmed_at: user.email_confirmed_at,
+        raw_user_meta_data: user.user_metadata
+      }));
+    } catch (error) {
+      console.error('Error in getAllUsers:', error);
+      throw error;
+    }
+  }
+
+  async suspendUser(userId: string, reason: string) {
+    try {
+      // Update user status in auth
+      const { error } = await supabase.auth.admin.updateUserById(userId, {
+        ban_duration: '876000h' // 100 years = effectively permanent
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Log the suspension
+      await this.auditLogger.log('user_suspended', 'auth.users', userId, {
+        new_values: { suspended: true, reason }
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error suspending user:', error);
+      throw error;
+    }
+  }
 }
 
 export const adminService = new AdminService();
