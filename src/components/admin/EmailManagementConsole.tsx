@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
@@ -101,6 +102,7 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
   const [activeTab, setActiveTab] = useState('overview');
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [notifications, setNotifications] = useState<EmailNotification[]>([]);
+  const { confirm, dialogProps } = useConfirmDialog();
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<EmailAnalytics[]>([]);
   const [queueStats, setQueueStats] = useState<QueueStats>({
@@ -302,16 +304,22 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
   };
 
   const handleDeleteTemplate = async (template: EmailTemplate) => {
-    if (!confirm(`Are you sure you want to delete "${template.name}"?`)) return;
-
-    try {
-      await emailService.deleteTemplate(template.id);
-      setTemplates(prev => prev.filter(t => t.id !== template.id));
-      toast.success('Template deleted successfully');
-    } catch (error) {
-      console.error('Failed to delete template:', error);
-      toast.error('Failed to delete template');
-    }
+    confirm({
+      title: 'Delete Template?',
+      description: `Are you sure you want to delete "${template.name}"?`,
+      variant: 'destructive',
+      confirmText: 'Delete',
+      onConfirm: async () => {
+        try {
+          await emailService.deleteTemplate(template.id);
+          setTemplates(prev => prev.filter(t => t.id !== template.id));
+          toast.success('Template deleted successfully');
+        } catch (error) {
+          console.error('Failed to delete template:', error);
+          toast.error('Failed to delete template');
+        }
+      }
+    });
   };
 
   const handleTestTemplate = async () => {
@@ -1293,6 +1301,8 @@ export const EmailManagementConsole: React.FC<EmailManagementConsoleProps> = ({ 
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 };

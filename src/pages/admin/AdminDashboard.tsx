@@ -5,6 +5,8 @@ import { adminService } from '@/services/admin/AdminService';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
+import { InputDialog, useInputDialog } from '@/components/ui/input-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,7 +41,9 @@ import type {
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { isPlatformAdmin, user: authUser, signOut } = useAuth();
-  
+  const { confirm, dialogProps: confirmDialogProps } = useConfirmDialog();
+  const { prompt: promptInput, dialogProps: inputDialogProps } = useInputDialog();
+
   // Core State
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -220,27 +224,15 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleCreateOrganization = async () => {
-    const name = prompt('Enter organization name:');
-    if (!name) return;
-    
-    const industry = prompt('Enter industry (optional):') || '';
-    const companySize = prompt('Enter company size (1-10, 11-50, 51-200, 201-1000, 1000+):') || '';
-
-    try {
-      await adminService.createOrganization({
-        name,
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        subscription_tier: 'team',
-        industry,
-        company_size: companySize
-      });
-
-      toast.success('Organization created successfully');
-      await loadAllData();
-    } catch (error) {
-      console.error('Error creating organization:', error);
-      toast.error('Failed to create organization');
-    }
+    // Reset form and open modal for creating
+    setEditingOrg(null);
+    setOrgForm({
+      name: '',
+      subscription_tier: 'team',
+      industry: '',
+      company_size: ''
+    });
+    setOrgSettingsOpen(true);
   };
 
   const handleEditOrganization = (org: OrganizationSummary) => {
@@ -287,20 +279,22 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteOrganization = async (org: OrganizationSummary) => {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${org.name}"? This action cannot be undone and will remove all associated data.`
-    );
-    
-    if (!confirmed) return;
-
-    try {
-      await adminService.deleteOrganization(org.id);
-      toast.success('Organization deleted successfully');
-      await loadAllData();
-    } catch (error) {
-      console.error('Error deleting organization:', error);
-      toast.error('Failed to delete organization');
-    }
+    confirm({
+      title: 'Delete Organization?',
+      description: `Are you sure you want to delete "${org.name}"? This action cannot be undone and will remove all associated data.`,
+      variant: 'destructive',
+      confirmText: 'Delete Organization',
+      onConfirm: async () => {
+        try {
+          await adminService.deleteOrganization(org.id);
+          toast.success('Organization deleted successfully');
+          await loadAllData();
+        } catch (error) {
+          console.error('Error deleting organization:', error);
+          toast.error('Failed to delete organization');
+        }
+      }
+    });
   };
 
   const handleCreateCustomerPortal = async (stripeCustomerId: string) => {
@@ -318,20 +312,9 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleCreateStripeProduct = async () => {
-    const name = prompt('Enter product name:');
-    if (!name) return;
-    
-    const description = prompt('Enter product description:');
-    if (!description) return;
-
-    try {
-      await StripeDirectAPI.Product.create({ name, description });
-      toast.success('Product created successfully');
-      await loadAllData();
-    } catch (error) {
-      console.error('Error creating product:', error);
-      toast.error('Failed to create product');
-    }
+    // Open product modal for creating new product
+    setSelectedProduct(null);
+    setProductModalOpen(true);
   };
 
   // Loading state
@@ -554,6 +537,9 @@ export const AdminDashboard: React.FC = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <ConfirmDialog {...confirmDialogProps} />
+        <InputDialog {...inputDialogProps} />
       </div>
     </ErrorBoundary>
   );

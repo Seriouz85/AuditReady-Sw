@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,6 +45,7 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [promotionCodes, setPromotionCodes] = useState<StripePromotionCode[]>([]);
   const [discountType, setDiscountType] = useState<'percentage' | 'amount'>('percentage');
+  const { confirm, dialogProps } = useConfirmDialog();
   const [couponData, setCouponData] = useState({
     id: '',
     name: '',
@@ -207,19 +209,27 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
   };
 
   const handleDeleteCoupon = async () => {
-    if (!coupon || !confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) return;
-    
-    setLoading(true);
-    try {
-      await stripeAdminService.deleteCoupon(coupon.id);
-      toast.success('Coupon deleted successfully!');
-      onCouponUpdated();
-      onClose();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete coupon');
-    } finally {
-      setLoading(false);
-    }
+    if (!coupon) return;
+
+    confirm({
+      title: 'Delete Coupon?',
+      description: 'Are you sure you want to delete this coupon? This action cannot be undone.',
+      variant: 'destructive',
+      confirmText: 'Delete Coupon',
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          await stripeAdminService.deleteCoupon(coupon.id);
+          toast.success('Coupon deleted successfully!');
+          onCouponUpdated();
+          onClose();
+        } catch (error: any) {
+          toast.error(error.message || 'Failed to delete coupon');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   const generateRandomCode = () => {
@@ -815,6 +825,7 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
           </div>
         </DialogFooter>
       </DialogContent>
+      <ConfirmDialog {...dialogProps} />
     </Dialog>
   );
 };

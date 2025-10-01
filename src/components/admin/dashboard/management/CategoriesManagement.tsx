@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Shield,
   Plus,
@@ -49,6 +50,7 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
     description: '',
     icon: 'Shield'
   });
+  const { confirm, dialogProps } = useConfirmDialog();
 
   const loadCategories = async () => {
     setLoading(true);
@@ -207,7 +209,7 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
     try {
       const { data: requirements, error: checkError } = await supabase
         .from('requirements_library')
-        .select('id', { count: 'exact' })
+        .select('id, control_id, title', { count: 'exact' })
         .eq('category_id', category.id);
 
       if (checkError) {
@@ -216,50 +218,82 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
 
       const usageCount = requirements?.length || 0;
 
+      // Log details of which requirements reference this category
+      if (usageCount > 0) {
+        console.log(`📋 Category "${category.name}" (ID: ${category.id}) is used by ${usageCount} requirements:`);
+        requirements?.slice(0, 10).forEach((req: any) => {
+          console.log(`  - ${req.control_id}: ${req.title}`);
+        });
+        if (usageCount > 10) {
+          console.log(`  ... and ${usageCount - 10} more`);
+        }
+      }
+
       if (usageCount > 0) {
         // Ask user if they want to remove category from requirements first
-        const confirmMessage = `This category is used by ${usageCount} requirement(s).\n\nOptions:\n1. Click OK to remove this category from those requirements and then delete it\n2. Click Cancel to keep the category`;
+        confirm({
+          title: 'Delete Category?',
+          description: `This category is used by ${usageCount} requirement(s). Click Continue to remove this category from those requirements and delete it.`,
+          variant: 'destructive',
+          confirmText: 'Delete Category',
+          onConfirm: async () => {
+            // Remove category_id from all requirements using this category
+            console.log(`Removing category reference from ${usageCount} requirements...`);
+            const { error: updateError } = await supabase
+              .from('requirements_library')
+              .update({ category_id: null })
+              .eq('category_id', category.id);
 
-        if (!confirm(confirmMessage)) {
-          return;
-        }
+            if (updateError) {
+              console.error('Error removing category from requirements:', updateError);
+              toast.error('Failed to remove category from requirements');
+              return;
+            }
 
-        // Remove category_id from all requirements using this category
-        console.log(`Removing category reference from ${usageCount} requirements...`);
-        const { error: updateError } = await supabase
-          .from('requirements_library')
-          .update({ category_id: null })
-          .eq('category_id', category.id);
+            console.log(`✅ Removed category from ${usageCount} requirements`);
 
-        if (updateError) {
-          console.error('Error removing category from requirements:', updateError);
-          toast.error('Failed to remove category from requirements');
-          return;
-        }
+            // Now delete the category
+            const { error } = await supabase
+              .from('unified_compliance_categories')
+              .delete()
+              .eq('id', category.id);
 
-        console.log(`✅ Removed category from ${usageCount} requirements`);
+            if (error) {
+              console.error('Error deleting category:', error);
+              toast.error(`Failed to delete category: ${error.message}`);
+              return;
+            }
+
+            toast.success(`Category deleted and removed from ${usageCount} requirement(s)`);
+            loadCategories();
+          }
+        });
+        return;
       } else {
-        if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
-          return;
-        }
-      }
+        confirm({
+          title: 'Delete Category?',
+          description: `Are you sure you want to delete "${category.name}"?`,
+          variant: 'destructive',
+          confirmText: 'Delete',
+          onConfirm: async () => {
+            // Delete the category
+            const { error } = await supabase
+              .from('unified_compliance_categories')
+              .delete()
+              .eq('id', category.id);
 
-      // Now delete the category
-      const { error } = await supabase
-        .from('unified_compliance_categories')
-        .delete()
-        .eq('id', category.id);
+            if (error) {
+              console.error('Error deleting category:', error);
+              toast.error(`Failed to delete category: ${error.message}`);
+              return;
+            }
 
-      if (error) {
-        console.error('Error deleting category:', error);
-        toast.error(`Failed to delete category: ${error.message}`);
+            toast.success('Category deleted successfully');
+            loadCategories();
+          }
+        });
         return;
       }
-
-      toast.success(usageCount > 0
-        ? `Category deleted and removed from ${usageCount} requirement(s)`
-        : 'Category deleted successfully');
-      loadCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
       toast.error('Failed to delete category');
@@ -543,6 +577,8 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 };
