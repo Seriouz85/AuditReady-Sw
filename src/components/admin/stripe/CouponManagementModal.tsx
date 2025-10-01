@@ -280,8 +280,9 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Gift className="h-5 w-5" />
@@ -825,7 +826,8 @@ export const CouponManagementModal: React.FC<CouponManagementModalProps> = ({
           </div>
         </DialogFooter>
       </DialogContent>
-      <ConfirmDialog {...dialogProps} />
     </Dialog>
+    <ConfirmDialog {...dialogProps} />
+    </>
   );
 };
