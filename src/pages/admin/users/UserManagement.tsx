@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { 
   ArrowLeft, 
   Search, 
@@ -52,6 +53,7 @@ interface PlatformAdmin {
 
 export const UserManagement: React.FC = () => {
   const navigate = useNavigate();
+  const { confirm, dialogProps } = useConfirmDialog();
   const [users, setUsers] = useState<User[]>([]);
   const [platformAdmins, setPlatformAdmins] = useState<PlatformAdmin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,17 +94,23 @@ export const UserManagement: React.FC = () => {
   };
 
   const handleSuspendUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to suspend this user?')) return;
-    
-    try {
-      await adminService.suspendUser(userId, 'Suspended by platform administrator');
-      toast.success('User suspended successfully');
-      await loadUserData(); // Refresh data
-    } catch (err) {
-      console.error('Error suspending user:', err);
-      setError('Failed to suspend user');
-      toast.error('Failed to suspend user');
-    }
+    confirm({
+      title: 'Suspend User?',
+      description: 'Are you sure you want to suspend this user? They will no longer be able to access the platform.',
+      variant: 'warning',
+      confirmText: 'Suspend User',
+      onConfirm: async () => {
+        try {
+          await adminService.suspendUser(userId, 'Suspended by platform administrator');
+          toast.success('User suspended successfully');
+          await loadUserData(); // Refresh data
+        } catch (err) {
+          console.error('Error suspending user:', err);
+          setError('Failed to suspend user');
+          toast.error('Failed to suspend user');
+        }
+      }
+    });
   };
 
   const filteredUsers = users.filter(user => {
@@ -438,6 +446,8 @@ export const UserManagement: React.FC = () => {
           </Card>
           </TabsContent>
         </Tabs>
+
+        <ConfirmDialog {...dialogProps} />
       </div>
     </div>
   );

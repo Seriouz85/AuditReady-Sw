@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { KnowledgeIngestionService, type KnowledgeSource, type IngestionResult } from '@/services/rag/KnowledgeIngestionService';
@@ -51,6 +52,7 @@ interface RAGMetrics {
 }
 
 export default function KnowledgeManagement() {
+  const { confirm, dialogProps } = useConfirmDialog();
   const [sources, setSources] = useState<KnowledgeSourceData[]>([]);
   const [contentMetrics, setContentMetrics] = useState<ContentMetrics | null>(null);
   const [ragMetrics, setRAGMetrics] = useState<RAGMetrics | null>(null);
@@ -270,25 +272,29 @@ export default function KnowledgeManagement() {
   };
   
   const handleDeleteSource = async (source: KnowledgeSourceData) => {
-    if (!confirm(`Are you sure you want to delete ${source.domain}? This will remove all associated content.`)) {
-      return;
-    }
-    
-    try {
-      const { error } = await supabase
-        .from('knowledge_sources')
-        .delete()
-        .eq('id', source.id);
-      
-      if (error) throw error;
-      
-      toast.success('Source deleted successfully');
-      await loadData();
-      
-    } catch (error) {
-      console.error('Failed to delete source:', error);
-      toast.error('Failed to delete source');
-    }
+    confirm({
+      title: 'Delete Knowledge Source?',
+      description: `Are you sure you want to delete ${source.domain}? This will remove all associated content.`,
+      variant: 'destructive',
+      confirmText: 'Delete Source',
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase
+            .from('knowledge_sources')
+            .delete()
+            .eq('id', source.id);
+
+          if (error) throw error;
+
+          toast.success('Source deleted successfully');
+          await loadData();
+
+        } catch (error) {
+          console.error('Failed to delete source:', error);
+          toast.error('Failed to delete source');
+        }
+      }
+    });
   };
   
   const getStatusBadge = (status: string) => {
@@ -718,6 +724,8 @@ export default function KnowledgeManagement() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 }

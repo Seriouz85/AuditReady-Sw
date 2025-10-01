@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -42,6 +43,7 @@ interface RequirementMapping {
 
 export default function ComplianceManagement() {
   const navigate = useNavigate();
+  const { confirm, dialogProps } = useConfirmDialog();
   const [categories, setCategories] = useState<UnifiedCategory[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -202,57 +204,65 @@ export default function ComplianceManagement() {
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm('Are you sure you want to delete this category? This will also delete all its requirements.')) {
-      return;
-    }
+    confirm({
+      title: 'Delete Category?',
+      description: 'Are you sure you want to delete this category? This will also delete all its requirements.',
+      variant: 'destructive',
+      confirmText: 'Delete Category',
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase
+            .from('unified_compliance_categories')
+            .delete()
+            .eq('id', categoryId);
 
-    try {
-      const { error } = await supabase
-        .from('unified_compliance_categories')
-        .delete()
-        .eq('id', categoryId);
-
-      if (error) throw error;
-      toast({
-        title: 'Success',
-        description: 'Category deleted successfully'
-      });
-      fetchCategories();
-    } catch (error) {
-      console.error('Error deleting category:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete category',
-        variant: 'destructive'
-      });
-    }
+          if (error) throw error;
+          toast({
+            title: 'Success',
+            description: 'Category deleted successfully'
+          });
+          fetchCategories();
+        } catch (error) {
+          console.error('Error deleting category:', error);
+          toast({
+            title: 'Error',
+            description: 'Failed to delete category',
+            variant: 'destructive'
+          });
+        }
+      }
+    });
   };
 
   const handleDeleteRequirement = async (requirementId: string) => {
-    if (!confirm('Are you sure you want to delete this requirement?')) {
-      return;
-    }
+    confirm({
+      title: 'Delete Requirement?',
+      description: 'Are you sure you want to delete this requirement? This action cannot be undone.',
+      variant: 'destructive',
+      confirmText: 'Delete',
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase
+            .from('unified_requirements')
+            .delete()
+            .eq('id', requirementId);
 
-    try {
-      const { error } = await supabase
-        .from('unified_requirements')
-        .delete()
-        .eq('id', requirementId);
-
-      if (error) throw error;
-      toast({
-        title: 'Success',
-        description: 'Requirement deleted successfully'
-      });
-      fetchCategories();
-    } catch (error) {
-      console.error('Error deleting requirement:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete requirement',
-        variant: 'destructive'
-      });
-    }
+          if (error) throw error;
+          toast({
+            title: 'Success',
+            description: 'Requirement deleted successfully'
+          });
+          fetchCategories();
+        } catch (error) {
+          console.error('Error deleting requirement:', error);
+          toast({
+            title: 'Error',
+            description: 'Failed to delete requirement',
+            variant: 'destructive'
+          });
+        }
+      }
+    });
   };
 
   const resetCategoryForm = () => {
@@ -641,6 +651,8 @@ export default function ComplianceManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 }

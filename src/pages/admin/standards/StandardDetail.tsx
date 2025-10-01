@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -53,11 +54,12 @@ interface Requirement {
 export const StandardDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { confirm, dialogProps } = useConfirmDialog();
   const [standard, setStandard] = useState<Standard | null>(null);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Editing states
   const [isEditingStandard, setIsEditingStandard] = useState(false);
   const [isCreatingRequirement, setIsCreatingRequirement] = useState(false);
@@ -189,15 +191,21 @@ export const StandardDetail: React.FC = () => {
   };
 
   const handleDeleteRequirement = async (requirementId: string) => {
-    if (!confirm('Are you sure you want to delete this requirement?')) return;
-    
-    try {
-      await adminService.deleteRequirement(requirementId);
-      setRequirements(prev => prev.filter(req => req.id !== requirementId));
-    } catch (err) {
-      console.error('Error deleting requirement:', err);
-      setError('Failed to delete requirement');
-    }
+    confirm({
+      title: 'Delete Requirement?',
+      description: 'Are you sure you want to delete this requirement? This action cannot be undone.',
+      variant: 'destructive',
+      confirmText: 'Delete',
+      onConfirm: async () => {
+        try {
+          await adminService.deleteRequirement(requirementId);
+          setRequirements(prev => prev.filter(req => req.id !== requirementId));
+        } catch (err) {
+          console.error('Error deleting requirement:', err);
+          setError('Failed to delete requirement');
+        }
+      }
+    });
   };
 
   const startEditingRequirement = (requirement: Requirement) => {
@@ -715,6 +723,8 @@ export const StandardDetail: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog {...dialogProps} />
       </div>
     </div>
   );

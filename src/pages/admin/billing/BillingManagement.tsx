@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { toast } from '@/utils/toast';
 import { 
   ArrowLeft, 
   CreditCard, 
@@ -539,6 +541,7 @@ const BillingSettingsTab: React.FC = () => {
 
 export const BillingManagement: React.FC = () => {
   const navigate = useNavigate();
+  const { confirm, dialogProps } = useConfirmDialog();
   const [loading, setLoading] = useState(true);
   const [subscriptions, setSubscriptions] = useState<SubscriptionData[]>([]);
   const [metrics, setMetrics] = useState<BillingMetrics | null>(null);
@@ -698,7 +701,7 @@ export const BillingManagement: React.FC = () => {
       // For demo purposes, show information
       const org = subscriptions.find(s => s.organization_id === organizationId);
       if (org) {
-        alert(`Opening customer portal for ${org.organization_name}\n\nThis would redirect to Stripe Customer Portal in a real implementation.`);
+        toast.info(`Opening customer portal for ${org.organization_name}. This would redirect to Stripe Customer Portal in a real implementation.`);
       }
     } catch (err) {
       console.error('Error opening customer portal:', err);
@@ -709,18 +712,18 @@ export const BillingManagement: React.FC = () => {
   const handleUpgradeSubscription = async (organizationId: string, newTier: string) => {
     try {
       setLoading(true);
-      
+
       // Update the organization's subscription tier in your database
       // For demo purposes, we'll just update the local state
-      setSubscriptions(prevSubs => 
-        prevSubs.map(sub => 
-          sub.organization_id === organizationId 
+      setSubscriptions(prevSubs =>
+        prevSubs.map(sub =>
+          sub.organization_id === organizationId
             ? { ...sub, tier: newTier, amount: getTierPrice(newTier) }
             : sub
         )
       );
-      
-      alert(`Subscription upgraded to ${newTier} tier successfully!`);
+
+      toast.success(`Subscription upgraded to ${newTier} tier successfully!`);
     } catch (err) {
       console.error('Error upgrading subscription:', err);
       setError('Failed to upgrade subscription');
@@ -730,29 +733,33 @@ export const BillingManagement: React.FC = () => {
   };
 
   const handleCancelSubscription = async (organizationId: string) => {
-    if (!confirm('Are you sure you want to cancel this subscription? This action cannot be undone.')) {
-      return;
-    }
+    confirm({
+      title: 'Cancel Subscription?',
+      description: 'Are you sure you want to cancel this subscription? This action cannot be undone.',
+      variant: 'destructive',
+      confirmText: 'Cancel Subscription',
+      onConfirm: async () => {
+        try {
+          setLoading(true);
 
-    try {
-      setLoading(true);
-      
-      // Update subscription status
-      setSubscriptions(prevSubs => 
-        prevSubs.map(sub => 
-          sub.organization_id === organizationId 
-            ? { ...sub, status: 'canceled' }
-            : sub
-        )
-      );
-      
-      alert('Subscription canceled successfully!');
-    } catch (err) {
-      console.error('Error canceling subscription:', err);
-      setError('Failed to cancel subscription');
-    } finally {
-      setLoading(false);
-    }
+          // Update subscription status
+          setSubscriptions(prevSubs =>
+            prevSubs.map(sub =>
+              sub.organization_id === organizationId
+                ? { ...sub, status: 'canceled' }
+                : sub
+            )
+          );
+
+          toast.success('Subscription canceled successfully!');
+        } catch (err) {
+          console.error('Error canceling subscription:', err);
+          setError('Failed to cancel subscription');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -1140,6 +1147,8 @@ export const BillingManagement: React.FC = () => {
         product={selectedProduct}
         onProductUpdated={handleProductUpdated}
       />
+
+      <ConfirmDialog {...dialogProps} />
       </div>
     </div>
   );
