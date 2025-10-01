@@ -450,10 +450,15 @@ export const AdminDashboard: React.FC = () => {
               <ProductsManagement
                 stripeProducts={stripeProducts}
                 stripePrices={stripePrices}
+                stripeCoupons={stripeCoupons}
                 loading={loading}
                 onCreateProduct={handleCreateStripeProduct}
                 onEditProduct={setSelectedProduct}
                 onDeleteProduct={(id) => console.log('Delete product:', id)}
+                onManageCoupons={() => {
+                  setSelectedCoupon(null);
+                  setCouponModalOpen(true);
+                }}
               />
             </TabsContent>
 

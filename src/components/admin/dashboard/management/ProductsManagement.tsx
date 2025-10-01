@@ -17,19 +17,23 @@ import {
 interface ProductsManagementProps {
   stripeProducts: any[];
   stripePrices: any[];
+  stripeCoupons: any[];
   loading: boolean;
   onCreateProduct: () => void;
   onEditProduct: (product: any) => void;
   onDeleteProduct: (productId: string) => void;
+  onManageCoupons: () => void;
 }
 
 export const ProductsManagement: React.FC<ProductsManagementProps> = ({
   stripeProducts,
   stripePrices,
+  stripeCoupons,
   loading,
   onCreateProduct,
   onEditProduct,
-  onDeleteProduct
+  onDeleteProduct,
+  onManageCoupons
 }) => {
   if (loading) {
     return (
@@ -58,9 +62,20 @@ export const ProductsManagement: React.FC<ProductsManagementProps> = ({
           </h2>
           <p className="text-muted-foreground mt-2">Manage Stripe products, pricing plans, and subscription tiers</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <Button 
-            onClick={onCreateProduct} 
+        <div className="flex items-center space-x-3">
+          <Button
+            onClick={onManageCoupons}
+            variant="outline"
+            className="border-purple-300 text-purple-700 hover:bg-purple-50"
+          >
+            <Tag className="w-4 h-4 mr-2" />
+            Manage Coupons
+            {stripeCoupons.length > 0 && (
+              <Badge variant="secondary" className="ml-2">{stripeCoupons.length}</Badge>
+            )}
+          </Button>
+          <Button
+            onClick={onCreateProduct}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           >
             <Plus className="w-4 h-4 mr-2" />
