@@ -1,43 +1,167 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Users, 
-  Search, 
-  UserPlus, 
-  TrendingUp, 
-  Activity, 
-  Mail, 
-  Shield, 
-  Filter, 
-  Download, 
-  Eye, 
-  UserCheck, 
-  Sparkles 
+import { Badge } from '@/components/ui/badge';
+import { adminService } from '@/services/admin/AdminService';
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/utils/toast';
+import {
+  Users,
+  Search,
+  UserPlus,
+  TrendingUp,
+  Activity,
+  Mail,
+  Shield,
+  Eye,
+  UserCheck,
+  Sparkles,
+  Clock,
+  Ban,
+  ArrowRight
 } from 'lucide-react';
-import { formatDate } from '../shared/AdminUtilities';
-import type { PlatformStats, OrganizationSummary } from '../shared/AdminSharedTypes';
 
 interface UsersManagementProps {
-  stats: PlatformStats | null;
-  organizations: OrganizationSummary[];
   loading: boolean;
   searchTerm: string;
   onSearchChange: (term: string) => void;
 }
 
+interface User {
+  id: string;
+  email: string;
+  created_at: string;
+  last_sign_in_at?: string;
+  email_confirmed_at?: string;
+  raw_user_meta_data?: any;
+  organization_name?: string;
+}
+
+interface UserStats {
+  totalUsers: number;
+  activeUsers: number;
+  newUsersThisMonth: number;
+  suspendedUsers: number;
+}
+
 export const UsersManagement: React.FC<UsersManagementProps> = ({
-  stats,
-  organizations,
-  loading,
+  loading: parentLoading,
   searchTerm,
   onSearchChange
 }) => {
   const navigate = useNavigate();
+  const [users, setUsers] = useState<User[]>([]);
+  const [stats, setStats] = useState<UserStats>({
+    totalUsers: 0,
+    activeUsers: 0,
+    newUsersThisMonth: 0,
+    suspendedUsers: 0
+  });
+  const [dataLoading, setDataLoading] = useState(true);
 
-  if (loading) {
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    setDataLoading(true);
+    try {
+      // Load all users
+      const allUsers = await adminService.getAllUsers();
+
+      // Get organization names for users
+      const usersWithOrgs = await Promise.all(
+        (allUsers || []).map(async (user) => {
+          try {
+            // Try to get organization membership
+            const { data: membership } = await supabase
+              .from('organization_members')
+              .select('organization:organizations(name)')
+              .eq('user_id', user.id)
+              .single();
+
+            return {
+              ...user,
+              organization_name: (membership?.organization as any)?.name || 'No Organization'
+            };
+          } catch {
+            return {
+              ...user,
+              organization_name: 'No Organization'
+            };
+          }
+        })
+      );
+
+      setUsers(usersWithOrgs);
+
+      // Calculate stats
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+
+      const activeUsers = usersWithOrgs.filter(u => {
+        if (!u.last_sign_in_at) return false;
+        return new Date(u.last_sign_in_at) >= thirtyDaysAgo;
+      }).length;
+
+      const newUsersThisMonth = usersWithOrgs.filter(u => {
+        return new Date(u.created_at) >= oneMonthAgo;
+      }).length;
+
+      setStats({
+        totalUsers: usersWithOrgs.length,
+        activeUsers,
+        newUsersThisMonth,
+        suspendedUsers: 0 // Would come from user status if implemented
+      });
+
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+      toast.error('Failed to load user data');
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  const goToUserManagement = () => {
+    navigate('/admin/users');
+  };
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Never';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  const getTimeSince = (dateString: string | undefined) => {
+    if (!dateString) return 'Never';
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+      return `${Math.floor(diffDays / 30)} months ago`;
+    } catch {
+      return 'Unknown';
+    }
+  };
+
+  if (parentLoading || dataLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -54,6 +178,14 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
       </div>
     );
   }
+
+  // Filter users based on search term
+  const filteredUsers = searchTerm
+    ? users.filter(u =>
+        u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.organization_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : users;
 
   return (
     <div className="space-y-6">
@@ -74,12 +206,12 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
               className="pl-10 w-64"
             />
           </div>
-          <Button 
-            onClick={() => navigate('/admin/users')} 
+          <Button
+            onClick={goToUserManagement}
             className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
           >
             <UserPlus className="w-4 h-4 mr-2" />
-            Add User
+            Manage Users
           </Button>
         </div>
       </div>
@@ -91,10 +223,10 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
             <CardTitle className="text-sm font-medium text-green-700">Total Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-900">{stats?.totalUsers || 0}</div>
+            <div className="text-3xl font-bold text-green-900">{stats.totalUsers}</div>
             <div className="flex items-center mt-2 text-sm text-green-600">
-              <TrendingUp className="w-4 h-4 mr-1" />
-              +{(stats as any)?.newUsersThisMonth || 0} this month
+              <Users className="w-4 h-4 mr-1" />
+              All users
             </div>
           </CardContent>
         </Card>
@@ -104,7 +236,7 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
             <CardTitle className="text-sm font-medium text-blue-700">Active Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-900">{(stats as any)?.activeUsers || 0}</div>
+            <div className="text-3xl font-bold text-blue-900">{stats.activeUsers}</div>
             <div className="flex items-center mt-2 text-sm text-blue-600">
               <Activity className="w-4 h-4 mr-1" />
               Last 30 days
@@ -114,103 +246,106 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
 
         <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-yellow-700">Pending Invites</CardTitle>
+            <CardTitle className="text-sm font-medium text-yellow-700">New This Month</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-900">{(stats as any)?.pendingInvites || 0}</div>
+            <div className="text-3xl font-bold text-yellow-900">{stats.newUsersThisMonth}</div>
             <div className="flex items-center mt-2 text-sm text-yellow-600">
-              <Mail className="w-4 h-4 mr-1" />
-              Awaiting response
+              <TrendingUp className="w-4 h-4 mr-1" />
+              User growth
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-purple-700">Admin Users</CardTitle>
+            <CardTitle className="text-sm font-medium text-purple-700">Confirmed Emails</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-900">{(stats as any)?.adminUsers || 0}</div>
+            <div className="text-3xl font-bold text-purple-900">
+              {users.filter(u => u.email_confirmed_at).length}
+            </div>
             <div className="flex items-center mt-2 text-sm text-purple-600">
-              <Shield className="w-4 h-4 mr-1" />
-              Platform admins
+              <Mail className="w-4 h-4 mr-1" />
+              Email verified
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Users Table */}
-      {organizations.length > 0 ? (
-        <Card className="bg-white/70 backdrop-blur-sm shadow-xl border border-gray-200/50">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold">Recent Users</CardTitle>
-                <CardDescription>Latest user registrations and activity</CardDescription>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
-                  <Filter className="w-3 h-3 mr-1" />
-                  Filter
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Download className="w-3 h-3 mr-1" />
-                  Export
-                </Button>
-              </div>
+      {/* Recent Users List */}
+      <Card className="bg-white/70 backdrop-blur-sm shadow-xl border border-gray-200/50">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold">Recent Users</CardTitle>
+              <CardDescription>Latest registered users ({filteredUsers.length} total)</CardDescription>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {organizations.slice(0, 8).map((org, index) => (
-                <div key={org.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-lg hover:bg-gray-100/50 transition-colors group">
-                  <div className="flex items-center space-x-4">
-                    <div className="rounded-full bg-gradient-to-br from-green-500 to-teal-500 p-2 text-white">
+            <Button onClick={goToUserManagement} variant="outline">
+              <Eye className="w-4 h-4 mr-2" />
+              View All Users
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {filteredUsers.length === 0 ? (
+            <div className="text-center py-12">
+              <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <p className="text-gray-500">No users found</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredUsers.slice(0, 10).map((user) => (
+                <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-lg hover:bg-gray-100/50 transition-colors group">
+                  <div className="flex items-center space-x-4 flex-1 min-w-0">
+                    <div className="rounded-full bg-gradient-to-br from-green-500 to-teal-500 p-2 text-white flex-shrink-0">
                       <Users className="h-4 w-4" />
                     </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{org.name} Users</div>
-                      <div className="text-sm text-gray-500">Organization • {org.userCount} members</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900 truncate">{user.email}</div>
+                      <div className="text-sm text-gray-500">{user.organization_name}</div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-4 flex-shrink-0">
                     <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">{org.userCount} users</div>
-                      <div className="text-xs text-gray-500">Last login {formatDate(org.lastActivity)}</div>
+                      {user.email_confirmed_at ? (
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          <UserCheck className="w-3 h-3 mr-1" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                          <Mail className="w-3 h-3 mr-1" />
+                          Pending
+                        </Badge>
+                      )}
+                      <div className="text-xs text-gray-500 mt-1">
+                        <Clock className="w-3 h-3 inline mr-1" />
+                        {getTimeSince(user.last_sign_in_at)}
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/admin/organizations/${org.id}`)}>
-                        <Eye className="w-3 h-3 mr-1" />
-                        View
-                      </Button>
-                      <Button variant="outline" size="sm" className="border-green-200 text-green-700 hover:bg-green-50">
-                        <UserCheck className="w-3 h-3 mr-1" />
-                        Manage
-                      </Button>
-                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={goToUserManagement}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      Details
+                    </Button>
                   </div>
                 </div>
               ))}
+
+              {filteredUsers.length > 10 && (
+                <Button onClick={goToUserManagement} variant="outline" className="w-full mt-4">
+                  View All {filteredUsers.length} Users <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="bg-gradient-to-br from-green-50 to-teal-50 border-green-200">
-          <CardContent className="p-12 text-center">
-            <div className="rounded-full bg-green-100 p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-              <Users className="w-12 h-12 text-green-600" />
-            </div>
-            <h3 className="text-2xl font-semibold mb-3 text-green-900">No Users Yet</h3>
-            <p className="text-green-700 mb-6 max-w-md mx-auto">
-              Start by creating organizations and inviting users to your platform.
-            </p>
-            <Button onClick={() => navigate('/admin/users')} size="lg" className="bg-gradient-to-r from-green-600 to-teal-600">
-              <UserPlus className="w-5 h-5 mr-2" />
-              Invite First User
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
 
       {/* User Management Tools */}
       <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
@@ -223,33 +358,41 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" 
-              onClick={() => navigate('/admin/users')}
+            <Button
+              variant="outline"
+              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50"
+              onClick={goToUserManagement}
             >
               <Users className="w-6 h-6 mb-2" />
-              <span className="text-sm">Browse All Users</span>
+              <span className="text-sm font-medium">All Users</span>
+              <span className="text-xs text-gray-500">{stats.totalUsers} users</span>
             </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" 
-              onClick={() => navigate('/admin/users')}
+            <Button
+              variant="outline"
+              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50"
+              onClick={goToUserManagement}
             >
               <Shield className="w-6 h-6 mb-2" />
-              <span className="text-sm">Role Management</span>
+              <span className="text-sm font-medium">Roles & Permissions</span>
+              <span className="text-xs text-gray-500">Manage access</span>
             </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50" 
-              onClick={() => navigate('/admin/users')}
+            <Button
+              variant="outline"
+              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50"
+              onClick={goToUserManagement}
+            >
+              <Ban className="w-6 h-6 mb-2" />
+              <span className="text-sm font-medium">Suspend Users</span>
+              <span className="text-xs text-gray-500">Access control</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50"
+              onClick={goToUserManagement}
             >
               <Activity className="w-6 h-6 mb-2" />
-              <span className="text-sm">Access Logs</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col border-green-200 text-green-700 hover:bg-green-50">
-              <Mail className="w-6 h-6 mb-2" />
-              <span className="text-sm">Bulk Invitations</span>
+              <span className="text-sm font-medium">Activity Logs</span>
+              <span className="text-xs text-gray-500">Audit trail</span>
             </Button>
           </div>
         </CardContent>

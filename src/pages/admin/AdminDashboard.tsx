@@ -421,8 +421,6 @@ export const AdminDashboard: React.FC = () => {
 
             <TabsContent value="users">
               <UsersManagement
-                stats={stats}
-                organizations={organizations}
                 loading={loading}
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
