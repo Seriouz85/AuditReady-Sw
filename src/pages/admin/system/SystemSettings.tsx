@@ -52,7 +52,7 @@ interface SystemSetting {
   category: string;
   description: string;
   data_type: string;
-  is_sensitive: boolean;
+  is_public: boolean;
 }
 
 export const SystemSettings: React.FC = () => {
@@ -116,7 +116,7 @@ export const SystemSettings: React.FC = () => {
           category: 'general',
           description: 'The name of the platform displayed to users',
           data_type: 'string',
-          is_sensitive: false
+          is_public: true
         },
         {
           id: '2',
@@ -125,7 +125,7 @@ export const SystemSettings: React.FC = () => {
           category: 'general',
           description: 'Enable maintenance mode to prevent user access',
           data_type: 'boolean',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '3',
@@ -134,7 +134,7 @@ export const SystemSettings: React.FC = () => {
           category: 'limits',
           description: 'Maximum number of organizations a platform admin can manage',
           data_type: 'number',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '4',
@@ -143,7 +143,7 @@ export const SystemSettings: React.FC = () => {
           category: 'email',
           description: 'Enable email notifications',
           data_type: 'boolean',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '5',
@@ -152,7 +152,7 @@ export const SystemSettings: React.FC = () => {
           category: 'email',
           description: 'SMTP server hostname',
           data_type: 'string',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '6',
@@ -161,7 +161,7 @@ export const SystemSettings: React.FC = () => {
           category: 'email',
           description: 'SMTP server password',
           data_type: 'string',
-          is_sensitive: true
+          is_public: true
         },
         {
           id: '7',
@@ -170,7 +170,7 @@ export const SystemSettings: React.FC = () => {
           category: 'security',
           description: 'User session timeout in hours',
           data_type: 'number',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '8',
@@ -179,7 +179,7 @@ export const SystemSettings: React.FC = () => {
           category: 'security',
           description: 'Require multi-factor authentication for all users',
           data_type: 'boolean',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '9',
@@ -188,7 +188,7 @@ export const SystemSettings: React.FC = () => {
           category: 'compliance',
           description: 'Number of days to retain audit logs',
           data_type: 'number',
-          is_sensitive: false
+          is_public: false
         },
         {
           id: '10',
@@ -197,7 +197,7 @@ export const SystemSettings: React.FC = () => {
           category: 'backup',
           description: 'Enable automatic data backups',
           data_type: 'boolean',
-          is_sensitive: false
+          is_public: false
         }
       ];
         
@@ -365,7 +365,7 @@ export const SystemSettings: React.FC = () => {
         );
       
       case 'string':
-        if (setting.is_sensitive) {
+        if (!setting.is_public) {
           return (
             <Input
               type="password"
@@ -621,7 +621,7 @@ export const SystemSettings: React.FC = () => {
                       <div className="space-y-1">
                         <Label className="text-sm font-medium">{setting.key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Label>
                         <p className="text-sm text-muted-foreground">{setting.description}</p>
-                        {setting.is_sensitive && (
+                        {!setting.is_public && (
                           <Badge variant="outline" className="text-xs">
                             <Key className="w-3 h-3 mr-1" />
                             Sensitive

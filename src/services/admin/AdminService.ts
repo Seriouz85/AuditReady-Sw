@@ -859,6 +859,51 @@ export class AdminService {
       throw error;
     }
   }
+
+  async getSystemSettings() {
+    try {
+      const { data, error } = await supabase
+        .from('system_settings')
+        .select('*')
+        .order('category', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching system settings:', error);
+        throw error;
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getSystemSettings:', error);
+      throw error;
+    }
+  }
+
+  async updateSystemSetting(settingId: string, value: any) {
+    try {
+      const { data, error } = await supabase
+        .from('system_settings')
+        .update({ value, updated_at: new Date().toISOString() })
+        .eq('id', settingId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating system setting:', error);
+        throw error;
+      }
+
+      // Log the change
+      await this.auditLogger.log('system_setting_updated', 'system_settings', settingId, {
+        new_values: { value }
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error in updateSystemSetting:', error);
+      throw error;
+    }
+  }
 }
 
 export const adminService = new AdminService();
