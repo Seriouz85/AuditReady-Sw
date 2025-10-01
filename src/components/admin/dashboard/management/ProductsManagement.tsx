@@ -183,36 +183,6 @@ export const ProductsManagement: React.FC<ProductsManagementProps> = ({
         </div>
       )}
 
-      {/* Quick Actions */}
-      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-        <CardHeader>
-          <CardTitle className="flex items-center text-purple-800">
-            <Sparkles className="w-5 h-5 mr-2" />
-            Product Management Tools
-          </CardTitle>
-          <CardDescription>Quick actions for managing your product catalog</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <Button variant="outline" className="h-16 flex-col border-purple-200 text-purple-700 hover:bg-purple-50">
-              <Package className="w-5 h-5 mb-1" />
-              <span className="text-sm">All Products</span>
-            </Button>
-            <Button variant="outline" className="h-16 flex-col border-purple-200 text-purple-700 hover:bg-purple-50">
-              <Tag className="w-5 h-5 mb-1" />
-              <span className="text-sm">Pricing Plans</span>
-            </Button>
-            <Button variant="outline" className="h-16 flex-col border-purple-200 text-purple-700 hover:bg-purple-50">
-              <CreditCard className="w-5 h-5 mb-1" />
-              <span className="text-sm">Subscriptions</span>
-            </Button>
-            <Button variant="outline" className="h-16 flex-col border-purple-200 text-purple-700 hover:bg-purple-50">
-              <DollarSign className="w-5 h-5 mb-1" />
-              <span className="text-sm">Revenue</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

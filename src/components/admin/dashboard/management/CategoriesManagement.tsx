@@ -59,7 +59,7 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
       const { data, error } = await supabase
         .from('unified_compliance_categories')
         .select('*')
-        .order('sort_order');
+        .order('sort_order') as { data: Category[] | null; error: any };
 
       if (error) {
         console.error('❌ Error loading categories:', error);
@@ -185,12 +185,12 @@ export const CategoriesManagement: React.FC<CategoriesManagementProps> = ({
         const maxOrder = Math.max(...categories.map(c => c.sort_order), 0);
         const { error } = await supabase
           .from('unified_compliance_categories')
-          .insert({
+          .insert([{
             name: formData.name,
             description: formData.description,
             icon: formData.icon,
             sort_order: maxOrder + 1
-          });
+          }]);
 
         if (error) throw error;
         toast.success('Category created successfully');
