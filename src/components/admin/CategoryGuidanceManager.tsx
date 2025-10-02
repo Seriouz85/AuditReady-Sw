@@ -359,7 +359,7 @@ export function CategoryGuidanceManager() {
           quality: 0.6 + (Math.random() * 0.4),
           version: `1.${Math.floor(Math.random() * 5)}.0`,
           lastModified: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-          modifiedBy: user?.email || 'admin@auditready.com',
+          modifiedBy: user?.email || 'System Admin',
           frameworks: category.frameworks.slice(0, Math.floor(Math.random() * 3) + 1),
           wordCount: Math.floor(Math.random() * 800) + 200,
           readingTime: Math.floor(Math.random() * 5) + 2,

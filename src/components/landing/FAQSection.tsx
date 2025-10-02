@@ -32,7 +32,7 @@ const faqs = [
   }
 ];
 
-export default function FAQSection() {
+export function FAQSection() {
   const { theme } = useTheme();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 

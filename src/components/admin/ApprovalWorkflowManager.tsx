@@ -311,7 +311,7 @@ export function ApprovalWorkflowManager() {
         category: 'Risk Management & Assessment',
         content: 'https://nist.gov/cybersecurity/framework/2.0',
         submittedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        submittedBy: 'admin@auditready.com',
+        submittedBy: 'System Admin',
         status: 'pending',
         priority: 'critical',
         comments: [],

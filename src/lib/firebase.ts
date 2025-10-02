@@ -17,13 +17,8 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-// Demo credentials for login purposes
+// Demo credentials for login purposes (marketing/demo use only)
 export const DEMO_EMAIL = "demo@auditready.com";
 export const DEMO_PASSWORD = "AuditReady@Demo2025!";
-export const ADMIN_EMAIL = "admin@auditready.com";
-export const ADMIN_PASSWORD = "Admin123!";
 
-// Function to create an admin user if needed
-export const createAdminUser = async (): Promise<UserCredential> => {
-  return await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
-}; 
+// REMOVED: Admin email constants (use database roles instead) 

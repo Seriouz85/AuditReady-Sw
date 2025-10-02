@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Gauge, Target, TrendingUp, Clock } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function DashboardPreview() {
+export function DashboardPreview() {
   const { theme } = useTheme();
 
   return (

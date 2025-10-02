@@ -287,8 +287,8 @@ export function EnhancedAdminConsole({ organizationId: _organizationId }: Enhanc
   }, [loadAdminData]);
 
   // Restrict access to platform administrators only
-  const isPlatformAdmin = user?.email === 'platform@auditready.com' || process.env['NODE_ENV'] === 'development';
-  
+  const { isPlatformAdmin } = useAuth();
+
   if (!isPlatformAdmin) {
     return (
       <div className="flex items-center justify-center h-64">

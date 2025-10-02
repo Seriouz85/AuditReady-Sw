@@ -15,7 +15,7 @@ const integrations = [
   { provider: "servicenow", name: "ServiceNow", delay: 0.8 },
 ];
 
-export default function IntegrationsSection() {
+export function IntegrationsSection() {
   const { theme } = useTheme();
 
   return (

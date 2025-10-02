@@ -1,13 +1,11 @@
 import { Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "next-themes";
 
-export default function LandingFooter() {
+export function LandingFooter() {
   const navigate = useNavigate();
-  const { theme } = useTheme();
 
   return (
-    <footer className={`${theme === 'light' ? 'bg-slate-900' : 'bg-slate-900'} text-white py-12 px-3 sm:px-4`}>
+    <footer className="bg-slate-900 text-white py-12 px-3 sm:px-4">
       <div className="container mx-auto max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>

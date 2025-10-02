@@ -7,25 +7,24 @@ import { supabase } from "@/lib/supabase";
 import { useDynamicPricing } from "@/hooks/useDynamicPricing";
 import { useTheme } from "next-themes";
 
-// Import all extracted components
+// Import all extracted components - STANDARDIZED IMPORTS
 import { LandingHeader } from "@/components/landing/LandingHeader";
-import HeroSection from "@/components/landing/HeroSection";
-import LogoShowcase from "@/components/landing/LogoShowcase";
-import DashboardPreview from "@/components/landing/DashboardPreview";
-import AutomatedAssessmentSection from "@/components/landing/AutomatedAssessmentSection";
-import UltraAIShowcase from "@/components/landing/UltraAIShowcase";
-import DataGovernanceSection from "@/components/landing/DataGovernanceSection";
-import FeaturesGrid from "@/components/landing/FeaturesGrid";
-import IntegrationsSection from "@/components/landing/IntegrationsSection";
-import TestimonialsSection from "@/components/landing/TestimonialsSection";
-import PricingSection from "@/components/landing/PricingSection";
-import FAQSection from "@/components/landing/FAQSection";
-import CTASection from "@/components/landing/CTASection";
-import LandingFooter from "@/components/landing/LandingFooter";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { LogoShowcase } from "@/components/landing/LogoShowcase";
+import { DashboardPreview } from "@/components/landing/DashboardPreview";
+import { AutomatedAssessmentSection } from "@/components/landing/AutomatedAssessmentSection";
+import { UnifiedRequirementsEngine } from "@/components/landing/UnifiedRequirementsEngine";
+import { DataGovernanceSection } from "@/components/landing/DataGovernanceSection";
+import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
+import { IntegrationsSection } from "@/components/landing/IntegrationsSection";
+import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
+import { PricingSection } from "@/components/landing/PricingSection";
+import { FAQSection } from "@/components/landing/FAQSection";
+import { CTASection } from "@/components/landing/CTASection";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [isHovered, setIsHovered] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { theme } = useTheme();
   const { plans: dynamicPlans, loading: pricingLoading } = useDynamicPricing();
@@ -114,8 +113,8 @@ export default function Landing() {
       {/* Automated Assessment Engine */}
       <AutomatedAssessmentSection />
 
-      {/* Ultra AI Showcase */}
-      <UltraAIShowcase />
+      {/* Unified Requirements Engine - AI Compliance Simplification */}
+      <UnifiedRequirementsEngine />
 
       {/* Data Governance & Security */}
       <DataGovernanceSection />

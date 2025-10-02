@@ -109,15 +109,11 @@ export class RequirementsService {
     
     const isValid = issues.length === 0 && categoryName !== null;
     
-    // Log validation results
-    if (!isValid) {
-      console.error(`❌ MAPPING VALIDATION FAILED [${methodName}]: ${requirement.control_id} (${requirement.standard_id})`);
-      console.error(`   → Requirement ID: ${requirement.id}`);
-      console.error(`   → Issues found:`, issues);
-      console.error(`   → Raw unified_mappings:`, JSON.stringify(unifiedMappings, null, 2));
-      console.error(`   → ACTION: This requirement needs proper database mapping in unified_requirement_mappings table`);
-    } else {
-      console.log(`✅ MAPPING VALID [${methodName}]: ${requirement.control_id} → "${categoryName}"`);
+    // Log validation results (only in development)
+    if (import.meta.env.DEV) {
+      if (!isValid) {
+        console.warn(`⚠️ MAPPING VALIDATION [${methodName}]: ${requirement.control_id} - unmapped requirement`);
+      }
     }
     
     return { isValid, categoryName, issues };

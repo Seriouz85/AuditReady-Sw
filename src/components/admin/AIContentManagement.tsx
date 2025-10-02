@@ -381,9 +381,9 @@ export function AIContentManagement() {
     return () => clearInterval(interval);
   }, [loadAdminData]);
 
-  // Access control
-  const isPlatformAdmin = user?.email === 'platform@auditready.com' || import.meta.env.MODE === 'development';
-  
+  // Access control - use isPlatformAdmin from useAuth
+  const { isPlatformAdmin } = useAuth();
+
   if (!isPlatformAdmin) {
     return (
       <div className="flex items-center justify-center h-64">

@@ -16,7 +16,7 @@ const testimonials = [
   },
 ];
 
-export default function TestimonialsSection() {
+export function TestimonialsSection() {
   const { theme } = useTheme();
 
   return (

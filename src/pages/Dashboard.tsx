@@ -27,13 +27,13 @@ const Dashboard = () => {
     'total-standards', 'total-requirements', 'total-assessments', 'compliance-score'
   ]);
 
-  // ONLY payam.razifar@gmail.com should be redirected to Platform Admin Console
+  // Platform admins are redirected to admin console
   useEffect(() => {
-    if (isPlatformAdmin && user?.email?.toLowerCase() === 'payam.razifar@gmail.com') {
+    if (isPlatformAdmin) {
       console.log("Platform admin detected, redirecting to admin console");
       navigate("/admin", { replace: true });
     }
-  }, [isPlatformAdmin, user?.email, navigate]);
+  }, [isPlatformAdmin, navigate]);
 
   // Cleanup auto-scroll on component unmount
   useEffect(() => {

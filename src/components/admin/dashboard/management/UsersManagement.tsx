@@ -4,6 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { adminService } from '@/services/admin/AdminService';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/utils/toast';
@@ -20,7 +36,10 @@ import {
   Sparkles,
   Clock,
   Ban,
-  ArrowRight
+  ArrowRight,
+  MoreVertical,
+  KeyRound,
+  Send
 } from 'lucide-react';
 
 interface UsersManagementProps {
@@ -37,6 +56,7 @@ interface User {
   email_confirmed_at?: string;
   raw_user_meta_data?: any;
   organization_name?: string;
+  name?: string;
 }
 
 interface UserStats {
@@ -60,6 +80,9 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
     suspendedUsers: 0
   });
   const [dataLoading, setDataLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showSuspendDialog, setShowSuspendDialog] = useState(false);
+  const [suspendingUser, setSuspendingUser] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -71,7 +94,7 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
       // Load all users
       const allUsers = await adminService.getAllUsers();
 
-      // Get organization names for users
+      // Get organization names for users and extract names from metadata
       const usersWithOrgs = await Promise.all(
         (allUsers || []).map(async (user) => {
           try {
@@ -82,14 +105,24 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
               .eq('user_id', user.id)
               .single();
 
+            // Extract name from user metadata or email
+            const userName = user.raw_user_meta_data?.name ||
+                           user.raw_user_meta_data?.full_name ||
+                           user.email.split('@')[0];
+
             return {
               ...user,
-              organization_name: (membership?.organization as any)?.name || 'No Organization'
+              organization_name: membership && (membership.organization as any)?.name || 'No Organization',
+              name: userName
             };
           } catch {
+            const userName = user.raw_user_meta_data?.name ||
+                           user.raw_user_meta_data?.full_name ||
+                           user.email.split('@')[0];
             return {
               ...user,
-              organization_name: 'No Organization'
+              organization_name: 'No Organization',
+              name: userName
             };
           }
         })
@@ -128,6 +161,45 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
 
   const goToUserManagement = () => {
     navigate('/admin/users');
+  };
+
+  const handleSuspendUser = async () => {
+    if (!selectedUser) return;
+
+    setSuspendingUser(true);
+    try {
+      await adminService.suspendUser(selectedUser.id, 'Suspended by platform administrator');
+      toast.success(`User ${selectedUser.email} has been suspended`);
+      setShowSuspendDialog(false);
+      setSelectedUser(null);
+      // Reload users
+      await loadUserData();
+    } catch (error) {
+      console.error('Failed to suspend user:', error);
+      toast.error('Failed to suspend user');
+    } finally {
+      setSuspendingUser(false);
+    }
+  };
+
+  const handleResetPassword = async (user: User) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      toast.success(`Password reset email sent to ${user.email}`);
+    } catch (error) {
+      console.error('Failed to send password reset email:', error);
+      toast.error('Failed to send password reset email');
+    }
+  };
+
+  const handleSendEmail = async (user: User) => {
+    // For now, just show a toast - you can integrate with email service later
+    toast.info(`Email functionality for ${user.email} - Coming soon`);
   };
 
   const formatDate = (dateString: string | undefined) => {
@@ -183,6 +255,7 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
   const filteredUsers = searchTerm
     ? users.filter(u =>
         u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.organization_name?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : users;
@@ -302,8 +375,9 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
                       <Users className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 truncate">{user.email}</div>
-                      <div className="text-sm text-gray-500">{user.organization_name}</div>
+                      <div className="font-medium text-gray-900">{user.name}</div>
+                      <div className="text-sm text-gray-500">{user.email}</div>
+                      <div className="text-xs text-gray-400">{user.organization_name}</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 flex-shrink-0">
@@ -324,15 +398,44 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
                         {getTimeSince(user.last_sign_in_at)}
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={goToUserManagement}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Eye className="w-3 h-3 mr-1" />
-                      Details
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>User Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={goToUserManagement}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSendEmail(user)}>
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Email
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleResetPassword(user)}>
+                          <KeyRound className="w-4 h-4 mr-2" />
+                          Reset Password
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowSuspendDialog(true);
+                          }}
+                          className="text-red-600"
+                        >
+                          <Ban className="w-4 h-4 mr-2" />
+                          Suspend User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               ))}
@@ -397,6 +500,57 @@ export const UsersManagement: React.FC<UsersManagementProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Suspend User Confirmation Dialog */}
+      <Dialog open={showSuspendDialog} onOpenChange={setShowSuspendDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Suspend User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to suspend this user? They will no longer be able to access the platform.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="py-4">
+              <div className="rounded-lg bg-gray-50 p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm font-medium text-gray-700">Name:</span>
+                  <span className="text-sm text-gray-900">{selectedUser.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm font-medium text-gray-700">Email:</span>
+                  <span className="text-sm text-gray-900">{selectedUser.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm font-medium text-gray-700">Organization:</span>
+                  <span className="text-sm text-gray-900">{selectedUser.organization_name}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowSuspendDialog(false);
+                setSelectedUser(null);
+              }}
+              disabled={suspendingUser}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleSuspendUser}
+              disabled={suspendingUser}
+            >
+              {suspendingUser ? 'Suspending...' : 'Suspend User'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

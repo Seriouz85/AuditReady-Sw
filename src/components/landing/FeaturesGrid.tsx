@@ -49,7 +49,7 @@ const features = [
   },
 ];
 
-export default function FeaturesGrid() {
+export function FeaturesGrid() {
   const { theme } = useTheme();
 
   return (

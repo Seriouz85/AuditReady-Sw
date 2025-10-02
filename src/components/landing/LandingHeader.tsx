@@ -26,6 +26,7 @@ export function LandingHeader() {
             size="sm"
             className={`inline-flex ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
             onClick={() => navigate("/roadmap")}
+            aria-label="View product roadmap"
           >
             <span className="hidden md:inline">Roadmap</span>
             <span className="md:hidden">Map</span>
@@ -38,6 +39,7 @@ export function LandingHeader() {
             size="sm"
             className={`inline-flex ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700'}`}
             onClick={() => navigate("/about")}
+            aria-label="Learn about the developer"
           >
             <span className="hidden sm:inline">About Dev</span>
             <span className="sm:hidden">Dev</span>
@@ -51,6 +53,7 @@ export function LandingHeader() {
             size="sm"
             className={`text-xs sm:text-sm px-2 sm:px-4 font-medium ${theme === 'light' ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 border border-slate-200/50' : 'text-slate-200 hover:text-slate-100 hover:bg-slate-700/80 border border-slate-600/50'}`}
             onClick={() => navigate("/login")}
+            aria-label="Log in to your account"
           >
             Log in
           </Button>
@@ -58,6 +61,7 @@ export function LandingHeader() {
             size="sm"
             className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 text-xs sm:text-sm font-semibold shadow-md border-2 border-blue-500/20"
             onClick={() => navigate("/onboarding")}
+            aria-label="Get started with AuditReady"
           >
             Get Started
           </Button>

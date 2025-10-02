@@ -12,7 +12,7 @@ const stats = [
   { number: "500+", label: "Security Controls" },
 ];
 
-export default function HeroSection() {
+export function HeroSection() {
   const navigate = useNavigate();
   const { theme } = useTheme();
 

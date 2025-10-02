@@ -89,7 +89,7 @@ export const DeploymentHistory: React.FC<DeploymentHistoryProps> = ({
           version: '1.0.9',
           environment: environment as any,
           status: 'success',
-          deployedBy: 'admin@auditready.com',
+          deployedBy: 'CI/CD Pipeline',
           deployedAt: new Date(Date.now() - 86400000), // 1 day ago
           commitSha: 'def456ghi789',
           branch: 'main',

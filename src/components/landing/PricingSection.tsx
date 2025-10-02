@@ -12,7 +12,7 @@ interface PricingSectionProps {
   dynamicPlans?: any[];
 }
 
-export default function PricingSection({ onPricingClick, isProcessingPayment, pricingLoading, dynamicPlans }: PricingSectionProps) {
+export function PricingSection({ onPricingClick, isProcessingPayment, pricingLoading, dynamicPlans }: PricingSectionProps) {
   const { theme } = useTheme();
 
   // Default plan structure with features

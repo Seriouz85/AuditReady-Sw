@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Cpu, Activity, Database } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function AutomatedAssessmentSection() {
+export function AutomatedAssessmentSection() {
   const { theme } = useTheme();
 
   return (

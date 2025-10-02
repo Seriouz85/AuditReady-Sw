@@ -398,11 +398,11 @@ const Assessments = () => {
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
-        <PageHeader 
-          title="Assessments" 
+        <PageHeader
+          title="Assessments"
           description="Manage and track your compliance assessments"
         />
-        
+
         <NewAssessmentDialog
           isOpen={isNewAssessmentOpen}
           onOpenChange={setIsNewAssessmentOpen}
@@ -448,7 +448,7 @@ const Assessments = () => {
         totalAssessmentsCount={assessments.length}
       />
 
-      <div className="mt-6">
+      <div className="mt-6" role="region" aria-label="Assessments list" aria-live="polite">
         <AssessmentList
           assessments={sortedAssessments}
           standards={standards}

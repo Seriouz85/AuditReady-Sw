@@ -424,10 +424,10 @@ export function EnhancedKnowledgeManager() {
     setShowValidationDialog(false);
   };
   
-  // Access control
-  const isAdmin = user?.email === 'platform@auditready.com' || import.meta.env.DEV;
-  
-  if (!isAdmin) {
+  // Access control - use isPlatformAdmin from useAuth
+  const { isPlatformAdmin } = useAuth();
+
+  if (!isPlatformAdmin) {
     return (
       <Card>
         <CardContent className="text-center py-12">

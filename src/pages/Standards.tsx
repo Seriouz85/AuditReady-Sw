@@ -230,8 +230,8 @@ const Standards = () => {
 
   if (requirementsLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen" role="status" aria-live="polite">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" aria-label="Loading standards and requirements"></div>
       </div>
     );
   }
@@ -243,14 +243,14 @@ const Standards = () => {
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div className="space-y-2">
-              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight" role="heading" aria-level={1}>
                 Standards & Regulations
               </h1>
-              <p className="text-slate-200 dark:text-slate-300 text-lg max-w-2xl">
+              <p className="text-slate-200 dark:text-slate-300 text-lg max-w-2xl" role="doc-subtitle">
                 Manage your compliance framework with enterprise-grade standards and automated requirement tracking.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto" role="group" aria-label="Standards management actions">
               <Dialog open={isSOADialogOpen} onOpenChange={(open) => {
                 setIsSOADialogOpen(open);
                 if (open) {
@@ -259,11 +259,12 @@ const Standards = () => {
                 }
               }}>
                 <DialogTrigger asChild>
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     className="w-full lg:w-auto bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm transition-all duration-200"
+                    aria-label="Open Statement of Applicability dialog"
                   >
-                    <ClipboardCheck className="h-4 w-4 mr-2" />
+                    <ClipboardCheck className="h-4 w-4 mr-2" aria-hidden="true" />
                     <span className="hidden sm:inline">Statement of Applicability</span>
                     <span className="sm:hidden">SoA</span>
                   </Button>
@@ -295,8 +296,11 @@ const Standards = () => {
           
               <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full lg:w-auto bg-white hover:bg-gray-50 text-slate-700 shadow-lg transition-all duration-200">
-                    <Library className="h-4 w-4 mr-2" />
+                  <Button
+                    className="w-full lg:w-auto bg-white hover:bg-gray-50 text-slate-700 shadow-lg transition-all duration-200"
+                    aria-label="Add standards from library"
+                  >
+                    <Library className="h-4 w-4 mr-2" aria-hidden="true" />
                     <span className="hidden sm:inline">Add from Library</span>
                     <span className="sm:hidden">Library</span>
                   </Button>
@@ -332,8 +336,11 @@ const Standards = () => {
 
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full lg:w-auto bg-slate-800 hover:bg-slate-900 text-white shadow-lg transition-all duration-200">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button
+                    className="w-full lg:w-auto bg-slate-800 hover:bg-slate-900 text-white shadow-lg transition-all duration-200"
+                    aria-label="Create new custom standard"
+                  >
+                    <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                     <span className="hidden sm:inline">Create Standard</span>
                     <span className="sm:hidden">Create</span>
                   </Button>
@@ -356,23 +363,27 @@ const Standards = () => {
       {/* Modern Search and Filter Section */}
       <div className="container mx-auto px-6 -mt-6 relative z-10">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4" role="search" aria-label="Search and filter standards">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-slate-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-slate-400" aria-hidden="true" />
               <Input
                 placeholder="Search standards and frameworks..."
                 className="pl-12 h-12 text-lg border-gray-200 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500 rounded-xl dark:bg-slate-700 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Search standards by name or description"
               />
             </div>
             <div className="lg:w-64">
-              <Select 
+              <Select
                 value={filterType}
                 onValueChange={(value) => setFilterType(value as string)}
               >
-                <SelectTrigger className="h-12 rounded-xl border-gray-200 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500 dark:bg-slate-700 dark:text-white">
-                  <Filter className="h-4 w-4 mr-2 text-gray-500 dark:text-slate-400" />
+                <SelectTrigger
+                  className="h-12 rounded-xl border-gray-200 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500 dark:bg-slate-700 dark:text-white"
+                  aria-label="Filter standards by type"
+                >
+                  <Filter className="h-4 w-4 mr-2 text-gray-500 dark:text-slate-400" aria-hidden="true" />
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -391,42 +402,42 @@ const Standards = () => {
       {/* Main Content Area */}
       <div className="container mx-auto px-6 py-8">
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" role="region" aria-label="Standards statistics">
           <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 border border-slate-200 dark:border-slate-600">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Total Standards</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{filteredStandards.length}</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white" aria-label={`${filteredStandards.length} total standards`}>{filteredStandards.length}</p>
               </div>
-              <div className="h-12 w-12 bg-slate-500 dark:bg-slate-600 rounded-full flex items-center justify-center">
+              <div className="h-12 w-12 bg-slate-500 dark:bg-slate-600 rounded-full flex items-center justify-center" aria-hidden="true">
                 <Library className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
-          
+
           <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-700/50">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Applicable</p>
-                <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">
+                <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300" aria-label={`${filteredStandards.filter(s => s.isApplicable).length} applicable standards`}>
                   {filteredStandards.filter(s => s.isApplicable).length}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-emerald-500 dark:bg-emerald-600 rounded-full flex items-center justify-center">
+              <div className="h-12 w-12 bg-emerald-500 dark:bg-emerald-600 rounded-full flex items-center justify-center" aria-hidden="true">
                 <ClipboardCheck className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
-          
+
           <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 border border-slate-200 dark:border-slate-600">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Requirements</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">
+                <p className="text-3xl font-bold text-slate-900 dark:text-white" aria-label={`${filteredStandards.reduce((sum, std) => sum + getRequirementCount(std.id), 0)} total requirements`}>
                   {filteredStandards.reduce((sum, std) => sum + getRequirementCount(std.id), 0)}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-slate-500 dark:bg-slate-600 rounded-full flex items-center justify-center">
+              <div className="h-12 w-12 bg-slate-500 dark:bg-slate-600 rounded-full flex items-center justify-center" aria-hidden="true">
                 <Plus className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -435,16 +446,16 @@ const Standards = () => {
 
         {/* Standards Grid */}
         {filteredStandards.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-4" role="region" aria-label="Standards list">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your Standards</h2>
-              <p className="text-gray-600 dark:text-slate-400">{filteredStandards.length} standard{filteredStandards.length !== 1 ? 's' : ''} found</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white" role="heading" aria-level={2}>Your Standards</h2>
+              <p className="text-gray-600 dark:text-slate-400" aria-live="polite" aria-atomic="true">{filteredStandards.length} standard{filteredStandards.length !== 1 ? 's' : ''} found</p>
             </div>
-            
-            <div className="grid gap-6">
+
+            <div className="grid gap-6" role="list">
               {filteredStandards.map((standard) => (
-                <div key={standard.id} className="transform transition-all duration-200 hover:scale-[1.02]">
-                  <StandardCard 
+                <div key={standard.id} className="transform transition-all duration-200 hover:scale-[1.02]" role="listitem">
+                  <StandardCard
                     standard={standard}
                     requirementCount={getRequirementCount(standard.id)}
                     onExport={() => exportStandard(standard.id)}
@@ -458,10 +469,10 @@ const Standards = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-16" role="status" aria-live="polite">
             <div className="max-w-md mx-auto">
               <div className="mb-6">
-                <div className="h-24 w-24 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="h-24 w-24 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <Search className="h-12 w-12 text-gray-400 dark:text-slate-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No standards found</h3>
@@ -469,13 +480,14 @@ const Standards = () => {
                   Adjust your search criteria or add a new standard to get started.
                 </p>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSearchTerm("");
                   setFilterType("all");
                 }}
                 className="rounded-xl px-6 py-3"
+                aria-label="Clear all search and filter criteria"
               >
                 Clear Filters
               </Button>

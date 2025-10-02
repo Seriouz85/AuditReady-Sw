@@ -106,20 +106,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const hasPermission = (permission: string): boolean => {
-    // CRITICAL SECURITY: Demo users NEVER have platform admin permission
-    const isPlatformAdminEmail = user?.email?.toLowerCase() === 'payam.razifar@gmail.com' || 
-                                 user?.email?.toLowerCase() === 'admin@auditready.com';
-    
+    // CRITICAL SECURITY: Check permissions from database role, not hardcoded emails
     if (permission === 'platform_admin') {
-      // ONLY platform admin emails can have platform admin permission
-      return isPlatformAdmin && isPlatformAdminEmail;
+      // Platform admin permission comes from database role only
+      return isPlatformAdmin;
     }
-    
+
     // Platform admins have all other permissions
-    if (isPlatformAdmin && isPlatformAdminEmail) {
+    if (isPlatformAdmin) {
       return true;
     }
-    
+
     if (isDemo) {
       // Demo users have comprehensive permissions for showcasing features (but NOT platform_admin)
       const demoPermissions = [
@@ -141,7 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       ];
       return demoPermissions.includes(permission);
     }
-    
+
     return userRole?.permissions?.includes(permission) || false;
   };
 
@@ -163,13 +160,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // FALLBACK: Check if user is platform admin (for session restoration)
-      if (user?.email?.toLowerCase() === 'payam.razifar@gmail.com') {
-        console.log('🔒 Platform admin detected during session restoration');
-        setPlatformAdminState(true);
-        setLoading(false);
-        return;
-      }
+      // REMOVED: No longer checking platform admin status by email
+      // Platform admin status comes from database role only
       
       if (isDemo) {
         // Load demo organization data
@@ -460,36 +452,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
 
-      // Handle platform admin with real Supabase authentication
-      const isPlatformAdminEmail = email.toLowerCase() === 'payam.razifar@gmail.com' || 
-                                   email.toLowerCase() === 'admin@auditready.com';
-      
-      if (isPlatformAdminEmail) {
-        console.log('Platform admin login detected - attempting real Supabase auth');
-        try {
-          // Use real Supabase authentication with the actual password provided
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email: email.toLowerCase(),
-            password  // Use the actual password entered by the user
-          });
-
-          if (data.user && !error) {
-            console.log('Platform admin successfully authenticated with Supabase');
-            setUser(data.user);
-            setPlatformAdminState(true);
-            setLoading(false); // Immediately set loading to false for platform admin
-            
-            // Skip loading user data for platform admin to improve performance
-            return {};
-          } else {
-            console.log('Platform admin Supabase auth failed, error:', error?.message);
-            return { error: error?.message || 'Invalid login credentials' };
-          }
-        } catch (error) {
-          console.error('Error in platform admin auth:', error);
-          return { error: 'Authentication failed. Please check your credentials.' };
-        }
-      }
+      // REMOVED: No hardcoded platform admin email checks
+      // All authentication goes through standard Supabase flow
 
       // Real Supabase authentication
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -519,6 +483,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (data.user) {
         setUser(data.user);
+
+        // CRITICAL: Check if user is a platform administrator FIRST
+        try {
+          const { data: adminData, error: adminError } = await supabase
+            .from('platform_administrators')
+            .select('id, email, role, is_active')
+            .eq('email', data.user.email)
+            .eq('is_active', true)
+            .maybeSingle();
+
+          if (!adminError && adminData) {
+            console.log('🔒 Platform administrator detected:', adminData.email, 'Role:', adminData.role);
+            setPlatformAdminState(true);
+            setLoading(false);
+            return {}; // Skip normal user data loading for platform admins
+          }
+        } catch (adminCheckError) {
+          console.log('Not a platform admin, proceeding with normal user flow');
+        }
+
+        // Normal user flow - load organization data
         try {
           await loadUserData(data.user.id);
         } catch (userDataError) {
@@ -585,13 +570,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return;
           }
           
-          // CRITICAL FIX: Check for platform admin during initialization
-          if (session.user.email?.toLowerCase() === 'payam.razifar@gmail.com') {
-            console.log('🔒 Platform admin detected during initialization');
-            setPlatformAdminState(true);
-            setLoading(false);
-            return;
-          }
+          // REMOVED: No email-based platform admin detection
+          // Platform admin status loaded from database
           
           // Only load user data if we're not on public pages
           const isPublicPage = window.location.pathname === '/' || 
@@ -623,13 +603,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 return;
               }
               
-              // CRITICAL FIX: Check for platform admin immediately to prevent state loss
-              if (session.user.email?.toLowerCase() === 'payam.razifar@gmail.com') {
-                console.log('🔒 Platform admin detected in auth state change');
-                setPlatformAdminState(true);
-                setLoading(false);
-                return;
-              }
+              // REMOVED: No email-based platform admin detection
+              // Platform admin status loaded from database
               
               // Only load user data after sign in if we're not on public pages
               const isPublicPage = window.location.pathname === '/' || 

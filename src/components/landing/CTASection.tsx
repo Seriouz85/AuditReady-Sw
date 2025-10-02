@@ -4,7 +4,7 @@ import { ArrowRight, Phone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 
-export default function CTASection() {
+export function CTASection() {
   const navigate = useNavigate();
   const { theme } = useTheme();
 

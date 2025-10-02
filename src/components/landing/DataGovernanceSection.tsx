@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Shield, CheckCircle2, ArrowRight, Layers, Gauge, Lock, Crown } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function DataGovernanceSection() {
+export function DataGovernanceSection() {
   const { theme } = useTheme();
 
   const features = [

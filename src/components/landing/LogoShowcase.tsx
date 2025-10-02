@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Shield, CheckCircle2, Lock, Sparkles, Zap } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function LogoShowcase() {
+export function LogoShowcase() {
   const { theme } = useTheme();
 
   return (

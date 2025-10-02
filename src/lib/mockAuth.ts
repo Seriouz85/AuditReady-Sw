@@ -1,4 +1,4 @@
-import { DEMO_EMAIL, DEMO_PASSWORD, ADMIN_EMAIL, ADMIN_PASSWORD } from './firebase';
+import { DEMO_EMAIL, DEMO_PASSWORD } from './firebase';
 
 // Demo credentials for validation script detection
 // demo@auditready.com
@@ -21,8 +21,8 @@ let currentUser: MockUser | null = null;
 export const mockSignIn = async (email: string, password: string): Promise<MockUser> => {
   // Wait for a realistic authentication delay
   await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Check if credentials match our demo or admin accounts
+
+  // Check if credentials match our demo account
   if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
     currentUser = {
       uid: 'demo-user-123',
@@ -32,17 +32,8 @@ export const mockSignIn = async (email: string, password: string): Promise<MockU
       isAdmin: false
     };
     return currentUser;
-  } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-    currentUser = {
-      uid: 'admin-user-456',
-      email: ADMIN_EMAIL,
-      displayName: 'Admin User',
-      isAnonymous: false,
-      isAdmin: true
-    };
-    return currentUser;
   }
-  
+
   // Reject with auth error for invalid credentials
   throw new Error('Invalid email or password');
 };
