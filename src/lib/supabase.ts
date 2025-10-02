@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
 
 // Supabase configuration
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || '';
 
 // Create main Supabase client (singleton pattern to avoid multiple instances)
-let supabaseInstance: ReturnType<typeof createClient> | null = null;
+let supabaseInstance: ReturnType<typeof createClient<Database>> | null = null;
 
 function createSupabaseClient() {
   if (!supabaseInstance) {
@@ -28,7 +29,7 @@ function createSupabaseClient() {
       });
     } else {
       // Create the real Supabase client
-      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, {
         auth: {
           storageKey: 'auditready_auth', // Unique storage key to avoid conflicts
           storage: typeof window !== 'undefined' ? window.localStorage : undefined,
@@ -46,8 +47,8 @@ function createSupabaseClient() {
 
 // Lazy-load the Supabase client to avoid initialization errors
 export const supabase = (() => {
-  let client: ReturnType<typeof createClient> | null = null;
-  return new Proxy({} as ReturnType<typeof createClient>, {
+  let client: ReturnType<typeof createClient<Database>> | null = null;
+  return new Proxy({} as ReturnType<typeof createClient<Database>>, {
     get(target, prop) {
       if (!client) {
         client = createSupabaseClient();
@@ -59,13 +60,13 @@ export const supabase = (() => {
 
 // Create admin client for platform admin operations (only if service role key is available)
 // This bypasses RLS for admin operations
-let supabaseAdminInstance: ReturnType<typeof createClient> | null = null;
+let supabaseAdminInstance: ReturnType<typeof createClient<Database>> | null = null;
 
 function createAdminClient() {
   if (!supabaseAdminInstance) {
     if (supabaseServiceRoleKey) {
       // Create proper admin client with service role key
-      supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      supabaseAdminInstance = createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
         auth: {
           storageKey: 'auditready_service_role', // Unique key for service role
           persistSession: false,
@@ -89,8 +90,8 @@ function createAdminClient() {
 
 // Lazy-load the admin client as well
 export const supabaseAdmin = (() => {
-  let client: ReturnType<typeof createClient> | null = null;
-  return new Proxy({} as ReturnType<typeof createClient>, {
+  let client: ReturnType<typeof createClient<Database>> | null = null;
+  return new Proxy({} as ReturnType<typeof createClient<Database>>, {
     get(target, prop) {
       if (!client) {
         client = createAdminClient();
