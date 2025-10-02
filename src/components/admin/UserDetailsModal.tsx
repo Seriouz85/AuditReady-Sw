@@ -58,13 +58,7 @@ export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const [mfaFactors, setMfaFactors] = useState<any[]>([]);
   const [activityLog, setActivityLog] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (initialUser && open) {
-      loadUserData();
-    }
-  }, [initialUser, open]);
-
-  const loadUserData = async () => {
+  const loadUserData = React.useCallback(async () => {
     if (!initialUser) return;
 
     setLoading(true);
@@ -88,7 +82,13 @@ export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [initialUser]);
+
+  useEffect(() => {
+    if (initialUser && open) {
+      loadUserData();
+    }
+  }, [initialUser, open, loadUserData]);
 
   const handleSendPasswordReset = () => {
     if (!user) return;
