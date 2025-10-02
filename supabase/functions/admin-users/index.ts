@@ -56,8 +56,22 @@ serve(async (req) => {
     switch (req.method) {
       case 'GET':
         return await handleGetUsers(supabaseAdmin, action)
-      case 'POST':
-        return await handleCreateUser(supabaseAdmin, req)
+      case 'POST': {
+        const bodyText = await req.text()
+        const body = bodyText ? JSON.parse(bodyText) : {}
+        if (body.action === 'reset_password') {
+          return await handlePasswordReset(supabaseAdmin, body)
+        } else if (body.action === 'remove_mfa') {
+          return await handleRemoveMFA(supabaseAdmin, body)
+        }
+        // For user creation, we need to create a new request with the body
+        const createReq = new Request(req.url, {
+          method: 'POST',
+          headers: req.headers,
+          body: bodyText,
+        })
+        return await handleCreateUser(supabaseAdmin, createReq)
+      }
       case 'PUT':
         return await handleUpdateUser(supabaseAdmin, req, action)
       case 'DELETE':
@@ -79,63 +93,141 @@ serve(async (req) => {
 
 async function handleGetUsers(supabaseAdmin: any, userId?: string) {
   if (userId && userId !== 'admin-users') {
-    // Get specific user
-    const { data: user, error } = await supabaseAdmin.auth.admin.getUserById(userId)
-    if (error) throw error
-
-    // Get organization membership
-    const { data: orgMembership } = await supabaseAdmin
+    // Get specific user from organization_users
+    const { data: orgUser, error: orgError } = await supabaseAdmin
       .from('organization_users')
       .select(`
         *,
         organization:organizations(name, slug, subscription_tier)
       `)
-      .eq('email', user.email)
+      .eq('user_id', userId)
+      .single()
+
+    if (orgError) throw orgError
+
+    // Try to get auth user data (may fail, that's ok)
+    let authUser = null
+    try {
+      const { data: user } = await supabaseAdmin.auth.admin.getUserById(userId)
+      authUser = user
+    } catch (e) {
+      console.log('Could not fetch auth user, using org data only')
+    }
 
     return new Response(
       JSON.stringify({
-        ...user,
-        organization_memberships: orgMembership || [],
+        id: orgUser.user_id,
+        email: authUser?.email || orgUser.user_id,
+        created_at: orgUser.created_at,
+        last_sign_in_at: orgUser.last_login_at,
+        organization_memberships: [orgUser],
       }),
       {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       }
     )
   } else {
-    // Get all users with pagination
-    const { data: users, error } = await supabaseAdmin.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000, // Adjust as needed
+    // WORKAROUND: auth.admin.listUsers() has database issues
+    // Instead, query auth.users directly via SQL using service role
+    console.log('🔍 Querying auth.users directly via SQL')
+
+    const { data: authUsers, error: authSqlError } = await supabaseAdmin
+      .rpc('get_all_auth_users')
+
+    let allUsers = []
+
+    if (authSqlError || !authUsers) {
+      console.warn('⚠️ RPC failed, trying direct approach:', authSqlError?.message)
+
+      // Fallback: Get user IDs from organization_users and platform_administrators
+      const { data: orgUsers } = await supabaseAdmin
+        .from('organization_users')
+        .select('user_id')
+
+      const { data: adminUsers } = await supabaseAdmin
+        .from('platform_administrators')
+        .select('id')
+
+      // Collect all unique user IDs
+      const userIds = new Set()
+      orgUsers?.forEach((u: any) => userIds.add(u.user_id))
+      adminUsers?.forEach((u: any) => userIds.add(u.id))
+
+      // Also add known user IDs
+      userIds.add('031dbc29-51fd-4135-9582-a9c5b63f7451') // demo user
+      userIds.add('40bb613f-aba0-4566-8d84-3b316e5093de') // payam
+      userIds.add('5cfd0d8d-3768-4f21-a38f-5626270c78af') // admin
+
+      console.log('🔍 Found', userIds.size, 'unique user IDs')
+
+      // Fetch each user individually
+      allUsers = await Promise.all(
+        Array.from(userIds).map(async (userId: any) => {
+          try {
+            const { data, error } = await supabaseAdmin.auth.admin.getUserById(userId)
+            if (!error && data?.user) {
+              return data.user
+            }
+          } catch (e) {
+            console.log(`Could not fetch user ${userId}:`, e)
+          }
+          return null
+        })
+      )
+
+      allUsers = allUsers.filter(u => u !== null)
+    } else {
+      allUsers = authUsers
+    }
+
+    console.log('✅ Got', allUsers.length, 'auth users')
+
+    // Get organization memberships for enrichment
+    const { data: orgUsers, error: orgError } = await supabaseAdmin
+      .from('organization_users')
+      .select(`
+        user_id,
+        created_at,
+        last_login_at,
+        organization:organizations(name, slug, subscription_tier)
+      `)
+
+    // Create a map of user_id to organization data
+    const orgMap = new Map()
+    if (!orgError && orgUsers) {
+      orgUsers.forEach((orgUser: any) => {
+        if (!orgMap.has(orgUser.user_id)) {
+          orgMap.set(orgUser.user_id, [])
+        }
+        orgMap.get(orgUser.user_id).push(orgUser)
+      })
+    }
+
+    // Map all auth users with organization data if available
+    const enrichedUsers = allUsers.map((authUser: any) => {
+      const orgMemberships = orgMap.get(authUser.id) || []
+
+      return {
+        id: authUser.id,
+        email: authUser.email || 'No email found',
+        created_at: authUser.created_at,
+        last_sign_in_at: authUser.last_sign_in_at,
+        email_confirmed_at: authUser.email_confirmed_at,
+        user_metadata: authUser.user_metadata || {},
+        organization_memberships: orgMemberships,
+      }
     })
 
-    if (error) throw error
-
-    // Enrich with organization data
-    const enrichedUsers = await Promise.all(
-      users.users.map(async (user: any) => {
-        const { data: orgMembership } = await supabaseAdmin
-          .from('organization_users')
-          .select(`
-            *,
-            organization:organizations(name, slug, subscription_tier)
-          `)
-          .eq('email', user.email)
-
-        return {
-          ...user,
-          organization_memberships: orgMembership || [],
-        }
-      })
-    )
+    console.log('✅ Returning', enrichedUsers.length, 'enriched users')
 
     return new Response(
       JSON.stringify({
         users: enrichedUsers,
-        total: users.total || enrichedUsers.length,
+        total: enrichedUsers.length,
       }),
       {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       }
     )
@@ -191,7 +283,7 @@ async function handleCreateUser(supabaseAdmin: any, req: Request) {
   return new Response(
     JSON.stringify({ user: user.user }),
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 201,
     }
   )
@@ -272,7 +364,7 @@ async function handleUpdateUser(supabaseAdmin: any, req: Request, userId: string
   return new Response(
     JSON.stringify({ message: 'User updated successfully' }),
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     }
   )
@@ -308,7 +400,88 @@ async function handleDeleteUser(supabaseAdmin: any, userId: string) {
   return new Response(
     JSON.stringify({ message: 'User deleted successfully' }),
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    }
+  )
+}
+
+async function handlePasswordReset(supabaseAdmin: any, body: any) {
+  const { email } = body
+
+  if (!email) {
+    throw new Error('Email is required for password reset')
+  }
+
+  // Send password reset email using Supabase Auth
+  const { error } = await supabaseAdmin.auth.admin.generateLink({
+    type: 'recovery',
+    email: email,
+  })
+
+  if (error) throw error
+
+  // Log the password reset action
+  const { data: users } = await supabaseAdmin.auth.admin.listUsers()
+  const user = users?.users.find((u: any) => u.email === email)
+
+  if (user) {
+    await supabaseAdmin.from('user_activity_log').insert({
+      user_id: user.id,
+      activity_type: 'password_reset',
+      metadata: {
+        email,
+        reset_sent_at: new Date().toISOString(),
+        initiated_by_admin: true,
+      },
+    })
+  }
+
+  return new Response(
+    JSON.stringify({
+      message: 'Password reset email sent successfully',
+      success: true
+    }),
+    {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    }
+  )
+}
+
+async function handleRemoveMFA(supabaseAdmin: any, body: any) {
+  const { userId, factorId } = body
+
+  if (!userId || !factorId) {
+    throw new Error('User ID and Factor ID are required')
+  }
+
+  // Delete the MFA factor using admin client
+  const { error } = await supabaseAdmin.auth.admin.mfa.deleteFactor({
+    id: factorId,
+    userId: userId,
+  })
+
+  if (error) throw error
+
+  // Log the MFA removal action
+  await supabaseAdmin.from('user_activity_log').insert({
+    user_id: userId,
+    activity_type: 'mfa_device_removed',
+    metadata: {
+      factor_id: factorId,
+      removed_at: new Date().toISOString(),
+      removed_by_admin: true,
+    },
+  })
+
+  return new Response(
+    JSON.stringify({
+      message: 'MFA device removed successfully',
+      success: true
+    }),
+    {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     }
   )

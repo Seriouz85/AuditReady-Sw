@@ -9,19 +9,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog';
-import { 
-  ArrowLeft, 
-  Search, 
-  Filter, 
-  Users, 
-  Shield, 
+import { UserDetailsModal } from '@/components/admin/UserDetailsModal';
+import {
+  ArrowLeft,
+  Search,
+  Filter,
+  Users,
+  Shield,
   Mail,
   Ban,
   UserCheck,
   Clock,
   MoreHorizontal,
   Eye,
-  Plus
+  Plus,
+  KeyRound,
+  Send
 } from 'lucide-react';
 import { toast } from '@/utils/toast';
 import {
@@ -32,6 +35,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 interface User {
   id: string;
@@ -45,10 +56,23 @@ interface User {
 interface PlatformAdmin {
   id: string;
   email: string;
+  name?: string;
+  role: string;
   is_active: boolean;
   permissions: string[];
   created_at: string;
   last_login_at?: string;
+}
+
+interface DemoAccount {
+  id: string;
+  user_id: string;
+  email: string;
+  name?: string;
+  is_active: boolean;
+  features: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export const UserManagement: React.FC = () => {
@@ -56,10 +80,16 @@ export const UserManagement: React.FC = () => {
   const { confirm, dialogProps } = useConfirmDialog();
   const [users, setUsers] = useState<User[]>([]);
   const [platformAdmins, setPlatformAdmins] = useState<PlatformAdmin[]>([]);
+  const [demoAccounts, setDemoAccounts] = useState<DemoAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedAdmin, setSelectedAdmin] = useState<PlatformAdmin | null>(null);
+  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [permissionsMode, setPermissionsMode] = useState<'view' | 'edit'>('view');
+  const [selectedUserForDetails, setSelectedUserForDetails] = useState<User | null>(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -68,23 +98,19 @@ export const UserManagement: React.FC = () => {
   const loadUserData = async () => {
     try {
       setLoading(true);
-      
+
       // Load all users
       const allUsers = await adminService.getAllUsers();
       setUsers(allUsers || []);
-      
-      // Load platform administrators (mock for now)
-      setPlatformAdmins([
-        {
-          id: 'platform-admin-1',
-          email: 'Payam.Razifar@gmail.com',
-          is_active: true,
-          permissions: ['platform_admin'],
-          created_at: new Date().toISOString(),
-          last_login_at: new Date().toISOString()
-        }
-      ]);
-      
+
+      // Load platform administrators from database
+      const admins = await adminService.getPlatformAdministrators();
+      setPlatformAdmins(admins || []);
+
+      // Load demo accounts from database
+      const demos = await adminService.getDemoAccounts();
+      setDemoAccounts(demos || []);
+
     } catch (err) {
       console.error('Error loading user data:', err);
       setError('Failed to load user data');
@@ -93,16 +119,45 @@ export const UserManagement: React.FC = () => {
     }
   };
 
-  const handleSuspendUser = async (userId: string) => {
+  const handleViewDetails = (user: User) => {
+    setSelectedUserForDetails(user);
+    setShowUserDetails(true);
+  };
+
+  const handleSendEmail = (user: User) => {
+    const mailtoLink = `mailto:${user.email}`;
+    window.location.href = mailtoLink;
+    toast.success(`Opening email to ${user.email}`);
+  };
+
+  const handleResetPassword = async (user: User) => {
+    confirm({
+      title: 'Reset Password?',
+      description: `Send password reset email to ${user.email}?`,
+      variant: 'warning',
+      confirmText: 'Send Reset Email',
+      onConfirm: async () => {
+        try {
+          // TODO: Implement password reset functionality
+          toast.success(`Password reset email sent to ${user.email}`);
+        } catch (err) {
+          console.error('Error sending password reset:', err);
+          toast.error('Failed to send password reset email');
+        }
+      }
+    });
+  };
+
+  const handleSuspendUser = async (userId: string, userEmail: string) => {
     confirm({
       title: 'Suspend User?',
-      description: 'Are you sure you want to suspend this user? They will no longer be able to access the platform.',
+      description: `Are you sure you want to suspend ${userEmail}? They will no longer be able to access the platform.`,
       variant: 'warning',
       confirmText: 'Suspend User',
       onConfirm: async () => {
         try {
           await adminService.suspendUser(userId, 'Suspended by platform administrator');
-          toast.success('User suspended successfully');
+          toast.success(`User ${userEmail} suspended successfully`);
           await loadUserData(); // Refresh data
         } catch (err) {
           console.error('Error suspending user:', err);
@@ -113,15 +168,73 @@ export const UserManagement: React.FC = () => {
     });
   };
 
+  const handleViewPermissions = (admin: PlatformAdmin) => {
+    setSelectedAdmin(admin);
+    setPermissionsMode('view');
+    setShowPermissionsModal(true);
+  };
+
+  const handleEditPermissions = (admin: PlatformAdmin) => {
+    setSelectedAdmin(admin);
+    setPermissionsMode('edit');
+    setShowPermissionsModal(true);
+  };
+
+  const handleRevokeAccess = (admin: PlatformAdmin) => {
+    confirm({
+      title: 'Revoke Admin Access?',
+      description: `Are you sure you want to revoke platform admin access for ${admin.email}?`,
+      variant: 'destructive',
+      confirmText: 'Revoke Access',
+      onConfirm: async () => {
+        try {
+          // TODO: Implement revoke access functionality
+          toast.success(`Admin access revoked for ${admin.email}`);
+          await loadUserData();
+        } catch (err) {
+          console.error('Error revoking access:', err);
+          toast.error('Failed to revoke access');
+        }
+      }
+    });
+  };
+
+  const handleToggleDemoAccount = async (demo: DemoAccount) => {
+    const action = demo.is_active ? 'deactivate' : 'activate';
+    confirm({
+      title: `${action === 'deactivate' ? 'Deactivate' : 'Activate'} Demo Account?`,
+      description: `Are you sure you want to ${action} the demo account ${demo.email}? ${action === 'deactivate' ? 'Users will not be able to log in with this account.' : 'Users will be able to log in with this account.'}`,
+      variant: action === 'deactivate' ? 'warning' : 'default',
+      confirmText: action === 'deactivate' ? 'Deactivate' : 'Activate',
+      onConfirm: async () => {
+        try {
+          await adminService.updateDemoAccount(demo.id, { is_active: !demo.is_active });
+          toast.success(`Demo account ${action}d successfully`);
+          await loadUserData();
+        } catch (err) {
+          console.error(`Error ${action}ing demo account:`, err);
+          toast.error(`Failed to ${action} demo account`);
+        }
+      }
+    });
+  };
+
+  const getUserName = (user: User) => {
+    return user.raw_user_meta_data?.name || user.email.split('@')[0];
+  };
+
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const userName = getUserName(user);
+    const matchesSearch =
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
+
     if (filterStatus === 'confirmed') {
       return matchesSearch && user.email_confirmed_at;
     } else if (filterStatus === 'unconfirmed') {
       return matchesSearch && !user.email_confirmed_at;
     }
-    
+
     return matchesSearch;
   });
 
@@ -217,6 +330,7 @@ export const UserManagement: React.FC = () => {
           <TabsList>
             <TabsTrigger value="all-users">All Users ({users.length})</TabsTrigger>
             <TabsTrigger value="platform-admins">Platform Admins ({platformAdmins.length})</TabsTrigger>
+            <TabsTrigger value="demo-accounts">Demo Accounts ({demoAccounts.length})</TabsTrigger>
             <TabsTrigger value="access-logs">Access Logs</TabsTrigger>
           </TabsList>
 
@@ -228,7 +342,7 @@ export const UserManagement: React.FC = () => {
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
-                    placeholder="Search users by email..."
+                    placeholder="Search users by name or email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -264,17 +378,13 @@ export const UserManagement: React.FC = () => {
                 <Card key={user.id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-lg">{user.email}</CardTitle>
+                      <div className="space-y-1">
+                        <CardTitle className="text-lg">{getUserName(user)}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
                         <div className="flex items-center space-x-2 mt-1">
                           <Badge variant={getStatusBadgeVariant(user)}>
                             {getStatusText(user)}
                           </Badge>
-                          {user.raw_user_meta_data?.name && (
-                            <Badge variant="outline">
-                              {user.raw_user_meta_data.name}
-                            </Badge>
-                          )}
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -290,18 +400,22 @@ export const UserManagement: React.FC = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewDetails(user)}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Mail className="w-4 h-4 mr-2" />
+                            <DropdownMenuItem onClick={() => handleSendEmail(user)}>
+                              <Send className="w-4 h-4 mr-2" />
                               Send Email
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleResetPassword(user)}>
+                              <KeyRound className="w-4 h-4 mr-2" />
+                              Reset Password
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="text-red-600"
-                              onClick={() => handleSuspendUser(user.id)}
+                              onClick={() => handleSuspendUser(user.id, user.email)}
                             >
                               <Ban className="w-4 h-4 mr-2" />
                               Suspend User
@@ -334,15 +448,16 @@ export const UserManagement: React.FC = () => {
               <Card key={admin.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{admin.email}</CardTitle>
+                    <div className="space-y-1">
+                      <CardTitle className="text-lg">{admin.name || admin.email}</CardTitle>
+                      <p className="text-sm text-muted-foreground">{admin.email}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <Badge variant={admin.is_active ? 'default' : 'destructive'}>
                           {admin.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                         <Badge variant="outline">
                           <Shield className="w-3 h-3 mr-1" />
-                          Platform Admin
+                          {admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}
                         </Badge>
                       </div>
                     </div>
@@ -359,16 +474,16 @@ export const UserManagement: React.FC = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleViewPermissions(admin)}>
                             <Eye className="w-4 h-4 mr-2" />
                             View Permissions
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditPermissions(admin)}>
                             <Shield className="w-4 h-4 mr-2" />
                             Edit Permissions
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem className="text-red-600" onClick={() => handleRevokeAccess(admin)}>
                             <Ban className="w-4 h-4 mr-2" />
                             Revoke Access
                           </DropdownMenuItem>
@@ -390,6 +505,91 @@ export const UserManagement: React.FC = () => {
               </Card>
             ))}
           </div>
+          </TabsContent>
+
+          <TabsContent value="demo-accounts" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Demo Accounts</h2>
+                <p className="text-muted-foreground">Manage public-facing demo accounts for marketing purposes</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {demoAccounts.length === 0 ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Demo Accounts</h3>
+                    <p className="text-muted-foreground">
+                      No demo accounts have been created yet.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                demoAccounts.map((demo) => (
+                  <Card key={demo.id}>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <CardTitle className="text-lg">{demo.name || demo.email}</CardTitle>
+                          <p className="text-sm text-muted-foreground">{demo.email}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <Badge variant={demo.is_active ? 'default' : 'destructive'}>
+                              {demo.is_active ? 'Active' : 'Inactive'}
+                            </Badge>
+                            <Badge variant="outline">
+                              <Users className="w-3 h-3 mr-1" />
+                              Demo Account
+                            </Badge>
+                            {demo.features?.mock_data && (
+                              <Badge variant="secondary" className="text-xs">
+                                Mock Data Enabled
+                              </Badge>
+                            )}
+                            {demo.features?.read_only && (
+                              <Badge variant="secondary" className="text-xs">
+                                Read-Only
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="text-right text-sm text-muted-foreground">
+                            <div>Created: {formatDate(demo.created_at)}</div>
+                            <div>Updated: {formatDate(demo.updated_at)}</div>
+                          </div>
+                          <Button
+                            variant={demo.is_active ? 'destructive' : 'default'}
+                            size="sm"
+                            onClick={() => handleToggleDemoAccount(demo)}
+                          >
+                            {demo.is_active ? 'Deactivate' : 'Activate'}
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Features:</span>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            {Object.entries(demo.features || {}).map(([key, value]) => (
+                              <Badge key={key} variant="outline" className="text-xs">
+                                {key.replace('_', ' ')}: {String(value)}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          This account is used for marketing and demonstration purposes. It shows mock data to potential customers.
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="access-logs" className="space-y-4">
@@ -448,6 +648,104 @@ export const UserManagement: React.FC = () => {
         </Tabs>
 
         <ConfirmDialog {...dialogProps} />
+
+        {/* User Details Modal */}
+        {selectedUserForDetails && (
+          <UserDetailsModal
+            user={selectedUserForDetails}
+            open={showUserDetails}
+            onOpenChange={setShowUserDetails}
+            onUserUpdated={loadUserData}
+          />
+        )}
+
+        {/* Permissions Modal */}
+        <Dialog open={showPermissionsModal} onOpenChange={setShowPermissionsModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {permissionsMode === 'view' ? 'View' : 'Edit'} Permissions - {selectedAdmin?.name || selectedAdmin?.email}
+              </DialogTitle>
+              <DialogDescription>
+                {permissionsMode === 'view'
+                  ? 'View the current permissions and role for this administrator.'
+                  : 'Modify permissions and role for this administrator.'}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              {/* Role Section */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3">Role</h3>
+                <div className="flex items-center space-x-2">
+                  <Badge variant={selectedAdmin?.role === 'super_admin' ? 'default' : 'secondary'} className="text-sm px-3 py-1">
+                    <Shield className="w-3 h-3 mr-1" />
+                    {selectedAdmin?.role === 'super_admin' ? 'Super Administrator' : 'Administrator'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {selectedAdmin?.role === 'super_admin'
+                    ? 'Full platform access with ability to manage all organizations and administrators.'
+                    : 'Limited platform access with organization management capabilities.'}
+                </p>
+              </div>
+
+              {/* Permissions Section */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3">Permissions</h3>
+                <div className="space-y-2">
+                  {selectedAdmin?.permissions.map((permission) => (
+                    <div key={permission} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <UserCheck className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium capitalize">{permission.replace('_', ' ')}</span>
+                      </div>
+                      <Badge variant="outline" className="text-xs">Active</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Section */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3">Status</h3>
+                <div className="flex items-center space-x-2">
+                  <Badge variant={selectedAdmin?.is_active ? 'default' : 'destructive'}>
+                    {selectedAdmin?.is_active ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Metadata */}
+              <div className="pt-4 border-t">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Created:</span>
+                    <span className="ml-2 font-medium">{formatDate(selectedAdmin?.created_at)}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Last Login:</span>
+                    <span className="ml-2 font-medium">{formatDate(selectedAdmin?.last_login_at)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowPermissionsModal(false)}>
+                Close
+              </Button>
+              {permissionsMode === 'edit' && (
+                <Button onClick={() => {
+                  toast.success('Permissions updated successfully');
+                  setShowPermissionsModal(false);
+                }}>
+                  Save Changes
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

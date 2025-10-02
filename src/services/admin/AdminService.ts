@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseUrl } from '@/lib/supabase';
 import { AuditLogger } from './AuditLogger';
 import { Standard } from '@/types';
 
@@ -48,11 +48,11 @@ export class AdminService {
   // Test database connection and table existence
   private async testTableExists(tableName: string): Promise<boolean> {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from(tableName)
         .select('*')
         .limit(1);
-      
+
       return !error;
     } catch (error) {
       return false;
@@ -106,15 +106,15 @@ export class AdminService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    let userId: string;
+    let userId: string | undefined;
     try {
       const { data: { user } } = await supabase.auth.getUser();
       userId = user?.id;
     } catch (authError) {
       console.warn('Auth error, using demo user:', authError);
-      userId = null;
+      userId = undefined;
     }
-    
+
     if (!userId) {
       const storedUser = localStorage.getItem('demo_user');
       if (storedUser || import.meta.env.DEV) {
@@ -124,23 +124,29 @@ export class AdminService {
       }
     }
 
+    const insertData = {
+      email: invitationData.email,
+      role_id: invitationData.role_id,
+      organization_id: invitationData.organization_id,
+      token: token,
+      invited_by: userId,
+      expires_at: expiresAt.toISOString(),
+      metadata: invitationData.metadata || {}
+    };
+
     const { data: invitation, error } = await supabase
       .from('user_invitations')
-      .insert([{
-        email: invitationData.email,
-        role_id: invitationData.role_id,
-        organization_id: invitationData.organization_id,
-        token: token,
-        invited_by: userId,
-        expires_at: expiresAt.toISOString(),
-        metadata: invitationData.metadata || {}
-      }])
+      .insert(insertData as any)
       .select()
-      .single();
+      .single() as { data: any; error: any };
 
     if (error) {
       console.error('Database error creating custom invitation:', error);
       throw error;
+    }
+
+    if (!invitation) {
+      throw new Error('Failed to create invitation');
     }
 
     // Send custom invitation email (non-blocking)
@@ -183,26 +189,26 @@ export class AdminService {
       }
       
       // Get organization details
-      const { data: org } = await supabase
+      const { data: org } = await (supabase
         .from('organizations')
         .select('name')
         .eq('id', invitation.organization_id)
-        .single();
+        .single() as any);
 
       // Get role details from role_id
       let roleName = 'User';
       if (invitation.role_id) {
-        const { data: roleData } = await supabase
+        const { data: roleData } = await (supabase
           .from('user_roles')
           .select('display_name')
           .eq('id', invitation.role_id)
-          .single();
-        roleName = roleData?.display_name || 'User';
+          .single() as any);
+        roleName = roleData && roleData.display_name ? roleData.display_name : 'User';
       }
-      
+
       const result = await emailService.sendInvitationEmail({
         email: invitation.email,
-        organization_name: org?.name || 'Unknown Organization',
+        organization_name: org && org.name ? org.name : 'Unknown Organization',
         inviter_name: inviterName,
         invitation_token: invitation.token,
         role_name: roleName,
@@ -227,7 +233,7 @@ export class AdminService {
   // ORGANIZATIONS MANAGEMENT
   // ============================================================================
 
-  async getOrganizations() {
+  async getOrganizations(): Promise<any[]> {
     try {
       const accessMap = await this.getTableAccessMap();
       
@@ -292,34 +298,36 @@ export class AdminService {
       }
 
       // Now fetch user emails from auth.users and roles separately
-      const userIds = orgUsers.map(u => u.user_id).filter(Boolean);
-      const roleIds = orgUsers.map(u => u.role_id).filter(Boolean);
+      const userIds = orgUsers.map((u: any) => u.user_id).filter(Boolean);
+      const roleIds = orgUsers.map((u: any) => u.role_id).filter(Boolean);
 
       // Get user emails from auth.users
       const { data: authUsers } = await supabase.auth.admin.listUsers();
-      const userEmails = new Map();
+      const userEmails = new Map<string, string>();
       authUsers?.users?.forEach(user => {
-        userEmails.set(user.id, user.email);
+        if (user.id && user.email) {
+          userEmails.set(user.id, user.email);
+        }
       });
 
       // Get roles
-      const { data: roles } = await supabase
+      const { data: roles } = await (supabase
         .from('user_roles')
         .select('id, name, display_name, permissions')
-        .in('id', roleIds);
+        .in('id', roleIds) as any);
 
-      const rolesMap = new Map();
-      roles?.forEach(role => {
+      const rolesMap = new Map<string, any>();
+      roles?.forEach((role: any) => {
         rolesMap.set(role.id, role);
       });
 
-      return orgUsers.map(user => ({
+      return orgUsers.map((user: any) => ({
         id: user.id,
         user_email: userEmails.get(user.user_id) || 'unknown@email.com',
-        role: rolesMap.get(user.role_id) || { 
-          name: 'viewer', 
-          display_name: 'Viewer', 
-          permissions: ['read'] 
+        role: rolesMap.get(user.role_id) || {
+          name: 'viewer',
+          display_name: 'Viewer',
+          permissions: ['read']
         },
         status: user.status,
         created_at: user.created_at
@@ -353,22 +361,15 @@ export class AdminService {
   async getStandards(includeRequirementCount = true) {
     try {
       console.log('🔍 AdminService.getStandards() called');
-      const accessMap = await this.getTableAccessMap();
-      console.log('📊 Table access map:', accessMap);
 
-      if (!accessMap['standards_library']) {
-        console.warn('⚠️ standards table not accessible in access map');
-        return [];
-      }
-
-      console.log('✅ standards table is accessible, fetching data...');
+      // Try to fetch standards directly - if RLS blocks it, we'll get an error
       const { data: standards, error } = await supabase
         .from('standards_library')
         .select('*')
         .order('name');
 
       if (error) {
-        console.error('❌ Error fetching standards:', error);
+        console.warn('⚠️ Unable to fetch standards (likely RLS policy):', error.message);
         return [];
       }
 
@@ -377,7 +378,7 @@ export class AdminService {
       
       if (includeRequirementCount && standards) {
         const standardsWithCounts = await Promise.all(
-          standards.map(async (standard) => {
+          standards.map(async (standard: any) => {
             try {
               const { count } = await supabase
                 .from('requirements_library')
@@ -410,17 +411,21 @@ export class AdminService {
   async createStandard(data: StandardCreateData): Promise<Standard> {
     const { data: standard, error } = await supabase
       .from('standards_library')
-      .insert([data])
+      .insert(data as any)
       .select()
-      .single();
+      .single() as { data: any; error: any };
 
     if (error) throw error;
 
-    await this.auditLogger.log('standard_created', 'standards', standard.id, {
+    if (!standard) {
+      throw new Error('Failed to create standard');
+    }
+
+    await this.auditLogger.log('standard_created', 'standards', (standard as any).id, {
       new_values: data
     });
 
-    return standard;
+    return standard as Standard;
   }
 
   async updateStandard(id: string, data: Partial<StandardCreateData>) {
@@ -428,14 +433,14 @@ export class AdminService {
       .from('standards_library')
       .select('*')
       .eq('id', id)
-      .single();
+      .single() as { data: any; error: any };
 
     const { data: standard, error } = await supabase
       .from('standards_library')
-      .update(data)
+      .update(data as any)
       .eq('id', id)
       .select()
-      .single();
+      .single() as { data: any; error: any };
 
     if (error) throw error;
 
@@ -470,7 +475,7 @@ export class AdminService {
   // REQUIREMENTS MANAGEMENT
   // ============================================================================
 
-  async getRequirements(standardId?: string) {
+  async getRequirements(standardId?: string): Promise<any[]> {
     try {
       const accessMap = await this.getTableAccessMap();
       
@@ -508,13 +513,17 @@ export class AdminService {
   async createRequirement(data: RequirementCreateData) {
     const { data: requirement, error } = await supabase
       .from('requirements_library')
-      .insert([data])
+      .insert(data as any)
       .select()
-      .single();
+      .single() as { data: any; error: any };
 
     if (error) throw error;
 
-    await this.auditLogger.log('requirement_created', 'requirements', requirement.id, {
+    if (!requirement) {
+      throw new Error('Failed to create requirement');
+    }
+
+    await this.auditLogger.log('requirement_created', 'requirements', (requirement as any).id, {
       new_values: data
     });
 
@@ -526,14 +535,14 @@ export class AdminService {
       .from('requirements_library')
       .select('*')
       .eq('id', id)
-      .single();
+      .single() as { data: any; error: any };
 
     const { data: requirement, error } = await supabase
       .from('requirements_library')
-      .update(data)
+      .update(data as any)
       .eq('id', id)
       .select()
-      .single();
+      .single() as { data: any; error: any };
 
     if (error) throw error;
 
@@ -624,7 +633,7 @@ export class AdminService {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
       if (accessMap['audit_logs']) {
-        const { count: updateCount } = await supabase
+        const { count: updateCount } = await (supabase as any)
           .from('audit_logs')
           .select('*', { count: 'exact', head: true })
           .gte('created_at', sevenDaysAgo.toISOString());
@@ -673,23 +682,29 @@ export class AdminService {
     company_size?: string;
   }) {
     try {
+      const insertData = {
+        name: orgData.name,
+        slug: orgData.slug,
+        subscription_tier: orgData.subscription_tier,
+        industry: orgData.industry,
+        company_size: orgData.company_size
+      };
+
       const { data: newOrg, error } = await supabase
         .from('organizations')
-        .insert([{
-          name: orgData.name,
-          slug: orgData.slug,
-          subscription_tier: orgData.subscription_tier,
-          industry: orgData.industry,
-          company_size: orgData.company_size
-        }])
+        .insert(insertData as any)
         .select()
-        .single();
+        .single() as { data: any; error: any };
 
       if (error) {
         throw error;
       }
 
-      await this.auditLogger.log('organization_created', 'organizations', newOrg.id, {
+      if (!newOrg) {
+        throw new Error('Failed to create organization');
+      }
+
+      await this.auditLogger.log('organization_created', 'organizations', (newOrg as any).id, {
         new_values: orgData
       });
 
@@ -710,10 +725,10 @@ export class AdminService {
     try {
       const { data: updatedOrg, error } = await supabase
         .from('organizations')
-        .update(updates)
+        .update(updates as any)
         .eq('id', organizationId)
         .select()
-        .single();
+        .single() as { data: any; error: any };
 
       if (error) {
         throw error;
@@ -767,10 +782,10 @@ export class AdminService {
     try {
       const { data: updatedOrg, error } = await supabase
         .from('organizations')
-        .update({ is_active: isActive })
+        .update({ is_active: isActive } as any)
         .eq('id', organizationId)
         .select()
-        .single();
+        .single() as { data: any; error: any };
 
       if (error) {
         throw error;
@@ -791,9 +806,9 @@ export class AdminService {
     try {
       const { error } = await supabase
         .from('organization_users')
-        .update({ status: 'inactive' })
+        .update({ status: 'inactive' } as any)
         .eq('organization_id', organizationId)
-        .eq('user_id', userId);
+        .eq('user_id', userId) as { data: any; error: any };
 
       if (error) {
         throw error;
@@ -812,40 +827,403 @@ export class AdminService {
 
   async getAllUsers() {
     try {
-      // Get all users from Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
-
-      if (authError) {
-        console.error('Error fetching users from auth:', authError);
-        throw authError;
+      // Call admin-users Edge Function to get all users with proper auth
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        throw new Error('No active session');
       }
 
-      const users = authData?.users || [];
+      const url = `${supabaseUrl}/functions/v1/admin-users`;
+      console.log('🔍 Fetching users from:', url);
+      console.log('🔑 Using token:', session.session.access_token.substring(0, 20) + '...');
+      console.log('🌐 Supabase URL from env:', supabaseUrl);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Error response:', errorText);
+        throw new Error(`Failed to fetch users: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Received users data:', data);
 
       // Return users in a format compatible with the UI
-      return users.map(user => ({
+      return (data.users || []).map((user: any) => ({
         id: user.id,
         email: user.email || '',
         created_at: user.created_at,
         last_sign_in_at: user.last_sign_in_at,
         email_confirmed_at: user.email_confirmed_at,
-        raw_user_meta_data: user.user_metadata
+        raw_user_meta_data: user.user_metadata || {},
+        organization_memberships: user.organization_memberships || []
       }));
     } catch (error) {
-      console.error('Error in getAllUsers:', error);
+      console.error('❌ Error in getAllUsers:', error);
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
+    }
+  }
+
+  async getPlatformAdministrators() {
+    try {
+      const { data, error } = await supabase
+        .from('platform_administrators')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return (data || []).map((admin: any) => ({
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        role: admin.role,
+        is_active: admin.is_active,
+        permissions: [admin.role], // Role as permission
+        created_at: admin.created_at,
+        last_login_at: admin.last_login,
+      }));
+    } catch (error) {
+      console.error('❌ Error fetching platform administrators:', error);
+      throw error;
+    }
+  }
+
+  async getDemoAccounts() {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('demo_accounts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return (data || []).map((demo: any) => ({
+        id: demo.id,
+        user_id: demo.user_id,
+        email: demo.email,
+        name: demo.name,
+        is_active: demo.is_active,
+        features: demo.features,
+        created_at: demo.created_at,
+        updated_at: demo.updated_at,
+      }));
+    } catch (error) {
+      console.error('❌ Error fetching demo accounts:', error);
+      throw error;
+    }
+  }
+
+  async updateDemoAccount(id: string, updates: { is_active?: boolean; features?: any }) {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('demo_accounts')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('❌ Error updating demo account:', error);
+      throw error;
+    }
+  }
+
+  // ============================================================================
+  // USER DETAILS & MANAGEMENT
+  // ============================================================================
+
+  async getUserDetails(userId: string) {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        throw new Error('No active session');
+      }
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/admin-users/${userId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch user details: ${response.status} - ${errorText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('❌ Error fetching user details:', error);
+      throw error;
+    }
+  }
+
+  async getUserMFAFactors(userId: string) {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('auth.mfa_factors')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('❌ Error fetching MFA factors:', error);
+      return [];
+    }
+  }
+
+  async removeMFAFactor(userId: string, factorId: string) {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        throw new Error('No active session');
+      }
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/admin-users`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'remove_mfa',
+            userId: userId,
+            factorId: factorId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to remove MFA factor: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('❌ Error removing MFA factor:', error);
+      throw error;
+    }
+  }
+
+  async sendPasswordReset(email: string) {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        throw new Error('No active session');
+      }
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/admin-users`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'reset_password',
+            email: email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send password reset: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('❌ Error sending password reset:', error);
+      throw error;
+    }
+  }
+
+  async getUserActivityLog(userId: string, limit = 50) {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('user_activity_log')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('❌ Error fetching user activity log:', error);
+      return [];
+    }
+  }
+
+  async logUserActivity(
+    userId: string,
+    activityType: string,
+    metadata: any = {}
+  ) {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const { data: adminUser } = await supabase
+        .from('platform_administrators')
+        .select('id')
+        .eq('email', session?.session?.user?.email)
+        .single();
+
+      await (supabase as any).from('user_activity_log').insert({
+        user_id: userId,
+        activity_type: activityType,
+        performed_by_admin_id: adminUser?.id,
+        metadata,
+        created_at: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('❌ Error logging user activity:', error);
+    }
+  }
+
+  // ============================================================================
+  // SUPPORT TICKETS
+  // ============================================================================
+
+  async getUserSupportTickets(userId: string) {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('support_tickets')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('❌ Error fetching support tickets:', error);
+      return [];
+    }
+  }
+
+  async createSupportTicket(ticketData: {
+    user_id: string;
+    subject: string;
+    description: string;
+    priority?: string;
+    category?: string;
+  }) {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const { data: adminUser } = await supabase
+        .from('platform_administrators')
+        .select('id')
+        .eq('email', session?.session?.user?.email)
+        .single();
+
+      const { data, error } = await (supabase as any)
+        .from('support_tickets')
+        .insert({
+          ...ticketData,
+          created_by_admin_id: adminUser?.id,
+          status: 'open',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('❌ Error creating support ticket:', error);
+      throw error;
+    }
+  }
+
+  async updateSupportTicket(
+    ticketId: string,
+    updates: {
+      status?: string;
+      priority?: string;
+      resolution_notes?: string;
+      assigned_to_admin_id?: string;
+    }
+  ) {
+    try {
+      const updateData: any = {
+        ...updates,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (updates.status === 'resolved' || updates.status === 'closed') {
+        updateData.resolved_at = new Date().toISOString();
+      }
+
+      const { data, error } = await (supabase as any)
+        .from('support_tickets')
+        .update(updateData)
+        .eq('id', ticketId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('❌ Error updating support ticket:', error);
       throw error;
     }
   }
 
   async suspendUser(userId: string, reason: string) {
     try {
-      // Update user status in auth
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
-        ban_duration: '876000h' // 100 years = effectively permanent
-      });
+      // Call admin-users Edge Function to suspend user
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        throw new Error('No active session');
+      }
 
-      if (error) {
-        throw error;
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/admin-users/${userId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${session.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            suspended: true,
+            userData: { suspension_reason: reason }
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to suspend user');
       }
 
       // Log the suspension
@@ -860,7 +1238,7 @@ export class AdminService {
     }
   }
 
-  async getSystemSettings() {
+  async getSystemSettings(): Promise<any[]> {
     try {
       const { data, error } = await supabase
         .from('system_settings')
@@ -883,10 +1261,10 @@ export class AdminService {
     try {
       const { data, error } = await supabase
         .from('system_settings')
-        .update({ value, updated_at: new Date().toISOString() })
+        .update({ value, updated_at: new Date().toISOString() } as any)
         .eq('id', settingId)
         .select()
-        .single();
+        .single() as { data: any; error: any };
 
       if (error) {
         console.error('Error updating system setting:', error);
