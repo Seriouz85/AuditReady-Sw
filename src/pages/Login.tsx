@@ -63,16 +63,12 @@ const Login = () => {
     // Load remembered credentials if they exist
     const loadRememberedCredentials = () => {
       const rememberedEmail = localStorage.getItem('auditready_remember_email');
-      const rememberedPassword = localStorage.getItem('auditready_remember_password');
       const isRemembered = localStorage.getItem('auditready_remember_me') === 'true';
 
       if (isRemembered && rememberedEmail) {
         setEmail(rememberedEmail);
         setRememberMe(true);
-        // Only load password if it exists (for demo purposes)
-        if (rememberedPassword) {
-          setPassword(rememberedPassword);
-        }
+        // 🔒 SECURITY FIX (Issue #1): Never store passwords in localStorage, even for demo
       }
     };
 
@@ -105,13 +101,11 @@ const Login = () => {
     if (rememberMe) {
       localStorage.setItem('auditready_remember_me', 'true');
       localStorage.setItem('auditready_remember_email', email);
-      // Only save password for demo credentials for convenience
-      if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-        localStorage.setItem('auditready_remember_password', password);
-      }
+      // 🔒 SECURITY FIX (Issue #1): Never store passwords - only email
     } else {
       localStorage.removeItem('auditready_remember_me');
       localStorage.removeItem('auditready_remember_email');
+      // Clean up any legacy password storage
       localStorage.removeItem('auditready_remember_password');
     }
   };

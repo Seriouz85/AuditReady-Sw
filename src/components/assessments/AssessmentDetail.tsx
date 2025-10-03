@@ -171,20 +171,14 @@ export function AssessmentDetail({
   // Sort requirements within each standard group by control_id/section for proper ordering
   Object.keys(groupedFilteredRequirements).forEach(standardId => {
     console.log(`🔄 SORTING STANDARD: ${standardId} with ${groupedFilteredRequirements[standardId]?.length} requirements`);
-    
+
     // Log the requirements before sorting for all frameworks (debug)
-    console.log(`📋 STANDARD ${standardId.substring(0, 8)}... REQUIREMENTS BEFORE SORTING:`, 
+    console.log(`📋 STANDARD ${standardId.substring(0, 8)}... REQUIREMENTS BEFORE SORTING:`,
       groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
     );
-    
-    // Trust database ordering for simple numerical patterns (4.1, 4.2, etc.)
-    const needsCustomSort = groupedFilteredRequirements[standardId]?.some(req => {
-      const code = req.control_id || req.code || '';
-      return code.includes('Article') || code.includes('Requirement') || code.match(/[A-Z]\./);
-    });
 
-    if (needsCustomSort) {
-      groupedFilteredRequirements[standardId]?.sort((a, b) => {
+    // ALWAYS sort numerically - don't trust database order for requirements
+    groupedFilteredRequirements[standardId]?.sort((a, b) => {
       // First sort by section, then by control ID or name
       const sectionCompare = (a.section || '').localeCompare(b.section || '');
       if (sectionCompare !== 0) return sectionCompare;
@@ -296,12 +290,8 @@ export function AssessmentDetail({
       
       // Fallback: Use standard numeric-aware sorting for all other cases
       return aId.localeCompare(bId, undefined, { numeric: true });
-      });
-    } else {
-      // Trust database ordering for simple numerical codes (like 4.1, 4.2, 5.1, 6.1.1)
-      console.log(`🎯 TRUSTING DATABASE ORDER for standard ${standardId.substring(0, 8)}...`);
-    }
-    
+    });
+
     // Log the requirements after sorting for all frameworks (debug purposes)
     console.log(`✅ STANDARD ${standardId.substring(0, 8)}... REQUIREMENTS AFTER SORTING:`, 
       groupedFilteredRequirements[standardId]?.map(r => ({ code: r.code, name: r.name }))
@@ -1205,15 +1195,23 @@ export function AssessmentDetail({
 
                   <div className="space-y-2">
                     <Label htmlFor="assessmentNotes">{t('assessment.notes.title')}</Label>
-                    <Textarea 
-                      id="assessmentNotes" 
+                    <Textarea
+                      id="assessmentNotes"
                       placeholder={t('assessment.notes.placeholder')}
                       value={localAssessment.notes || ''}
                       rows={6}
                       disabled={readOnly || isCompleted}
                       onChange={(e) => {
-                        updateAssessment({ notes: e.target.value });
+                        // 🔇 FIX TOAST SPAM: Update local state immediately for responsive UI
+                        // but defer database save and toast to auto-save mechanism
+                        const newValue = e.target.value;
+                        setLocalAssessment(prev => ({
+                          ...prev,
+                          notes: newValue,
+                          updatedAt: new Date().toISOString()
+                        }));
                         setHasChanges(true);
+                        // Auto-save will handle the actual database update silently
                       }}
                     />
                   </div>

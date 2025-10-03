@@ -70,12 +70,14 @@ export class AssessmentProgressService {
         import.meta.env.VITE_SUPABASE_ANON_KEY || ''
       );
       
+      // Note: PostgreSQL order by control_id does alphabetical sort (6.1.1 before 4.1)
+      // The AssessmentDetail component handles proper numeric sorting client-side
+      // We fetch all requirements here and let the UI sort them correctly
       const { data, error } = await publicSupabase
         .from('requirements_library')
         .select('*')
         .in('standard_id', assessment.standardIds)
-        .eq('is_active', true)
-        .order('control_id');
+        .eq('is_active', true);
 
       if (error) {
         console.error('Database error, falling back to mock data:', error);

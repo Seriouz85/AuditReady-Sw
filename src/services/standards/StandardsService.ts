@@ -392,6 +392,53 @@ export class StandardsService {
     }
   }
 
+  // 🔒 SECURITY FIX (Issue #16): Check for dependencies before deletion
+  async checkStandardDependencies(standardId: string): Promise<{
+    hasAssessments: boolean;
+    hasRequirements: boolean;
+    assessmentCount: number;
+    requirementCount: number;
+  }> {
+    try {
+      // Check for assessments using this standard
+      const { count: assessmentCount, error: assessmentError } = await supabase
+        .from('assessments')
+        .select('id', { count: 'exact', head: true })
+        .contains('standard_ids', [standardId]);
+
+      if (assessmentError) {
+        console.error('Error checking assessments:', assessmentError);
+      }
+
+      // Check for requirements linked to this standard
+      const { count: requirementCount, error: requirementError } = await supabase
+        .from('requirements_library')
+        .select('id', { count: 'exact', head: true })
+        .eq('standard_id', standardId)
+        .eq('is_active', true);
+
+      if (requirementError) {
+        console.error('Error checking requirements:', requirementError);
+      }
+
+      return {
+        hasAssessments: (assessmentCount || 0) > 0,
+        hasRequirements: (requirementCount || 0) > 0,
+        assessmentCount: assessmentCount || 0,
+        requirementCount: requirementCount || 0
+      };
+    } catch (error) {
+      console.error('Error checking standard dependencies:', error);
+      // Return safe defaults - assume dependencies exist to prevent accidental deletion
+      return {
+        hasAssessments: true,
+        hasRequirements: true,
+        assessmentCount: 0,
+        requirementCount: 0
+      };
+    }
+  }
+
   // Remove standard from organization
   async removeStandardFromOrganization(
     organizationId: string,
@@ -518,12 +565,18 @@ export const useStandardsService = () => {
     return service.getAvailableStandards();
   };
 
+  const checkStandardDependencies = async (standardId: string) => {
+    // 🔒 SECURITY FIX (Issue #16): Check dependencies before deletion
+    return service.checkStandardDependencies(standardId);
+  };
+
   return {
     getStandards,
     addStandards,
     updateApplicability,
     removeStandard,
-    getAvailableStandards
+    getAvailableStandards,
+    checkStandardDependencies
   };
 };
 

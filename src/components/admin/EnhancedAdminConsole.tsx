@@ -98,150 +98,25 @@ export function EnhancedAdminConsole({ organizationId: _organizationId }: Enhanc
   const loadAdminData = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Load system metrics
-      const demoMetrics: SystemMetrics = {
-        uptime: '15 days, 7 hours',
-        cpuUsage: 34,
-        memoryUsage: 67,
-        diskUsage: 45,
-        activeUsers: 1247,
-        totalOrganizations: 89,
-        totalDocuments: 15420,
-        apiRequests24h: 245890,
-        errorRate: 0.12,
-        responseTime: 145
-      };
-      setMetrics(demoMetrics);
 
-      // Load organizations
-      const demoOrgs: OrganizationSummary[] = [
-        {
-          id: 'org-1',
-          name: 'TechCorp Industries',
-          userCount: 45,
-          documentsCount: 1250,
-          complianceScore: 87,
-          subscriptionTier: 'enterprise',
-          status: 'active',
-          lastActivity: '2 minutes ago',
-          storageUsed: 2.4, // GB
-          apiCalls30d: 45890
-        },
-        {
-          id: 'org-2', 
-          name: 'SecureBank Ltd',
-          userCount: 78,
-          documentsCount: 3420,
-          complianceScore: 94,
-          subscriptionTier: 'enterprise',
-          status: 'active',
-          lastActivity: '5 minutes ago',
-          storageUsed: 8.7,
-          apiCalls30d: 89340
-        },
-        {
-          id: 'org-3',
-          name: 'StartupXYZ',
-          userCount: 12,
-          documentsCount: 340,
-          complianceScore: 65,
-          subscriptionTier: 'professional',
-          status: 'trial',
-          lastActivity: '1 hour ago',
-          storageUsed: 0.8,
-          apiCalls30d: 12450
-        },
-        {
-          id: 'demo-org',
-          name: 'Demo Organization',
-          userCount: 1,
-          documentsCount: 25,
-          complianceScore: 78,
-          subscriptionTier: 'free',
-          status: 'active',
-          lastActivity: 'Just now',
-          storageUsed: 0.1,
-          apiCalls30d: 2340
-        }
-      ];
-      setOrganizations(demoOrgs);
+      // 🔄 REAL DATA - Issue #38 Fix
+      // Load real system metrics from database
+      const { adminService } = await import('@/services/admin/AdminService');
 
-      // Load user activities
-      const demoActivities: UserActivity[] = [
-        {
-          id: 'act-1',
-          userId: 'user-1',
-          userName: 'John Smith',
-          organizationName: 'TechCorp Industries',
-          action: 'Document Upload',
-          resource: 'ISO 27001 Assessment.pdf',
-          timestamp: '2 minutes ago',
-          ipAddress: '192.168.1.100',
-          userAgent: 'Chrome/119.0',
-          success: true
-        },
-        {
-          id: 'act-2',
-          userId: 'user-2',
-          userName: 'Sarah Johnson',
-          organizationName: 'SecureBank Ltd',  
-          action: 'Compliance Report Generated',
-          resource: 'Q1 2025 Compliance Report',
-          timestamp: '5 minutes ago',
-          ipAddress: '10.0.0.45',
-          userAgent: 'Firefox/120.0',
-          success: true
-        },
-        {
-          id: 'act-3',
-          userId: 'demo-user',
-          userName: 'Demo User',
-          organizationName: 'Demo Organization',
-          action: 'Settings Access',
-          resource: 'Data Classification Settings',
-          timestamp: 'Just now',
-          ipAddress: '127.0.0.1',
-          userAgent: 'Chrome/119.0',
-          success: true
-        }
-      ];
-      setUserActivities(demoActivities);
+      const realMetrics = await adminService.getSystemMetrics();
+      setMetrics(realMetrics);
 
-      // Load system alerts
-      const demoAlerts: SystemAlert[] = [
-        {
-          id: 'alert-1',
-          type: 'warning',
-          title: 'High Memory Usage',
-          message: 'Memory usage has exceeded 65% threshold',
-          component: 'Application Server',
-          timestamp: '10 minutes ago',
-          resolved: false,
-          severity: 'medium'
-        },
-        {
-          id: 'alert-2',
-          type: 'info',
-          title: 'Backup Completed',
-          message: 'Daily backup completed successfully',
-          component: 'Backup Service',
-          timestamp: '2 hours ago', 
-          resolved: true,
-          severity: 'low'
-        },
-        {
-          id: 'alert-3',
-          type: 'error',
-          title: 'API Rate Limit Exceeded',
-          message: 'Organization "StartupXYZ" exceeded rate limits',
-          component: 'API Gateway',
-          timestamp: '30 minutes ago',
-          resolved: false,
-          severity: 'high'
-        }
-      ];
-      setSystemAlerts(demoAlerts);
+      // Load real organizations from database
+      const realOrgs = await adminService.getOrganizationsSummary();
+      setOrganizations(realOrgs);
+
+      // Load real user activities from audit logs
+      const realActivities = await adminService.getRecentActivities(10);
+      setActivities(realActivities as any);
+
+      // System alerts would need a dedicated alerts system
+      // For now, keep empty or add placeholder
+      setSystemAlerts([]);
 
     } catch (error) {
       console.error('Error loading admin data:', error);

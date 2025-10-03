@@ -164,9 +164,24 @@ const Requirements = () => {
   const loadRequirements = async () => {
     try {
       setLoading(true);
-      const requirementsData = await requirementsService.getRequirements(
-        standardFilter !== "all" ? standardFilter : undefined
-      );
+
+      // 🔒 VALIDATE UUID FORMAT - Issue #17 Fix (SQL Injection Protection)
+      // Only allow valid UUID format for standard filter to prevent SQL injection via URL parameter
+      const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+      let validatedFilter: string | undefined;
+      if (standardFilter !== "all") {
+        if (!UUID_REGEX.test(standardFilter)) {
+          console.error('🔒 SECURITY: Invalid standard ID format detected:', standardFilter);
+          toast.error('Invalid standard ID format');
+          setStandardFilter("all");
+          validatedFilter = undefined;
+        } else {
+          validatedFilter = standardFilter;
+        }
+      }
+
+      const requirementsData = await requirementsService.getRequirements(validatedFilter);
       setLocalRequirements(requirementsData);
 
       if (requirementsData.length === 0 && !isDemo) {
@@ -425,7 +440,20 @@ const Requirements = () => {
               <div className="text-sm text-muted-foreground" aria-live="polite">
                 Last updated: {new Date(selectedRequirement.updatedAt).toLocaleString()}
               </div>
-              <Button size="sm" className="flex items-center gap-1.5" aria-label="Save changes (Ctrl+S or Cmd+S)">
+              <Button
+                size="sm"
+                className="flex items-center gap-1.5"
+                aria-label="Save changes (Ctrl+S or Cmd+S)"
+                onClick={() => {
+                  // Trigger save on the RequirementDetail component
+                  // The keyboard shortcut (Ctrl+S) already works via useEffect in RequirementDetail
+                  // This button provides a clickable alternative
+                  const saveButton = document.querySelector('[data-save-all-button]') as HTMLButtonElement;
+                  if (saveButton) {
+                    saveButton.click();
+                  }
+                }}
+              >
                 <Save size={14} className="mr-1" aria-hidden="true" />
                 Save
                 <span className="text-[11px] px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 ml-1.5 border border-gray-400 dark:border-gray-600 font-semibold text-gray-800 dark:text-gray-200 shadow-sm">

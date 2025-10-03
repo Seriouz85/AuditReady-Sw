@@ -95,12 +95,26 @@ const Standards = () => {
   };
 
   const handleApplicabilityChange = async (standardId: string, isApplicable: boolean) => {
+    // 🔒 RBAC CHECK - Issue #15 Fix
+    // Only admins and compliance managers can change standard applicability
+    const allowedRoles = ['admin', 'compliance_manager', 'owner'];
+    const userRoleName = userRole?.name?.toLowerCase();
+
+    if (!isPlatformAdmin && !allowedRoles.includes(userRoleName || '')) {
+      toast.error('Insufficient permissions. Only admins can change standard applicability.');
+      console.warn('RBAC: User attempted to change standard applicability without permission', {
+        userRole: userRoleName,
+        requiredRoles: allowedRoles
+      });
+      return;
+    }
+
     try {
       const result = await standardsService.updateApplicability(standardId, isApplicable);
       if (result.success) {
         // Update local state
-        setLocalStandards(prev => prev.map(std => 
-          std.id === standardId 
+        setLocalStandards(prev => prev.map(std =>
+          std.id === standardId
             ? { ...std, isApplicable }
             : std
         ));
@@ -126,6 +140,21 @@ const Standards = () => {
     if (!standardToRemove) return;
 
     try {
+      // 🔒 SECURITY FIX (Issue #16): Check for dependencies before deletion
+      const dependencies = await standardsService.checkStandardDependencies(standardToRemove.id);
+
+      if (dependencies.hasAssessments || dependencies.hasRequirements) {
+        const warningMessage = `⚠️ This standard has ${dependencies.requirementCount || 0} requirements${
+          dependencies.hasAssessments ? ` and ${dependencies.assessmentCount || 0} active assessment(s)` : ''
+        }. Deleting it will break compliance tracking and orphan related data. This action cannot be undone.`;
+
+        toast.error(warningMessage, { duration: 8000 });
+        console.warn('Deletion blocked - standard has dependencies:', dependencies);
+        setIsRemoveDialogOpen(false);
+        setStandardToRemove(null);
+        return;
+      }
+
       const result = await standardsService.removeStandard(standardToRemove.id);
       if (result.success) {
         // Update local state

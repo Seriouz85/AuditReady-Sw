@@ -18,7 +18,7 @@ interface UseAssessmentDataReturn {
   activeStandardId: string | undefined;
   setActiveStandardId: (id: string | undefined) => void;
   updateRequirementStatus: (reqId: string, newStatus: RequirementStatus) => Promise<void>;
-  updateAssessment: (updates: Partial<Assessment>) => Promise<void>;
+  updateAssessment: (updates: Partial<Assessment>, silent?: boolean) => Promise<void>;
   groupRequirementsBySection: () => Record<string, Requirement[]>;
   syncStatus: SyncStatus;
   retryFailedSync: () => Promise<void>;
@@ -226,7 +226,7 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
   }, [assessment.id, assessmentRequirements, pendingOperations.size]);
   
   // Update assessment data with database persistence
-  const updateAssessment = useCallback(async (updates: Partial<Assessment>) => {
+  const updateAssessment = useCallback(async (updates: Partial<Assessment>, silent: boolean = false) => {
     try {
       setSyncStatus(prev => ({ ...prev, isSyncing: true, syncError: null }));
 
@@ -251,7 +251,10 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
           syncError: null,
           isSyncing: false
         }));
-        toast.success('Assessment updated');
+        // 🔇 FIX TOAST SPAM: Only show toast if not silent (e.g., manual save button)
+        if (!silent) {
+          toast.success('Assessment updated');
+        }
       } else {
         // Revert on failure
         setAssessment(previousAssessment);
@@ -261,6 +264,7 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
           hasPendingChanges: true,
           isSyncing: false
         }));
+        // Always show errors
         toast.error(`Failed to update assessment: ${result.error}`);
       }
 
@@ -272,6 +276,7 @@ export function useAssessmentData(initialAssessment: Assessment): UseAssessmentD
         hasPendingChanges: true,
         isSyncing: false
       }));
+      // Always show errors
       toast.error('Failed to update assessment');
     }
   }, [assessment]);

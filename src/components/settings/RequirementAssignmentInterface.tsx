@@ -42,90 +42,47 @@ export const RequirementAssignmentInterface = ({ users, isDemo }: RequirementAss
   const loadRequirements = async () => {
     try {
       setLoading(true);
-      if (isDemo) {
-        // Use mock data for demo - load organization-specific requirements
-        const mockRequirements = await requirementAssignmentService.getOrganizationRequirements('demo-org-1');
-        
-        // Convert to the expected format for the UI
-        const formattedRequirements = mockRequirements.map(req => ({
-          id: req.id,
-          code: req.code,
-          name: req.name,
-          standardId: req.standardId,
-          standardName: getStandardName(req.standardId),
-          tags: req.tags || [],
-          status: req.status
-        }));
-        
-        setRequirements([
-          ...formattedRequirements,
-          // Add some additional demo requirements
-          {
-            id: 'req-demo-1',
-            code: 'A.5.1',
-            name: 'Policies for information security',
-            standardId: 'iso-27002-2022',
-            standardName: 'ISO 27002:2022',
-            tags: ['tag-organizational', 'tag-organization'],
-            status: 'not-fulfilled'
-          },
-          {
-            id: 'req-demo-2',
-            code: 'A.6.1',
-            name: 'Screening',
-            standardId: 'iso-27002-2022',
-            standardName: 'ISO 27002:2022',
-            tags: ['tag-awareness', 'tag-organization'],
-            status: 'not-fulfilled'
-          },
-          {
-            id: 'req-3',
-            code: 'A.8.1',
-            name: 'User end point devices',
-            standardId: 'iso-27002-2022',
-            standardName: 'ISO 27002:2022',
-            tags: ['tag-endpoint', 'tag-device'],
-            status: 'partially-fulfilled'
-          },
-          {
-            id: 'req-4',
-            code: '1.1',
-            name: 'Establish and Maintain Detailed Enterprise Asset Inventory',
-            standardId: 'cis-ig1',
-            standardName: 'CIS Controls IG1',
-            tags: ['tag-assets', 'tag-organization'],
-            status: 'not-fulfilled'
-          },
-          {
-            id: 'req-5',
-            code: '2.1',
-            name: 'Establish and Maintain a Software Inventory',
-            standardId: 'cis-ig1',
-            standardName: 'CIS Controls IG1',
-            tags: ['tag-assets', 'tag-device'],
-            status: 'fulfilled'
-          },
-          {
-            id: 'req-6',
-            code: 'A.7.1',
-            name: 'Physical security perimeters',
-            standardId: 'iso-27002-2022',
-            standardName: 'ISO 27002:2022',
-            tags: ['tag-physical', 'tag-organization'],
-            status: 'not-fulfilled'
-          }
-        ]);
-      } else {
-        const data = await requirementsService.getOrganizationRequirements();
-        setRequirements(data);
-      }
+      // 🔄 REAL DATA FOR ALL USERS (including demo) - User requested database loading
+      const data = await requirementsService.getOrganizationRequirements();
+
+      // Format the data consistently
+      const formattedRequirements = data.map(req => ({
+        id: req.id,
+        code: req.code || req.control_id,
+        name: req.name || req.title,
+        standardId: req.standardId || req.standard_id,
+        standardName: getStandardName(req.standardId || req.standard_id),
+        tags: req.tags || req.categories || [],
+        status: req.status || 'not-fulfilled'
+      }));
+
+      setRequirements(formattedRequirements);
     } catch (error) {
       console.error('Error loading requirements:', error);
-      toast.error("Failed to load requirements");
+
+      // Fallback to empty state instead of hardcoded mock data
+      setRequirements([]);
+      toast.error("Failed to load requirements from database");
     } finally {
       setLoading(false);
     }
   };
+
+  // Helper function to get standard name from ID
+  const getStandardName = (standardId: string): string => {
+    // This could be enhanced to fetch from standards table
+    const standardNames: Record<string, string> = {
+      'iso-27002-2022': 'ISO 27002:2022',
+      'iso-27001-2022': 'ISO/IEC 27001:2022',
+      'cis-ig1': 'CIS Controls IG1',
+      'cis-ig2': 'CIS Controls IG2',
+      'cis-ig3': 'CIS Controls IG3',
+      'nist-csf': 'NIST Cybersecurity Framework',
+      'soc2': 'SOC 2'
+    };
+    return standardNames[standardId] || standardId;
+  };
+
 
   const getTypeTagName = (tags: string[]) => {
     const typeTagMap: Record<string, string> = {
@@ -182,18 +139,6 @@ export const RequirementAssignmentInterface = ({ users, isDemo }: RequirementAss
     } else {
       setSelectedRequirements(filteredRequirements.map(req => req.id));
     }
-  };
-
-  // Helper function to get standard name
-  const getStandardName = (standardId: string): string => {
-    const standardNames: Record<string, string> = {
-      'iso-27002-2022': 'ISO 27002:2022',
-      'cis-controls-v8': 'CIS Controls v8',
-      'nist-csf': 'NIST Cybersecurity Framework',
-      'gdpr': 'GDPR',
-      'hipaa': 'HIPAA'
-    };
-    return standardNames[standardId] || 'Unknown Standard';
   };
 
   const handleAssign = async () => {
