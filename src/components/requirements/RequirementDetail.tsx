@@ -16,6 +16,8 @@ import { FileText, Link, Save, Plus, X, Flag, Info, Target, Tags } from "lucide-
 import { useTranslation } from "@/lib/i18n";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@/components/ui/dropdown-menu";
+import { AuditReadyGuidanceModal } from "./AuditReadyGuidanceModal";
+import { getStandardName } from "@/utils/standardNames";
 
 interface RequirementDetailProps {
   requirement: Requirement;
@@ -238,25 +240,7 @@ export function RequirementDetail({
             </div>
             <CardTitle>{requirement.name}</CardTitle>
             <CardDescription>
-              {(() => {
-                // Map UUIDs to standard names
-                const standardNames: Record<string, string> = {
-                  '55742f4e-769b-4efe-912c-1371de5e1cd6': 'ISO/IEC 27001 (2022)',
-                  'f4e13e2b-1bcc-4865-913f-084fb5599a00': 'NIS2 Directive (2022)',
-                  '73869227-cd63-47db-9981-c0d633a3d47b': 'GDPR (2018)',
-                  '8508cfb0-3457-4226-b39a-851be52ef7ea': 'ISO/IEC 27002 (2022)',
-                  'afe9728d-2084-4b6b-8653-b04e1e92cdff': 'CIS Controls IG1 (8.1.2)',
-                  '05501cbc-c463-4668-ae84-9acb1a4d5332': 'CIS Controls IG2 (8.1.2)',
-                  '8ed562f0-915c-40ad-851e-27f6bddaa54e': 'NIS2 Directive (2022)',
-                  'b1d9e82f-b0c3-40e2-89d7-4c51e216214e': 'NIST Cybersecurity Framework (1.1)',
-                  // Legacy string IDs for backward compatibility
-                  'cis-ig1': 'CIS Controls IG1 - v8.1',
-                  'cis-ig2': 'CIS Controls IG2 - v8.1',
-                  'cis-ig3': 'CIS Controls IG3 - v8.1'
-                };
-                
-                return standardNames[requirement.standardId] || t(`standard.${requirement.standardId}.name`, 'Unknown Standard');
-              })()}
+              {getStandardName(requirement.standardId, t(`standard.${requirement.standardId}.name`, 'Unknown Standard'))}
             </CardDescription>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -310,110 +294,17 @@ export function RequirementDetail({
         </div>
 
         {/* AuditReady guidance modal */}
-        {showAuditReady && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-            onClick={() => setShowAuditReady(false)}
-          >
-            <div
-              className="bg-white dark:bg-slate-900 p-8 rounded-lg max-w-3xl w-full shadow-lg relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-900 text-xl"
-                onClick={() => setShowAuditReady(false)}
-              >
-                &times;
-              </button>
-              <div className="flex justify-between items-center mb-5">
-                <h3 className="text-xl font-bold text-emerald-700 dark:text-emerald-400">AuditReady guidance</h3>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="px-3 py-1 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
-                  onClick={() => {
-                    // Get bullet points and manually strip any existing dashes or bullet prefixes
-                    const bulletElements = document.querySelectorAll('.prose ul li');
-                    
-                    // Get bullet points and manually strip any existing dashes or bullet prefixes
-                    const bullets = Array.from(bulletElements)
-                      .map(el => {
-                        // Remove any leading dash, bullet, or asterisk with whitespace
-                        const text = el.textContent || '';
-                        return text.replace(/^[-•*]\s+/, '').trim();
-                      })
-                      .filter(text => text.length > 0) // Remove empty lines
-                      .join('\n• '); // Join with bullet points for better readability
-                    
-                    // Format the guidance with just the Implementation section and proper bullet formatting
-                    const formattedGuidance = bullets.length > 0 ? 
-                      `Implementation:\n\n• ${bullets}` : 
-                      'No implementation guidance available.';
-                    
-                    setGuidance(formattedGuidance);
-                    setHasChanges(true);
-                    toast.success("Guidance applied to requirement");
-                    setShowAuditReady(false);
-                  }}
-                >
-                  Apply to Requirement
-                </Button>
-              </div>
-              <div className="prose dark:prose-invert max-w-none max-h-[70vh] overflow-y-auto w-full px-3">
-                {(() => {
-                  const content = requirement.auditReadyGuidance || 'No guidance available.';
-                  
-                  if (!content || content.trim() === '' || content === 'No guidance available.') {
-                    return (
-                      <div className="text-center py-8">
-                        <p className="text-gray-500 dark:text-gray-400">No AuditReady guidance is available for this requirement.</p>
-                      </div>
-                    );
-                  }
-                  
-                  const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                  const implIdx = lines.findIndex(l =>
-                    l.toLowerCase().includes('implementation') ||
-                    l.includes('**Implementation**')
-                  );
-                  const bulletPoints: string[] = [];
-                  if (implIdx >= 0) {
-                    for (let i = implIdx + 1; i < lines.length; i++) {
-                      const line = lines[i].trim();
-                      if (line.length > 0 &&
-                          !line.toLowerCase().includes('implementation') &&
-                          !line.includes('**Implementation**')) {
-                        const cleanedLine = line
-                          .replace(/^[•*]+ */, '')
-                          .replace(/^- */, '')
-                          .trim();
-                        if (cleanedLine && !bulletPoints.includes(cleanedLine)) {
-                          bulletPoints.push(cleanedLine);
-                        }
-                      }
-                    }
-                  }
-                  return (
-                    <>
-                      <div>
-                        <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mb-2">Implementation</h4>
-                        {bulletPoints.length > 0 ? (
-                          <ul className="list-disc pl-6 space-y-3">
-                            {bulletPoints.map((point, idx) => (
-                              <li key={idx} className="text-base">{point}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No implementation details available.</p>
-                        )}
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-        )}
+        <AuditReadyGuidanceModal
+          isOpen={showAuditReady}
+          onClose={() => setShowAuditReady(false)}
+          guidance={requirement.auditReadyGuidance || ''}
+          requirementCode={requirement.code}
+          requirementName={requirement.name}
+          onApplyGuidance={(formattedGuidance) => {
+            setGuidance(formattedGuidance);
+            setHasChanges(true);
+          }}
+        />
 
         <Separator />
 
@@ -644,6 +535,7 @@ export function RequirementDetail({
           className="w-full"
           onClick={handleSaveAll}
           disabled={!hasChanges || (status === 'not-applicable' && justification.trim() === '')}
+          data-save-all-button
         >
           <Save size={16} className="mr-2" />
           {t('requirement.button.saveAllChanges', 'Save All Changes')}

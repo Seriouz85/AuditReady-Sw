@@ -73,144 +73,98 @@ export interface RequirementActivity {
 }
 
 export class RequirementsService {
-  // Validate and log mapping issues for debugging
+  // 🔧 REFACTORED: Simplified category extraction
+  private extractCategoryFromMappings(unifiedMappings: any[]): string {
+    const categoryName = unifiedMappings?.[0]?.unified_requirement?.category?.name;
+    return categoryName || 'General';
+  }
+
   private validateRequirementMappings(
-    requirement: any, 
-    unifiedMappings: any[], 
-    methodName: string
-  ): { isValid: boolean; categoryName: string | null; issues: string[] } {
-    const issues: string[] = [];
-    let categoryName: string | null = null;
-    
-    // Check if requirement has basic data
-    if (!requirement?.id || !requirement?.control_id) {
-      issues.push('Missing basic requirement data (id or control_id)');
-      return { isValid: false, categoryName, issues };
-    }
-    
-    // Check unified mappings structure
-    if (!unifiedMappings || !Array.isArray(unifiedMappings)) {
-      issues.push('unified_mappings is missing or not an array');
-    } else if (unifiedMappings.length === 0) {
-      issues.push('unified_mappings array is empty - requirement not mapped to any unified category');
-    } else {
-      // Validate mapping structure
-      const mapping = unifiedMappings[0];
-      if (!mapping?.unified_requirement) {
-        issues.push('unified_mappings[0] missing unified_requirement reference');
-      } else if (!mapping.unified_requirement.category) {
-        issues.push('unified_mappings[0].unified_requirement missing category reference');
-      } else if (!mapping.unified_requirement.category.name) {
-        issues.push('unified_mappings[0].unified_requirement.category missing name field');
-      } else {
-        categoryName = mapping.unified_requirement.category.name;
-      }
-    }
-    
-    const isValid = issues.length === 0 && categoryName !== null;
-    
-    // Log validation results (only in development)
-    if (import.meta.env.DEV) {
-      if (!isValid) {
-        console.warn(`⚠️ MAPPING VALIDATION [${methodName}]: ${requirement.control_id} - unmapped requirement`);
-      }
-    }
-    
-    return { isValid, categoryName, issues };
+    requirement: any,
+    unifiedMappings: any[]
+  ): { isValid: boolean; categoryName: string } {
+    const categoryName = this.extractCategoryFromMappings(unifiedMappings);
+    const isValid = !!unifiedMappings?.length && categoryName !== 'General';
+
+    return { isValid, categoryName };
   }
 
-  // Diagnose mapping issues for a specific standard
-  async diagnoseMappingIssues(standardId?: string): Promise<{
-    totalRequirements: number;
-    mappedRequirements: number;
-    unmappedRequirements: number;
-    unmappedDetails: Array<{
-      id: string;
-      control_id: string;
-      title: string;
-      standard_id: string;
-      legacy_tags: string[];
-    }>;
-  }> {
-    try {
-      let query = supabase
-        .from('requirements_library')
-        .select(`
-          id,
-          control_id,
-          title,
-          standard_id,
-          tags,
-          unified_mappings:unified_requirement_mappings (
-            unified_requirement:unified_requirements (
-              category:unified_compliance_categories (
-                name
-              )
-            )
-          )
-        `)
-        .eq('is_active', true);
+  // 🔧 REFACTORED: Extracted status validation to reduce duplication
+  private normalizeRequirementStatus(orgStatus: string, requirementTitle?: string): RequirementStatus {
+    const validStatuses: RequirementStatus[] = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
 
-      if (standardId) {
-        query = query.eq('standard_id', standardId);
-      }
+    if (orgStatus && validStatuses.includes(orgStatus as RequirementStatus)) {
+      return orgStatus as RequirementStatus;
+    }
 
-      const { data, error } = await query;
-      
-      if (error) throw error;
-      if (!data) return { totalRequirements: 0, mappedRequirements: 0, unmappedRequirements: 0, unmappedDetails: [] };
+    console.warn('Invalid requirement status:', orgStatus, 'for requirement:', requirementTitle);
 
-      const unmappedDetails = data
-        .filter((req: any) => !req.unified_mappings || req.unified_mappings.length === 0)
-        .map((req: any) => ({
-          id: req.id,
-          control_id: req.control_id,
-          title: req.title,
-          standard_id: req.standard_id,
-          legacy_tags: req.tags || []
-        }));
-
-      const results = {
-        totalRequirements: data.length,
-        mappedRequirements: data.length - unmappedDetails.length,
-        unmappedRequirements: unmappedDetails.length,
-        unmappedDetails
-      };
-
-      console.log('🔍 MAPPING DIAGNOSIS RESULTS:', results);
-      
-      if (unmappedDetails.length > 0) {
-        console.warn('⚠️ UNMAPPED REQUIREMENTS FOUND:');
-        unmappedDetails.forEach(req => {
-          console.warn(`   - ${req.control_id} (${req.standard_id}): ${req.title}`);
-          if (req.legacy_tags.length > 0) {
-            console.warn(`     Legacy tags: ${req.legacy_tags.join(', ')}`);
-          }
-        });
-      }
-
-      return results;
-    } catch (error) {
-      console.error('Error diagnosing mapping issues:', error);
-      return { totalRequirements: 0, mappedRequirements: 0, unmappedRequirements: 0, unmappedDetails: [] };
+    // Map common variations to valid statuses
+    switch (orgStatus?.toLowerCase?.()) {
+      case 'complete':
+      case 'completed':
+      case 'done':
+        return 'fulfilled';
+      case 'partial':
+      case 'partially-complete':
+      case 'in-progress':
+        return 'partially-fulfilled';
+      case 'incomplete':
+      case 'failed':
+      case 'missing':
+        return 'not-fulfilled';
+      case 'na':
+      case 'n/a':
+      case 'exempt':
+        return 'not-applicable';
+      default:
+        return 'not-fulfilled';
     }
   }
+
+  // 🔧 REFACTORED: Extracted shared transformation logic to reduce duplication
+  private processCategoryAndTags(requirement: any, unifiedMappings: any[]): {
+    unifiedCategoryName: string;
+    finalTags: string[];
+    finalCategories: string[];
+  } {
+    const validation = this.validateRequirementMappings(requirement, unifiedMappings);
+
+    let unifiedCategoryName = validation.categoryName || requirement['category'] || 'General';
+    const categoryNames = validation.categoryName ? [validation.categoryName] : [];
+
+    let finalTags = requirement['tags'] || [];
+    let finalCategories = categoryNames;
+
+    // Handle validation failures gracefully
+    if (!validation.isValid && finalCategories.length === 0) {
+      console.warn(`⚠️ FALLBACK: Using 'General' category for unmapped requirement ${requirement['control_id']}`);
+      finalCategories = ['General'];
+      unifiedCategoryName = 'General';
+    }
+
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`📋 REQUIREMENT PROCESSED: ${requirement['control_id']} (${requirement['standard_id']})`, {
+        requirementId: requirement['id'],
+        validationResult: validation,
+        finalCategories,
+        needsDatabaseFix: !validation.isValid
+      });
+    }
+
+    return { unifiedCategoryName, finalTags, finalCategories };
+  }
+
+  // 🔧 REFACTORED: Removed diagnoseMappingIssues() - dev-only diagnostic (-75 lines)
 
   // Get organization's requirements with status for a specific standard
   async getOrganizationRequirements(
-    organizationId: string, 
+    organizationId: string,
     standardId?: string
   ): Promise<RequirementWithStatus[]> {
     try {
-      const isDemoOrg = organizationId === '34adc4bb-d1e7-43bd-8249-89c76520533d';
-      let clientToUse = supabase;
-      
-      // For demo org, use main client to avoid multiple client issues
-      if (isDemoOrg) {
-        console.log('Using main supabase client for demo org requirements');
-      }
-
-      let query = clientToUse
+      let query = supabase
         .from('organization_requirements')
         .select(`
           *,
@@ -241,7 +195,7 @@ export class RequirementsService {
       // If standard is specified, filter by standard
       if (standardId) {
         // First get requirement IDs for this standard
-        const { data: standardRequirements } = await clientToUse
+        const { data: standardRequirements } = await supabase
           .from('requirements_library')
           .select('id')
           .eq('standard_id', standardId);
@@ -272,77 +226,21 @@ export class RequirementsService {
       }
 
       return data.map(orgReq => {
-        // Validate and normalize status value
-        const validStatuses: RequirementStatus[] = ['fulfilled', 'partially-fulfilled', 'not-fulfilled', 'not-applicable'];
-        let status: RequirementStatus = 'not-fulfilled';
-        
-        const orgStatus = (orgReq as any)['status'];
-        if (orgStatus && validStatuses.includes(orgStatus as RequirementStatus)) {
-          status = orgStatus as RequirementStatus;
-        } else {
-          console.warn('Invalid requirement status:', orgStatus, 'for requirement:', (orgReq as any)['requirement']?.['title']);
-          // Map common variations to valid statuses
-          switch (orgStatus?.toLowerCase?.()) {
-            case 'complete':
-            case 'completed':
-            case 'done':
-              status = 'fulfilled';
-              break;
-            case 'partial':
-            case 'partially-complete':
-            case 'in-progress':
-              status = 'partially-fulfilled';
-              break;
-            case 'incomplete':
-            case 'failed':
-            case 'missing':
-              status = 'not-fulfilled';
-              break;
-            case 'na':
-            case 'n/a':
-            case 'exempt':
-              status = 'not-applicable';
-              break;
-            default:
-              status = 'not-fulfilled';
-          }
-        }
-
-        // Safely access requirement data
         const requirement = (orgReq as any)['requirement'];
         if (!requirement) {
           console.warn('No requirement data found for organization requirement');
           return null;
         }
 
-        // Use validation function to check database mappings
+        // Validate and normalize status value
+        const status = this.normalizeRequirementStatus(
+          (orgReq as any)['status'],
+          requirement['title']
+        );
+
+        // Process categories and tags using shared helper
         const unifiedMappings = requirement['unified_mappings'] || [];
-        const validation = this.validateRequirementMappings(requirement, unifiedMappings, 'getOrganizationRequirements');
-        
-        // Get category from validation result or fallback
-        let unifiedCategoryName = validation.categoryName || requirement['category'] || 'General';
-        const categoryNames = validation.categoryName ? [validation.categoryName] : [];
-
-        // Use database mappings exclusively - no hardcoded overrides
-        let finalTags = requirement['tags'] || [];
-        let finalCategories = categoryNames;
-        
-        // Handle validation failures gracefully
-        if (!validation.isValid && finalCategories.length === 0) {
-          console.warn(`⚠️ FALLBACK: Using 'General' category for unmapped requirement ${requirement['control_id']}`);
-          finalCategories = ['General'];
-          unifiedCategoryName = 'General';
-        }
-
-        // Debug logging for development
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`📋 REQUIREMENT PROCESSED: ${requirement['control_id']} (${requirement['standard_id']})`, {
-            requirementId: requirement['id'],
-            validationResult: validation,
-            finalCategories: finalCategories,
-            needsDatabaseFix: !validation.isValid
-          });
-        }
+        const { unifiedCategoryName, finalTags, finalCategories } = this.processCategoryAndTags(requirement, unifiedMappings);
 
         return {
           id: requirement['id'],
@@ -506,24 +404,9 @@ export class RequirementsService {
       if (!data || data.length === 0) return [];
 
       return data.map(req => {
-        // Use validation function to check database mappings
+        // Process categories and tags using shared helper
         const unifiedMappings = (req as any)['unified_mappings'] || [];
-        const validation = this.validateRequirementMappings(req, unifiedMappings, 'getStandardRequirementsWithDefaultStatus');
-        
-        // Get category from validation result or fallback
-        let unifiedCategoryName = validation.categoryName || (req as any)['category'] || 'General';
-        const categoryNames = validation.categoryName ? [validation.categoryName] : [];
-
-        // Use database mappings exclusively - no hardcoded overrides
-        let finalTags = (req as any)['tags'] || [];
-        let finalCategories = categoryNames;
-        
-        // Handle validation failures gracefully
-        if (!validation.isValid && finalCategories.length === 0) {
-          console.warn(`⚠️ FALLBACK: Using 'General' category for unmapped requirement ${(req as any)['control_id']}`);
-          finalCategories = ['General'];
-          unifiedCategoryName = 'General';
-        }
+        const { unifiedCategoryName, finalTags, finalCategories } = this.processCategoryAndTags(req, unifiedMappings);
 
         return {
           id: (req as any)['id'],
@@ -657,15 +540,12 @@ export const useRequirementsService = () => {
     return service.getStandardRequirements(standardId);
   };
 
-  const diagnoseMappingIssues = async (standardId?: string) => {
-    return service.diagnoseMappingIssues(standardId);
-  };
+  // 🔧 REFACTORED: Removed diagnoseMappingIssues - dev-only diagnostic method
 
   return {
     getRequirements,
     updateRequirement,
-    getStandardRequirements,
-    diagnoseMappingIssues
+    getStandardRequirements
   };
 };
 

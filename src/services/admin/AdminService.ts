@@ -39,49 +39,13 @@ export interface UserInvitationData {
 
 export class AdminService {
   private auditLogger: AuditLogger;
-  private tableAccessMap: Record<string, boolean> | null = null;
 
   constructor() {
     this.auditLogger = new AuditLogger();
   }
-  
-  // Test database connection and table existence
-  private async testTableExists(tableName: string): Promise<boolean> {
-    try {
-      const { error } = await (supabase as any)
-        .from(tableName)
-        .select('*')
-        .limit(1);
 
-      return !error;
-    } catch (error) {
-      return false;
-    }
-  }
-  
-  private async getTableAccessMap(): Promise<Record<string, boolean>> {
-    if (this.tableAccessMap) {
-      return this.tableAccessMap;
-    }
-    
-    const tables = [
-      'organizations',
-      'organization_users',
-      'standards_library',
-      'requirements_library',
-      'assessments',
-      'audit_logs',
-      'platform_administrators'
-    ];
-    
-    this.tableAccessMap = {};
-    
-    for (const table of tables) {
-      this.tableAccessMap[table] = await this.testTableExists(table);
-    }
-    
-    return this.tableAccessMap;
-  }
+  // 🔧 REFACTORED: Removed testTableExists() and getTableAccessMap() - band-aid defensive code
+  // Production database tables always exist - no need for existence checking
 
   // ============================================================================
   // USER INVITATION MANAGEMENT
@@ -106,23 +70,16 @@ export class AdminService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    let userId: string | undefined;
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      userId = user?.id;
-    } catch (authError) {
-      console.warn('Auth error, using demo user:', authError);
-      userId = undefined;
+    // 🔒 REMOVED LOCALSTORAGE AUTH BYPASS - Issue #40 Fix
+    // Proper authentication required - no localStorage fallback
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user?.id) {
+      console.error('🔒 SECURITY: User not authenticated, cannot invite users:', authError);
+      throw new Error('User not authenticated. Please log in again.');
     }
 
-    if (!userId) {
-      const storedUser = localStorage.getItem('demo_user');
-      if (storedUser || import.meta.env.DEV) {
-        userId = '031dbc29-51fd-4135-9582-a9c5b63f7451';
-      } else {
-        throw new Error('User not authenticated and not in demo mode');
-      }
-    }
+    const userId = user.id;
 
     const insertData = {
       email: invitationData.email,
@@ -235,13 +192,7 @@ export class AdminService {
 
   async getOrganizations(): Promise<any[]> {
     try {
-      const accessMap = await this.getTableAccessMap();
-      
-      if (!accessMap['organizations']) {
-        return [];
-      }
-      
-      // Use admin client for platform admin access
+      // 🔧 REFACTORED: Removed table existence check - band-aid code removed
       const { data, error } = await supabase
         .from('organizations')
         .select(`
@@ -477,12 +428,7 @@ export class AdminService {
 
   async getRequirements(standardId?: string): Promise<any[]> {
     try {
-      const accessMap = await this.getTableAccessMap();
-      
-      if (!accessMap['requirements_library']) {
-        return [];
-      }
-      
+      // 🔧 REFACTORED: Removed table existence check - band-aid code removed
       let query = supabase
         .from('requirements_library')
         .select(`
@@ -579,83 +525,42 @@ export class AdminService {
   
   async getPlatformStatistics() {
     try {
-      const accessMap = await this.getTableAccessMap();
-      
-      // Get organizations count
-      let totalOrganizations = 0;
-      if (accessMap['organizations']) {
-        const { count: orgCount } = await supabase
-          .from('organizations')
-          .select('*', { count: 'exact', head: true });
-        totalOrganizations = orgCount || 0;
-      }
-      
-      // Get users count
-      let totalUsers = 0;
-      if (accessMap['organization_users']) {
-        const { count: userCount } = await supabase
-          .from('organization_users')
-          .select('*', { count: 'exact', head: true });
-        totalUsers = userCount || 0;
-      }
-      
-      // Get standards count
-      let totalStandards = 0;
-      if (accessMap['standards_library']) {
-        const { count: standardsCount } = await supabase
-          .from('standards_library')
-          .select('*', { count: 'exact', head: true });
-        totalStandards = standardsCount || 0;
-      }
-      
-      // Get requirements count
-      let totalRequirements = 0;
-      if (accessMap['requirements_library']) {
-        const { count: reqCount } = await supabase
-          .from('requirements_library')
-          .select('*', { count: 'exact', head: true });
-        totalRequirements = reqCount || 0;
-      }
-      
-      // Get active assessments count
-      let activeAssessments = 0;
-      if (accessMap['assessments']) {
-        const { count: assessmentCount } = await supabase
-          .from('assessments')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'in_progress');
-        activeAssessments = assessmentCount || 0;
-      }
-      
-      // Get recent updates (last 7 days)
-      let recentUpdates = 0;
+      // 🔧 REFACTORED: Removed table existence checks - simplified and cleaner
+      const { count: totalOrganizations } = await supabase
+        .from('organizations')
+        .select('*', { count: 'exact', head: true });
+
+      const { count: totalUsers } = await supabase
+        .from('organization_users')
+        .select('*', { count: 'exact', head: true });
+
+      const { count: totalStandards } = await supabase
+        .from('standards_library')
+        .select('*', { count: 'exact', head: true });
+
+      const { count: totalRequirements } = await supabase
+        .from('requirements_library')
+        .select('*', { count: 'exact', head: true });
+
+      const { count: activeAssessments } = await supabase
+        .from('assessments')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'in_progress');
+
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      if (accessMap['audit_logs']) {
-        const { count: updateCount } = await (supabase as any)
-          .from('audit_logs')
-          .select('*', { count: 'exact', head: true })
-          .gte('created_at', sevenDaysAgo.toISOString());
-        recentUpdates = updateCount || 0;
-      }
-      
-      console.log('Platform statistics:', {
-        totalOrganizations,
-        totalUsers,
-        totalStandards,
-        totalRequirements,
-        activeAssessments,
-        recentUpdates
-      });
-      
+      const { count: recentUpdates } = await (supabase as any)
+        .from('audit_logs')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', sevenDaysAgo.toISOString());
+
       return {
-        totalOrganizations,
-        totalUsers,
-        totalStandards,
-        totalRequirements,
-        activeAssessments,
-        recentUpdates
+        totalOrganizations: totalOrganizations || 0,
+        totalUsers: totalUsers || 0,
+        totalStandards: totalStandards || 0,
+        totalRequirements: totalRequirements || 0,
+        activeAssessments: activeAssessments || 0,
+        recentUpdates: recentUpdates || 0
       };
     } catch (error) {
       console.error('Error fetching platform statistics:', error);
@@ -1279,6 +1184,236 @@ export class AdminService {
       return data;
     } catch (error) {
       console.error('Error in updateSystemSetting:', error);
+      throw error;
+    }
+  }
+
+  // ============================================================================
+  // PLATFORM ADMIN - SYSTEM METRICS (Issue #38 Fix)
+  // ============================================================================
+
+  /**
+   * Get real system metrics from database
+   * Replaces hardcoded mock data in EnhancedAdminConsole
+   */
+  async getSystemMetrics() {
+    try {
+      // Get total organizations count
+      const { count: totalOrganizations, error: orgError } = await supabase
+        .from('organizations')
+        .select('*', { count: 'exact', head: true });
+
+      if (orgError) throw orgError;
+
+      // Get active users count (users with activity in last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const { count: activeUsers, error: usersError } = await (supabase as any)
+        .from('users')
+        .select('*', { count: 'exact', head: true })
+        .gte('last_sign_in_at', thirtyDaysAgo.toISOString());
+
+      if (usersError && usersError.code !== 'PGRST116') console.warn('Users table query failed:', usersError);
+
+      // Get total documents count
+      const { count: totalDocuments, error: docsError } = await (supabase as any)
+        .from('documents')
+        .select('*', { count: 'exact', head: true });
+
+      if (docsError && docsError.code !== 'PGRST116') console.warn('Documents table query failed:', docsError);
+
+      // Get audit logs for API requests (last 24 hours)
+      const oneDayAgo = new Date();
+      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+      const { count: apiRequests24h, error: logsError } = await (supabase as any)
+        .from('audit_logs')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', oneDayAgo.toISOString());
+
+      if (logsError && logsError.code !== 'PGRST116') console.warn('Audit logs query failed:', logsError);
+
+      // Calculate system uptime (mock for now - would need server-side metric)
+      const uptimeDays = 15;
+      const uptimeHours = 7;
+
+      return {
+        uptime: `${uptimeDays} days, ${uptimeHours} hours`,
+        cpuUsage: 0, // Would need server-side metric
+        memoryUsage: 0, // Would need server-side metric
+        diskUsage: 0, // Would need server-side metric
+        activeUsers: activeUsers || 0,
+        totalOrganizations: totalOrganizations || 0,
+        totalDocuments: totalDocuments || 0,
+        apiRequests24h: apiRequests24h || 0,
+        errorRate: 0, // Would need error tracking integration
+        responseTime: 0 // Would need APM integration
+      };
+    } catch (error) {
+      console.error('Error getting system metrics:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all organizations with summary data
+   * Replaces hardcoded mock organizations in EnhancedAdminConsole
+   */
+  async getOrganizationsSummary() {
+    try {
+      // Get all organizations
+      const { data: orgs, error: orgsError } = await supabase
+        .from('organizations')
+        .select('id, name, industry, created_at, updated_at')
+        .order('created_at', { ascending: false });
+
+      if (orgsError) throw orgsError;
+
+      if (!orgs || orgs.length === 0) {
+        return [];
+      }
+
+      // Get user counts per organization
+      const { data: userCounts, error: userCountsError } = await supabase
+        .from('organization_users')
+        .select('organization_id, user_id')
+        .in('organization_id', orgs.map(o => o.id));
+
+      if (userCountsError) throw userCountsError;
+
+      // Get document counts per organization
+      const { data: docCounts, error: docCountsError } = await (supabase as any)
+        .from('documents')
+        .select('organization_id, id')
+        .in('organization_id', orgs.map(o => o.id));
+
+      if (docCountsError && docCountsError.code !== 'PGRST116') console.warn('Documents query failed:', docCountsError);
+
+      // Get assessments for compliance scores
+      const { data: assessments, error: assessmentsError } = await supabase
+        .from('assessments')
+        .select('organization_id, status')
+        .in('organization_id', orgs.map(o => o.id));
+
+      if (assessmentsError) throw assessmentsError;
+
+      // Build summary for each organization
+      const summaries = orgs.map(org => {
+        const userCount = userCounts?.filter(uc => uc.organization_id === org.id).length || 0;
+        const documentsCount = docCounts?.filter((dc: any) => dc.organization_id === org.id).length || 0;
+
+        // Calculate compliance score based on assessments
+        const orgAssessments = assessments?.filter(a => a.organization_id === org.id) || [];
+        const completedAssessments = orgAssessments.filter(a => a.status === 'completed').length;
+        const complianceScore = orgAssessments.length > 0
+          ? Math.round((completedAssessments / orgAssessments.length) * 100)
+          : 0;
+
+        // Calculate last activity
+        const updatedAt = new Date(org.updated_at);
+        const now = new Date();
+        const diffMs = now.getTime() - updatedAt.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        let lastActivity = 'Just now';
+        if (diffMins < 60) {
+          lastActivity = `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+        } else if (diffHours < 24) {
+          lastActivity = `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else {
+          lastActivity = `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        }
+
+        return {
+          id: org.id,
+          name: org.name,
+          userCount,
+          documentsCount,
+          complianceScore,
+          subscriptionTier: 'professional' as const, // Would need subscription table
+          status: 'active' as const, // Would need status field in organizations table
+          lastActivity,
+          storageUsed: 0, // Would need storage calculation
+          apiCalls30d: 0 // Would need API call tracking
+        };
+      });
+
+      return summaries;
+    } catch (error) {
+      console.error('Error getting organizations summary:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get recent user activities across the platform
+   * Replaces hardcoded mock activities in EnhancedAdminConsole
+   */
+  async getRecentActivities(limit = 10) {
+    try {
+      const { data: activities, error } = await (supabase as any)
+        .from('audit_logs')
+        .select(`
+          id,
+          user_id,
+          action,
+          resource_type,
+          resource_id,
+          metadata,
+          created_at,
+          users:user_id (
+            email,
+            full_name
+          ),
+          organizations:organization_id (
+            name
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Audit logs query failed:', error);
+        return [];
+      }
+
+      if (!activities || activities.length === 0) {
+        return [];
+      }
+
+      // Transform to user activity format
+      return activities.map((activity: any) => {
+        const timestamp = new Date(activity.created_at);
+        const now = new Date();
+        const diffMs = now.getTime() - timestamp.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+
+        let timeAgo = 'Just now';
+        if (diffMins > 0 && diffMins < 60) {
+          timeAgo = `${diffMins}m ago`;
+        } else if (diffMins >= 60) {
+          const hours = Math.floor(diffMins / 60);
+          timeAgo = `${hours}h ago`;
+        }
+
+        return {
+          id: activity.id,
+          userId: activity.user_id,
+          userName: activity.users?.full_name || activity.users?.email || 'Unknown User',
+          organizationName: activity.organizations?.name || 'Unknown Organization',
+          action: activity.action,
+          resource: activity.resource_type || 'Unknown Resource',
+          timestamp: timeAgo,
+          ipAddress: '0.0.0.0', // Not tracked yet
+          userAgent: 'N/A', // Not tracked yet
+          success: true // Assume success if logged
+        };
+      });
+    } catch (error) {
+      console.error('Error getting recent activities:', error);
       throw error;
     }
   }
